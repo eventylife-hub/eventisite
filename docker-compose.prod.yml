@@ -1,0 +1,150 @@
+# Docker Compose PRODUCTION — Eventy Life
+# Scaleway Kapsule (Kubernetes) ou Docker sur instance DEV1-S
+# Usage: docker compose -f docker-compose.prod.yml up -d
+#
+# Prérequis:
+#   - Fichier .env.production rempli (voir .env.production.example)
+#   - Certificats SSL Let's Encrypt via certbot
+#   - Base PostgreSQL managée Scaleway (recommandé) ou container
+
+version: '3.9'
+
+services:
+
+  # ── Nginx reverse proxy ──────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: eventy-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/logs:/var/log/nginx:rw
+    depends_on:
+      - app
+      - frontend
+    networks:
+      - eventy-prod
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Frontend Next.js ─────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+        NODE_ENV: production
+    image: eventy-frontend:${APP_VERSION:-latest}
+    container_name: eventy-frontend
+    restart: always
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+    networks:
+      - eventy-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ── Backend NestJS ───────────────────────────────────────────────────────
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: 20
+    image: eventy-backend:${APP_VERSION:-latest}
+    container_name: eventy-backend
+    restart: always
+    expose:
+      - "4000"
+    env_file:
+      - ./backend/.env.production
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: warn
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - eventy-prod
+    volumes:
+      - ./backend/logs:/app/logs:rw
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # Limites ressources Scaleway DEV1-S (2vCPU, 2GB RAM)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 768M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # ── Redis (cache + sessions) ─────────────────────────────────────────────
+  # NOTE: En production Scaleway, utiliser l'offre managée Redis si budget le permet
+  redis:
+    image: redis:7-alpine
+    container_name: eventy-redis
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD}
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+    volumes:
+      - redis-prod-data:/data:rw
+    networks:
+      - eventy-prod
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$REDIS_PASSWORD redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 192M
+
+  # ── Watchtower (auto-update images) ─────────────────────────────────────
+  # Optionnel — met à jour automatiquement les images Docker
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   command: --interval 300 --cleanup --label-enable
+
+volumes:
+  redis-prod-data:
+    driver: local
+
+networks:
+  eventy-prod:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

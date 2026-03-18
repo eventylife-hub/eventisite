@@ -1,0 +1,190 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                 EVENTY LIFE — SCALEWAY PRODUCTION DEPLOYMENT                 ║
+║                              QUICK REFERENCE                                 ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 PHASE 1: INITIAL SETUP (5 minutes)
+────────────────────────────────────────────────────────────────────────────
+
+$ ssh root@YOUR_SCALEWAY_IP
+$ curl -fsSL https://raw.githubusercontent.com/eventy/eventy-life/main/scripts/setup-scaleway.sh | bash
+
+Expected output: Green ✓ checkmarks, final checklist with next steps
+
+
+📋 PHASE 2: MANUAL CONFIGURATION (30 minutes)
+────────────────────────────────────────────────────────────────────────────
+
+1. Edit environment variables
+   $ sudo -u eventy nano /home/eventy/eventy-life/backend/.env.production
+   
+   Fill in:
+   • DATABASE_URL (PostgreSQL Scaleway RDB)
+   • STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+   • NEXT_PUBLIC_STRIPE_PUBLIC_KEY
+   • RESEND_API_KEY (email service)
+   • AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY (S3)
+   • SENTRY_DSN (both backend + frontend)
+
+2. Create docker-compose.yml
+   File: /home/eventy/eventy-life/docker-compose.yml
+   Reference: README-SCALEWAY-SETUP.md → "Déploiement avec Docker Compose"
+
+3. Create Nginx config
+   File: /home/eventy/eventy-life/nginx/conf.d/eventy.conf
+   Reference: README-SCALEWAY-SETUP.md → Nginx configuration section
+
+4. Configure DNS (at your registrar)
+   eventy.life       → A record → YOUR_SCALEWAY_IP
+   www.eventy.life   → CNAME → eventy.life.
+   api.eventy.life   → A record → YOUR_SCALEWAY_IP
+
+
+📋 PHASE 3: DEPLOYMENT (5 minutes)
+────────────────────────────────────────────────────────────────────────────
+
+$ cd /home/eventy/eventy-life
+$ sudo -u eventy docker compose up -d
+$ docker ps    # Verify all containers running
+
+
+📋 PHASE 4: VALIDATION (10 minutes)
+────────────────────────────────────────────────────────────────────────────
+
+✓ Frontend loads        → curl -I https://eventy.life
+✓ API responds         → curl -I https://api.eventy.life/api/health
+✓ SSL certificate      → openssl x509 -enddate -noout -in /etc/letsencrypt/live/eventy.life/fullchain.pem
+✓ No console errors    → https://eventy.life in browser (open DevTools)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔧 KEY FILES & LOCATIONS
+
+Script                          Location
+────────────────────────────────────────────────────────────────────────────
+Main setup                      scripts/setup-scaleway.sh
+SSL renewal + reload            scripts/ssl-renew.sh
+Environment variables           backend/.env.production
+Docker Compose                  docker-compose.yml (root)
+Nginx config                    nginx/conf.d/eventy.conf
+SSL certificates                /etc/letsencrypt/live/eventy.life/
+Renewal logs                    /var/log/eventy-ssl-renew.log
+Docker logs                     docker logs eventy_SERVICENAME_1
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📡 IMPORTANT DOMAINS
+
+Domain              Type    Destination
+────────────────────────────────────────────────────────────────────────────
+eventy.life         A       YOUR_SCALEWAY_IP
+www.eventy.life     CNAME   eventy.life.
+api.eventy.life     A       YOUR_SCALEWAY_IP
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚨 TROUBLESHOOTING COMMANDS
+
+Issue                                   Solution
+────────────────────────────────────────────────────────────────────────────
+"Port 80 already in use"                lsof -i :80; kill -9 PID
+
+Nginx returns 502                       docker logs eventy_nginx_1
+
+Backend not responding                  docker logs eventy_backend_1
+
+Redis connection refused                docker logs eventy_redis_1
+
+Certificate not found                   ls -la /etc/letsencrypt/live/eventy.life/
+
+DNS not resolving                       nslookup eventy.life (wait 5-30 min)
+
+GHCR image pull fails                   docker login ghcr.io (use GitHub PAT)
+
+Docker socket permission denied         sudo usermod -aG docker eventy
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 SERVICE PORTS
+
+Service         Internal Port   External Port   Protocol
+────────────────────────────────────────────────────────────────────────────
+Backend         4000            443 (via Nginx) HTTPS
+Frontend        3000            443 (via Nginx) HTTPS
+Nginx           80, 443         80, 443         HTTP/HTTPS
+Redis           6379            —               —
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ CHECKLIST (copy-paste)
+
+After Phase 1 (Setup):
+  ☐ Docker installed (docker --version)
+  ☐ Certbot installed (certbot --version)
+  ☐ Eventy user created (id eventy)
+  ☐ UFW active (sudo ufw status)
+  ☐ SSL certs generated (ls /etc/letsencrypt/live/eventy.life/)
+  ☐ Repository cloned (ls /home/eventy/eventy-life/.git)
+  ☐ .env.production created (ls /home/eventy/eventy-life/backend/.env.production)
+
+After Phase 3 (Deployment):
+  ☐ All containers running (docker ps | wc -l ≥ 4)
+  ☐ Backend healthy (docker ps | grep backend | grep "healthy")
+  ☐ Frontend healthy (docker ps | grep frontend | grep "healthy")
+  ☐ Nginx healthy (docker ps | grep nginx | grep "healthy")
+  ☐ Redis running (docker ps | grep redis)
+
+After Phase 4 (Validation):
+  ☐ HTTPS on eventy.life returns 200
+  ☐ API health check returns 200
+  ☐ SSL certificate valid (not before 60 days)
+  ☐ No 404 errors in browser console
+  ☐ DNS resolves (nslookup eventy.life → YOUR_IP)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📞 CONTACTS & RESOURCES
+
+Contact         Email                        Role
+────────────────────────────────────────────────────────────────────────────
+David (PDG)     eventylife@gmail.com        Decision maker
+
+Documentation
+────────────────────────────────────────────────────────────────────────────
+README-SCALEWAY-SETUP.md    → Complete deployment guide
+SCALEWAY-CHECKLIST.md       → Detailed validation checklist
+SETUP-SUMMARY.md            → Overview & deliverables
+
+External Links
+────────────────────────────────────────────────────────────────────────────
+Scaleway Console       https://console.scaleway.com
+Certbot Docs           https://certbot.eff.org/
+Docker Compose         https://docs.docker.com/compose/
+Nginx Docs             https://nginx.org/en/docs/
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🕐 TIMELINE
+
+Setup Script            ~5 min
+Manual Config           ~30 min
+Deployment              ~5 min
+Validation              ~10 min
+─────────────────────────────
+TOTAL                   ~50 minutes
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Version: 1.0.0
+Created: 2026-03-16
+For: Eventy Life
+Status: Production Ready ✓
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de réservation - Eventy Life</title>
+    <style type="text/css">
+        body { margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; }
+        table { border-collapse: collapse; }
+        img { max-width: 100%; height: auto; display: block; }
+        a { color: #FF6B35; text-decoration: none; }
+        h1, h2, h3 { font-family: 'Fraunces', serif; margin: 0; }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#FEFCF3;">
+    <table role="presentation" style="width:100%; background-color:#FEFCF3;">
+        <tr>
+            <td align="center" style="padding:20px 0;">
+                <table role="presentation" style="width:100%; max-width:600px; background-color:#FFFFFF; border-radius:8px; box-shadow:0 2px 8px rgba(10,22,40,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding:40px 30px; background:linear-gradient(135deg, #FF6B35 0%, #0077B6 100%); text-align:center; border-radius:8px 8px 0 0;">
+                            <h1 style="color:#FFFFFF; font-size:28px; margin:0 0 8px 0;">Eventy Life</h1>
+                            <p style="color:#FEFCF3; font-size:12px; margin:0; font-weight:300; letter-spacing:1px;">VOYAGES DE GROUPE</p>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding:40px 30px;">
+                            <!-- Greeting -->
+                            <h2 style="color:#0A1628; font-size:24px; margin-bottom:16px;">Bravo, c'est confirmé! 🎉</h2>
+                            <p style="color:#0A1628; font-size:14px; line-height:1.6; margin:0 0 24px 0;">
+                                Merci d'avoir réservé avec Eventy Life. Votre voyage de groupe est maintenant confirmé. Retrouvez tous les détails ci-dessous.
+                            </p>
+
+                            <!-- Booking Details Box -->
+                            <table role="presentation" style="width:100%; background-color:#F0F9FF; border-left:4px solid #0077B6; border-radius:4px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="padding:20px;">
+                                        <h3 style="color:#0077B6; font-size:16px; margin-bottom:12px;">Résumé de votre réservation</h3>
+                                        <table role="presentation" style="width:100%;">
+                                            <tr>
+                                                <td style="padding:8px 0; color:#0A1628; font-size:13px; font-weight:600;">Voyage:</td>
+                                                <td style="padding:8px 0; color:#0A1628; font-size:13px; text-align:right;">{{VOYAGE_NAME}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 0; color:#0A1628; font-size:13px; font-weight:600;">Dates:</td>
+                                                <td style="padding:8px 0; color:#0A1628; font-size:13px; text-align:right;">{{START_DATE}} - {{END_DATE}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 0; color:#0A1628; font-size:13px; font-weight:600;">Participants:</td>
+                                                <td style="padding:8px 0; color:#0A1628; font-size:13px; text-align:right;">{{PASSENGER_COUNT}} voyageur(s)</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="padding:8px 0; border-top:1px solid #CBD5E1;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:12px 0; color:#0A1628; font-size:14px; font-weight:700;">Montant total:</td>
+                                                <td style="padding:12px 0; color:#FF6B35; font-size:16px; font-weight:700; text-align:right;">{{TOTAL_PRICE}}€</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:8px 0; color:#666; font-size:12px;">Référence:</td>
+                                                <td style="padding:8px 0; color:#666; font-size:12px; text-align:right; font-family:monospace;">{{BOOKING_REF}}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Pack Sérénité Badge -->
+                            <table role="presentation" style="width:100%; background-color:#F0FDF4; border:1px solid #06D6A0; border-radius:4px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="padding:16px; text-align:center;">
+                                        <h3 style="color:#06D6A0; font-size:14px; margin:0 0 4px 0; font-weight:700;">✓ Pack Sérénité inclus</h3>
+                                        <p style="color:#047857; font-size:12px; margin:0;">Assistance 24/7, assurance voyage, et protection complète</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Payment Summary -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">Résumé du paiement</h3>
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="padding:8px 0; color:#0A1628; font-size:13px;">Acompte payé:</td>
+                                    <td style="padding:8px 0; color:#06D6A0; font-size:13px; font-weight:700; text-align:right;">{{DEPOSIT_PAID}}€</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0; color:#0A1628; font-size:13px;">Solde à payer:</td>
+                                    <td style="padding:8px 0; color:#FF6B35; font-size:13px; font-weight:700; text-align:right;">{{REMAINING_BALANCE}}€</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 0; color:#0A1628; font-size:13px;">Échéance:</td>
+                                    <td style="padding:8px 0; color:#0A1628; font-size:13px; text-align:right;">{{DUE_DATE}}</td>
+                                </tr>
+                            </table>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="{{TRAVELER_DASHBOARD_URL}}" style="display:inline-block; padding:14px 32px; background:linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%); color:#FFFFFF; text-decoration:none; border-radius:4px; font-weight:700; font-size:14px;">Accéder à mon espace voyageur</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Info Section -->
+                            <table role="presentation" style="width:100%; background-color:#FEFCF3; border-radius:4px; padding:16px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="color:#0A1628; font-size:13px; line-height:1.6;">
+                                        <strong>Prochaines étapes:</strong><br>
+                                        • Consultez les documents de voyage (devis détaillé, programme)<br>
+                                        • Complétez les informations des participants<br>
+                                        • Réglez le solde avant la date limite
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Questions Section -->
+                            <p style="color:#0A1628; font-size:13px; margin:0;">
+                                Des questions? <a href="mailto:support@eventylife.com" style="color:#FF6B35; font-weight:600;">Contactez notre équipe</a>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding:30px; background-color:#0A1628; border-radius:0 0 8px 8px; text-align:center;">
+                            <p style="color:#FFFFFF; font-size:12px; margin:0 0 12px 0;">
+                                © 2026 Eventy Life - Tous droits réservés
+                            </p>
+                            <p style="color:#94A3B8; font-size:11px; margin:0 0 8px 0;">
+                                <a href="{{UNSUBSCRIBE_URL}}" style="color:#94A3B8; text-decoration:none;">Se désabonner</a> |
+                                <a href="{{PRIVACY_POLICY_URL}}" style="color:#94A3B8; text-decoration:none;">Politique de confidentialité</a> |
+                                <a href="{{LEGAL_NOTICE_URL}}" style="color:#94A3B8; text-decoration:none;">Mentions légales</a>
+                            </p>
+                            <p style="color:#64748B; font-size:10px; margin:0;">
+                                Eventy Life - Plateforme de voyages de groupe | Paris, France
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

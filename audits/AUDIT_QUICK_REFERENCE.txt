@@ -1,0 +1,106 @@
+FRONTEND AUDIT - QUICK REFERENCE
+================================
+Date: 2026-03-15
+Location: /sessions/exciting-determined-planck/mnt/eventisite/frontend
+
+CRITICAL ISSUES FOUND: 3
+========================
+
+1. SYNTAX ERROR - Page Won't Render
+   File: /sessions/exciting-determined-planck/mnt/eventisite/frontend/app/(public)/voyages/page.tsx
+   Line: 292
+   Issue: onSubmit={(e) = noValidate> e.preventDefault()}
+   Fix:   onSubmit={(e) => { e.preventDefault(); }}
+   Impact: Travel listing page (/voyages) will crash
+
+2. MISSING API ENDPOINT - Public Travel Listing
+   File: /sessions/exciting-determined-planck/mnt/eventisite/frontend/app/(public)/voyages/page.tsx
+   Line: 87
+   Call: apiClient.get<Travel[]>('/travels')
+   Issue: No backend endpoint exists
+   Fix: Create /api/travels endpoint in backend or update frontend path
+   Impact: Travel listing shows demo data instead of real data
+
+3. DUPLICATE HTML ATTRIBUTE - Accessibility Warning
+   File: /sessions/exciting-determined-planck/mnt/eventisite/frontend/app/(public)/voyages/page.tsx
+   Lines: 287, 289
+   Issue: aria-label="Filtrer les voyages" appears twice
+   Fix: Remove one duplicate
+   Impact: Console warning, accessibility tool confusion
+
+UNVERIFIED API PATHS (Need Backend Verification)
+=================================================
+
+PRO PORTAL API PATHS:
+File: /sessions/exciting-determined-planck/mnt/eventisite/frontend/lib/stores/pro-store.ts
+- /pro/profile (line 163)
+- /pro/onboarding/status (line 187)
+- /pro/travels (line 219) - appears to exist
+- /pro/bus-stops (line 247)
+- /pro/formation/modules (line 267)
+- /pro/formation/progress (line 288)
+- /pro/team (line 313)
+- /pro/financials (line 333)
+- /pro/marketing/campaigns (line 354)
+
+PRO DASHBOARD CALLS:
+File: /sessions/exciting-determined-planck/mnt/eventisite/frontend/app/(pro)/pro/page.tsx
+- /pro/travels?limit=50 (line 59)
+- /pro/revenues (line 60)
+
+ADMIN PORTAL API PATHS (All Unverified):
+Files: /sessions/exciting-determined-planck/mnt/eventisite/frontend/app/(admin)/admin/*/page.tsx
+- /admin/alerts (alertes page)
+- /admin/cancellations (annulations page)
+- /admin/audit-logs (audit page)
+- /admin/bookings (bookings page)
+- /admin/documents (documents page)
+- /admin/exports (exports page)
+- /admin/dashboard/revenue (finance page)
+- /admin/finance/payments (finance payouts)
+- /admin/marketing (marketing page)
+- /admin/tickets (support tickets)
+- /admin/transport (transport page)
+- /admin/users (user management)
+
+VERIFIED WORKING
+================
+✓ All component imports resolve
+✓ Auth flows work (login, register)
+✓ CSRF protection implemented
+✓ Cookie-based token handling
+✓ API error handling with fallbacks
+✓ All UI components exist
+✓ No broken imports found
+
+PAGES STATUS
+============
+PUBLIC:
+  / (homepage) - WORKS
+  /voyages - BROKEN (syntax error line 292)
+  /contact - WORKS
+
+CLIENT (AUTH REQUIRED):
+  /connexion - WORKS (calls /auth/login)
+  /inscription - WORKS (calls /auth/register)
+  /client/dashboard - WORKS
+  /client/reservations/* - WORKS
+
+PRO (AUTH REQUIRED):
+  /pro - PARTIAL (unverified API paths)
+  /pro/formation/* - PARTIAL (unverified API paths)
+  /pro/arrets/* - WORKS
+
+ADMIN (AUTH REQUIRED):
+  /admin - PARTIAL (unverified API paths)
+  /admin/voyages/* - PARTIAL (unverified API paths)
+  /admin/utilisateurs/* - PARTIAL (unverified API paths)
+
+NEXT STEPS
+==========
+1. Fix syntax error on line 292 (5 minutes)
+2. Create /api/travels endpoint (depends on backend)
+3. Remove duplicate aria-label (2 minutes)
+4. Verify all Pro API paths exist in backend
+5. Verify all Admin API paths exist in backend
+6. Test all three portal flows end-to-end

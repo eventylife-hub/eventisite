@@ -1,0 +1,245 @@
+================================================================================
+PRISMA SCHEMA vs DATABASE MIGRATIONS — COMPREHENSIVE GAP ANALYSIS
+================================================================================
+Generated: 2026-03-15
+Repository: /sessions/exciting-determined-planck/mnt/eventisite
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+Current State:
+  • Prisma Schema: 118 models, 122 enums
+  • Init Migration (20260303002933_init): 38 tables, 29 enums
+  • Amendment Migration (20260306061254_add_campaign_rejection_reason): +1 field
+  • Database Gap: 80 models and 93 enums NOT in database
+
+Critical Issue:
+  The Prisma schema defines significantly more models than have been migrated
+  to the database. This is a major mismatch that will cause:
+  1. Prisma client generation failures
+  2. Type safety issues
+  3. Runtime errors when accessing unmapped models
+  4. Data loss if migrations are lost
+
+================================================================================
+QUANTITATIVE BREAKDOWN
+================================================================================
+
+ENUMS: 93 Missing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Category                          Count   Models Using
+  ─────────────────────────────────────────────────────────────────────────
+  Finance & Accounting               12    Invoice, LedgerEntry, Refund, etc.
+  Booking & Reservation              14    PreReservation, RoomHold, etc.
+  Notifications & Messaging          10    NotificationEvent, MessageTemplate
+  Marketing & Attribution             5    Campaign, TrackingLink
+  Compliance & Legal                 16    DsarRequest, DPIARecord, etc.
+  Transport & Logistics               4    TransportProvider, etc.
+  Admin & Operations                  8    CronJobLog, ExportLog, etc.
+  Organization                        3    OrgCode, OrgDiscountConfig
+  Partnership                         2    HotelPartner, PartnerStatus
+  Reviews & Feedback                  2    Review, ReviewStatus
+  Pro & Roles                         5    ProFormation, GroupMemberRole
+  Tipping                             3    Tip, StaffTipPool
+  Miscellaneous                       7    Priority, DeadlineOverrideType
+
+TABLES: 80 Missing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Category                          Count   Total Fields
+  ─────────────────────────────────────────────────────────────────────────
+  Finance & Accounting               11    ~150 fields
+  Booking & Reservation               8    ~100 fields
+  Notifications & Messaging           9    ~120 fields
+  Marketing & Attribution            10    ~80 fields
+  Compliance & Legal                 12    ~150 fields
+  Transport & Logistics               8    ~100 fields
+  Admin & Operations                  7    ~80 fields
+  Organization                        6    ~90 fields
+  Partnership & Reference Data        5    ~70 fields
+  User & Security                     7    ~80 fields
+  Payment & Dispute                   5    ~70 fields
+  Tipping & Compensation              4    ~60 fields
+  Reviews & Feedback                  2    ~30 fields
+  Support & Messaging                 2    ~40 fields
+  Miscellaneous                       4    ~50 fields
+  ─────────────────────────────────────────────────────────────────────────
+  Total Missing Table Definitions   ~1,170 fields to migrate
+
+INDEXES: 450+ Missing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Most tables: 4-6 indexes
+  • Avg ~5.6 indexes per table
+  • 80 tables × 5.6 = ~448 indexes needed
+  • Types: Single column, composite, unique, partial
+
+FOREIGN KEYS: 150+ Missing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Most tables: 1-3 FKs
+  • Cross-references to existing 38 tables
+  • New cross-references between 80 new tables
+  • Cascade/Restrict/SetNull rules vary
+
+================================================================================
+TOP 10 LARGEST MISSING MODELS (by field count)
+================================================================================
+
+1. Invoice                     ~20 fields (invoicing system)
+2. NotificationEvent           ~15 fields (event-driven notifications)
+3. PreReservation              ~15 fields (pre-booking deposits)
+4. Review                      ~14 fields (extended feedback system)
+5. LedgerEntry                 ~12 fields (accounting ledger)
+6. QuoteRequest                ~12 fields (transport quotes)
+7. DsarRequest                 ~10 fields (GDPR data requests)
+8. ExportLog                   ~12 fields (export auditing)
+9. TravelOccurrenceRouteAssignment ~8 fields (transport routing)
+10. OutboxMessage              ~10 fields (event outbox pattern)
+
+================================================================================
+CRITICAL DEPENDENCIES & ORDERING
+================================================================================
+
+Phase 1: Create All Enums (93 total)
+  • All enum types must exist before creating tables
+  • No dependencies between enums
+  • Execution: ~1-2 seconds
+
+Phase 2: Create Base Tables (no cross-dependencies)
+  • AdminActionLog, Campaign, ComplianceCheck, GeoCache, IdempotencyKey
+  • MVP, ProviderDocument, PickupRouteTemplate, StripeEvent, SystemAlert
+  • TransportProvider, TravelRotationPlan, UrssafSettings
+
+Phase 3: Create Organization Tables (minimal deps)
+  • OrgCode → [none]
+  • OrgMember → [OrgCode, User]
+  • OrgDiscountConfig → [OrgCode, Travel?]
+  • OrgTripRequest → [OrgCode]
+  • OrgWallet → [OrgCode]
+
+Phase 4: Create User/Security Tables
+  • AdminUser, EmailVerificationToken, PasswordResetToken
+  • LoginAttempt, PiiAccessLog, ConsentRecord
+
+Phase 5: Create Financial Tables
+  • AdjustmentLine → [BookingGroup, RoomBooking, User, Refund]
+  • PayoutBlockReason → [PayoutProfile]
+  • CreditVoucher → [User]
+  • DisputeHold → [PaymentContribution]
+  • Refund → [PaymentContribution, User]
+  • LedgerEntry → [Travel?]
+  • Invoice → [Travel?]
+  • InvoiceLine → [Invoice]
+  • TvaMarginCalc → [Travel]
+
+Phase 6: Create Notification Tables
+  • MessageTemplate, NotificationPreference, FollowNotifPreference
+  • NotificationEvent, NotificationSchedule, NoGoNotification
+  • ClientNotification, InboxThread, InboxMessage
+
+Phase 7: Create Booking/Reservation Tables
+  • PreReservation → [Travel, OrgCode?]
+  • PreResRoomAssignment → [PreReservation]
+  • BookingTransfer, RoomHold, RoomInventory
+  • WaitlistEntry, HotelRoomAllocation
+
+Phase 8: Create Transport Tables
+  • QuoteRequest, QuoteSegment, BusQuoteRequest
+  • PickupRouteStopItem, TravelOccurrenceRouteAssignment
+
+Phase 9: Create Compliance/Legal Tables
+  • DsarRequest, DPIARecord, DataRetentionPolicy
+  • ProcessingActivity, IncidentReport, CronJobLog
+
+Phase 10: Create Marketing/Attribution Tables
+  • LeadCapture, AttributionEvent, AttributionModel
+  • TrackingLink, MessageReadEvent
+
+Phase 11: Create Partner/Reference Tables
+  • HotelPartner, RestaurantPartner, ProviderDocument
+  • MealDeclaration
+
+Phase 12: Create Tipping/Review Tables
+  • Tip, StaffTipPool, StaffTipPoolMovement, TipPayoutLine
+  • TipSplitPolicy, Review, ProFormation
+
+Phase 13: Create Admin/Support Tables
+  • AdminActionLog, SupportMessage, ExportLog, OutboxMessage
+  • GoDecisionLog
+
+Phase 14: Create All Indexes & Foreign Keys
+  • ~450+ indexes on all tables
+  • ~150+ foreign key constraints
+
+================================================================================
+IMPACT ASSESSMENT
+================================================================================
+
+Development Impact:
+  ✗ Prisma Client cannot generate without schema/DB sync
+  ✗ TypeScript types will be incomplete
+  ✗ Runtime errors accessing unmapped models
+  ✗ Manual workarounds needed for missing models
+
+Data Layer Impact:
+  ✗ No invoice generation capability
+  ✗ No ledger/accounting features
+  ✗ No GDPR/compliance tracking
+  ✗ Limited notification system
+  ✗ No attribution/marketing metrics
+  ✗ No organization support
+  ✗ No pre-reservation system
+
+Production Readiness:
+  ✗ Missing financial tracking → Can't calculate payout
+  ✗ Missing audit trails → Compliance risk
+  ✗ Missing consent tracking → GDPR risk
+  ✗ Missing invoice system → B2B functionality blocked
+  ✗ Missing notification system → No real alerts to users
+
+================================================================================
+RECOMMENDED ACTION PLAN
+================================================================================
+
+Immediate (Week 1):
+  1. Create new migration file: 20260315000000_add_missing_models.sql
+  2. Generate DDL from Prisma schema for all 80 tables
+  3. Test migration on staging DB (verify no conflicts)
+  4. Verify Prisma client generation passes
+  5. Run full test suite
+
+Short-term (Week 2-3):
+  1. Update backend tests for new models
+  2. Implement service layer for Invoice, Ledger, etc.
+  3. Update notification system to use new NotificationEvent
+  4. Implement GDPR compliance features
+  5. Add pre-reservation workflow
+
+Medium-term (Month 2):
+  1. Implement organization support
+  2. Add attribution tracking
+  3. Set up financial reporting
+  4. Add compliance dashboards
+
+================================================================================
+REFERENCE FILES
+================================================================================
+
+1. MIGRATION_DIFFERENCES_SCHEMA_VS_MIGRATIONS.md
+   - Comprehensive breakdown of all 93 enums with values
+   - All 80 table definitions with fields
+   - Index descriptions
+   - Foreign key relationships
+   - Category grouping
+
+2. COMPREHENSIVE_MIGRATION_TEMPLATE.sql
+   - All 93 enum CREATE TYPE statements (ready to copy)
+   - Migration structure template
+   - Execution ordering guidance
+   - Foreign key constraint rules
+
+3. Detailed Schema Location:
+   - Full Prisma Schema: backend/prisma/schema.prisma (3,391 lines)
+   - Init Migration: backend/prisma/migrations/20260303002933_init/migration.sql
+   - Amendment: backend/prisma/migrations/20260306061254_add_campaign_rejection_reason/migration.sql
+
+================================================================================

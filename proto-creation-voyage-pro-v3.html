@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eventy Pro — Créer un voyage · Phase 1</title>
+<style>
+  :root {
+    --pro-primary: #1a1a2e;
+    --pro-accent: #e94560;
+    --pro-accent2: #0f3460;
+    --pro-bg: #f4f6f9;
+    --pro-card: #ffffff;
+    --pro-border: #e2e8f0;
+    --pro-text: #1e293b;
+    --pro-muted: #64748b;
+    --pro-success: #10b981;
+    --pro-warning: #f59e0b;
+    --pro-error: #ef4444;
+    --pro-info: #3b82f6;
+    --tab-active: #e94560;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--pro-bg); color: var(--pro-text); font-size: 14px; }
+
+  /* HEADER */
+  .header {
+    background: var(--pro-primary);
+    color: white;
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo { font-weight: 800; font-size: 18px; color: var(--pro-accent); letter-spacing: -0.5px; }
+  .logo span { color: white; }
+  .breadcrumb { color: #94a3b8; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .breadcrumb a { color: #cbd5e1; text-decoration: none; }
+  .breadcrumb .sep { color: #475569; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .qualite-badge {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .qualite-score { font-weight: 700; color: #fbbf24; }
+  .btn { padding: 7px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .15s; }
+  .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,.3); color: white; }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); }
+  .btn-primary { background: var(--pro-accent); color: white; }
+  .btn-primary:hover { background: #c73652; }
+  .btn-success { background: var(--pro-success); color: white; }
+  .btn-success:hover { background: #059669; }
+  .btn-outline { background: white; border: 1.5px solid var(--pro-border); color: var(--pro-text); }
+  .btn-outline:hover { border-color: var(--pro-accent); color: var(--pro-accent); }
+  .btn-disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-icon { background: none; border: none; cursor: pointer; color: var(--pro-muted); padding: 4px; border-radius: 6px; }
+  .btn-icon:hover { background: var(--pro-bg); color: var(--pro-text); }
+
+  /* BLOCKING BANNER */
+  .blocking-bar {
+    background: #fef3c7;
+    border-bottom: 1px solid #fde68a;
+    padding: 8px 24px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: #92400e;
+  }
+  .blocking-bar .icon { font-size: 14px; }
+  .blocking-item {
+    background: #fde68a;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-weight: 600;
+  }
+
+  /* TABS */
+  .tabs-wrapper {
+    background: white;
+    border-bottom: 2px solid var(--pro-border);
+    padding: 0 24px;
+    position: sticky; top: 56px; z-index: 90;
+    box-shadow: var(--shadow-sm);
+  }
+  .tabs { display: flex; gap: 0; }
+  .tab {
+    padding: 14px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    font-size: 13px; font-weight: 600;
+    color: var(--pro-muted);
+    display: flex; align-items: center; gap: 8px;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--pro-text); }
+  .tab.active { color: var(--pro-accent); border-bottom-color: var(--pro-accent); }
+  .tab .tab-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--pro-border); color: var(--pro-muted);
+    font-size: 11px; display: flex; align-items: center; justify-content: center;
+  }
+  .tab.active .tab-num { background: var(--pro-accent); color: white; }
+  .tab .tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pro-success); }
+
+  /* CONTENT */
+  .content { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--pro-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--pro-border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--pro-border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fafbfc;
+  }
+  .card-title { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .emoji { font-size: 16px; }
+  .card-body { padding: 20px; }
+  .card-footer { padding: 14px 20px; border-top: 1px solid var(--pro-border); background: #fafbfc; display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* FORM */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-full { margin-bottom: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 12px; font-weight: 600; color: var(--pro-muted); text-transform: uppercase; letter-spacing: .5px; }
+  label .req { color: var(--pro-accent); }
+  input[type=text], input[type=number], input[type=date], select, textarea {
+    border: 1.5px solid var(--pro-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--pro-text);
+    background: white;
+    transition: border-color .15s;
+    width: 100%;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--pro-accent); box-shadow: 0 0 0 3px rgba(233,69,96,.1); }
+  textarea { resize: vertical; min-height: 80px; }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  .field-hint { font-size: 11px; color: var(--pro-muted); margin-top: 2px; }
+  .blocking-field { border-color: var(--pro-error) !important; }
+  .blocking-field:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.1) !important; }
+
+  /* DESCRIPTION MODULES */
+  .desc-modules { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .desc-module {
+    border: 1.5px solid var(--pro-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .desc-module-header {
+    background: #f8fafc;
+    padding: 6px 10px;
+    font-size: 11px; font-weight: 600; color: var(--pro-muted);
+    border-bottom: 1px solid var(--pro-border);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .desc-module textarea { border: none; border-radius: 0; min-height: 60px; }
+
+  /* MEDIA UPLOAD */
+  .media-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .media-slot {
+    aspect-ratio: 4/3;
+    border: 2px dashed var(--pro-border);
+    border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--pro-muted); font-size: 12px; gap: 4px;
+    transition: all .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .media-slot:hover { border-color: var(--pro-accent); color: var(--pro-accent); background: rgba(233,69,96,.03); }
+  .media-slot.filled { border-style: solid; border-color: var(--pro-border); }
+  .media-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+  .media-slot .media-cover { position: absolute; top: 4px; left: 4px; background: var(--pro-accent); color: white; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .media-slot .media-del { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,.5); color: white; border: none; border-radius: 4px; cursor: pointer; width: 20px; height: 20px; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+  .media-icon { font-size: 22px; }
+
+  /* CAPACITY ROW */
+  .capacity-row { display: flex; align-items: center; gap: 24px; }
+  .capacity-item { display: flex; flex-direction: column; gap: 4px; }
+  .capacity-number { font-size: 28px; font-weight: 800; color: var(--pro-primary); }
+  .capacity-label { font-size: 11px; color: var(--pro-muted); font-weight: 600; text-transform: uppercase; }
+  .capacity-controls { display: flex; gap: 4px; align-items: center; }
+  .capacity-btn { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid var(--pro-border); background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .capacity-btn:hover { border-color: var(--pro-accent); color: var(--pro-accent); }
+
+  /* TRANSPORT MODE */
+  .transport-modes { display: flex; gap: 10px; }
+  .transport-mode {
+    flex: 1;
+    border: 2px solid var(--pro-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .transport-mode.selected { border-color: var(--pro-accent); background: rgba(233,69,96,.04); }
+  .transport-mode-title { font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .transport-mode-desc { font-size: 11px; color: var(--pro-muted); margin-top: 4px; }
+  .transport-mode .radio { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--pro-muted); display: inline-block; }
+  .transport-mode.selected .radio { border-color: var(--pro-accent); background: var(--pro-accent); }
+
+  /* ═══ ONGLET 2 — HRA ═══ */
+
+  /* HRA SECTION */
+  .hra-section { margin-bottom: 16px; }
+  .hra-section-title {
+    font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 10px 10px 0 0;
+    border: 1px solid var(--pro-border);
+    border-bottom: none;
+  }
+  .hra-section-body {
+    border: 1px solid var(--pro-border);
+    border-radius: 0 0 10px 10px;
+    padding: 16px;
+  }
+
+  /* HRA SELECTOR */
+  .hra-selector {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--pro-border);
+    border-radius: 8px;
+    background: white;
+    margin-bottom: 10px;
+  }
+  .hra-selector-icon { font-size: 20px; }
+  .hra-selector-info { flex: 1; }
+  .hra-selector-name { font-weight: 600; font-size: 13px; }
+  .hra-selector-sub { font-size: 11px; color: var(--pro-muted); }
+  .hra-selector-badge { font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+  .badge-validated { background: #d1fae5; color: #065f46; }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .badge-draft { background: #e2e8f0; color: #475569; }
+  .hra-selector select { flex: 1; }
+  .hra-invite-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--pro-accent); font-size: 12px; font-weight: 600;
+    cursor: pointer; padding: 6px; border-radius: 6px;
+    border: 1.5px dashed rgba(233,69,96,.3);
+    background: rgba(233,69,96,.04);
+    transition: all .15s;
+  }
+  .hra-invite-btn:hover { background: rgba(233,69,96,.08); }
+
+  /* PROGRAMME PAR JOUR */
+  .jour-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .jour-tab {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--pro-border);
+    background: white; cursor: pointer; font-size: 12px; font-weight: 600;
+    transition: all .15s;
+  }
+  .jour-tab.active { background: var(--pro-primary); color: white; border-color: var(--pro-primary); }
+  .jour-tab:hover:not(.active) { border-color: var(--pro-accent); }
+
+  .creneau-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .creneau-card {
+    border: 1.5px solid var(--pro-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .creneau-header {
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--pro-border);
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .creneau-body { padding: 10px 12px; }
+  .creneau-type-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .creneau-type-chip {
+    padding: 3px 10px; border-radius: 12px;
+    border: 1.5px solid var(--pro-border);
+    font-size: 11px; cursor: pointer; font-weight: 600;
+    transition: all .1s;
+  }
+  .creneau-type-chip.active { background: var(--pro-primary); color: white; border-color: var(--pro-primary); }
+  .creneau-notes { font-size: 12px; color: var(--pro-muted); font-style: italic; }
+
+  /* RESTAURATION */
+  .resto-day { margin-bottom: 12px; }
+  .resto-day-title { font-weight: 700; font-size: 12px; color: var(--pro-muted); text-transform: uppercase; margin-bottom: 8px; }
+  .resto-mode-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
+  .resto-mode-btn {
+    padding: 4px 12px; border-radius: 6px;
+    border: 1.5px solid var(--pro-border);
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    background: white;
+    transition: all .1s;
+  }
+  .resto-mode-btn.active { background: var(--pro-accent2); color: white; border-color: var(--pro-accent2); }
+  .resto-multi-select {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 8px;
+    border: 1.5px solid var(--pro-border);
+    border-radius: 8px;
+    min-height: 40px;
+    background: #fafbfc;
+  }
+  .resto-chip {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+    background: #dbeafe; color: #1e40af;
+    cursor: pointer;
+  }
+  .resto-chip .remove { color: #60a5fa; font-size: 14px; line-height: 1; }
+  .resto-chip-add {
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1.5px dashed #93c5fd; color: #3b82f6;
+    background: white;
+  }
+  .hotel-meal-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #d1fae5; color: #065f46;
+    padding: 6px 12px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+  }
+  .dupliquer-btn {
+    display: flex; align-items: center; gap: 4px;
+    color: var(--pro-muted); font-size: 12px; cursor: pointer;
+    padding: 4px 8px; border-radius: 6px;
+    border: 1px dashed var(--pro-border);
+    background: white; width: fit-content; margin-top: 8px;
+  }
+  .dupliquer-btn:hover { border-color: var(--pro-accent2); color: var(--pro-accent2); }
+
+  /* ACTIVITÉS */
+  .activite-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--pro-border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: white;
+  }
+  .activite-icon { font-size: 20px; }
+  .activite-info { flex: 1; }
+  .activite-name { font-weight: 600; font-size: 13px; }
+  .activite-sub { font-size: 11px; color: var(--pro-muted); }
+  .activite-prix { font-weight: 700; font-size: 13px; color: var(--pro-success); }
+  .activite-status { display: flex; align-items: center; }
+  .add-activite-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    border: 2px dashed var(--pro-border); background: white;
+    color: var(--pro-muted); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .add-activite-btn:hover { border-color: var(--pro-accent); color: var(--pro-accent); }
+
+  /* BUS SUR PLACE */
+  .bus-arret {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--pro-border);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    background: white;
+  }
+  .bus-arret-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pro-accent2); flex-shrink: 0; }
+  .bus-arret-name { font-weight: 600; font-size: 13px; flex: 1; }
+  .bus-arret-type { font-size: 11px; color: var(--pro-muted); }
+  .bus-arrow { color: var(--pro-muted); font-size: 12px; }
+
+  /* ═══ ONGLET 3 — SÉCURITÉ ═══ */
+  .securite-section { margin-bottom: 16px; }
+  .urgence-numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .urgence-num {
+    text-align: center; padding: 12px;
+    border: 1.5px solid var(--pro-border);
+    border-radius: 10px; background: white;
+  }
+  .urgence-num .num { font-size: 24px; font-weight: 800; color: var(--pro-error); }
+  .urgence-num .service { font-size: 11px; color: var(--pro-muted); font-weight: 600; }
+  .doc-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--pro-border);
+    border-radius: 8px; margin-bottom: 6px; background: white;
+  }
+  .doc-item-icon { font-size: 18px; }
+  .doc-item-info { flex: 1; }
+  .doc-item-name { font-weight: 600; font-size: 13px; }
+  .doc-item-sub { font-size: 11px; color: var(--pro-muted); }
+  .doc-status-ok { color: var(--pro-success); font-size: 16px; }
+  .doc-status-missing { color: var(--pro-muted); font-size: 14px; }
+
+  /* ═══ ONGLET 4 — PRÉPA P2 ═══ */
+  .occurrence-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .occurrence-item {
+    border: 1.5px solid var(--pro-border); border-radius: 8px;
+    padding: 12px; background: white;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .occurrence-num { font-size: 11px; font-weight: 700; color: var(--pro-muted); text-transform: uppercase; }
+  .occurrence-dates { font-size: 13px; font-weight: 600; }
+  .occurrence-rotation { font-size: 11px; color: var(--pro-accent2); font-weight: 600; }
+  .occurrence-add {
+    border: 2px dashed var(--pro-border); border-radius: 8px;
+    padding: 12px; background: #fafbfc;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--pro-muted); font-size: 12px; font-weight: 600;
+    gap: 6px; transition: all .15s;
+  }
+  .occurrence-add:hover { border-color: var(--pro-accent); color: var(--pro-accent); }
+
+  /* RAMASSE */
+  .hub-card {
+    border: 2px solid var(--pro-accent2);
+    border-radius: 10px;
+    padding: 14px;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    margin-bottom: 10px;
+  }
+  .hub-card-title { font-weight: 700; font-size: 13px; color: var(--pro-accent2); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .branche {
+    border: 1.5px solid var(--pro-border);
+    border-radius: 8px; overflow: hidden; margin-bottom: 8px;
+  }
+  .branche-header {
+    background: #f8fafc; padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--pro-border);
+  }
+  .branche-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--pro-accent2); color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .branche-name { font-weight: 600; font-size: 12px; flex: 1; }
+  .branche-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .stop-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .stop-num { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--pro-border); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; color: var(--pro-muted); }
+  .stop-name { flex: 1; font-weight: 600; }
+  .stop-heure { color: var(--pro-muted); }
+  .stop-provisional { color: #f59e0b; font-size: 10px; font-weight: 600; }
+
+  /* ESTIMATION PRIX */
+  .prix-recap {
+    border: 2px solid var(--pro-border);
+    border-radius: 10px; overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .prix-recap-title {
+    background: var(--pro-primary); color: white;
+    padding: 10px 16px; font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .prix-row {
+    display: flex; align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--pro-border);
+    background: white;
+  }
+  .prix-row:last-child { border-bottom: none; }
+  .prix-row.total { background: #f8fafc; font-weight: 700; }
+  .prix-row.separator { background: var(--pro-border); height: 2px; padding: 0; }
+  .prix-label { flex: 1; font-size: 13px; }
+  .prix-value { font-size: 13px; font-weight: 600; color: var(--pro-text); }
+  .prix-row.total .prix-value { font-size: 16px; color: var(--pro-accent); }
+  .prix-note { font-size: 11px; color: var(--pro-muted); padding: 8px 16px; background: #fafbfc; border-top: 1px solid var(--pro-border); }
+  .interne-badge { background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; vertical-align: middle; }
+
+  /* ENVOI */
+  .gates-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .gate-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px; border: 1px solid var(--pro-border);
+    background: white;
+  }
+  .gate-ok { background: #d1fae5; border-color: #6ee7b7; }
+  .gate-ko { background: #fee2e2; border-color: #fca5a5; }
+  .gate-warn { background: #fef3c7; border-color: #fde68a; }
+  .gate-icon { font-size: 16px; flex-shrink: 0; }
+  .gate-text { flex: 1; font-size: 13px; font-weight: 600; }
+  .gate-action { font-size: 11px; color: var(--pro-accent); cursor: pointer; text-decoration: underline; font-weight: 600; }
+
+  .envoi-btn-wrap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn-envoyer {
+    padding: 14px 28px; border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; border: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: all .2s;
+  }
+  .btn-envoyer.active { background: var(--pro-accent); color: white; box-shadow: 0 4px 14px rgba(233,69,96,.3); }
+  .btn-envoyer.active:hover { background: #c73652; transform: translateY(-1px); }
+  .btn-envoyer.locked { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+  .lock-reason { font-size: 12px; color: var(--pro-muted); }
+
+  /* QUALITÉ BAR */
+  .qualite-bar-wrap { margin-bottom: 16px; }
+  .qualite-bar-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .qualite-bar { height: 8px; background: var(--pro-border); border-radius: 4px; overflow: hidden; }
+  .qualite-bar-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+  .qualite-low .qualite-bar-fill { background: var(--pro-error); }
+  .qualite-mid .qualite-bar-fill { background: var(--pro-warning); }
+  .qualite-high .qualite-bar-fill { background: var(--pro-success); }
+
+  /* AUTOSAVE */
+  .autosave-indicator {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--pro-success);
+  }
+  .autosave-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pro-success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+  /* MISC */
+  .section-divider { border: none; border-top: 1px solid var(--pro-border); margin: 16px 0; }
+  .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #1e40af; display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px; }
+  .warning-box { background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #92400e; display: flex; gap: 8px; margin-bottom: 12px; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .tag-blue { background: #dbeafe; color: #1e40af; }
+  .tag-green { background: #d1fae5; color: #065f46; }
+  .tag-orange { background: #fef3c7; color: #92400e; }
+  .tag-gray { background: #f1f5f9; color: #475569; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .flex-gap { display: flex; align-items: center; gap: 8px; }
+  .mt8 { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .mb8 { margin-bottom: 8px; }
+  .mb16 { margin-bottom: 16px; }
+  .text-muted { color: var(--pro-muted); }
+  .text-sm { font-size: 12px; }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:1000; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:white; border-radius:14px; padding:24px; max-width:420px; width:90%; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+  .modal-title { font-weight:700; font-size:16px; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">even<span>ty</span> <span style="font-size:11px;font-weight:600;background:rgba(255,255,255,.15);padding:2px 8px;border-radius:6px;color:#94a3b8;letter-spacing:1px">PRO</span></div>
+    <div class="breadcrumb">
+      <a href="#">Mes voyages</a>
+      <span class="sep">›</span>
+      <span>Créer un voyage</span>
+      <span class="sep">›</span>
+      <span style="color:white;font-weight:600">Phase 1</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="autosave-indicator">
+      <div class="autosave-dot"></div>
+      <span>Brouillon sauvegardé</span>
+    </div>
+    <div class="qualite-badge">
+      <span>Qualité fiche</span>
+      <span class="qualite-score" id="qualiteScore">42%</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="saveDraft()">💾 Enregistrer</button>
+    <button class="btn btn-primary btn-sm" onclick="document.getElementById('tab4').click()">📤 Envoyer Phase 1</button>
+  </div>
+</div>
+
+<!-- BLOCKING BAR -->
+<div class="blocking-bar">
+  <span class="icon">⚠️</span>
+  <span>Blocages avant envoi :</span>
+  <span class="blocking-item">📸 Photo couverture</span>
+  <span class="blocking-item">📋 Charte Eventy non signée</span>
+  <span class="blocking-item">📄 Fiche sécurité incomplète</span>
+  <span style="margin-left:auto;font-weight:700">3 BLOCKING · 1 WARNING</span>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrapper">
+  <div class="tabs">
+    <div class="tab active" id="tab1" onclick="switchTab(1)">
+      <span class="tab-num">1</span>
+      🗺️ Mon Voyage
+    </div>
+    <div class="tab" id="tab2" onclick="switchTab(2)">
+      <span class="tab-num">2</span>
+      🏨 Programme & HRA
+    </div>
+    <div class="tab" id="tab3" onclick="switchTab(3)">
+      <span class="tab-num">3</span>
+      🛡️ Sécurité & Docs
+    </div>
+    <div class="tab" id="tab4" onclick="switchTab(4)">
+      <span class="tab-num">4</span>
+      🚌 Prépa Phase 2 + Envoi
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ═══════════════════════════════ -->
+  <!-- ONGLET 1 — MON VOYAGE          -->
+  <!-- ═══════════════════════════════ -->
+  <div class="tab-panel active" id="panel1">
+
+    <div class="two-col">
+      <div>
+
+        <!-- TITRE + THÈME -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">✍️</span> Informations générales</div>
+          </div>
+          <div class="card-body">
+            <div class="form-full form-group">
+              <label>Titre du voyage <span class="req">*</span></label>
+              <input type="text" placeholder="Ex: Marrakech Express — 7j/6n · Médinas & Désert" style="font-size:15px;font-weight:600;" value="Marrakech Express — 7j/6n">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Destination <span class="req">*</span></label>
+                <select>
+                  <option>🇲🇦 Marrakech, Maroc</option>
+                  <option>🇵🇹 Lisbonne, Portugal</option>
+                  <option>🇮🇹 Rome, Italie</option>
+                  <option>🇪🇸 Barcelone, Espagne</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Thème</label>
+                <select>
+                  <option>🌴 Découverte culturelle</option>
+                  <option>🏖️ Plage & Détente</option>
+                  <option>🥾 Aventure & Nature</option>
+                  <option>🏙️ City-break</option>
+                  <option>🍷 Gastronomie & Vin</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>Date de départ <span class="req">*</span></label>
+                <input type="date" value="2026-07-10">
+              </div>
+              <div class="form-group">
+                <label>Date de retour <span class="req">*</span></label>
+                <input type="date" value="2026-07-17">
+              </div>
+              <div class="form-group">
+                <label>Durée</label>
+                <input type="text" value="7 jours / 6 nuits" readonly style="background:#f8fafc;color:var(--pro-muted)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESCRIPTION STRUCTURÉE V88 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📝</span> Description structurée <span class="tag tag-gray" style="font-size:10px">V88</span></div>
+          </div>
+          <div class="card-body">
+            <div class="info-box">
+              💡 La description est modulaire — chaque section sera affichée séparément sur la fiche client.
+            </div>
+            <div class="desc-modules">
+              <div class="desc-module">
+                <div class="desc-module-header">✨ Accroche (1-2 phrases)</div>
+                <textarea placeholder="Ce qui rend ce voyage unique…">Partez à la découverte de Marrakech, ville millénaire entre médinas envoûtantes et modernité.</textarea>
+              </div>
+              <div class="desc-module">
+                <div class="desc-module-header">📍 Points forts</div>
+                <textarea placeholder="3-5 points forts du voyage">• Médina classée UNESCO
+• Souks & artisanat
+• Excursion Atlas & Désert
+• Hammam traditionnel</textarea>
+              </div>
+              <div class="desc-module">
+                <div class="desc-module-header">👥 Public cible</div>
+                <textarea placeholder="Pour qui est ce voyage ?">Idéal pour groupes de 20-40 personnes, tous âges, amateur de découvertes culturelles.</textarea>
+              </div>
+              <div class="desc-module">
+                <div class="desc-module-header">📌 Inclus / Non inclus</div>
+                <textarea placeholder="Ce qui est inclus…">Inclus : Hébergement, petits-déjeuners, transferts aéroport.
+Non inclus : Vols, déjeuners libres.</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MÉDIAS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📸</span> Médias</div>
+            <span class="tag tag-orange" style="font-size:11px">⚠️ Photo couverture manquante</span>
+          </div>
+          <div class="card-body">
+            <div class="field-hint mb8">La 1ère photo devient la couverture. Recommandé : 5-10 photos + 1 vidéo d'intro.</div>
+            <div class="media-grid">
+              <div class="media-slot filled" style="border-color:#e2e8f0;background:linear-gradient(135deg,#f97316,#e11d48)">
+                <div style="color:white;font-size:11px;font-weight:700;text-align:center;padding:8px;">📸<br>Photo 1<br><span style="font-size:9px;opacity:.8">COUVERTURE</span></div>
+                <div class="media-cover">COVER</div>
+                <button class="media-del">✕</button>
+              </div>
+              <div class="media-slot filled" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)">
+                <div style="color:white;font-size:11px;font-weight:700;text-align:center;padding:8px;">📸<br>Photo 2</div>
+                <button class="media-del">✕</button>
+              </div>
+              <div class="media-slot filled" style="background:linear-gradient(135deg,#10b981,#3b82f6)">
+                <div style="color:white;font-size:11px;font-weight:700;text-align:center;padding:8px;">🎬<br>Vidéo intro</div>
+                <button class="media-del">✕</button>
+              </div>
+              <div class="media-slot" onclick="alert('Sélectionner une photo')">
+                <div class="media-icon">📷</div>
+                <span>Ajouter</span>
+              </div>
+              <div class="media-slot" onclick="alert('Sélectionner une photo')">
+                <div class="media-icon">+</div>
+              </div>
+            </div>
+            <div class="info-box mt8">
+              📹 <strong>TravelHeroVideo</strong> : vidéo courte (15-30s) affichée en bannière — recommandé pour les fiches premium.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLONNE DROITE -->
+      <div>
+
+        <!-- CAPACITÉ & ROTATIONS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">👥</span> Capacité & Rotations</div>
+          </div>
+          <div class="card-body">
+            <div class="form-group mb16">
+              <label>Capacité max par départ <span class="req">*</span></label>
+              <div class="flex-gap">
+                <button class="capacity-btn" onclick="changeVal('capacity', -1)">−</button>
+                <input type="number" id="capacity" value="35" style="width:70px;text-align:center;font-size:18px;font-weight:700">
+                <button class="capacity-btn" onclick="changeVal('capacity', 1)">+</button>
+                <span class="text-muted text-sm">voyageurs</span>
+              </div>
+            </div>
+            <div class="form-group mb16">
+              <label>Nombre de rotations (parcours bus) <span class="req">*</span></label>
+              <div class="flex-gap">
+                <button class="capacity-btn" onclick="changeVal('rotation', -1)">−</button>
+                <input type="number" id="rotation" value="5" min="1" max="10" style="width:70px;text-align:center;font-size:18px;font-weight:700">
+                <button class="capacity-btn" onclick="changeVal('rotation', 1)">+</button>
+                <span class="text-muted text-sm">parcours (max 10)</span>
+              </div>
+              <div class="field-hint">Défaut = 5 · Un parcours différent à chaque occurrence</div>
+            </div>
+            <div class="form-group">
+              <label>Option bus sur place</label>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+                <label style="display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--pro-text)">
+                  <input type="checkbox" id="busSurPlace" checked style="width:auto"> Tournées bus sur place actives
+                </label>
+              </div>
+              <div class="field-hint">Désactivez pour clubs, croisières (masque la section bus sur place)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRANSPORT MODE -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">✈️</span> Mode de transport</div>
+          </div>
+          <div class="card-body">
+            <div class="transport-modes">
+              <div class="transport-mode selected" onclick="selectTransportMode(this)">
+                <div class="transport-mode-title"><span class="radio"></span> ✈️🚌 COMPLET</div>
+                <div class="transport-mode-desc">Eventy gère vol + bus porte-à-porte</div>
+              </div>
+              <div class="transport-mode" onclick="selectTransportMode(this)">
+                <div class="transport-mode-title"><span class="radio"></span> 🏨 ALLOTEMENT</div>
+                <div class="transport-mode-desc">Vente hébergement seul (vol libre)</div>
+              </div>
+            </div>
+            <div class="field-hint mt8">ALLOTEMENT nécessite activation Admin</div>
+          </div>
+        </div>
+
+        <!-- QUALITÉ FICHE -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📊</span> Qualité fiche</div>
+          </div>
+          <div class="card-body">
+            <div class="qualite-bar-wrap qualite-mid">
+              <div class="qualite-bar-label">
+                <span>Complétude Phase 1</span>
+                <strong>42%</strong>
+              </div>
+              <div class="qualite-bar"><div class="qualite-bar-fill" style="width:42%"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--pro-muted);display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between">
+                <span>✅ Titre + destination</span><span style="color:var(--pro-success)">OK</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>✅ Dates renseignées</span><span style="color:var(--pro-success)">OK</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>⚠️ Photo couverture</span><span style="color:var(--pro-error)">MANQUANT</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>⚠️ HRA rattachés</span><span style="color:var(--pro-warning)">0/3</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>⚠️ Fiche sécurité</span><span style="color:var(--pro-error)">MANQUANT</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>⚠️ Charte Eventy</span><span style="color:var(--pro-error)">NON SIGNÉE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESTIMATION PRIX RAPIDE -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">💰</span> Estimation prix <span class="interne-badge">INTERNE</span></div>
+          </div>
+          <div class="card-body">
+            <div class="info-box">
+              📊 Calculée automatiquement dès que les HRA sont rattachés (onglet 2). Jamais visible par le client.
+            </div>
+            <div style="text-align:center;padding:16px;color:var(--pro-muted);font-size:13px">
+              <div style="font-size:24px;margin-bottom:6px">🔒</div>
+              Rattachez les HRA pour voir l'estimation
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /panel1 -->
+
+
+  <!-- ═══════════════════════════════ -->
+  <!-- ONGLET 2 — PROGRAMME & HRA     -->
+  <!-- ═══════════════════════════════ -->
+  <div class="tab-panel" id="panel2">
+
+    <div class="info-box">
+      🔄 <strong>Flux HRA en 3 temps :</strong> ① Panel Créateur → constituer vos favoris · ② Ici → rattacher au voyage via dropdown · ③ Programme → HRA apparaissent auto dans les jours
+    </div>
+
+    <!-- A) HÉBERGEMENT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="emoji">🏨</span> A — Hébergement (séjour entier)</div>
+        <button class="btn btn-sm btn-outline" onclick="document.getElementById('modalInviteHotel').classList.add('open')">+ Inviter un hôtel</button>
+      </div>
+      <div class="card-body">
+
+        <div class="form-group mb16">
+          <label>Hôtel principal <span class="req">*</span></label>
+          <div class="hra-selector">
+            <span class="hra-selector-icon">🏨</span>
+            <div class="hra-selector-info">
+              <div class="hra-selector-name">Riad Yasmine & Spa ⭐⭐⭐⭐</div>
+              <div class="hra-selector-sub">Médina, Marrakech · Tarif négocié : 58€/pers/nuit</div>
+            </div>
+            <span class="hra-selector-badge badge-validated">✅ Validé</span>
+            <button class="btn btn-sm btn-outline">Changer</button>
+          </div>
+          <div style="margin-top:6px">
+            <select style="font-size:13px">
+              <option>— Choisir dans Mes Favoris HRA —</option>
+              <option selected>🏨 Riad Yasmine & Spa ⭐⭐⭐⭐ — Médina, Marrakech</option>
+              <option>🏨 Atlas Garden Resort ⭐⭐⭐⭐⭐ — Palmeraie, Marrakech</option>
+              <option>🏨 Kenzi Rose Garden ⭐⭐⭐⭐ — Hivernage, Marrakech</option>
+              <option>✨ + Inviter un nouvel hôtel…</option>
+            </select>
+            <div class="field-hint">Vos favoris HRA sont constitués en amont dans le Panel Créateur (V392/V393)</div>
+          </div>
+        </div>
+
+        <div class="form-group mb16">
+          <label>Hôtel de backup (optionnel)</label>
+          <select style="font-size:13px">
+            <option>— Aucun backup —</option>
+            <option>🏨 Atlas Garden Resort ⭐⭐⭐⭐⭐ — Palmeraie</option>
+            <option>🏨 Kenzi Rose Garden ⭐⭐⭐⭐ — Hivernage</option>
+          </select>
+          <div class="field-hint">Si l'hôtel principal est indisponible pour une occurrence</div>
+        </div>
+
+        <div class="info-box">
+          🏨 <strong>Multi-hôtels (HotelLeg)</strong> : pour les voyages avec changement d'hébergement mi-séjour, vous pouvez ajouter des segments hôteliers.
+          <button class="btn btn-sm btn-outline" style="margin-left:auto" onclick="alert('Ajouter un segment hôtelier')">+ Ajouter un segment</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- B + C + D en 2 colonnes -->
+    <div class="two-col">
+      <div>
+
+        <!-- B) PROGRAMME PAR JOUR -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📅</span> B — Programme par jour</div>
+            <span class="tag tag-gray" style="font-size:11px">V413 · 4 créneaux/jour</span>
+          </div>
+          <div class="card-body">
+            <div class="jour-tabs">
+              <div class="jour-tab active" onclick="selectJour(this, 1)">J1</div>
+              <div class="jour-tab" onclick="selectJour(this, 2)">J2</div>
+              <div class="jour-tab" onclick="selectJour(this, 3)">J3</div>
+              <div class="jour-tab" onclick="selectJour(this, 4)">J4</div>
+              <div class="jour-tab" onclick="selectJour(this, 5)">J5</div>
+              <div class="jour-tab" onclick="selectJour(this, 6)">J6</div>
+              <div class="jour-tab" onclick="selectJour(this, 7)">J7</div>
+            </div>
+
+            <div id="jourTitle" style="font-weight:700;font-size:13px;color:var(--pro-muted);margin-bottom:10px">📅 Jour 1 — Jeudi 10 juillet · Arrivée Marrakech</div>
+
+            <div class="creneau-grid">
+              <div class="creneau-card">
+                <div class="creneau-header">🌅 Matin</div>
+                <div class="creneau-body">
+                  <div class="creneau-type-row">
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">✈️ Transport</div>
+                    <div class="creneau-type-chip active" onclick="toggleChip(this)">🎯 Activité</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🍽️ Repas</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🕊️ Libre</div>
+                  </div>
+                  <textarea style="font-size:12px;min-height:50px;margin-top:6px" placeholder="Détails du créneau…">Transfert aéroport → Riad. Check-in, découverte du Riad.</textarea>
+                </div>
+              </div>
+              <div class="creneau-card">
+                <div class="creneau-header">☀️ Midi</div>
+                <div class="creneau-body">
+                  <div class="creneau-type-row">
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">✈️ Transport</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🎯 Activité</div>
+                    <div class="creneau-type-chip active" onclick="toggleChip(this)">🍽️ Repas</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🕊️ Libre</div>
+                  </div>
+                  <textarea style="font-size:12px;min-height:50px;margin-top:6px" placeholder="Détails du créneau…">Déjeuner libre — Médina</textarea>
+                </div>
+              </div>
+              <div class="creneau-card">
+                <div class="creneau-header">🌇 Après-midi</div>
+                <div class="creneau-body">
+                  <div class="creneau-type-row">
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">✈️ Transport</div>
+                    <div class="creneau-type-chip active" onclick="toggleChip(this)">🎯 Activité</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🍽️ Repas</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🕊️ Libre</div>
+                  </div>
+                  <textarea style="font-size:12px;min-height:50px;margin-top:6px" placeholder="Détails du créneau…">Visite Souks · Place Jemaa el-Fna</textarea>
+                </div>
+              </div>
+              <div class="creneau-card">
+                <div class="creneau-header">🌙 Soir</div>
+                <div class="creneau-body">
+                  <div class="creneau-type-row">
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">✈️ Transport</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🎯 Activité</div>
+                    <div class="creneau-type-chip active" onclick="toggleChip(this)">🍽️ Repas</div>
+                    <div class="creneau-type-chip" onclick="toggleChip(this)">🕊️ Libre</div>
+                  </div>
+                  <textarea style="font-size:12px;min-height:50px;margin-top:6px" placeholder="Détails du créneau…">Dîner partenaire au choix · Animation folklorique</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E) BUS SUR PLACE -->
+        <div class="card" id="busSurPlaceCard">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">🚌</span> E — Bus sur place</div>
+            <span class="tag tag-blue" style="font-size:11px">V414 · Déplacements locaux</span>
+          </div>
+          <div class="card-body">
+            <div class="info-box">
+              🚌 Tournées bus sur place = hôtel ↔ activités ↔ restos ↔ visites. Rempli en Phase 1, validé par Admin Transport.
+            </div>
+            <div class="field-hint mb8" style="font-weight:700;color:var(--pro-text)">Arrêts existants (base partagée)</div>
+            <div class="bus-arret">
+              <div class="bus-arret-dot"></div>
+              <div class="bus-arret-name">Riad Yasmine & Spa (Hôtel principal)</div>
+              <div class="bus-arret-type">🏨 HOTEL · Médina</div>
+              <span class="tag tag-green" style="font-size:10px">VALIDATED</span>
+            </div>
+            <div class="bus-arret">
+              <div class="bus-arret-dot"></div>
+              <div class="bus-arret-name">Place Jemaa el-Fna</div>
+              <div class="bus-arret-type">📍 PLACE · Centre Médina</div>
+              <span class="tag tag-green" style="font-size:10px">VALIDATED</span>
+            </div>
+            <div class="bus-arret">
+              <div class="bus-arret-dot"></div>
+              <div class="bus-arret-name">Palais Bahia</div>
+              <div class="bus-arret-type">🏛️ MONUMENT · Médina Sud</div>
+              <span class="tag tag-green" style="font-size:10px">VALIDATED</span>
+            </div>
+            <div class="bus-arret" style="border-style:dashed;background:#fafbfc;cursor:pointer" onclick="alert('Proposer un nouvel arrêt')">
+              <span style="font-size:16px">+</span>
+              <span class="text-muted text-sm">Proposer un nouvel arrêt bus…</span>
+            </div>
+            <div class="mt8">
+              <div class="field-hint" style="font-weight:700;color:var(--pro-text);margin-bottom:8px">Planning bus J1</div>
+              <div style="font-size:12px;color:var(--pro-muted);display:flex;flex-direction:column;gap:4px">
+                <div>🌅 Matin : <strong>Aéroport Mohammed V → Riad Yasmine</strong> (transfert arrivée)</div>
+                <div>🌇 Après-midi : <strong>Riad → Jemaa el-Fna → Souks → Riad</strong></div>
+                <div>🌙 Soir : <strong>Riad → Resto partenaire → Riad</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- C + D colonne droite -->
+      <div>
+
+        <!-- C) RESTAURATION -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">🍽️</span> C — Restauration <span class="tag tag-blue" style="font-size:10px">CHOIX CLIENT</span></div>
+          </div>
+          <div class="card-body">
+            <div class="info-box" style="font-size:11px">
+              💪 <strong>Notre force :</strong> Le client choisit son resto sur place parmi vos partenaires. Vous sélectionnez plusieurs restos par créneau.
+            </div>
+
+            <!-- Mode restauration -->
+            <div class="form-group mb8">
+              <label>Mode restauration</label>
+              <div class="resto-mode-toggle">
+                <button class="resto-mode-btn" onclick="toggleRestoMode(this, 'hotel')">🏨 Repas hôtel</button>
+                <button class="resto-mode-btn active" onclick="toggleRestoMode(this, 'partner')">🍴 Restos partenaires</button>
+              </div>
+            </div>
+
+            <!-- J1 -->
+            <div class="resto-day">
+              <div class="resto-day-title">J1 — 10 juillet</div>
+
+              <div style="margin-bottom:8px">
+                <div style="font-size:11px;font-weight:600;color:var(--pro-muted);margin-bottom:4px">☀️ MIDI</div>
+                <div class="resto-multi-select">
+                  <div class="resto-chip">La Maison Arabe <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                  <div class="resto-chip">Nomad Rooftop <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                  <div class="resto-chip-add" onclick="alert('Sélectionner un restaurant partenaire')">+ Resto</div>
+                </div>
+              </div>
+
+              <div style="margin-bottom:8px">
+                <div style="font-size:11px;font-weight:600;color:var(--pro-muted);margin-bottom:4px">🌙 SOIR</div>
+                <div class="resto-multi-select">
+                  <div class="resto-chip">Le Foundouk <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                  <div class="resto-chip">Dar Yacout <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                  <div class="resto-chip">Comptoir Darna <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                  <div class="resto-chip-add" onclick="alert('Sélectionner un restaurant partenaire')">+ Resto</div>
+                </div>
+              </div>
+
+              <div class="dupliquer-btn" onclick="alert('Restauration dupliquée sur tous les jours')">
+                ⚡ Dupliquer sur tous les jours
+              </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- Add-on repas trajet -->
+            <div class="form-group">
+              <label>Add-on repas trajet (long A/R)</label>
+              <select>
+                <option value="NONE">Aucun — Pas de repas trajet</option>
+                <option value="AUTO">Auto standard — Repas panier inclus</option>
+                <option value="CUSTOM">Jours personnalisés</option>
+              </select>
+              <div class="field-hint">Pour les longs trajets bus (>4h)</div>
+            </div>
+
+            <div class="info-box mt8" style="font-size:11px">
+              💌 <button style="background:none;border:none;color:#1e40af;text-decoration:underline;cursor:pointer;font-size:11px;padding:0" onclick="document.getElementById('modalInviteResto').classList.add('open')">Inviter un nouveau restaurant partenaire</button> (modal inline V403)
+            </div>
+          </div>
+        </div>
+
+        <!-- D) ACTIVITÉS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">🎯</span> D — Activités</div>
+            <button class="btn btn-sm btn-outline" onclick="document.getElementById('modalAddActivite').classList.add('open')">+ Ajouter</button>
+          </div>
+          <div class="card-body">
+            <div class="info-box" style="font-size:11px">
+              📖 Catalogue Eventy pré-enregistré + vos ajouts libres. Workflow prix : BASE → négocié → fournisseur valide → admin → EFFECTIF gelé.
+            </div>
+
+            <div class="activite-item">
+              <div class="activite-icon">🕌</div>
+              <div class="activite-info">
+                <div class="activite-name">Visite guidée Médina UNESCO</div>
+                <div class="activite-sub">Guide officiel · 3h · Inclus dans le programme</div>
+              </div>
+              <div class="activite-prix">18€/pax</div>
+              <div class="activite-status"><span class="tag tag-green" style="font-size:10px">✅ Validé</span></div>
+              <button class="btn-icon" title="Retirer">✕</button>
+            </div>
+
+            <div class="activite-item">
+              <div class="activite-icon">🛁</div>
+              <div class="activite-info">
+                <div class="activite-name">Hammam traditionnel + Gommage</div>
+                <div class="activite-sub">Hammam Les Bains de Marrakech · 2h · Option client</div>
+              </div>
+              <div class="activite-prix">35€/pax</div>
+              <div class="activite-status"><span class="tag tag-green" style="font-size:10px">✅ Validé</span></div>
+              <button class="btn-icon" title="Retirer">✕</button>
+            </div>
+
+            <div class="activite-item" style="border-color:#fde68a;background:#fefce8">
+              <div class="activite-icon">🐫</div>
+              <div class="activite-info">
+                <div class="activite-name">Excursion Désert Agafay (ajout libre)</div>
+                <div class="activite-sub">Fournisseur : Agafay Desert Experience · Soumis admin</div>
+              </div>
+              <div class="activite-prix">~65€/pax</div>
+              <div class="activite-status"><span class="tag tag-orange" style="font-size:10px">⏳ En attente</span></div>
+              <button class="btn-icon" title="Retirer">✕</button>
+            </div>
+
+            <div class="add-activite-btn" onclick="document.getElementById('modalAddActivite').classList.add('open')">
+              <span>+</span> Ajouter du catalogue Eventy
+            </div>
+            <div class="add-activite-btn mt8" style="border-color:rgba(233,69,96,.3);color:var(--pro-accent)" onclick="alert('Inviter un fournisseur d\'activité par email')">
+              📧 Inviter un fournisseur d'activité locale
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /two-col -->
+
+  </div><!-- /panel2 -->
+
+
+  <!-- ═══════════════════════════════ -->
+  <!-- ONGLET 3 — SÉCURITÉ & DOCS     -->
+  <!-- ═══════════════════════════════ -->
+  <div class="tab-panel" id="panel3">
+
+    <div class="warning-box">
+      ⚠️ <strong>BLOCKING</strong> — La fiche de sécurité doit être complétée avant l'envoi Phase 1. Le créateur édite, l'admin valide.
+    </div>
+
+    <div class="two-col">
+      <div>
+
+        <!-- FICHE SÉCURITÉ -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">🛡️</span> Fiche de sécurité <span class="tag tag-orange" style="font-size:10px">⚠️ INCOMPLET</span></div>
+          </div>
+          <div class="card-body">
+            <div class="info-box">
+              📋 Template fourni par l'admin. Complétez les sections manquantes. Certaines sections nécessitent validation admin (🔒).
+            </div>
+
+            <div class="form-full form-group mb16">
+              <label>Protocole urgence médical sur place <span class="req">*</span></label>
+              <textarea placeholder="Protocole en cas d'urgence médicale : contact médecin local, hôpital de référence, assurance rapatriement…" class="blocking-field" style="min-height:80px"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Hôpital de référence <span class="req">*</span></label>
+                <input type="text" placeholder="Clinique Internationale · Marrakech" class="blocking-field">
+              </div>
+              <div class="form-group">
+                <label>Médecin partenaire local</label>
+                <input type="text" placeholder="Dr. Karim Benali · +212 6 XX XX XX">
+              </div>
+            </div>
+
+            <div class="form-full form-group mb16">
+              <label>Plan d'évacuation (situation de crise) <span class="req">*</span></label>
+              <textarea placeholder="Point de RDV en cas d'évacuation · Protocole de communication groupe…" style="min-height:60px">Point de RDV urgence : Riad Yasmine (Hall principal). Contact urgence groupe : responsable accompagnement +33 6 XX XX XX</textarea>
+            </div>
+
+            <div class="form-full form-group">
+              <label>Consignes sécurité voyageurs</label>
+              <textarea placeholder="Consignes générales pour les voyageurs…" style="min-height:60px">Garder son badge Eventy visible. Ne pas s'éloigner du groupe sans prévenir l'accompagnateur. Point de RDV toutes les 2h.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- RUNBOOK J0 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📋</span> Runbook J0 <span class="tag tag-gray" style="font-size:10px">V115</span></div>
+          </div>
+          <div class="card-body">
+            <div class="form-full form-group mb16">
+              <label>Brief sécurité J0 (lu au départ)</label>
+              <textarea placeholder="Script d'animation bus J0 · Brief sécurité groupe…" style="min-height:80px">Bonjour à tous, bienvenue pour ce voyage Eventy vers Marrakech ! Quelques informations importantes avant le départ…</textarea>
+            </div>
+            <div class="form-full form-group">
+              <label>Script animation bus aller</label>
+              <textarea placeholder="Points d'arrêt · horaires · instructions…" style="min-height:60px">Départ à 6h00. Premier arrêt prévu à 8h30 (aire d'autoroute). Arrivée aéroport estimée 10h00.</textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+
+        <!-- NUMÉROS URGENCE -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">🚨</span> Numéros d'urgence</div>
+          </div>
+          <div class="card-body">
+            <div class="urgence-numbers mb16">
+              <div class="urgence-num">
+                <div class="num">112</div>
+                <div class="service">UE Urgences</div>
+              </div>
+              <div class="urgence-num">
+                <div class="num">15</div>
+                <div class="service">SAMU</div>
+              </div>
+              <div class="urgence-num">
+                <div class="num">17</div>
+                <div class="service">Police</div>
+              </div>
+              <div class="urgence-num">
+                <div class="num">18</div>
+                <div class="service">Pompiers</div>
+              </div>
+            </div>
+            <div class="form-full form-group mb16">
+              <label>Numéro urgence local (Maroc)</label>
+              <input type="text" value="🇲🇦 Urgences Maroc : 15 (SAMU) · 19 (Police) · 150 (Gendarmerie)">
+            </div>
+            <div class="form-full form-group">
+              <label>Contact consulat français (Marrakech)</label>
+              <input type="text" placeholder="+212 5 24 38 82 00">
+            </div>
+          </div>
+        </div>
+
+        <!-- DOCS TERRAIN -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📁</span> Docs terrain <span class="tag tag-gray" style="font-size:10px">V412</span></div>
+          </div>
+          <div class="card-body">
+            <div class="doc-item">
+              <div class="doc-item-icon">📄</div>
+              <div class="doc-item-info">
+                <div class="doc-item-name">Vouchers hôtel (Riad Yasmine)</div>
+                <div class="doc-item-sub">Confirmations hébergement · PDF</div>
+              </div>
+              <span class="doc-status-ok">✅</span>
+            </div>
+            <div class="doc-item">
+              <div class="doc-item-icon">🗺️</div>
+              <div class="doc-item-info">
+                <div class="doc-item-name">Plan circuit Médina</div>
+                <div class="doc-item-sub">Carte des arrêts bus + points d'intérêt</div>
+              </div>
+              <span class="doc-status-ok">✅</span>
+            </div>
+            <div class="doc-item" style="border-color:#fde68a;background:#fefce8">
+              <div class="doc-item-icon">📋</div>
+              <div class="doc-item-info">
+                <div class="doc-item-name">Contacts prestataires sur place</div>
+                <div class="doc-item-sub">Guides, chauffeurs, restos — à remplir</div>
+              </div>
+              <span class="doc-status-missing">📝</span>
+            </div>
+            <div class="doc-item" style="border-style:dashed;cursor:pointer;background:#fafbfc" onclick="alert('Ajouter un document terrain')">
+              <span style="font-size:16px">+</span>
+              <div class="doc-item-info">
+                <div style="font-size:12px;color:var(--pro-muted)">Ajouter un document terrain…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHARTE EVENTY -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📜</span> Charte Eventy <span class="tag tag-orange" style="font-size:10px">⚠️ BLOCKING</span></div>
+          </div>
+          <div class="card-body">
+            <div class="gate-item gate-ko">
+              <span class="gate-icon">❌</span>
+              <span class="gate-text">Charte Eventy non signée</span>
+              <span class="gate-action" onclick="alert('Ouvrir la charte Eventy pour signature')">Signer maintenant →</span>
+            </div>
+            <div class="info-box mt8" style="font-size:11px">
+              La charte définit vos engagements qualité envers les voyageurs Eventy. Signature obligatoire avant le premier envoi Phase 1.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /panel3 -->
+
+
+  <!-- ═══════════════════════════════ -->
+  <!-- ONGLET 4 — PRÉPA P2 + ENVOI    -->
+  <!-- ═══════════════════════════════ -->
+  <div class="tab-panel" id="panel4">
+
+    <div class="info-box">
+      💡 <strong>Préparez Phase 2 dès maintenant</strong> — tout ce que vous remplissez ici sera automatiquement pré-rempli en Phase 2 (après approbation Phase 1). Vous n'avez pas à attendre !
+    </div>
+
+    <div class="two-col">
+      <div>
+
+        <!-- A) OCCURRENCES -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📅</span> A — Occurrences (dates de départ)</div>
+            <span class="tag tag-gray" style="font-size:11px">V231 · Optionnel en P1</span>
+          </div>
+          <div class="card-body">
+            <div class="info-box" style="font-size:11px">
+              📅 Planifiez les dates de départ à l'avance. Si vous ne remplissez pas ici, vous pourrez générer les occurrences en Phase 2.
+            </div>
+            <div class="occurrence-grid mb16">
+              <div class="occurrence-item">
+                <div class="occurrence-num">Occurrence #1</div>
+                <div class="occurrence-dates">10 — 17 juillet 2026</div>
+                <div class="occurrence-rotation">Parcours A (Rotation 1)</div>
+                <span class="tag tag-orange" style="font-size:10px">PROVISIONAL</span>
+              </div>
+              <div class="occurrence-item">
+                <div class="occurrence-num">Occurrence #2</div>
+                <div class="occurrence-dates">7 — 14 août 2026</div>
+                <div class="occurrence-rotation">Parcours B (Rotation 2)</div>
+                <span class="tag tag-orange" style="font-size:10px">PROVISIONAL</span>
+              </div>
+              <div class="occurrence-item">
+                <div class="occurrence-num">Occurrence #3</div>
+                <div class="occurrence-dates">4 — 11 sept. 2026</div>
+                <div class="occurrence-rotation">Parcours C (Rotation 3)</div>
+                <span class="tag tag-orange" style="font-size:10px">PROVISIONAL</span>
+              </div>
+              <div class="occurrence-add" onclick="alert('Ajouter une occurrence')">+ Ajouter une date</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" onclick="alert('Générer N occurrences automatiquement')">⚡ Générer N occurrences</button>
+              <span class="text-muted text-sm" style="align-self:center">Rotation auto : A→B→C→…</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- B + C) POINTS DE RAMASSE -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📍</span> B — Points de ramasse (PATCH 927)</div>
+          </div>
+          <div class="card-body">
+
+            <div class="hub-card mb16">
+              <div class="hub-card-title">✈️ HUB principal (aéroport de départ)</div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <select style="flex:1;font-size:13px">
+                  <option>✈️ CDG — Paris Charles de Gaulle</option>
+                  <option>✈️ ORY — Paris Orly</option>
+                  <option>✈️ NCE — Nice Côte d'Azur</option>
+                  <option>✈️ LYS — Lyon Saint-Exupéry</option>
+                </select>
+                <span class="tag tag-green">HUB principal</span>
+              </div>
+            </div>
+
+            <div class="field-hint mb8" style="font-weight:700;color:var(--pro-text)">Branches étoile (max 6)</div>
+
+            <div class="branche">
+              <div class="branche-header">
+                <div class="branche-letter">A</div>
+                <div class="branche-name">Branche Île-de-France Sud</div>
+                <span class="tag tag-orange" style="font-size:10px">3 stops</span>
+                <button class="btn-icon" title="Dupliquer">⎘</button>
+              </div>
+              <div class="branche-body">
+                <div class="stop-item">
+                  <span class="stop-num">1</span>
+                  <span class="stop-name">📍 Évry-Courcouronnes — Gare RER D</span>
+                  <span class="stop-heure">05:30</span>
+                  <span class="stop-provisional">PROVISIONAL</span>
+                </div>
+                <div class="stop-item">
+                  <span class="stop-num">2</span>
+                  <span class="stop-name">📍 Orly Sud — Terminal 3</span>
+                  <span class="stop-heure">06:00</span>
+                  <span class="stop-provisional">PROVISIONAL</span>
+                </div>
+                <div class="stop-item">
+                  <span class="stop-num">3</span>
+                  <span class="stop-name">✈️ CDG — Terminal 2E (ARRIVÉE)</span>
+                  <span class="stop-heure">07:15</span>
+                  <span class="tag tag-blue" style="font-size:10px">ARRIVAL</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="branche">
+              <div class="branche-header">
+                <div class="branche-letter">B</div>
+                <div class="branche-name">Branche Val-d'Oise</div>
+                <span class="tag tag-orange" style="font-size:10px">2 stops</span>
+                <button class="btn-icon" title="Dupliquer">⎘</button>
+              </div>
+              <div class="branche-body">
+                <div class="stop-item">
+                  <span class="stop-num">1</span>
+                  <span class="stop-name">📍 Cergy-Pontoise — Gare Saint-Christophe</span>
+                  <span class="stop-heure">05:45</span>
+                  <span class="stop-provisional">PROVISIONAL</span>
+                </div>
+                <div class="stop-item">
+                  <span class="stop-num">2</span>
+                  <span class="stop-name">✈️ CDG — Terminal 2E (ARRIVÉE)</span>
+                  <span class="stop-heure">06:45</span>
+                  <span class="tag tag-blue" style="font-size:10px">ARRIVAL</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="branche" style="border-style:dashed;background:#fafbfc;cursor:pointer" onclick="alert('Ajouter une nouvelle branche')">
+              <div class="branche-header" style="background:transparent;border:none;color:var(--pro-muted);justify-content:center">
+                + Ajouter une branche étoile
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+
+        <!-- D) ESTIMATION PRIX -->
+        <div class="prix-recap">
+          <div class="prix-recap-title">
+            💰 Estimation prix Phase 1 <span class="interne-badge" style="margin-left:auto">INTERNE UNIQUEMENT</span>
+          </div>
+          <div class="prix-row">
+            <span class="prix-label">🏨 Hôtel négocié TTC</span>
+            <span class="prix-value">348 € /pax</span>
+          </div>
+          <div class="prix-row">
+            <span class="prix-label">🍽️ Restauration (estimé)</span>
+            <span class="prix-value">~85 € /pax</span>
+          </div>
+          <div class="prix-row">
+            <span class="prix-label">🎯 Activités</span>
+            <span class="prix-value">118 € /pax</span>
+          </div>
+          <div class="prix-row">
+            <span class="prix-label">🛡️ Assurance incluse</span>
+            <span class="prix-value">28 € /pax</span>
+          </div>
+          <div class="prix-row">
+            <span class="prix-label">🏷️ Taxe de séjour</span>
+            <span class="prix-value">12 € /pax</span>
+          </div>
+          <div class="prix-row" style="background:#f8fafc;font-weight:700">
+            <span class="prix-label">Sous-total sur place</span>
+            <span class="prix-value" style="color:var(--pro-accent2)">591 € /pax</span>
+          </div>
+          <div class="prix-row">
+            <span class="prix-label">✈️ Transport (≈ estimé *)</span>
+            <span class="prix-value" style="color:var(--pro-muted)">~320 € /pax</span>
+          </div>
+          <div class="prix-row" style="background:#fff7ed">
+            <span class="prix-label" style="font-size:14px;font-weight:700">PRIX TOTAL ESTIMÉ</span>
+            <span class="prix-value" style="font-size:17px;color:var(--pro-accent)">≈ 911 € /pax</span>
+          </div>
+          <div class="prix-note">* Moyenne voyages équivalents Eventy (même destination, même durée). Prix affiné en Phase 2 avec devis réels.</div>
+        </div>
+
+        <!-- E) ENVOI PHASE 1 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="emoji">📤</span> Envoi Phase 1</div>
+          </div>
+          <div class="card-body">
+            <div class="gates-list">
+              <div class="gate-item gate-ko">
+                <span class="gate-icon">❌</span>
+                <span class="gate-text">Photo couverture manquante</span>
+                <span class="gate-action" onclick="switchTab(1)">Ajouter →</span>
+              </div>
+              <div class="gate-item gate-ko">
+                <span class="gate-icon">❌</span>
+                <span class="gate-text">Fiche de sécurité incomplète</span>
+                <span class="gate-action" onclick="switchTab(3)">Compléter →</span>
+              </div>
+              <div class="gate-item gate-ko">
+                <span class="gate-icon">❌</span>
+                <span class="gate-text">Charte Eventy non signée</span>
+                <span class="gate-action" onclick="alert('Signer la charte')">Signer →</span>
+              </div>
+              <div class="gate-item gate-ok">
+                <span class="gate-icon">✅</span>
+                <span class="gate-text">SIRET valide</span>
+              </div>
+              <div class="gate-item gate-ok">
+                <span class="gate-icon">✅</span>
+                <span class="gate-text">Statut Pro VALIDÉ</span>
+              </div>
+              <div class="gate-item gate-warn">
+                <span class="gate-icon">⚠️</span>
+                <span class="gate-text">RC Pro (recommandé — non bloquant)</span>
+                <span class="gate-action" onclick="alert('Souscrire RC Pro')">Souscrire →</span>
+              </div>
+            </div>
+
+            <div class="envoi-btn-wrap">
+              <button class="btn-envoyer locked" disabled title="3 blocages à résoudre">
+                🔒 Envoyer Phase 1
+              </button>
+              <div>
+                <div class="lock-reason">🔴 3 blocages à résoudre</div>
+                <div class="lock-reason" style="color:var(--pro-muted)">Qualité fiche : 42% / 100%</div>
+              </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-outline" onclick="saveDraft()">💾 Enregistrer le brouillon</button>
+              <button class="btn btn-outline" onclick="alert('Prévisualisation fiche voyageur')">👁️ Prévisualiser</button>
+            </div>
+
+            <div class="info-box mt8" style="font-size:11px">
+              📬 Après envoi : Admin Voyage + Admin Transport valident Phase 1. Label affiché : <strong>« Prêt Phase 2 »</strong>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /panel4 -->
+
+</div><!-- /content -->
+
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Modal Inviter Hôtel -->
+<div class="modal-overlay" id="modalInviteHotel">
+  <div class="modal">
+    <div class="modal-title">🏨 Inviter un nouvel hôtel (V398)</div>
+    <div class="form-full form-group mb16">
+      <label>Nom de l'hôtel</label>
+      <input type="text" placeholder="Ex: Riad La Maison Dorée">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email du responsable</label>
+        <input type="text" placeholder="contact@hotel.ma">
+      </div>
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="text" placeholder="+212 5 XX XX XX XX">
+      </div>
+    </div>
+    <div class="form-full form-group">
+      <label>Message personnalisé</label>
+      <textarea placeholder="Bonjour, je suis créateur de voyages sur Eventy et souhaite vous proposer un partenariat…" style="min-height:60px"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('modalInviteHotel').classList.remove('open')">Annuler</button>
+      <button class="btn btn-primary" onclick="alert('Invitation envoyée ! L\'hôtel recevra un email Eventy.');document.getElementById('modalInviteHotel').classList.remove('open')">📧 Envoyer l'invitation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Inviter Restaurant -->
+<div class="modal-overlay" id="modalInviteResto">
+  <div class="modal">
+    <div class="modal-title">🍽️ Inviter un restaurant partenaire (V403)</div>
+    <div class="form-full form-group mb16">
+      <label>Nom du restaurant</label>
+      <input type="text" placeholder="Ex: Le Comptoir Berbère">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="text" placeholder="contact@resto.ma">
+      </div>
+      <div class="form-group">
+        <label>Capacité groupe</label>
+        <input type="number" placeholder="40" min="1">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('modalInviteResto').classList.remove('open')">Annuler</button>
+      <button class="btn btn-primary" onclick="alert('Invitation envoyée !');document.getElementById('modalInviteResto').classList.remove('open')">📧 Envoyer l'invitation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ajouter Activité -->
+<div class="modal-overlay" id="modalAddActivite">
+  <div class="modal">
+    <div class="modal-title">🎯 Ajouter une activité</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="btn btn-outline" style="flex:1;font-size:12px" onclick="this.style.background='#1a1a2e';this.style.color='white'">📖 Catalogue Eventy</button>
+      <button class="btn btn-outline" style="flex:1;font-size:12px">✏️ Saisie libre</button>
+    </div>
+    <div class="form-full form-group mb16">
+      <label>Rechercher dans le catalogue</label>
+      <input type="text" placeholder="Hammam, Médina, Désert, Quad…">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="activite-item" onclick="alert('Activité ajoutée au voyage !')">
+        <div class="activite-icon">🕌</div>
+        <div class="activite-info"><div class="activite-name">Visite guidée Musée Yves Saint Laurent</div><div class="activite-sub">2h · Culturel · Groupe jusqu'à 40</div></div>
+        <div class="activite-prix">22€/pax</div>
+        <button class="btn btn-sm btn-primary">+ Ajouter</button>
+      </div>
+      <div class="activite-item" onclick="alert('Activité ajoutée au voyage !')">
+        <div class="activite-icon">🏺</div>
+        <div class="activite-info"><div class="activite-name">Atelier poterie artisanale</div><div class="activite-sub">3h · Artisanat · Groupe jusqu'à 25</div></div>
+        <div class="activite-prix">30€/pax</div>
+        <button class="btn btn-sm btn-primary">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('modalAddActivite').classList.remove('open')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // ─── NAVIGATION ONGLETS ───
+  function switchTab(n) {
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i === n-1));
+    document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i === n-1));
+  }
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.addEventListener('click', () => switchTab(i+1));
+  });
+
+  // ─── TRANSPORT MODE ───
+  function selectTransportMode(el) {
+    document.querySelectorAll('.transport-mode').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // ─── CAPACITÉ ───
+  function changeVal(id, delta) {
+    const el = document.getElementById(id);
+    const min = parseInt(el.min) || 1;
+    const max = parseInt(el.max) || 999;
+    el.value = Math.min(max, Math.max(min, parseInt(el.value) + delta));
+  }
+
+  // ─── JOUR TABS ───
+  const jourDates = [
+    'Jour 1 — Jeu 10 juillet · Arrivée Marrakech',
+    'Jour 2 — Ven 11 juillet · Médina & Souks',
+    'Jour 3 — Sam 12 juillet · Atlas & Désert Agafay',
+    'Jour 4 — Dim 13 juillet · Palais & Jardins',
+    'Jour 5 — Lun 14 juillet · Hammam & Shopping',
+    'Jour 6 — Mar 15 juillet · Excursion Ourika',
+    'Jour 7 — Mer 16 juillet · Départ'
+  ];
+  function selectJour(el, n) {
+    document.querySelectorAll('.jour-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('jourTitle').textContent = '📅 ' + jourDates[n-1];
+  }
+
+  // ─── CRÉNEAU CHIPS ───
+  function toggleChip(chip) {
+    const row = chip.closest('.creneau-type-row');
+    row.querySelectorAll('.creneau-type-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  }
+
+  // ─── RESTO MODE ───
+  function toggleRestoMode(btn, mode) {
+    btn.closest('.resto-mode-toggle').querySelectorAll('.resto-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ─── AUTOSAVE ───
+  function saveDraft() {
+    const ind = document.querySelector('.autosave-indicator');
+    ind.innerHTML = '<div class="autosave-dot" style="background:#f59e0b"></div><span style="color:#f59e0b">Sauvegarde en cours…</span>';
+    setTimeout(() => {
+      ind.innerHTML = '<div class="autosave-dot"></div><span>Brouillon sauvegardé à ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) + '</span>';
+    }, 800);
+  }
+
+  // ─── BUS SUR PLACE TOGGLE ───
+  document.getElementById('busSurPlace').addEventListener('change', function() {
+    document.getElementById('busSurPlaceCard').style.display = this.checked ? 'block' : 'none';
+  });
+
+  // ─── FERMER MODALS ───
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  // Autosave toutes les 30s (simulation)
+  setInterval(() => {
+    document.querySelector('.autosave-indicator').innerHTML = '<div class="autosave-dot"></div><span>Brouillon sauvegardé à ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) + '</span>';
+  }, 30000);
+</script>
+
+</body>
+</html>

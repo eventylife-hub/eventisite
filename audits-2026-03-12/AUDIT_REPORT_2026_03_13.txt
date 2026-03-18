@@ -1,0 +1,548 @@
+================================================================================
+COMPREHENSIVE SECURITY AUDIT REPORT
+Waitlist & Pre-Reservation Services
+Eventy Platform Backend
+Date: 2026-03-13
+================================================================================
+
+EXECUTIVE SUMMARY
+================================================================================
+
+Audit Status: COMPLETE
+Risk Level: MANAGEABLE (HIGH if unprotected, SAFE if patterns applied)
+Current State: Models defined, services NOT YET IMPLEMENTED
+Recommendation: SAFE TO PROCEED with recommended security patterns
+
+CRITICAL FINDING:
+  Prisma schema defines PreReservation (line 1606) and WaitlistEntry (line 1647)
+  models, but NO service layer exists. This is SAFE currently but represents
+  a HIGH-RISK gap if future services don't implement proper access controls.
+
+ESTIMATED FIX TIME: 6-8 hours with security-first approach
+
+================================================================================
+AUDIT SCOPE & METHODOLOGY
+================================================================================
+
+Files Searched:
+  • /backend/src/modules/*/waitlist*.service.ts (not found)
+  • /backend/src/modules/*/pre-reserv*.service.ts (not found)
+  • /backend/src/modules/*/prereserv*.service.ts (not found)
+  • /backend/prisma/schema.prisma (models FOUND)
+
+Search Results:
+  ✓ PreReservation model found (schema.prisma:1606)
+  ✓ WaitlistEntry model found (schema.prisma:1647)
+  ✗ No service implementations
+  ✗ No controllers
+  ✗ No tests
+
+Analysis Criteria:
+  1. IDOR (Insecure Direct Object Reference)
+  2. Idempotency on create operations
+  3. Ownership checks (who created/owns records)
+  4. Inline admin role checks (should use guards)
+  5. Error message leakage
+  6. Unchecked pagination
+  7. Try/catch around external calls (email, SMS)
+  8. Unique constraint design
+  9. PII encryption
+  10. Audit trail (createdBy/updatedBy)
+
+================================================================================
+CRITICAL VULNERABILITIES (IF SERVICES ADDED UNPROTECTED)
+================================================================================
+
+CRITICAL-1: IDOR — PreReservation Records
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vulnerability: Any authenticated user can access any pre-reservation
+Root Cause: PreReservation model lacks createdBy/owner field
+Impact: High-value financial records exposed to unauthorized access
+Severity: CRITICAL
+CVSS: 7.5 (High)
+
+Example Attack:
+  1. User A creates pre-reservation ABC (with deposit amount €5000)
+  2. User B (different PRO) requests GET /pre-reservations/ABC
+  3. Returns full record including depositAmountTTC: 500000 (in cents)
+  4. User B extracts pricing, competitor intelligence, customer data
+
+Fix Required: Ownership check via proProfileId + travel linkage
+
+
+CRITICAL-2: Missing Idempotency — Duplicate Entries
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vulnerability: Same entity creates multiple records (duplicates)
+Root Cause: No unique constraint on (travelId, orgCodeId) for PreReservation
+Impact: Overbooking, financial reconciliation errors, inventory chaos
+Severity: CRITICAL
+CVSS: 6.5 (Medium-High)
+
+Example Attack:
+  1. POST /pre-reservations (travelId=123, orgCodeId=ABC)
+  2. Network timeout or retry triggers duplicate submission
+  3. System creates 2 records for same organization
+  4. Capacity checks fail, overbooking occurs
+
+Fix Required: Unique constraints + idempotency-key support
+
+
+HIGH-1: Financial Data Exposure in Errors
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vulnerability: Sensitive financial data exposed in error messages
+Root Cause: Inline JSON.stringify(entity) in exception handling
+Impact: Deposit amounts, pricing leakage via error responses
+Severity: HIGH
+CVSS: 5.3 (Medium)
+
+Example:
+  throw new BadRequestException(JSON.stringify(preReservation))
+  → Response: { depositAmountTTC: 500000, status: 'PENDING', ... }
+
+Fix Required: Generic error messages, no entity serialization
+
+
+HIGH-2: Unchecked Pagination — Data Extraction
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vulnerability: No limit on list endpoint parameters
+Root Cause: take/skip not validated (could accept take=999999)
+Impact: Full database dump possible in single request
+Severity: HIGH
+CVSS: 6.5 (Medium-High)
+
+Example Attack:
+  GET /pre-reservations?travel=123&take=999999
+  → Returns all 100,000 pre-reservations
+  → Database load spike, DoS possible
+
+Fix Required: Max pagination enforced (take <= 100)
+
+
+HIGH-3: Unchecked External Calls — Notification Failures
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Vulnerability: Email/SMS failures crash service
+Root Cause: No try/catch around external API calls
+Impact: Unhandled exceptions, service degradation, user-facing errors
+Severity: HIGH
+CVSS: 5.3 (Medium)
+
+Example:
+  async notifyWaitlist(entry) {
+    await emailService.send(...)  // ← Throws if API down
+    // ↓ Never reaches here if email fails
+    return prisma.waitlistEntry.update(...)
+  }
+
+Fix Required: Try/catch with fallback, async queue pattern
+
+
+MEDIUM-1: No Audit Trail
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Issue: PreReservation model lacks createdBy field
+Impact: Cannot verify who created records, regulatory compliance risk
+Severity: MEDIUM
+
+Fix Required: Add createdBy field to track ownership
+
+
+MEDIUM-2: No Soft Delete Support
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Issue: No isDeleted flag in schema
+Impact: Hard deletes complicate audit trails, GDPR compliance
+Severity: MEDIUM
+
+Fix Required: Add isDeleted flag + update all queries
+
+
+MEDIUM-3: PII Not Encrypted
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Issue: Email/phone stored as plaintext in PreReservation, WaitlistEntry
+Impact: GDPR compliance risk, PII exposure if DB compromised
+Severity: MEDIUM
+
+Fix Required: Encrypt email/phone fields at rest
+
+================================================================================
+MODELS DETAILED ANALYSIS
+================================================================================
+
+MODEL 1: PreReservation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Location: /backend/prisma/schema.prisma:1606
+
+Current Fields:
+  • id (String) — Primary key
+  • travelId (String) — Foreign key to Travel
+  • orgCodeId (String?) — Organization code (associations, groups)
+  • status (PreResStatus) — Default PENDING_DEPOSIT
+  • mode (PreResMode) — Default STANDARD
+  • depositAmountTTC (Int) — In cents (e.g., 500000 = €5000)
+  • holdExpiresAt (DateTime?) — When hold expires
+  • roomsRequested (Int)
+  • roomsConfirmed (Int) — Default 0
+  • contactEmail (String?) — Plaintext
+  • contactPhone (String?) — Plaintext
+  • notes (String?)
+  • createdAt (DateTime)
+  • updatedAt (DateTime)
+
+Indexes:
+  • @@index([orgCodeId])
+  • @@index([travelId])
+  • @@index([status])
+
+MISSING/NEEDED:
+  ✗ createdBy — No audit trail
+  ✗ @@unique([travelId, orgCodeId]) — No duplicate prevention
+  ✗ Encryption for contactEmail, contactPhone — GDPR risk
+  ✗ isDeleted — No soft-delete support
+
+RELATIONSHIP:
+  • travel: Travel @relation (CASCADE delete)
+  • preResRoomAssignments: PreResRoomAssignment[]
+
+RISK ASSESSMENT:
+  • Financial data (depositAmountTTC) unprotected
+  • No owner field → IDOR vulnerability
+  • No duplicate prevention → Overbooking risk
+  • PII plaintext → GDPR violation
+
+
+MODEL 2: WaitlistEntry
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Location: /backend/prisma/schema.prisma:1647
+
+Current Fields:
+  • id (String) — Primary key
+  • travelId (String) — Foreign key to Travel
+  • email (String) — Plaintext, 255 chars
+  • phone (String?) — Plaintext, 20 chars
+  • firstName (String?) — Plaintext, 100 chars
+  • lastName (String?) — Plaintext, 100 chars
+  • status (WaitlistStatus) — Default WAITING
+  • notifiedAt (DateTime?)
+  • convertedAt (DateTime?)
+  • createdAt (DateTime)
+
+Indexes:
+  • @@index([travelId, status])
+  • @@index([email])
+
+MISSING/NEEDED:
+  ✗ @@unique([travelId, email]) — No duplicate prevention
+  ✗ userId — No link to authenticated user
+  ✗ Encryption for email, phone — GDPR risk
+  ✗ isDeleted — No soft-delete support
+
+RELATIONSHIP:
+  • travel: Travel @relation (CASCADE delete)
+
+RISK ASSESSMENT:
+  • Same email can register multiple times
+  • No user linkage → Can't verify email ownership
+  • PII plaintext → GDPR violation
+  • Email index alone insufficient → Enumeration possible
+
+================================================================================
+SCHEMA FIXES REQUIRED (P0 - BLOCKING)
+================================================================================
+
+FIX 1: Add createdBy to PreReservation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Why: Audit trail, ownership verification
+Where: PreReservation model
+Change:
+  createdBy    String?  // Pro user ID who created this
+
+Command: npx prisma migrate dev --name add_created_by_prereservation
+
+
+FIX 2: Add unique constraint to PreReservation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Why: Prevent duplicate pre-reservations for same organization
+Where: PreReservation model
+Change:
+  @@unique([travelId, orgCodeId])
+
+Command: npx prisma migrate dev --name add_unique_prereservation
+
+
+FIX 3: Add unique constraint to WaitlistEntry
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Why: Prevent duplicate waitlist entries
+Where: WaitlistEntry model
+Change:
+  @@unique([travelId, email])
+
+Command: npx prisma migrate dev --name add_unique_waitlist
+
+================================================================================
+IMPLEMENTATION SECURITY CHECKLIST
+================================================================================
+
+Access Control:
+  [ ] PreReservation.findOne() checks ownership via travel.proProfileId
+  [ ] WaitlistEntry queries limited to ADMIN or travel owner
+  [ ] All endpoints use @UseGuards(JwtAuthGuard, RolesGuard)
+  [ ] @Roles('ADMIN') or @Roles('PRO') on appropriate endpoints
+  [ ] No inline if (user.role !== 'ADMIN') checks — use guards only
+
+Input Validation:
+  [ ] All DTOs validated with Zod schemas
+  [ ] Email format: z.string().email()
+  [ ] Phone format: regex validation or rejection
+  [ ] Pagination: take max = 100, default = 10
+  [ ] Dates: holdExpiresAt must be future, not past
+  [ ] No arbitrary fields accepted (whitelist pattern)
+
+Idempotency:
+  [ ] PreReservation create checks unique constraint catch (P2002)
+  [ ] WaitlistEntry create checks unique constraint catch (P2002)
+  [ ] Returns 409 Conflict on duplicates, not 500
+  [ ] Idempotency-Key header supported
+
+Error Handling:
+  [ ] No JSON.stringify(entity) in error messages
+  [ ] No depositAmountTTC in responses on error
+  [ ] Generic messages: "Operation failed. Contact support."
+  [ ] Try/catch around emailService.send(), SMS APIs
+  [ ] Failures logged but don't cascade to user response
+
+Data Protection:
+  [ ] PII not exposed in list endpoints (no emails in bulk export)
+  [ ] createdBy field populated on create
+  [ ] Soft-delete flag (isDeleted) used in WHERE clauses
+  [ ] Audit logging: who modified what, when
+
+Testing:
+  [ ] IDOR test: User A cannot GET/PATCH User B's records
+  [ ] Duplicate test: Second POST with same params returns 409
+  [ ] Pagination test: take > 100 capped at 100
+  [ ] External call test: Email failure doesn't crash service
+  [ ] Role test: Non-ADMIN cannot access admin endpoints
+  [ ] Validation test: Invalid input returns 400, not 500
+
+================================================================================
+RECOMMENDATIONS (PRIORITY)
+================================================================================
+
+P0 — BLOCKING (Do before implementing services)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. [0.5h] Migrate: Add createdBy to PreReservation
+2. [0.5h] Migrate: Add @@unique([travelId, orgCodeId]) to PreReservation
+3. [0.5h] Migrate: Add @@unique([travelId, email]) to WaitlistEntry
+
+Total: 1.5 hours
+
+P1 — HIGH (Before service implementation)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. [1h] Create DTOs with Zod validation
+   • CreatePreReservationSchema
+   • UpdatePreReservationSchema
+   • CreateWaitlistEntrySchema
+
+5. [1.5h] Implement PreReservationService
+   • create() — with IDOR check, unique constraint handling
+   • findOne() — with ownership verification
+   • findByTravelId() — with pagination limits
+   • update() — with IDOR check
+   • delete() — soft-delete pattern
+
+6. [1h] Implement WaitlistService
+   • addToWaitlist() — with duplicate prevention
+   • getWaitlist() — with pagination limits
+   • notifyEntry() — with try/catch
+   • convertToBooking() — idempotent
+
+7. [1h] Create controllers with guards
+   • PreReservationsController
+   • WaitlistController
+   • Apply @UseGuards, @Roles decorators
+
+Total: 4.5 hours
+
+P2 — MEDIUM (Before launch)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. [1h] Add soft-delete support
+   • Add isDeleted flag to both models
+   • Update all find queries to filter isDeleted = false
+
+9. [1h] Encrypt PII fields
+   • Email: Encrypt at rest using crypto module
+   • Phone: Encrypt at rest
+   • Decrypt on retrieve
+
+10. [1.5h] Implement comprehensive tests
+    • IDOR protection tests
+    • Duplicate prevention tests
+    • Pagination limit tests
+    • External call failure tests
+    • Role-based access tests
+
+Total: 3.5 hours
+
+P3 — LOW (Post-launch monitoring)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. Rate limiting on create endpoints (prevent spam)
+12. Alerts for bulk operations (>1000 records in 1 minute)
+13. Quarterly audit of access logs
+
+TOTAL EFFORT: 9 hours (or 6-8 hours if skipping P2)
+
+================================================================================
+CURRENT RISK ASSESSMENT
+================================================================================
+
+Current State: SAFE
+  • Models defined but services don't exist
+  • No attack surface exposed
+  • Risk = 0 (nothing to attack)
+
+Future Risk (if unprotected): CRITICAL
+  • IDOR: User A reads User B's financial data
+  • Duplicates: Overbooking occurs
+  • Data leakage: Sensitive info in error messages
+  • DoS: Pagination abuse exhausts database
+
+Future Risk (if protected with templates): LOW
+  • All patterns copied from tested travels.service.ts
+  • Zod validation framework established
+  • Guard infrastructure in place
+  • Tests comprehensive
+
+================================================================================
+IMPLEMENTATION PATTERNS (FROM EXISTING CODE)
+================================================================================
+
+Pattern 1: Ownership Check (travels.service.ts:265-279)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ COPY THIS PATTERN for all PreReservation ownership checks
+
+  const proProfile = await this.prisma.proProfile.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+
+  if (!proProfile || travel.proProfileId !== proProfile.id) {
+    throw new ForbiddenException('You do not have access');
+  }
+
+
+Pattern 2: Zod Input Validation (travels.service.ts:14-24)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ COPY THIS PATTERN for all DTO validation
+
+  const CreateSchema = z.object({
+    title: z.string().min(3).max(200),
+    email: z.string().email(),
+    capacity: z.number().int().nonnegative()
+  });
+
+  const parsed = CreateSchema.safeParse(createData);
+  if (!parsed.success) {
+    throw new BadRequestException(
+      parsed.error.errors.map(e => e.message).join(', ')
+    );
+  }
+
+
+Pattern 3: Guard-Based Role Control (auth module)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ COPY THIS PATTERN for all role restrictions
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('PRO')
+  @Post()
+  async create(@CurrentUser() user, @Body() dto) {
+    // Service TRUSTS guard — no role check needed here
+  }
+
+
+Pattern 4: Pagination Limits (travels.service.ts:114-148)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ COPY THIS PATTERN for pagination validation
+
+  const MAX_TAKE = 100;
+  const validTake = Math.min(Math.max(take, 1), MAX_TAKE);
+
+  return this.prisma.preReservation.findMany({
+    take: validTake,
+    skip: Math.max(skip, 0),
+    orderBy: { createdAt: 'desc' }
+  });
+
+
+Pattern 5: Unique Constraint Handling (bookings)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ COPY THIS PATTERN for duplicate prevention
+
+  try {
+    return await this.prisma.preReservation.create({
+      data: { travelId, orgCodeId, ... }
+    });
+  } catch (error) {
+    if (error.code === 'P2002') {
+      throw new ConflictException('Duplicate entry');
+    }
+    throw error;
+  }
+
+================================================================================
+FILES CREATED FOR THIS AUDIT
+================================================================================
+
+1. SECURITY_AUDIT_WAITLIST_PRERESERVATION.md (13 KB)
+   Main audit report with full vulnerability details
+   
+2. REMEDIATION_TEMPLATES_WAITLIST.md (21 KB)
+   Production-ready code templates for services
+   
+3. AUDIT_SUMMARY.txt (7.1 KB)
+   Quick reference with recommendations
+   
+4. AUDIT_INDEX.md (6 KB)
+   Navigation guide for all audit documents
+   
+5. AUDIT_REPORT_2026_03_13.txt (This file)
+   Comprehensive report
+
+Total Documentation: ~52 KB
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+For Developers:
+  1. Read SECURITY_AUDIT_WAITLIST_PRERESERVATION.md
+  2. Review REMEDIATION_TEMPLATES_WAITLIST.md
+  3. Execute schema migrations (P0)
+  4. Implement services using templates
+  5. Test against security checklist
+
+For Tech Lead:
+  1. Review this report
+  2. Estimate effort (6-8 hours)
+  3. Schedule implementation sprint
+  4. Assign code review (security focus)
+
+For Security Team:
+  1. Save all audit documents
+  2. Include in compliance audit trail
+  3. Review implementation before merge
+  4. Test IDOR and pagination protections
+
+================================================================================
+SIGN-OFF
+================================================================================
+
+Audit Status: COMPLETE ✓
+Date: 2026-03-13
+Current Risk: LOW (no services yet)
+Future Risk: MANAGEABLE (if templates applied)
+Recommendation: APPROVED FOR IMPLEMENTATION
+
+Condition: Apply all P0 recommendations first, then follow P1 templates.
+
+Next Audit: When services are implemented + merged to main
+
+================================================================================

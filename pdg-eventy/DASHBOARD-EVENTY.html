@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eventy — Dashboard PDG</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --primary: #1a56db;
+    --primary-light: #e8eefb;
+    --success: #059669;
+    --success-light: #d1fae5;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --gray: #6b7280;
+    --gray-light: #e5e7eb;
+    --text: #111827;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --radius: 8px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+
+  .app { max-width:1280px; margin:0 auto; padding:20px; }
+
+  /* Header */
+  .header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:20px; }
+  .header h1 { font-size:1.5rem; font-weight:700; }
+  .header h1 span { color:var(--primary); }
+  .header-meta { text-align:right; color:var(--text-light); font-size:.85rem; }
+
+  /* Stats row */
+  .stats { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:20px; }
+  .stat-card { background:var(--card); padding:16px 20px; border-radius:var(--radius); box-shadow:var(--shadow); border-left:4px solid var(--primary); }
+  .stat-card.green { border-left-color:var(--success); }
+  .stat-card.orange { border-left-color:var(--warning); }
+  .stat-card.red { border-left-color:var(--danger); }
+  .stat-label { font-size:.8rem; color:var(--text-light); text-transform:uppercase; letter-spacing:.5px; }
+  .stat-value { font-size:1.6rem; font-weight:700; margin-top:2px; }
+  .stat-sub { font-size:.75rem; color:var(--text-light); margin-top:2px; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:4px; background:var(--card); padding:4px; border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:20px; overflow-x:auto; }
+  .tab { padding:8px 16px; border-radius:6px; border:none; background:transparent; cursor:pointer; font-size:.85rem; font-weight:500; color:var(--text-light); white-space:nowrap; transition: all .15s; }
+  .tab:hover { background:var(--bg); color:var(--text); }
+  .tab.active { background:var(--primary); color:#fff; }
+
+  /* Cards */
+  .card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:16px; overflow:hidden; }
+  .card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .card-header h2 { font-size:1.05rem; font-weight:600; }
+  .card-body { padding:16px 20px; }
+
+  /* Badge */
+  .badge { display:inline-block; padding:2px 10px; border-radius:12px; font-size:.75rem; font-weight:600; }
+  .badge-p0 { background:var(--danger-light); color:var(--danger); }
+  .badge-p1 { background:var(--warning-light); color:var(--warning); }
+  .badge-p2 { background:var(--primary-light); color:var(--primary); }
+  .badge-done { background:var(--success-light); color:var(--success); }
+  .badge-pending { background:var(--gray-light); color:var(--gray); }
+
+  /* Task list */
+  .task-list { list-style:none; }
+  .task-item { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .task-item:last-child { border-bottom:none; }
+  .task-check { width:20px; height:20px; border-radius:4px; border:2px solid var(--gray-light); flex-shrink:0; margin-top:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: all .15s; }
+  .task-check.checked { background:var(--success); border-color:var(--success); }
+  .task-check.checked::after { content:'✓'; color:#fff; font-size:.75rem; font-weight:700; }
+  .task-content { flex:1; }
+  .task-title { font-size:.9rem; font-weight:500; }
+  .task-title.done { text-decoration:line-through; color:var(--text-light); }
+  .task-meta { font-size:.75rem; color:var(--text-light); margin-top:2px; }
+
+  /* Timeline */
+  .timeline { position:relative; padding-left:28px; }
+  .timeline::before { content:''; position:absolute; left:10px; top:8px; bottom:8px; width:2px; background:var(--gray-light); }
+  .timeline-item { position:relative; padding-bottom:20px; }
+  .timeline-item:last-child { padding-bottom:0; }
+  .timeline-dot { width:12px; height:12px; border-radius:50%; position:absolute; left:-22px; top:4px; border:2px solid #fff; }
+  .timeline-dot.active { background:var(--primary); box-shadow:0 0 0 3px var(--primary-light); }
+  .timeline-dot.pending { background:var(--gray-light); }
+  .timeline-dot.done { background:var(--success); }
+  .timeline-title { font-weight:600; font-size:.9rem; }
+  .timeline-desc { font-size:.8rem; color:var(--text-light); margin-top:2px; }
+  .timeline-duration { font-size:.75rem; color:var(--primary); font-weight:500; }
+
+  /* Table */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.85rem; }
+  th { text-align:left; padding:10px 12px; background:var(--bg); font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.3px; color:var(--text-light); }
+  td { padding:10px 12px; border-bottom:1px solid var(--border); }
+  tr:hover td { background:#f9fafb; }
+
+  /* Progress bar */
+  .progress-bar { background:var(--gray-light); border-radius:20px; height:8px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:20px; transition: width .3s; }
+  .progress-fill.green { background:var(--success); }
+  .progress-fill.blue { background:var(--primary); }
+  .progress-fill.orange { background:var(--warning); }
+
+  /* Budget chart */
+  .budget-row { display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .budget-row:last-child { border-bottom:none; }
+  .budget-label { width:180px; font-size:.85rem; flex-shrink:0; }
+  .budget-bar-wrap { flex:1; }
+  .budget-bar { height:24px; border-radius:4px; display:flex; align-items:center; padding:0 8px; font-size:.75rem; font-weight:600; color:#fff; min-width:60px; }
+  .budget-amount { width:100px; text-align:right; font-size:.85rem; font-weight:600; flex-shrink:0; }
+
+  /* Transport sim */
+  .sim-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .sim-input { display:flex; flex-direction:column; gap:4px; }
+  .sim-input label { font-size:.8rem; font-weight:500; color:var(--text-light); }
+  .sim-input input, .sim-input select { padding:8px 12px; border:1px solid var(--border); border-radius:6px; font-size:.9rem; }
+  .sim-result { background:var(--bg); border-radius:var(--radius); padding:16px; margin-top:16px; }
+  .sim-total { font-size:1.4rem; font-weight:700; color:var(--primary); }
+
+  /* Hidden sections */
+  .section { display:none; }
+  .section.active { display:block; }
+
+  /* Responsive */
+  @media (max-width:768px) {
+    .stats { grid-template-columns:1fr 1fr; }
+    .sim-grid { grid-template-columns:1fr; }
+    .header { flex-direction:column; gap:12px; }
+    .header-meta { text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const DATA = {
+  tasks: [
+    // P0 — Obligatoire
+    { id:1, title:"Créer la SAS (statuts + Kbis)", cat:"legal", priority:"P0", status:"todo", est:"2 000€ - 3 500€", duration:"2-4 sem.", dep:[] },
+    { id:2, title:"Ouvrir compte bancaire professionnel", cat:"finance", priority:"P0", status:"todo", est:"0€ (Qonto/Shine)", duration:"1-3 jours", dep:[1] },
+    { id:3, title:"Souscrire garantie financière (APST)", cat:"assurance", priority:"P0", status:"todo", est:"~2 100€/an", duration:"2-4 sem.", dep:[1,2] },
+    { id:4, title:"Souscrire RC Pro", cat:"assurance", priority:"P0", status:"todo", est:"780€ - 1 200€/an", duration:"1-2 sem.", dep:[1] },
+    { id:5, title:"Déposer dossier immatriculation Atout France", cat:"legal", priority:"P0", status:"todo", est:"Gratuit", duration:"~1 mois", dep:[1,3,4] },
+    { id:6, title:"Obtenir l'immatriculation IM0XXXXX", cat:"legal", priority:"P0", status:"blocked", est:"-", duration:"Après dépôt", dep:[5] },
+    { id:7, title:"Sécuriser le site (HTTPS, headers, WAF)", cat:"tech", priority:"P0", status:"partial", est:"~0€ (Cloudflare)", duration:"1-2 jours", dep:[] },
+    { id:8, title:"Corriger les 5 tests setAvatar", cat:"tech", priority:"P0", status:"todo", est:"-", duration:"< 1 jour", dep:[] },
+
+    // P1 — Important
+    { id:9, title:"Faire valider CGV/CGU par avocat tourisme", cat:"legal", priority:"P1", status:"todo", est:"2 500€ - 5 000€", duration:"2-3 sem.", dep:[] },
+    { id:10, title:"Rédiger mentions légales du site", cat:"legal", priority:"P1", status:"todo", est:"-", duration:"1 jour", dep:[1] },
+    { id:11, title:"Rédiger politique de confidentialité", cat:"legal", priority:"P1", status:"partial", est:"-", duration:"1 jour", dep:[] },
+    { id:12, title:"Contacter 3 autocaristes pour devis", cat:"transport", priority:"P1", status:"todo", est:"-", duration:"1 sem.", dep:[] },
+    { id:13, title:"Contacter 5 hôtels/gîtes partenaires", cat:"partenaires", priority:"P1", status:"todo", est:"-", duration:"2 sem.", dep:[] },
+    { id:14, title:"Contacter 5 prestataires activités", cat:"partenaires", priority:"P1", status:"todo", est:"-", duration:"2 sem.", dep:[] },
+    { id:15, title:"Engager un expert-comptable", cat:"finance", priority:"P1", status:"todo", est:"80€ - 200€/mois", duration:"1 sem.", dep:[] },
+    { id:16, title:"Configurer Google Workspace (email pro)", cat:"tech", priority:"P1", status:"todo", est:"7€/mois", duration:"< 1 jour", dep:[] },
+    { id:17, title:"Déployer backend sur Scaleway", cat:"tech", priority:"P1", status:"todo", est:"~25€/mois", duration:"1-2 jours", dep:[7] },
+    { id:18, title:"Configurer domaine eventylife.fr", cat:"tech", priority:"P1", status:"todo", est:"~12€/an", duration:"< 1 jour", dep:[] },
+    { id:19, title:"Mettre en place CI/CD (GitHub Actions)", cat:"tech", priority:"P1", status:"todo", est:"0€", duration:"1 jour", dep:[] },
+    { id:20, title:"Activer emails transactionnels (Brevo/Resend)", cat:"tech", priority:"P1", status:"todo", est:"0€ - 25€/mois", duration:"1 jour", dep:[] },
+    { id:21, title:"Créer pages réseaux sociaux (Instagram, LinkedIn, Facebook)", cat:"marketing", priority:"P1", status:"todo", est:"0€", duration:"1 jour", dep:[] },
+    { id:22, title:"Rédiger 10 articles SEO fondation", cat:"marketing", priority:"P1", status:"todo", est:"0€", duration:"2 sem.", dep:[] },
+    { id:23, title:"Préparer campagne Google Ads lancement", cat:"marketing", priority:"P1", status:"todo", est:"500€ - 1 000€", duration:"1 sem.", dep:[] },
+    { id:24, title:"Tester webhooks Stripe en production", cat:"tech", priority:"P1", status:"todo", est:"-", duration:"1 jour", dep:[17] },
+    { id:25, title:"Configurer backups automatiques DB", cat:"tech", priority:"P1", status:"todo", est:"-", duration:"< 1 jour", dep:[17] },
+
+    // P2 — Souhaitable
+    { id:26, title:"Dashboard admin complet", cat:"tech", priority:"P2", status:"todo", est:"-", duration:"1-2 sem.", dep:[] },
+    { id:27, title:"Intégration analytics (Plausible/GA)", cat:"tech", priority:"P2", status:"todo", est:"0€ - 9€/mois", duration:"< 1 jour", dep:[17] },
+    { id:28, title:"Chat support client temps réel", cat:"tech", priority:"P2", status:"todo", est:"-", duration:"2-3 sem.", dep:[] },
+    { id:29, title:"Application mobile PWA", cat:"tech", priority:"P2", status:"todo", est:"-", duration:"1-2 mois", dep:[] },
+    { id:30, title:"Multi-langue FR/EN/ES", cat:"tech", priority:"P2", status:"todo", est:"-", duration:"2-3 sem.", dep:[] },
+  ],
+
+  timeline: [
+    { title:"Semaine 1-2 : Création SAS", desc:"Rédaction statuts, dépôt capital, immatriculation greffe", status:"pending" },
+    { title:"Semaine 2-3 : Banque + Assurances", desc:"Ouverture compte pro, souscription garantie APST + RC Pro", status:"pending" },
+    { title:"Semaine 3-4 : Dépôt Atout France", desc:"Constitution dossier complet, envoi à Atout France", status:"pending" },
+    { title:"Semaine 3-6 : Préparation parallèle", desc:"Sécurité site, déploiement, CGV avocat, premiers partenaires", status:"pending" },
+    { title:"Semaine 4-8 : Attente immatriculation", desc:"Marketing, SEO, partenaires, tests production", status:"pending" },
+    { title:"Semaine 8-12 : LANCEMENT OFFICIEL", desc:"Activation vente en ligne, communication, premiers voyages", status:"pending" },
+  ],
+
+  budget: [
+    { label:"Création SAS", min:2000, max:3500, color:"#dc2626" },
+    { label:"Garantie APST (an 1)", min:2100, max:3000, color:"#d97706" },
+    { label:"RC Pro (an 1)", min:780, max:1200, color:"#d97706" },
+    { label:"Avocat CGV", min:2500, max:5000, color:"#dc2626" },
+    { label:"Expert-comptable (12m)", min:960, max:2400, color:"#6b7280" },
+    { label:"Hébergement cloud (12m)", min:300, max:600, color:"#1a56db" },
+    { label:"Marketing lancement", min:500, max:3000, color:"#059669" },
+    { label:"Outils SaaS (12m)", min:336, max:1200, color:"#6b7280" },
+    { label:"Domaine + divers", min:100, max:500, color:"#6b7280" },
+  ],
+
+  transport: {
+    types: [
+      { name:"Minibus 9 places", prixJour:250, prixKm:1.2 },
+      { name:"Minibus 20 places", prixJour:450, prixKm:1.5 },
+      { name:"Autocar 35 places", prixJour:750, prixKm:2.0 },
+      { name:"Autocar 49 places", prixJour:950, prixKm:2.2 },
+      { name:"Autocar 55 places", prixJour:1100, prixKm:2.5 },
+    ],
+    saisonCoeff: { basse:1.0, moyenne:1.1, haute:1.25 },
+  },
+
+  modules: [
+    { name:"Auth (JWT)", tests:"✅", status:"Production-ready" },
+    { name:"Users (profils)", tests:"⚠️ 5 échoués", status:"À corriger" },
+    { name:"Client (espace)", tests:"120 ✅", status:"Production-ready" },
+    { name:"Bookings", tests:"✅", status:"Production-ready" },
+    { name:"Checkout", tests:"✅", status:"Production-ready" },
+    { name:"Payments (Stripe)", tests:"✅", status:"Production-ready" },
+    { name:"Groups", tests:"✅", status:"Production-ready" },
+    { name:"Travels", tests:"✅", status:"Production-ready" },
+    { name:"Admin (RBAC, audit)", tests:"✅", status:"Production-ready" },
+    { name:"Documents (PDF)", tests:"✅", status:"Production-ready" },
+    { name:"Reviews", tests:"✅", status:"Production-ready" },
+    { name:"SEO", tests:"✅", status:"Production-ready" },
+    { name:"Uploads (S3)", tests:"✅", status:"Production-ready" },
+    { name:"Pro (espace pro)", tests:"✅", status:"Production-ready" },
+    { name:"HRA", tests:"40 ✅", status:"Production-ready" },
+    { name:"Finance", tests:"✅", status:"Production-ready" },
+    { name:"Insurance", tests:"✅", status:"Production-ready" },
+    { name:"Marketing", tests:"✅", status:"Production-ready" },
+    { name:"Notifications", tests:"✅", status:"Production-ready" },
+    { name:"Cancellation", tests:"✅", status:"Production-ready" },
+    { name:"Legal / DSAR", tests:"✅", status:"Production-ready" },
+    { name:"Exports", tests:"✅", status:"Production-ready" },
+    { name:"Rooming", tests:"✅", status:"Production-ready" },
+    { name:"Transport", tests:"✅", status:"Production-ready" },
+    { name:"Post-sale", tests:"✅", status:"Production-ready" },
+    { name:"Quick-sell", tests:"✅", status:"Production-ready" },
+    { name:"Revenues (pro)", tests:"✅", status:"Production-ready" },
+  ]
+};
+
+// State
+let state = {
+  activeTab: "overview",
+  tasks: DATA.tasks.map(t => ({...t})),
+  sim: { type:3, jours:2, km:300, saison:"moyenne", pax:30 }
+};
+
+function getStats() {
+  const total = state.tasks.length;
+  const done = state.tasks.filter(t => t.status === "done").length;
+  const p0 = state.tasks.filter(t => t.priority === "P0");
+  const p0Done = p0.filter(t => t.status === "done").length;
+  const budgetMin = DATA.budget.reduce((s,b) => s + b.min, 0);
+  const budgetMax = DATA.budget.reduce((s,b) => s + b.max, 0);
+  return { total, done, p0Total: p0.length, p0Done, budgetMin, budgetMax, prodReady: DATA.modules.filter(m => m.status === "Production-ready").length, modulesTotal: DATA.modules.length };
+}
+
+function toggleTask(id) {
+  const t = state.tasks.find(t => t.id === id);
+  if (t) t.status = t.status === "done" ? "todo" : "done";
+  render();
+}
+
+function setTab(tab) {
+  state.activeTab = tab;
+  render();
+}
+
+function updateSim(field, val) {
+  state.sim[field] = isNaN(Number(val)) ? val : Number(val);
+  render();
+}
+
+function calcTransport() {
+  const s = state.sim;
+  const v = DATA.transport.types[s.type];
+  const coeff = DATA.transport.saisonCoeff[s.saison];
+  const base = v.prixJour * s.jours;
+  const kmCost = v.prixKm * s.km;
+  const total = (base + kmCost) * coeff;
+  const perPax = total / Math.max(1, s.pax);
+  return { vehicule: v.name, base, kmCost, coeff, total: Math.round(total), perPax: Math.round(perPax) };
+}
+
+function render() {
+  const s = getStats();
+  const pct = Math.round(s.done / s.total * 100);
+  const tabs = [
+    { id:"overview", label:"Vue d'ensemble" },
+    { id:"tasks", label:"Tâches" },
+    { id:"timeline", label:"Timeline" },
+    { id:"budget", label:"Budget" },
+    { id:"transport", label:"Transport" },
+    { id:"tech", label:"Backend" },
+    { id:"simulation", label:"Simulateur devis" },
+  ];
+
+  let html = `
+    <div class="header">
+      <div>
+        <h1><span>Eventy</span> — Dashboard PDG</h1>
+        <div style="font-size:.85rem;color:var(--text-light);margin-top:4px;">Plateforme SaaS + Agence de voyages de groupe</div>
+      </div>
+      <div class="header-meta">
+        <div>PDG : David</div>
+        <div>Mise à jour : ${new Date().toLocaleDateString('fr-FR')}</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card ${pct >= 50 ? 'green' : 'orange'}">
+        <div class="stat-label">Progression globale</div>
+        <div class="stat-value">${pct}%</div>
+        <div class="stat-sub">${s.done} / ${s.total} tâches</div>
+        <div class="progress-bar" style="margin-top:8px"><div class="progress-fill ${pct >= 50 ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Tâches P0 (bloquantes)</div>
+        <div class="stat-value">${s.p0Done} / ${s.p0Total}</div>
+        <div class="stat-sub">Obligatoires avant lancement</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Budget estimé</div>
+        <div class="stat-value">${(s.budgetMin/1000).toFixed(1)}k€ — ${(s.budgetMax/1000).toFixed(1)}k€</div>
+        <div class="stat-sub">Année 1 (hors trésorerie)</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Modules backend</div>
+        <div class="stat-value">${s.prodReady} / ${s.modulesTotal}</div>
+        <div class="stat-sub">Production-ready</div>
+        <div class="progress-bar" style="margin-top:8px"><div class="progress-fill green" style="width:${Math.round(s.prodReady/s.modulesTotal*100)}%"></div></div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      ${tabs.map(t => `<button class="tab ${state.activeTab===t.id?'active':''}" onclick="setTab('${t.id}')">${t.label}</button>`).join('')}
+    </div>
+  `;
+
+  // OVERVIEW
+  html += `<div class="section ${state.activeTab==='overview'?'active':''}">`;
+  html += `<div class="card"><div class="card-header"><h2>Chemin critique vers le lancement</h2></div><div class="card-body"><div class="timeline">`;
+  DATA.timeline.forEach((t,i) => {
+    html += `<div class="timeline-item">
+      <div class="timeline-dot ${t.status}"></div>
+      <div class="timeline-title">${t.title}</div>
+      <div class="timeline-desc">${t.desc}</div>
+    </div>`;
+  });
+  html += `</div></div></div>`;
+
+  // P0 tasks summary
+  const p0tasks = state.tasks.filter(t => t.priority === "P0");
+  html += `<div class="card"><div class="card-header"><h2>Tâches P0 — Bloquantes</h2><span class="badge badge-p0">${p0tasks.filter(t=>t.status==='done').length}/${p0tasks.length}</span></div><div class="card-body"><ul class="task-list">`;
+  p0tasks.forEach(t => {
+    const done = t.status === 'done';
+    html += `<li class="task-item">
+      <div class="task-check ${done?'checked':''}" onclick="toggleTask(${t.id})"></div>
+      <div class="task-content">
+        <div class="task-title ${done?'done':''}">${t.title}</div>
+        <div class="task-meta">${t.est !== '-' ? t.est + ' · ' : ''}${t.duration}${t.dep.length ? ' · Dépend de #'+t.dep.join(', #') : ''}</div>
+      </div>
+      <span class="badge badge-p0">P0</span>
+    </li>`;
+  });
+  html += `</ul></div></div>`;
+
+  // Contacts
+  html += `<div class="card"><div class="card-header"><h2>Contacts prioritaires</h2></div><div class="card-body"><div class="table-wrap"><table>
+    <tr><th>Qui</th><th>Pourquoi</th><th>Statut</th></tr>
+    <tr><td>Avocat droit tourisme</td><td>Statuts SAS + CGV</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>Expert-comptable</td><td>Compta + fiscal</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>APST</td><td>Garantie financière 200k€</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>Assureur RC Pro</td><td>Orus / Hiscox / Coover</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>Banque pro</td><td>Qonto / Shine</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>3 Autocaristes</td><td>Devis transport groupe</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>5 Hôtels / Gîtes</td><td>Partenariat hébergement</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+    <tr><td>5 Prestataires activités</td><td>Programme voyages</td><td><span class="badge badge-pending">À contacter</span></td></tr>
+  </table></div></div></div>`;
+  html += `</div>`;
+
+  // TASKS
+  html += `<div class="section ${state.activeTab==='tasks'?'active':''}">`;
+  ['P0','P1','P2'].forEach(p => {
+    const tasks = state.tasks.filter(t => t.priority === p);
+    const doneC = tasks.filter(t => t.status === 'done').length;
+    html += `<div class="card"><div class="card-header"><h2>Priorité ${p}</h2><span class="badge badge-${p.toLowerCase()}">${doneC}/${tasks.length}</span></div><div class="card-body"><ul class="task-list">`;
+    tasks.forEach(t => {
+      const done = t.status === 'done';
+      html += `<li class="task-item">
+        <div class="task-check ${done?'checked':''}" onclick="toggleTask(${t.id})"></div>
+        <div class="task-content">
+          <div class="task-title ${done?'done':''}">${t.title}</div>
+          <div class="task-meta">${t.cat} · ${t.est !== '-' ? t.est + ' · ' : ''}${t.duration}</div>
+        </div>
+      </li>`;
+    });
+    html += `</ul></div></div>`;
+  });
+  html += `</div>`;
+
+  // TIMELINE
+  html += `<div class="section ${state.activeTab==='timeline'?'active':''}">
+    <div class="card"><div class="card-header"><h2>Planning de lancement — 8 à 12 semaines</h2></div><div class="card-body"><div class="timeline">`;
+  DATA.timeline.forEach(t => {
+    html += `<div class="timeline-item">
+      <div class="timeline-dot ${t.status}"></div>
+      <div class="timeline-title">${t.title}</div>
+      <div class="timeline-desc">${t.desc}</div>
+    </div>`;
+  });
+  html += `</div></div></div></div>`;
+
+  // BUDGET
+  const maxBudget = Math.max(...DATA.budget.map(b => b.max));
+  html += `<div class="section ${state.activeTab==='budget'?'active':''}">
+    <div class="card"><div class="card-header"><h2>Budget prévisionnel — Année 1</h2></div><div class="card-body">`;
+  DATA.budget.forEach(b => {
+    const w = Math.round(b.max / maxBudget * 100);
+    html += `<div class="budget-row">
+      <div class="budget-label">${b.label}</div>
+      <div class="budget-bar-wrap"><div class="budget-bar" style="width:${w}%;background:${b.color}">${b.min.toLocaleString()}€</div></div>
+      <div class="budget-amount">${b.max.toLocaleString()}€</div>
+    </div>`;
+  });
+  const totalMin = DATA.budget.reduce((s,b) => s+b.min, 0);
+  const totalMax = DATA.budget.reduce((s,b) => s+b.max, 0);
+  html += `<div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--text);display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem">
+    <span>TOTAL ANNÉE 1</span><span>${totalMin.toLocaleString()}€ — ${totalMax.toLocaleString()}€</span>
+  </div>`;
+  html += `</div></div></div>`;
+
+  // TRANSPORT
+  const sim = state.sim;
+  const res = calcTransport();
+  html += `<div class="section ${state.activeTab==='transport'?'active':''}">
+    <div class="card"><div class="card-header"><h2>Grille tarifaire transport</h2></div><div class="card-body"><div class="table-wrap"><table>
+      <tr><th>Véhicule</th><th>Places</th><th>Prix/jour HT</th><th>Prix/km HT</th><th>Exemple 2j + 300km</th></tr>
+      ${DATA.transport.types.map((v,i) => `<tr>
+        <td>${v.name}</td>
+        <td>${v.name.match(/\\d+/)?.[0] || '-'}</td>
+        <td>${v.prixJour}€</td>
+        <td>${v.prixKm.toFixed(2)}€</td>
+        <td><strong>${Math.round(v.prixJour*2 + v.prixKm*300)}€</strong></td>
+      </tr>`).join('')}
+    </table></div>
+    <div style="margin-top:12px;font-size:.8rem;color:var(--text-light)">
+      Coefficient saisonnalité : Basse (oct-fév) ×1.0 · Moyenne (mars, sept) ×1.1 · Haute (avr-août) ×1.25
+    </div></div></div>
+
+    <div class="card"><div class="card-header"><h2>Simulateur transport</h2></div><div class="card-body">
+      <div class="sim-grid">
+        <div class="sim-input"><label>Type de véhicule</label>
+          <select onchange="updateSim('type',this.value)">
+            ${DATA.transport.types.map((v,i) => `<option value="${i}" ${sim.type===i?'selected':''}>${v.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="sim-input"><label>Nombre de jours</label><input type="number" min="1" max="14" value="${sim.jours}" onchange="updateSim('jours',this.value)"></div>
+        <div class="sim-input"><label>Kilomètres total</label><input type="number" min="0" max="5000" value="${sim.km}" onchange="updateSim('km',this.value)"></div>
+        <div class="sim-input"><label>Saison</label>
+          <select onchange="updateSim('saison',this.value)">
+            <option value="basse" ${sim.saison==='basse'?'selected':''}>Basse (oct-fév) ×1.0</option>
+            <option value="moyenne" ${sim.saison==='moyenne'?'selected':''}>Moyenne (mars, sept) ×1.1</option>
+            <option value="haute" ${sim.saison==='haute'?'selected':''}>Haute (avr-août) ×1.25</option>
+          </select>
+        </div>
+        <div class="sim-input"><label>Nombre de participants</label><input type="number" min="1" max="200" value="${sim.pax}" onchange="updateSim('pax',this.value)"></div>
+      </div>
+      <div class="sim-result">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
+          <div><div style="font-size:.8rem;color:var(--text-light)">Base (${res.vehicule})</div><div style="font-size:1.1rem;font-weight:600">${res.base.toLocaleString()}€</div><div style="font-size:.75rem;color:var(--text-light)">${sim.jours}j × ${DATA.transport.types[sim.type].prixJour}€/j</div></div>
+          <div><div style="font-size:.8rem;color:var(--text-light)">Kilométrage</div><div style="font-size:1.1rem;font-weight:600">${res.kmCost.toLocaleString()}€</div><div style="font-size:.75rem;color:var(--text-light)">${sim.km}km × ${DATA.transport.types[sim.type].prixKm}€/km</div></div>
+          <div><div style="font-size:.8rem;color:var(--text-light)">Coeff. saison</div><div style="font-size:1.1rem;font-weight:600">×${res.coeff}</div><div style="font-size:.75rem;color:var(--text-light)">${sim.saison}</div></div>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:.8rem;color:var(--text-light)">TOTAL HT</div><div class="sim-total">${res.total.toLocaleString()}€</div></div>
+          <div style="text-align:right"><div style="font-size:.8rem;color:var(--text-light)">Par participant</div><div style="font-size:1.2rem;font-weight:700;color:var(--success)">${res.perPax}€ / pers.</div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>`;
+
+  // TECH / BACKEND
+  html += `<div class="section ${state.activeTab==='tech'?'active':''}">
+    <div class="card"><div class="card-header"><h2>Backend NestJS — 37 modules, 3 306 tests</h2><span class="badge badge-done">7/7 audits</span></div><div class="card-body"><div class="table-wrap"><table>
+      <tr><th>Module</th><th>Tests</th><th>Statut</th></tr>
+      ${DATA.modules.map(m => `<tr>
+        <td>${m.name}</td>
+        <td>${m.tests}</td>
+        <td><span class="badge ${m.status==='Production-ready'?'badge-done':'badge-p0'}">${m.status}</span></td>
+      </tr>`).join('')}
+    </table></div></div></div>
+
+    <div class="card"><div class="card-header"><h2>Checklist sécurité avant production</h2></div><div class="card-body"><ul class="task-list">
+      ${["HTTPS obligatoire","Headers sécurité (CORS, CSP, HSTS)","Rate limiting","Endpoints admin protégés","Logs d'audit activés","Backups automatiques DB","Monitoring (uptime, erreurs)","Webhooks Stripe production","Module DSAR vérifié","WAF Cloudflare","npm audit dépendances"].map(t =>
+        `<li class="task-item"><div class="task-check" onclick="this.classList.toggle('checked')"></div><div class="task-content"><div class="task-title">${t}</div></div></li>`
+      ).join('')}
+    </ul></div></div>
+  </div>`;
+
+  // SIMULATION DEVIS
+  html += `<div class="section ${state.activeTab==='simulation'?'active':''}">
+    <div class="card"><div class="card-header"><h2>Simulateur de devis voyage</h2></div><div class="card-body">
+      <div id="devis-sim"></div>
+    </div></div>
+  </div>`;
+
+  document.getElementById('app').innerHTML = html;
+
+  // Devis sim
+  if (state.activeTab === 'simulation') renderDevisSim();
+}
+
+function renderDevisSim() {
+  const el = document.getElementById('devis-sim');
+  if (!el) return;
+
+  el.innerHTML = `
+    <div class="sim-grid">
+      <div class="sim-input"><label>Type de voyage</label>
+        <select id="ds-type">
+          <option value="weekend">Week-end (2j/1n)</option>
+          <option value="court" selected>Court séjour (3j/2n)</option>
+          <option value="semaine">Semaine (5j/4n)</option>
+        </select>
+      </div>
+      <div class="sim-input"><label>Nombre de participants</label><input type="number" id="ds-pax" value="25" min="8" max="100"></div>
+      <div class="sim-input"><label>Gamme hébergement</label>
+        <select id="ds-hotel">
+          <option value="eco">Éco (gîte, auberge) — 35€/nuit/pers</option>
+          <option value="standard" selected>Standard (hôtel 2-3★) — 55€/nuit/pers</option>
+          <option value="premium">Premium (hôtel 4★) — 90€/nuit/pers</option>
+        </select>
+      </div>
+      <div class="sim-input"><label>Activités par jour</label>
+        <select id="ds-act">
+          <option value="light">Légères (rando, visite) — 15€/pers/j</option>
+          <option value="standard" selected>Standard (mixte) — 35€/pers/j</option>
+          <option value="intense">Intensives (rafting, parc) — 60€/pers/j</option>
+        </select>
+      </div>
+      <div class="sim-input"><label>Transport</label>
+        <select id="ds-transport">
+          <option value="none">Pas de transport (sur place)</option>
+          <option value="minibus">Minibus 20pl — 450€/j + 1.5€/km</option>
+          <option value="car" selected>Autocar 49pl — 950€/j + 2.2€/km</option>
+        </select>
+      </div>
+      <div class="sim-input"><label>Km aller-retour estimés</label><input type="number" id="ds-km" value="400" min="0" max="2000"></div>
+    </div>
+    <button onclick="calcDevis()" style="margin-top:16px;padding:10px 24px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:.9rem;font-weight:600;cursor:pointer">Calculer le devis</button>
+    <div id="devis-result"></div>
+  `;
+}
+
+function calcDevis() {
+  const type = document.getElementById('ds-type').value;
+  const pax = Number(document.getElementById('ds-pax').value);
+  const hotel = document.getElementById('ds-hotel').value;
+  const act = document.getElementById('ds-act').value;
+  const transport = document.getElementById('ds-transport').value;
+  const km = Number(document.getElementById('ds-km').value);
+
+  const durations = { weekend:{j:2,n:1}, court:{j:3,n:2}, semaine:{j:5,n:4} };
+  const hotelPrix = { eco:35, standard:55, premium:90 };
+  const actPrix = { light:15, standard:35, intense:60 };
+  const transportPrix = { none:{jour:0,km:0}, minibus:{jour:450,km:1.5}, car:{jour:950,km:2.2} };
+
+  const d = durations[type];
+  const hTotal = hotelPrix[hotel] * d.n * pax;
+  const aTotal = actPrix[act] * d.j * pax;
+  const tp = transportPrix[transport];
+  const tTotal = tp.jour * d.j + tp.km * km;
+
+  const coutTotal = hTotal + aTotal + tTotal;
+  const commission = 0.15;
+  const prixVente = Math.round(coutTotal * (1 + commission));
+  const marge = prixVente - coutTotal;
+  const prixParPers = Math.round(prixVente / pax);
+
+  document.getElementById('devis-result').innerHTML = `
+    <div class="sim-result" style="margin-top:16px">
+      <div style="font-weight:600;margin-bottom:12px;font-size:1rem">Devis estimé — ${type === 'weekend' ? 'Week-end' : type === 'court' ? 'Court séjour' : 'Semaine'} · ${pax} personnes</div>
+      <table style="width:100%">
+        <tr><td>Hébergement (${d.n} nuits × ${pax} pers × ${hotelPrix[hotel]}€)</td><td style="text-align:right;font-weight:600">${hTotal.toLocaleString()}€</td></tr>
+        <tr><td>Activités (${d.j} jours × ${pax} pers × ${actPrix[act]}€)</td><td style="text-align:right;font-weight:600">${aTotal.toLocaleString()}€</td></tr>
+        <tr><td>Transport (${d.j}j + ${km}km)</td><td style="text-align:right;font-weight:600">${tTotal.toLocaleString()}€</td></tr>
+        <tr style="border-top:1px solid var(--border)"><td><strong>Coût total fournisseurs</strong></td><td style="text-align:right;font-weight:700">${coutTotal.toLocaleString()}€</td></tr>
+        <tr><td>Commission Eventy (15%)</td><td style="text-align:right;font-weight:600;color:var(--success)">+${marge.toLocaleString()}€</td></tr>
+        <tr style="border-top:2px solid var(--text)"><td><strong style="font-size:1.1rem">PRIX DE VENTE TTC</strong></td><td style="text-align:right"><strong style="font-size:1.2rem;color:var(--primary)">${prixVente.toLocaleString()}€</strong></td></tr>
+      </table>
+      <div style="margin-top:16px;display:flex;justify-content:space-between;padding:12px;background:var(--primary-light);border-radius:6px">
+        <div><strong>${prixParPers}€ / personne</strong></div>
+        <div>Marge nette : <strong style="color:var(--success)">${marge.toLocaleString()}€</strong> (${Math.round(marge/prixVente*100)}%)</div>
+      </div>
+    </div>
+  `;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>

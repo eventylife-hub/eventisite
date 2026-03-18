@@ -1,0 +1,274 @@
+# TypeScript Errors Grouped by File
+
+## ADMIN PAGES (Most Critical)
+
+### app/(admin)/admin/annulations/[id]/page.tsx - 11 errors
+- Property 'refundCalculation' does not exist on type 'CancellationDetail' (TS2339)
+- Property 'bookingGroup' does not exist on type 'CancellationDetail' (TS2339) x5
+- Property 'paidAmountCents' does not exist on type 'CancellationDetail' (TS2339)
+- Property 'requestedAt' does not exist on type 'CancellationDetail' (TS2339)
+- Property 'rejectionReason' does not exist on type 'CancellationDetail' (TS2339) x2
+  → ISSUE: CancellationDetail type definition mismatch with API response
+
+### app/(admin)/admin/notifications/page.tsx - 8 errors
+- Type '(value: X) => JSX.Element' not assignable to '(value: unknown) => ReactNode' (TS2322) x7
+  - Affects: channel, boolean, string, status fields
+- Argument of type 'string' not assignable to 'SetStateAction<"EMAIL" | "SMS" | "PUSH">' (TS2345)
+  → ISSUE: Table column renderers have generic type constraints problem
+
+### app/(admin)/admin/page.tsx - 5 errors
+- 'stats.userGrowth' is possibly 'undefined' (TS18048)
+- 'stats.pendingTravels' is possibly 'undefined' (TS18048)
+- 'stats.pendingPros' is possibly 'undefined' (TS18048)
+- 'stats' is possibly 'null' (TS18047) x2
+  → ISSUE: Stats API response can be null/undefined - add null checks
+
+### app/(admin)/admin/parametres/page.tsx - 7 errors
+- Type mismatch on Setting array assignment (TS2345)
+- 'unknown' cannot be used as index type (TS2538) x4
+- Argument of type 'unknown' not assignable to 'string' (TS2345)
+- Type 'unknown' not assignable to 'Key | null | undefined' (TS2322)
+  → ISSUE: Settings data parsing issue - unknown type handling
+
+### app/(admin)/admin/finance/payouts/page.tsx - 4 errors
+- Type '"icon"' is not assignable to type 'ButtonSize | undefined' (TS2322) x4
+  → ISSUE: Button size prop expects enum value, not string literal
+
+### app/(admin)/admin/voyages/[id]/lifecycle/page.tsx - 6 errors
+- Argument of type 'string | undefined' not assignable to 'string | URL | Request' (TS2769)
+- Property 'reason' does not exist on type 'HistoryEntry' (TS2339)
+- Property 'createdAt' does not exist on type 'HistoryEntry' (TS2339)
+- Property 'actorUser' does not exist on type 'HistoryEntry' (TS2339) x3
+  → ISSUE: HistoryEntry type mismatch - API response structure changed
+
+### app/(admin)/admin/voyages/[id]/page.tsx - 4 errors
+- Type undefined not assignable to travel status enum (TS2345)
+- Type 'undefined' cannot be used as index type (TS2538)
+- 'travel.auditLog' is possibly 'undefined' (TS18048)
+  → ISSUE: Travel data can have undefined status/audit log
+
+### app/(admin)/admin/voyages/page.tsx - 5 errors
+- Property 'firstName' does not exist on type '{}' (TS2339)
+- Property 'lastName' does not exist on type '{}' (TS2339)
+- Argument of type '{}' not assignable to 'string | Date' (TS2345)
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- Argument of type '{}' not assignable to 'number' (TS2345)
+  → ISSUE: Empty object type for user/data - missing type definition
+
+### app/(admin)/admin/transport/page.tsx - 6 errors
+- Argument of type 'unknown' not assignable to 'string' (TS2345) x2
+- Type 'unknown' not assignable to 'ReactNode' (TS2322) x2
+- Argument of type 'unknown' not assignable to 'number' (TS2345)
+  → ISSUE: Transport data has unknown type fields
+
+### app/(admin)/admin/alertes/page.tsx - 3 errors
+- Type 'unknown' cannot be used as index type (TS2538)
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+  → ISSUE: Alert data typing issue
+
+### app/(admin)/admin/audit/page.tsx - 3 errors
+- Property 'firstName' does not exist on type '{}' (TS2339)
+- Property 'lastName' does not exist on type '{}' (TS2339)
+- Property 'email' does not exist on type '{}' (TS2339)
+  → ISSUE: Empty object type for audit user data
+
+### app/(admin)/admin/bookings/page.tsx - 4 errors
+- Type 'unknown' not assignable to 'ReactNode' (TS2322) x2
+- Argument of type 'unknown' not assignable to 'number' (TS2345)
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+  → ISSUE: Booking data has unknown field types
+
+### app/(admin)/admin/exports/page.tsx - 4 errors
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+- Argument of type 'unknown' not assignable to 'string' (TS2345) x2
+- Type 'undefined' not assignable to SetStateAction (TS2345)
+  → ISSUE: Export format/data type issues
+
+### app/(admin)/admin/marketing/page.tsx - 4 errors
+- Argument of type 'unknown' not assignable to 'number' (TS2345) x2
+- 'value' is of type 'unknown' (TS18046) x2
+  → ISSUE: Marketing stats/metrics have unknown types
+
+### app/(admin)/admin/pros/page.tsx - 2 errors
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+
+### app/(admin)/admin/rooming/page.tsx - 2 errors
+- Type 'unknown' not assignable to 'string[]' (TS2322)
+- Type '{}' not assignable to 'ReactNode' (TS2322)
+
+### app/(admin)/admin/support/page.tsx - 3 errors
+- Argument of type 'unknown' not assignable to 'string' (TS2345)
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+
+### app/(admin)/admin/utilisateurs/page.tsx - 2 errors
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+
+---
+
+## CLIENT PAGES
+
+### app/(client)/client/reservations/[id]/annuler/page.tsx - 6 errors
+- Property 'travel' does not exist on type 'Booking' (TS2339) x2
+- Property 'totalAmountCents' does not exist on type 'Booking' (TS2339)
+- Property 'totalAmountCents' does not exist on type 'Booking' (TS2339)
+- Property 'cancellationFeeCents' does not exist on type 'RefundCalculation' (TS2339)
+- Property 'refundAmountCents' does not exist on type 'RefundCalculation' (TS2551) x2
+- Property 'policyApplied' does not exist on type 'RefundCalculation' (TS2339)
+  → ISSUE: Booking and RefundCalculation types missing fields
+
+### app/(client)/client/reservations/[id]/facture/page.tsx - 10 errors
+- Property 'totalAmountCents' does not exist on type 'Invoice' (TS2339)
+- Property 'totalCostsCents' does not exist on type 'Invoice' (TS2339) x2
+- Property 'createdByUser' does not exist on type 'Invoice' (TS2339) x3
+- Property 'travel' does not exist on type 'Invoice' (TS2339)
+- Property 'paymentContributions' does not exist on type 'Invoice' (TS2339) x2
+- Type 'unknown' not assignable to 'Key | null | undefined' (TS2322)
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- Argument of type 'unknown' not assignable to 'number' (TS2345)
+  → ISSUE: Invoice type missing multiple fields
+
+### app/(client)/client/reservations/[id]/avis/page.tsx - 4 errors
+- 'booking' is possibly 'null' (TS18047)
+- Property 'travelId' does not exist on type 'BookingFeedback' (TS2339)
+- Property 'travel' does not exist on type 'BookingFeedback' (TS2339) x3
+  → ISSUE: BookingFeedback type mismatch
+
+### app/(client)/client/groupes/[id]/inviter/page.tsx - 5 errors
+- Argument of type '{}' not assignable to 'string' (TS2345)
+- Type 'unknown' not assignable to 'ReactNode' (TS2322)
+- 'groupe.pendingInvites' is of type 'unknown' (TS18046) x2
+  → ISSUE: Group type missing pendingInvites with proper typing
+
+### app/(client)/client/groupes/creer/page.tsx - 6 errors
+- Type 'unknown' not assignable to 'Key | null | undefined' (TS2322)
+- Type 'unknown' not assignable to string/number/array (TS2322)
+- Type 'unknown' not assignable to 'ReactNode' (TS2322) x2
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345) x2
+  → ISSUE: Group creation form data has unknown types
+
+### app/(client)/client/assurance/page.tsx - 4 errors
+- Type 'unknown' not assignable to 'Key | null | undefined' (TS2322)
+- 'insurance.subscriptionId' is of type 'unknown' (TS18046)
+- Argument of type 'unknown' not assignable to 'string | Date' (TS2345)
+- Argument of type 'unknown' not assignable to 'number' (TS2345)
+  → ISSUE: Insurance data has unknown field types
+
+### app/(client)/client/groupes/rejoindre/page.tsx - 6 errors
+- Type '{}' not assignable to 'ReactNode' (TS2322) x2
+- Type 'unknown' not assignable to 'ReactNode' (TS2322) x2
+- Property 'firstName' does not exist on type '{}' (TS2339)
+- Property 'lastName' does not exist on type '{}' (TS2339)
+- Operator '>' cannot be applied to types '{}' and 'number' (TS2365)
+- Left-hand side of arithmetic must be number (TS2362)
+  → ISSUE: Empty object type for group data
+
+### app/(client)/client/notifications/page.tsx - 1 error
+- Object is possibly 'undefined' (TS2532)
+  → ISSUE: Notification data can be undefined
+
+---
+
+## PRO PAGES
+
+### app/(pro)/pro/revenus/releve/page.tsx - 2 errors
+- Argument of type 'string | undefined' not assignable to 'string' (TS2345) x2
+  → ISSUE: String parameter can be undefined
+
+### app/(pro)/pro/marketing/creer/page.tsx - 1 error
+- Type '(campaignData: CreateCampaignData) => Promise<void>' not assignable
+- Types of property 'startDate' are incompatible
+  → ISSUE: Campaign form data date type mismatch (Date | null vs string | undefined)
+
+### app/(pro)/pro/marketing/[id]/page.tsx - 1 error
+- Type 'CampaignMetrics' missing properties: conversionRate, roi (TS2739)
+  → ISSUE: Campaign metrics type incomplete
+
+### app/(pro)/pro/marketing/page.tsx - 1 error
+- Type missing properties: budget, createdAt (TS2739)
+  → ISSUE: Campaign list type incomplete
+
+### app/(pro)/pro/onboarding/page.tsx - 2 errors
+- Value has no properties in common with type (TS2560) x2
+  → ISSUE: Form state setter needs to be called as function
+
+### app/(pro)/pro/finance/page.tsx - 2 errors
+- Type '{ month: string; margin: unknown; ca: unknown; }' not assignable
+- Type 'unknown' not assignable to 'Key | null | undefined' (TS2322)
+  → ISSUE: Finance data metrics have unknown types
+
+### app/(pro)/pro/page.tsx - 3 errors
+- Property 'recentTravels' does not exist on type 'ProProfile' (TS2339) x3
+  → ISSUE: ProProfile type missing recentTravels field
+
+---
+
+## TEST FILES
+
+### __tests__/admin/users.test.tsx - 3 errors
+- Property 'selectOption' does not exist (did you mean 'selectOptions'?) (TS2551) x3
+  → ISSUE: Testing library API changed - selectOption → selectOptions
+
+### __tests__/components/CookieBanner.test.tsx - 2 errors
+- Argument of type 'HTMLElement | undefined' not assignable to 'Element' (TS2345) x2
+  → ISSUE: querySelector can return undefined - add null check
+
+### __tests__/components/ReviewCard.test.tsx - 1 error
+- Module has no default export (TS2613)
+  → ISSUE: test-utils exports userEvent as named export, not default
+
+### __tests__/components/TravelFilters.test.tsx - 1 error
+- Module has no default export (TS2613)
+  → ISSUE: test-utils exports userEvent as named export, not default
+
+### __tests__/pages/travels-list.test.tsx - 3 errors
+- Module has no default export (TS2613)
+- Cannot find module '@/(public)/voyages/page' (TS2307)
+  → ISSUE: test-utils export + missing voyages page
+
+---
+
+## UTILITIES
+
+### components/uploads/file-upload.tsx - 6 errors
+- Type 'undefined' not assignable to 'string' (TS2322) x3
+- Type 'undefined' not assignable to 'File' (TS2322) x2
+- Type 'string | undefined' not assignable to 'string' (TS2345)
+  → ISSUE: File/string parameters can be undefined
+
+### lib/api-client.ts - 2 errors
+- Argument of type 'string | undefined' not assignable to 'URL | RequestInfo' (TS2769)
+  → ISSUE: URL parameter can be undefined
+
+### lib/api.ts - 2 errors
+- Argument of type 'string | undefined' not assignable to 'string | URL | Request' (TS2769)
+  → ISSUE: Endpoint parameter can be undefined
+
+### middleware.ts - 1 error
+- Type compatibility issue
+
+### lib/sentry.ts - 1 error
+- Type compatibility issue
+
+### lib/utils.ts - 1 error
+- Type compatibility issue
+
+### playwright.config.ts - 1 error
+- Configuration type issue
+
+---
+
+## E2E TESTS
+
+### e2e/booking-flow.spec.ts - 3 errors
+- Test method/selector issues
+
+### e2e/pro-dashboard.spec.ts - 2 errors
+- Test method/selector issues
+
+### e2e/global-setup.ts - 1 error
+- Setup configuration issue
+

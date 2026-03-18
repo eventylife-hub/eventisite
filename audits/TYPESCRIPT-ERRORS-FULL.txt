@@ -1,0 +1,349 @@
+__tests__/admin/users.test.tsx(235,18): error TS2551: Property 'selectOption' does not exist on type 'UserEvent'. Did you mean 'selectOptions'?
+__tests__/admin/users.test.tsx(247,18): error TS2551: Property 'selectOption' does not exist on type 'UserEvent'. Did you mean 'selectOptions'?
+__tests__/admin/users.test.tsx(354,18): error TS2551: Property 'selectOption' does not exist on type 'UserEvent'. Did you mean 'selectOptions'?
+__tests__/components/CookieBanner.test.tsx(254,24): error TS2345: Argument of type 'HTMLElement | undefined' is not assignable to parameter of type 'Element'.
+  Type 'undefined' is not assignable to type 'Element'.
+__tests__/components/CookieBanner.test.tsx(533,24): error TS2345: Argument of type 'HTMLElement | undefined' is not assignable to parameter of type 'Element'.
+  Type 'undefined' is not assignable to type 'Element'.
+__tests__/components/ReviewCard.test.tsx(3,8): error TS2613: Module '"/sessions/focused-exciting-lamport/mnt/eventisite/frontend/__tests__/test-utils"' has no default export. Did you mean to use 'import { userEvent } from "/sessions/focused-exciting-lamport/mnt/eventisite/frontend/__tests__/test-utils"' instead?
+__tests__/components/TravelFilters.test.tsx(3,8): error TS2613: Module '"/sessions/focused-exciting-lamport/mnt/eventisite/frontend/__tests__/test-utils"' has no default export. Did you mean to use 'import { userEvent } from "/sessions/focused-exciting-lamport/mnt/eventisite/frontend/__tests__/test-utils"' instead?
+__tests__/pages/travels-list.test.tsx(3,8): error TS2613: Module '"/sessions/focused-exciting-lamport/mnt/eventisite/frontend/__tests__/test-utils"' has no default export. Did you mean to use 'import { userEvent } from "/sessions/focused-exciting-lamport/mnt/eventisite/frontend/__tests__/test-utils"' instead?
+__tests__/pages/travels-list.test.tsx(44,25): error TS2307: Cannot find module '@/(public)/voyages/page' or its corresponding type declarations.
+app/(admin)/admin/alertes/page.tsx(170,37): error TS2538: Type 'unknown' cannot be used as an index type.
+app/(admin)/admin/alertes/page.tsx(179,75): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/alertes/page.tsx(184,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/annulations/[id]/page.tsx(161,29): error TS2339: Property 'refundCalculation' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(207,29): error TS2339: Property 'bookingGroup' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(208,29): error TS2339: Property 'bookingGroup' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(212,29): error TS2339: Property 'bookingGroup' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(222,73): error TS2339: Property 'bookingGroup' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(226,40): error TS2339: Property 'bookingGroup' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(230,40): error TS2339: Property 'bookingGroup' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(244,43): error TS2339: Property 'paidAmountCents' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(273,85): error TS2339: Property 'requestedAt' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(278,25): error TS2339: Property 'rejectionReason' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/annulations/[id]/page.tsx(280,79): error TS2339: Property 'rejectionReason' does not exist on type 'CancellationDetail'.
+app/(admin)/admin/audit/page.tsx(76,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/audit/page.tsx(83,22): error TS2339: Property 'firstName' does not exist on type '{}'.
+app/(admin)/admin/audit/page.tsx(83,41): error TS2339: Property 'lastName' does not exist on type '{}'.
+app/(admin)/admin/audit/page.tsx(83,60): error TS2339: Property 'email' does not exist on type '{}'.
+app/(admin)/admin/bookings/page.tsx(134,62): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/bookings/page.tsx(141,40): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/bookings/page.tsx(157,71): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/(admin)/admin/bookings/page.tsx(174,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/exports/page.tsx(211,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/exports/page.tsx(237,87): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/exports/page.tsx(238,27): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/exports/page.tsx(271,25): error TS2345: Argument of type '"CSV" | "PDF" | undefined' is not assignable to parameter of type 'SetStateAction<"CSV" | "PDF">'.
+  Type 'undefined' is not assignable to type 'SetStateAction<"CSV" | "PDF">'.
+app/(admin)/admin/finance/payouts/page.tsx(93,37): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+app/(admin)/admin/finance/payouts/page.tsx(122,37): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+app/(admin)/admin/finance/payouts/page.tsx(153,37): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+app/(admin)/admin/finance/payouts/page.tsx(189,35): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+app/(admin)/admin/marketing/page.tsx(158,38): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/(admin)/admin/marketing/page.tsx(163,38): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/(admin)/admin/marketing/page.tsx(168,26): error TS18046: 'value' is of type 'unknown'.
+app/(admin)/admin/marketing/page.tsx(177,30): error TS18046: 'value' is of type 'unknown'.
+app/(admin)/admin/notifications/page.tsx(202,7): error TS2322: Type '(value: NotificationTemplate["channel"]) => React.JSX.Element' is not assignable to type '(value: unknown, row: NotificationTemplate) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type '"EMAIL" | "SMS" | "PUSH"'.
+app/(admin)/admin/notifications/page.tsx(222,7): error TS2322: Type '(value: boolean) => React.JSX.Element' is not assignable to type '(value: unknown, row: NotificationTemplate) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'boolean'.
+app/(admin)/admin/notifications/page.tsx(233,7): error TS2322: Type '(value: string) => string' is not assignable to type '(value: unknown, row: NotificationTemplate) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'string'.
+app/(admin)/admin/notifications/page.tsx(245,7): error TS2322: Type '(value: string) => React.JSX.Element' is not assignable to type '(value: unknown, row: NotificationHistory) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'string'.
+app/(admin)/admin/notifications/page.tsx(250,7): error TS2322: Type '(value: NotificationHistory["channel"]) => React.JSX.Element' is not assignable to type '(value: unknown, row: NotificationHistory) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type '"EMAIL" | "SMS" | "PUSH"'.
+app/(admin)/admin/notifications/page.tsx(262,7): error TS2322: Type '(value: NotificationHistory["status"]) => React.JSX.Element' is not assignable to type '(value: unknown, row: NotificationHistory) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type '"PENDING" | "FAILED" | "SENT" | "DELIVERED"'.
+app/(admin)/admin/notifications/page.tsx(274,7): error TS2322: Type '(value: string) => string' is not assignable to type '(value: unknown, row: NotificationHistory) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'string'.
+app/(admin)/admin/notifications/page.tsx(433,96): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"EMAIL" | "SMS" | "PUSH">'.
+app/(admin)/admin/page.tsx(111,22): error TS18048: 'stats.userGrowth' is possibly 'undefined'.
+app/(admin)/admin/page.tsx(149,18): error TS18048: 'stats.pendingTravels' is possibly 'undefined'.
+app/(admin)/admin/page.tsx(152,24): error TS18047: 'stats' is possibly 'null'.
+app/(admin)/admin/page.tsx(180,18): error TS18048: 'stats.pendingPros' is possibly 'undefined'.
+app/(admin)/admin/page.tsx(183,24): error TS18047: 'stats' is possibly 'null'.
+app/(admin)/admin/parametres/page.tsx(74,11): error TS2345: Argument of type '{ value: string | undefined; key: string; description?: string | undefined; }[]' is not assignable to parameter of type 'SetStateAction<Setting[]>'.
+  Type '{ value: string | undefined; key: string; description?: string | undefined; }[]' is not assignable to type 'Setting[]'.
+    Type '{ value: string | undefined; key: string; description?: string; }' is not assignable to type 'Setting'.
+      Types of property 'value' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+app/(admin)/admin/parametres/page.tsx(189,18): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(admin)/admin/parametres/page.tsx(191,44): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/parametres/page.tsx(192,54): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/parametres/page.tsx(197,40): error TS2538: Type 'unknown' cannot be used as an index type.
+app/(admin)/admin/parametres/page.tsx(197,78): error TS2538: Type 'unknown' cannot be used as an index type.
+app/(admin)/admin/parametres/page.tsx(199,38): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/parametres/page.tsx(204,32): error TS2538: Type 'unknown' cannot be used as an index type.
+app/(admin)/admin/parametres/page.tsx(205,35): error TS2538: Type 'unknown' cannot be used as an index type.
+app/(admin)/admin/parametres/page.tsx(213,28): error TS2538: Type 'unknown' cannot be used as an index type.
+app/(admin)/admin/parametres/page.tsx(216,49): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/pros/page.tsx(81,11): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/pros/page.tsx(88,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/rooming/page.tsx(129,7): error TS2322: Type '(value: string[]) => React.JSX.Element' is not assignable to type '(value: unknown, row: Room) => ReactNode'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'string[]'.
+app/(admin)/admin/rooming/page.tsx(160,45): error TS2322: Type '{}' is not assignable to type 'ReactNode'.
+app/(admin)/admin/support/page.tsx(80,84): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/support/page.tsx(81,11): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/support/page.tsx(100,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/transport/page.tsx(187,33): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/transport/page.tsx(188,37): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/transport/page.tsx(200,39): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/transport/page.tsx(207,52): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/(admin)/admin/transport/page.tsx(214,87): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/transport/page.tsx(215,27): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(admin)/admin/utilisateurs/page.tsx(78,11): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/utilisateurs/page.tsx(85,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/voyages/[id]/lifecycle/page.tsx(156,36): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | URL | Request'.
+      Type 'undefined' is not assignable to type 'string | URL | Request'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'URL | RequestInfo'.
+      Type 'undefined' is not assignable to type 'URL | RequestInfo'.
+app/(admin)/admin/voyages/[id]/lifecycle/page.tsx(242,63): error TS2339: Property 'reason' does not exist on type 'HistoryEntry'.
+app/(admin)/admin/voyages/[id]/lifecycle/page.tsx(243,79): error TS2339: Property 'createdAt' does not exist on type 'HistoryEntry'.
+app/(admin)/admin/voyages/[id]/lifecycle/page.tsx(244,26): error TS2339: Property 'actorUser' does not exist on type 'HistoryEntry'.
+app/(admin)/admin/voyages/[id]/lifecycle/page.tsx(246,35): error TS2339: Property 'actorUser' does not exist on type 'HistoryEntry'.
+app/(admin)/admin/voyages/[id]/lifecycle/page.tsx(246,63): error TS2339: Property 'actorUser' does not exist on type 'HistoryEntry'.
+app/(admin)/admin/voyages/[id]/page.tsx(261,55): error TS2345: Argument of type '"DRAFT" | "COMPLETED" | "PUBLISHED" | "ON_GOING" | "PHASE_1" | "PHASE_2" | undefined' is not assignable to parameter of type '"DRAFT" | "COMPLETED" | "PUBLISHED" | "ON_GOING" | "PHASE_1" | "PHASE_2"'.
+  Type 'undefined' is not assignable to type '"DRAFT" | "COMPLETED" | "PUBLISHED" | "ON_GOING" | "PHASE_1" | "PHASE_2"'.
+app/(admin)/admin/voyages/[id]/page.tsx(265,40): error TS2538: Type 'undefined' cannot be used as an index type.
+app/(admin)/admin/voyages/[id]/page.tsx(506,30): error TS18048: 'travel.auditLog' is possibly 'undefined'.
+app/(admin)/admin/voyages/page.tsx(96,26): error TS2339: Property 'firstName' does not exist on type '{}'.
+app/(admin)/admin/voyages/page.tsx(96,45): error TS2339: Property 'lastName' does not exist on type '{}'.
+app/(admin)/admin/voyages/page.tsx(102,31): error TS2345: Argument of type '{}' is not assignable to parameter of type 'string | Date'.
+app/(admin)/admin/voyages/page.tsx(118,13): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(admin)/admin/voyages/page.tsx(131,38): error TS2345: Argument of type '{}' is not assignable to parameter of type 'number'.
+app/(client)/client/assurance/page.tsx(115,19): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(client)/client/assurance/page.tsx(119,64): error TS18046: 'insurance.subscriptionId' is of type 'unknown'.
+app/(client)/client/assurance/page.tsx(120,63): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(client)/client/assurance/page.tsx(136,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/(client)/client/assurance/page.tsx(141,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(client)/client/groupes/[id]/inviter/page.tsx(106,37): error TS2345: Argument of type '{}' is not assignable to parameter of type 'string'.
+app/(client)/client/groupes/[id]/inviter/page.tsx(220,19): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/[id]/inviter/page.tsx(244,18): error TS18046: 'groupe.pendingInvites' is of type 'unknown'.
+app/(client)/client/groupes/[id]/inviter/page.tsx(246,21): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/[id]/inviter/page.tsx(246,56): error TS18046: 'groupe.pendingInvites' is of type 'unknown'.
+app/(client)/client/groupes/creer/page.tsx(155,31): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(client)/client/groupes/creer/page.tsx(155,42): error TS2322: Type 'unknown' is not assignable to type 'string | number | readonly string[] | undefined'.
+app/(client)/client/groupes/creer/page.tsx(156,25): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/creer/page.tsx(156,48): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(client)/client/groupes/creer/page.tsx(224,42): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/creer/page.tsx(226,33): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(client)/client/groupes/creer/page.tsx(226,78): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(client)/client/groupes/rejoindre/page.tsx(149,56): error TS2322: Type '{}' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/rejoindre/page.tsx(152,17): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/rejoindre/page.tsx(156,49): error TS2339: Property 'firstName' does not exist on type '{}'.
+app/(client)/client/groupes/rejoindre/page.tsx(156,86): error TS2339: Property 'lastName' does not exist on type '{}'.
+app/(client)/client/groupes/rejoindre/page.tsx(164,21): error TS2322: Type '{}' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/rejoindre/page.tsx(164,61): error TS2365: Operator '>' cannot be applied to types '{}' and 'number'.
+app/(client)/client/groupes/rejoindre/page.tsx(165,21): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/groupes/rejoindre/page.tsx(165,54): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+app/(client)/client/notifications/page.tsx(38,13): error TS2532: Object is possibly 'undefined'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(143,67): error TS2339: Property 'travel' does not exist on type 'Booking'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(146,78): error TS2339: Property 'travel' does not exist on type 'Booking'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(150,73): error TS2339: Property 'totalAmountCents' does not exist on type 'Booking'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(185,67): error TS2339: Property 'totalAmountCents' does not exist on type 'Booking'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(190,45): error TS2339: Property 'cancellationFeeCents' does not exist on type 'RefundCalculation'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(196,44): error TS2551: Property 'refundAmountCents' does not exist on type 'RefundCalculation'. Did you mean 'refundAmount'?
+app/(client)/client/reservations/[id]/annuler/page.tsx(200,78): error TS2339: Property 'policyApplied' does not exist on type 'RefundCalculation'.
+app/(client)/client/reservations/[id]/annuler/page.tsx(248,89): error TS2551: Property 'refundAmountCents' does not exist on type 'RefundCalculation'. Did you mean 'refundAmount'?
+app/(client)/client/reservations/[id]/avis/page.tsx(66,34): error TS18047: 'booking' is possibly 'null'.
+app/(client)/client/reservations/[id]/avis/page.tsx(66,42): error TS2339: Property 'travelId' does not exist on type 'BookingFeedback'.
+app/(client)/client/reservations/[id]/avis/page.tsx(192,66): error TS2339: Property 'travel' does not exist on type 'BookingFeedback'.
+app/(client)/client/reservations/[id]/avis/page.tsx(195,78): error TS2339: Property 'travel' does not exist on type 'BookingFeedback'.
+app/(client)/client/reservations/[id]/avis/page.tsx(198,78): error TS2339: Property 'travel' does not exist on type 'BookingFeedback'.
+app/(client)/client/reservations/[id]/facture/page.tsx(100,28): error TS2339: Property 'totalAmountCents' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(101,39): error TS2339: Property 'totalCostsCents' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(102,55): error TS2339: Property 'totalCostsCents' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(133,51): error TS2339: Property 'createdByUser' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(133,86): error TS2339: Property 'createdByUser' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(134,59): error TS2339: Property 'createdByUser' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(151,61): error TS2339: Property 'travel' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(186,18): error TS2339: Property 'paymentContributions' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(190,24): error TS2339: Property 'paymentContributions' does not exist on type 'Invoice'.
+app/(client)/client/reservations/[id]/facture/page.tsx(191,22): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(client)/client/reservations/[id]/facture/page.tsx(193,41): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(client)/client/reservations/[id]/facture/page.tsx(195,67): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+app/(pro)/pro/finance/page.tsx(134,22): error TS2322: Type '{ month: string; margin: unknown; ca: unknown; }[]' is not assignable to type '{ month: string; margin: number; ca: number; }[]'.
+  Type '{ month: string; margin: unknown; ca: unknown; }' is not assignable to type '{ month: string; margin: number; ca: number; }'.
+    Types of property 'margin' are incompatible.
+      Type 'unknown' is not assignable to type 'number'.
+app/(pro)/pro/finance/page.tsx(164,27): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(pro)/pro/marketing/[id]/page.tsx(251,33): error TS2739: Type 'CampaignMetrics' is missing the following properties from type '{ impressions: number; clicks: number; conversions: number; ctr: string; conversionRate: string; roi: string; }': conversionRate, roi
+app/(pro)/pro/marketing/creer/page.tsx(97,11): error TS2322: Type '(campaignData: CreateCampaignData) => Promise<void>' is not assignable to type '(data: CampaignData) => void'.
+  Types of parameters 'campaignData' and 'data' are incompatible.
+    Type 'CampaignData' is not assignable to type 'CreateCampaignData'.
+      Types of property 'startDate' are incompatible.
+        Type 'Date | null' is not assignable to type 'string | undefined'.
+          Type 'null' is not assignable to type 'string | undefined'.
+app/(pro)/pro/marketing/page.tsx(166,47): error TS2739: Type '{ id: string; title: string; description?: string | undefined; status: string; }' is missing the following properties from type '{ id: string; title: string; description?: string | undefined; status: string; budget: number; startDate?: string | undefined; endDate?: string | undefined; createdAt: string; }': budget, createdAt
+app/(pro)/pro/onboarding/page.tsx(425,17): error TS2560: Value of type '(prev: OnboardingFormData) => { identityDocAssetId: string; displayName?: string | undefined; bio?: string | undefined; website?: string | undefined; proType?: string | undefined; ... 11 more ...; completedModules?: number[] | undefined; }' has no properties in common with type 'OnboardingFormData'. Did you mean to call it?
+app/(pro)/pro/onboarding/page.tsx(432,17): error TS2560: Value of type '(prev: OnboardingFormData) => { kbisDocAssetId: string; displayName?: string | undefined; bio?: string | undefined; website?: string | undefined; proType?: string | undefined; ... 11 more ...; completedModules?: number[] | undefined; }' has no properties in common with type 'OnboardingFormData'. Did you mean to call it?
+app/(pro)/pro/page.tsx(340,31): error TS2339: Property 'recentTravels' does not exist on type 'ProProfile'.
+app/(pro)/pro/page.tsx(340,59): error TS2339: Property 'recentTravels' does not exist on type 'ProProfile'.
+app/(pro)/pro/page.tsx(342,31): error TS2339: Property 'recentTravels' does not exist on type 'ProProfile'.
+app/(pro)/pro/revenus/releve/page.tsx(174,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/revenus/releve/page.tsx(174,52): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(108,62): error TS18046: 'dashboard.travel' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(125,30): error TS18046: 'dashboard.statistics' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(137,58): error TS18046: 'dashboard.statistics' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(142,18): error TS18046: 'dashboard.statistics' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(148,18): error TS18046: 'dashboard.statistics' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(161,18): error TS18046: 'dashboard.feedbacks' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(168,20): error TS18046: 'dashboard.feedbacks' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(177,22): error TS18046: 'dashboard.feedbacks' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(181,31): error TS18046: 'dashboard.feedbacks' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(189,38): error TS18046: 'count' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(189,46): error TS18046: 'dashboard.feedbacks' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(193,76): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(206,12): error TS18046: 'dashboard.actions' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(215,12): error TS18046: 'dashboard.actions' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/bilan/page.tsx(225,12): error TS18046: 'dashboard.actions' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/equipe/page.tsx(295,28): error TS2604: JSX element type 'StatusIcon' does not have any construct or call signatures.
+app/(pro)/pro/voyages/[id]/equipe/page.tsx(295,28): error TS2786: 'StatusIcon' cannot be used as a JSX component.
+  Its type 'ComponentType<{ className?: string | undefined; }> | undefined' is not a valid JSX element type.
+    Type 'undefined' is not assignable to type 'ElementType'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(195,23): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(199,51): error TS2339: Property 'firstName' does not exist on type '{}'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(199,86): error TS2339: Property 'lastName' does not exist on type '{}'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(202,51): error TS2339: Property 'email' does not exist on type '{}'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(207,35): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Date'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(210,36): error TS2345: Argument of type '{}' is not assignable to parameter of type 'number'.
+app/(pro)/pro/voyages/[id]/factures/page.tsx(225,68): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(142,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(143,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(144,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(145,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(147,11): error TS18046: 'finance.caTTC' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(148,27): error TS18046: 'finance.marge' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(148,43): error TS18046: 'finance.caTTC' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/finance/page.tsx(162,13): error TS2322: Type 'unknown' is not assignable to type 'Cost[] | undefined'.
+app/(pro)/pro/voyages/[id]/reservations/page.tsx(317,30): error TS2604: JSX element type 'StatusIcon' does not have any construct or call signatures.
+app/(pro)/pro/voyages/[id]/reservations/page.tsx(317,30): error TS2786: 'StatusIcon' cannot be used as a JSX component.
+  Its type 'ComponentType<{ className?: string | undefined; }> | undefined' is not a valid JSX element type.
+    Type 'undefined' is not assignable to type 'ElementType'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(156,19): error TS2322: Type 'Record<string, unknown> | undefined' is not assignable to type 'MealPlan'.
+  Type 'undefined' is not assignable to type 'MealPlan'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(171,60): error TS2339: Property 'costs' does not exist on type 'Costs'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(176,40): error TS2339: Property 'costs' does not exist on type 'Costs'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(182,40): error TS2339: Property 'costs' does not exist on type 'Costs'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(188,40): error TS2339: Property 'costs' does not exist on type 'Costs'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(194,40): error TS2339: Property 'totalCents' does not exist on type 'Costs'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(210,62): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(215,59): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(219,59): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(223,59): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(227,59): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(227,81): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(233,45): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(234,48): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(235,52): error TS2339: Property 'stats' does not exist on type 'Dietary'.
+app/(pro)/pro/voyages/[id]/restauration/page.tsx(255,51): error TS2741: Property 'contact' is missing in type 'Restaurant' but required in type '{ id: string; name: string; contact: string; phone?: string | undefined; cuisineType?: string | undefined; capacity?: number | undefined; address?: string | undefined; notes?: string | undefined; }'.
+app/(pro)/pro/voyages/[id]/rooming/hotel-blocks/page.tsx(119,62): error TS2365: Operator '<=' cannot be applied to types '{}' and 'number'.
+app/(pro)/pro/voyages/[id]/rooming/hotel-blocks/page.tsx(162,20): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(pro)/pro/voyages/[id]/rooming/hotel-blocks/page.tsx(164,19): error TS2740: Type 'Record<string, unknown>' is missing the following properties from type 'HotelBlock': hotelName, hotelEmail, status, roomsConfirmed, and 3 more.
+app/(pro)/pro/voyages/[id]/rooming/page.tsx(136,58): error TS2339: Property 'totalRoomBookings' does not exist on type 'RoomingStats'.
+app/(pro)/pro/voyages/[id]/rooming/page.tsx(146,58): error TS2339: Property 'totalOccupants' does not exist on type 'RoomingStats'.
+app/(pro)/pro/voyages/[id]/rooming/page.tsx(147,60): error TS2339: Property 'totalCapacity' does not exist on type 'RoomingStats'.
+app/(pro)/pro/voyages/[id]/rooming/page.tsx(167,36): error TS2339: Property 'totalHotelRevenueCents' does not exist on type 'RoomingStats'.
+app/(pro)/pro/voyages/[id]/rooming/page.tsx(191,15): error TS2322: Type 'Record<string, unknown>[]' is not assignable to type 'Room[]'.
+  Type 'Record<string, unknown>' is missing the following properties from type 'Room': id, roomLabel, roomType, occupancyCount, and 3 more.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(116,24): error TS18046: 'stopData.stop' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(119,20): error TS18046: 'stopData.stop' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(119,48): error TS18046: 'stopData.stop' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(122,19): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(137,24): error TS18046: 'stopData.passengers' is of type 'unknown'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(140,29): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(145,29): error TS2322: Type '{}' is not assignable to type 'ReactNode'.
+app/(pro)/pro/voyages/[id]/transport/manifest/page.tsx(149,31): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+app/(pro)/pro/voyages/[id]/transport/page.tsx(244,24): error TS2322: Type 'Record<string, unknown>[]' is not assignable to type 'TransportStop[]'.
+  Property 'busStop' is missing in type 'Record<string, unknown>' but required in type 'TransportStop'.
+app/(pro)/pro/voyages/[id]/transport/page.tsx(247,29): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+app/(pro)/pro/voyages/[id]/transport/page.tsx(247,47): error TS2739: Type 'Record<string, unknown>' is missing the following properties from type 'StopCardData': type, busStop
+app/(pro)/pro/voyages/nouveau/page.tsx(398,17): error TS2345: Argument of type '(prev: TravelFormData) => { rooms: Room[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; program: DayProgram[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(415,17): error TS2345: Argument of type '(prev: TravelFormData) => { rooms: Room[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; program: DayProgram[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(417,7): error TS2322: Type '{ id?: string | undefined; type?: string | undefined; label?: string | undefined; capacity?: number | undefined; pricePerPersonCents?: number | undefined; quantity?: number | undefined; }' is not assignable to type 'Room'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/nouveau/page.tsx(421,17): error TS2532: Object is possibly 'undefined'.
+app/(pro)/pro/voyages/nouveau/page.tsx(428,17): error TS2345: Argument of type '(prev: TravelFormData) => { rooms: Room[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; program: DayProgram[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(544,17): error TS2345: Argument of type '(prev: TravelFormData) => { program: DayProgram[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(560,17): error TS2345: Argument of type '(prev: TravelFormData) => { program: DayProgram[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(562,7): error TS2322: Type '{ id?: string | undefined; dayNumber?: number | undefined; title?: string | undefined; description?: string | undefined; activities?: Activity[] | undefined; }' is not assignable to type 'DayProgram'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/nouveau/page.tsx(568,17): error TS2345: Argument of type '(prev: TravelFormData) => { program: { dayNumber: number; id: string; title: string; description: string; activities: Activity[]; }[]; title: string; description: string; startDate: string; ... 7 more ...; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(577,17): error TS2345: Argument of type '(prev: TravelFormData) => { program: DayProgram[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(579,7): error TS2322: Type '{ activities: Activity[]; id?: string | undefined; dayNumber?: number | undefined; title?: string | undefined; description?: string | undefined; }' is not assignable to type 'DayProgram'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/nouveau/page.tsx(582,14): error TS2532: Object is possibly 'undefined'.
+app/(pro)/pro/voyages/nouveau/page.tsx(591,17): error TS2345: Argument of type '(prev: TravelFormData) => { program: DayProgram[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(593,24): error TS2532: Object is possibly 'undefined'.
+app/(pro)/pro/voyages/nouveau/page.tsx(594,7): error TS2322: Type '{ id?: string | undefined; time?: string | undefined; label?: string | undefined; description?: string | undefined; }' is not assignable to type 'Activity'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/nouveau/page.tsx(595,7): error TS2322: Type '{ activities: Activity[]; id?: string | undefined; dayNumber?: number | undefined; title?: string | undefined; description?: string | undefined; }' is not assignable to type 'DayProgram'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/nouveau/page.tsx(601,17): error TS2345: Argument of type '(prev: TravelFormData) => { program: DayProgram[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; photos: Photo[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(603,7): error TS2322: Type '{ activities: Activity[]; id?: string | undefined; dayNumber?: number | undefined; title?: string | undefined; description?: string | undefined; }' is not assignable to type 'DayProgram'.
+  Types of property 'id' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+app/(pro)/pro/voyages/nouveau/page.tsx(605,21): error TS2532: Object is possibly 'undefined'.
+app/(pro)/pro/voyages/nouveau/page.tsx(621,19): error TS2345: Argument of type '(prev: TravelFormData) => { program: { id: string; dayNumber: number; title: string; description: string; activities: never[]; }[]; title: string; description: string; startDate: string; endDate: string; ... 6 more ...; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(716,19): error TS2345: Argument of type '(prev: TravelFormData) => { photos: Photo[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; program: DayProgram[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(725,17): error TS2345: Argument of type '(prev: TravelFormData) => { photos: Photo[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; program: DayProgram[]; busStops: BusStop[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/nouveau/page.tsx(817,17): error TS2345: Argument of type '(prev: TravelFormData) => { busStops: BusStop[]; title: string; description: string; startDate: string; endDate: string; destination: string; transportMode: string; capacity: number; rooms: Room[]; program: DayProgram[]; photos: Photo[]; pricing: Pricing; }' is not assignable to parameter of type 'TravelFormData'.
+app/(pro)/pro/voyages/page.tsx(55,19): error TS2532: Object is possibly 'undefined'.
+app/(pro)/pro/voyages/page.tsx(159,29): error TS2532: Object is possibly 'undefined'.
+app/(public)/voyages/[slug]/groupes/page.tsx(138,40): error TS2739: Type 'Group' is missing the following properties from type '{ id: string; code: string; leaderUser?: { firstName?: string | undefined; lastName?: string | undefined; } | undefined; memberCount: number; maxRooms?: number | null | undefined; status: string; createdAt: string; }': code, status, createdAt
+components/uploads/file-upload.tsx(71,34): error TS2345: Argument of type 'File | undefined' is not assignable to parameter of type 'File'.
+  Type 'undefined' is not assignable to type 'File'.
+components/uploads/file-upload.tsx(76,17): error TS18048: 'file' is possibly 'undefined'.
+components/uploads/file-upload.tsx(77,17): error TS18048: 'file' is possibly 'undefined'.
+components/uploads/file-upload.tsx(85,17): error TS18048: 'file' is possibly 'undefined'.
+components/uploads/file-upload.tsx(86,17): error TS18048: 'file' is possibly 'undefined'.
+components/uploads/file-upload.tsx(91,20): error TS2345: Argument of type 'File | undefined' is not assignable to parameter of type 'File'.
+  Type 'undefined' is not assignable to type 'File'.
+e2e/booking-flow.spec.ts(63,29): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+e2e/booking-flow.spec.ts(193,28): error TS2531: Object is possibly 'null'.
+e2e/booking-flow.spec.ts(451,28): error TS2531: Object is possibly 'null'.
+e2e/global-setup.ts(10,34): error TS2339: Property 'use' does not exist on type 'FullConfig<{}, {}>'.
+e2e/pro-dashboard.spec.ts(72,25): error TS18048: 'bodyContent.length' is possibly 'undefined'.
+e2e/pro-dashboard.spec.ts(105,25): error TS18048: 'bodyContent.length' is possibly 'undefined'.
+lib/api-client.ts(48,39): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+lib/api.ts(25,37): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+lib/sentry.ts(54,19): error TS2339: Property 'replayCanBegin' does not exist on type 'typeof Replay'.
+lib/utils.ts(105,3): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+middleware.ts(2,27): error TS2307: Cannot find module 'jwt-decode' or its corresponding type declarations.
+playwright.config.ts(34,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type '(string | string[])[]' is not assignable to type 'LiteralUnion<"json" | "html" | "list" | "github" | "dot" | "line" | "junit" | "null", string> | ReporterDescription[] | undefined'.
+      Type '(string | string[])[]' is not assignable to type 'ReporterDescription[]'.
+        Type 'string | string[]' is not assignable to type 'ReporterDescription'.
+          Type 'string' is not assignable to type 'ReporterDescription'.

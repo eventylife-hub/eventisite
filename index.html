@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#FF6B35" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Eventy Admin" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon-192.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon-512.svg" />
+  <title>Eventy Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #FF6B35;
+      --primary-light: #FF8F5E;
+      --ocean: #0077B6;
+      --ocean-light: #00A8E8;
+      --bg: #FEFCF3;
+      --surface: #FFFFFF;
+      --sidebar-from: #0A1628;
+      --sidebar-to: #142438;
+      --text: #0A1628;
+      --text-secondary: #64748B;
+      --mint: #06D6A0;
+      --violet: #7B2FF7;
+      --coral: #E63946;
+      --gold: #92400E;
+      --radius: 14px;
+    }
+    body { font-family: 'Outfit', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* Sidebar */
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: linear-gradient(180deg, var(--sidebar-from), var(--sidebar-to)); color: white; z-index: 40; transition: transform 0.3s ease; overflow-y: auto; }
+    .sidebar-logo { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo img { width: 40px; height: 40px; border-radius: 10px; }
+    .sidebar-logo h1 { font-size: 18px; font-weight: 700; }
+    .sidebar-logo span { font-size: 11px; color: rgba(255,255,255,0.5); display: block; }
+    .nav-section { padding: 16px 12px 8px; }
+    .nav-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); margin-bottom: 8px; padding: 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: rgba(255,255,255,0.7); position: relative; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-item.active { background: rgba(255,107,53,0.2); color: var(--primary); font-weight: 600; }
+    .nav-item .badge { position: absolute; right: 8px; background: var(--coral); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
+    .nav-item .icon { width: 20px; text-align: center; }
+
+    /* Main content */
+    .main { margin-left: 260px; min-height: 100vh; padding: 0; }
+    .topbar { background: white; border-bottom: 1px solid #E2E8F0; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 30; }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-left h2 { font-size: 20px; font-weight: 700; }
+    .topbar-breadcrumb { font-size: 12px; color: var(--text-secondary); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--ocean)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+    .hamburger { display: none; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+
+    .content { padding: 24px; }
+
+    /* Cards */
+    .card { background: var(--surface); border-radius: var(--radius); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #E2E8F0; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-title { font-size: 16px; font-weight: 600; }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--surface); border-radius: var(--radius); padding: 20px; border: 1px solid #E2E8F0; position: relative; overflow: hidden; }
+    .stat-card.urgent { border-left: 4px solid var(--coral); }
+    .stat-card .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px; }
+    .stat-card .stat-value { font-size: 28px; font-weight: 700; }
+    .stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+    .stat-card .stat-trend { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+    .stat-card .stat-trend.up { color: var(--mint); }
+    .stat-card .stat-trend.down { color: var(--coral); }
+
+    /* Table */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); border-bottom: 2px solid #E2E8F0; }
+    td { padding: 12px 16px; border-bottom: 1px solid #F1F5F9; font-size: 14px; }
+    tr:hover td { background: #F8FAFC; }
+
+    /* Badges */
+    .badge-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .badge-status.active, .badge-status.published { background: #ECFDF5; color: #065F46; }
+    .badge-status.pending { background: #FEF3C7; color: #92400E; }
+    .badge-status.cancelled, .badge-status.rejected { background: #FEF2F2; color: #991B1B; }
+    .badge-status.ongoing { background: #EFF6FF; color: #1E40AF; }
+    .badge-status.completed { background: #F0FDF4; color: #166534; }
+    .badge-status.admin { background: #F5F3FF; color: #5B21B6; }
+    .badge-status.pro { background: #FFF7ED; color: #9A3412; }
+    .badge-status.client { background: #EFF6FF; color: #1D4ED8; }
+
+    /* Buttons */
+    .btn { padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: inherit; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+    .btn-ocean { background: linear-gradient(135deg, var(--ocean), var(--ocean-light)); color: white; }
+    .btn-outline { background: transparent; border: 1px solid #E2E8F0; color: var(--text); }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger { background: var(--coral); color: white; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; border: none; color: var(--text-secondary); transition: all 0.2s; font-family: inherit; }
+    .tab.active { background: var(--primary); color: white; }
+    .tab:hover:not(.active) { background: #F1F5F9; }
+
+    /* Search */
+    .search-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 200px; padding: 10px 16px; border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px; font-family: inherit; background: var(--surface); }
+    .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
+    select.search-input { cursor: pointer; }
+
+    /* Modules grid */
+    .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .module-card { background: var(--surface); border-radius: var(--radius); padding: 20px; border: 1px solid #E2E8F0; cursor: pointer; transition: all 0.2s; }
+    .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: var(--primary); }
+    .module-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .module-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .module-title { font-weight: 600; font-size: 15px; }
+    .module-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+    .module-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+    .module-stats { display: flex; flex-direction: column; gap: 6px; }
+    .module-stat-row { display: flex; justify-content: space-between; font-size: 13px; }
+    .module-stat-row .value { font-weight: 600; }
+
+    /* Alert bar */
+    .alert-bar { padding: 12px 20px; border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+    .alert-bar.danger { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
+    .alert-bar.warning { background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E; }
+    .alert-bar.info { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
+    .alert-bar.success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .form-input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px; font-family: inherit; }
+    .form-input:focus { outline: none; border-color: var(--primary); }
+    textarea.form-input { min-height: 80px; resize: vertical; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; }
+    .modal h3 { font-size: 18px; margin-bottom: 16px; }
+
+    /* Audit log */
+    .audit-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F1F5F9; }
+    .audit-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+    .audit-content { flex: 1; }
+    .audit-action { font-size: 14px; }
+    .audit-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px 20px; }
+    .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state p { color: var(--text-secondary); margin-bottom: 20px; }
+
+    /* Progress bar */
+    .progress-bar { height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+    /* Stepper */
+    .stepper { display: flex; align-items: center; margin-bottom: 24px; overflow-x: auto; }
+    .step { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; white-space: nowrap; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+    .step.active .step-num { background: var(--primary); color: white; }
+    .step.done .step-num { background: var(--mint); color: white; }
+    .step:not(.active):not(.done) .step-num { background: #E2E8F0; color: var(--text-secondary); }
+    .step-line { width: 40px; height: 2px; background: #E2E8F0; }
+
+    /* Sidebar user */
+    .sidebar-user { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; display: flex; align-items: center; gap: 10px; }
+    .sidebar-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--ocean)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+    .sidebar-user-info { flex: 1; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; }
+    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+    /* Mobile */
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 35; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); width: 280px; z-index: 50; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main { margin-left: 0; }
+      .hamburger { display: block; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .modules-grid { grid-template-columns: 1fr; }
+      .content { padding: 16px; }
+      .topbar { padding: 12px 16px; }
+      table { font-size: 13px; }
+      th, td { padding: 8px 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .search-bar { flex-direction: column; }
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    .delay-1 { animation-delay: 0.05s; animation-fill-mode: both; }
+    .delay-2 { animation-delay: 0.1s; animation-fill-mode: both; }
+    .delay-3 { animation-delay: 0.15s; animation-fill-mode: both; }
+    .delay-4 { animation-delay: 0.2s; animation-fill-mode: both; }
+
+    /* Scrollbar */
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+    /* Splash screen */
+    .splash { position: fixed; inset: 0; background: linear-gradient(135deg, var(--sidebar-from), var(--sidebar-to)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; transition: opacity 0.5s; }
+    .splash.hidden { opacity: 0; pointer-events: none; }
+    .splash-icon { width: 120px; height: 120px; border-radius: 28px; margin-bottom: 20px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
+    .splash h1 { color: white; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .splash p { color: rgba(255,255,255,0.5); font-size: 14px; }
+    .splash-loader { width: 120px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 24px; overflow: hidden; }
+    .splash-loader-bar { height: 100%; background: var(--primary); border-radius: 2px; animation: loading 1.5s ease-in-out infinite; }
+    @keyframes loading { 0% { width: 0; } 50% { width: 70%; } 100% { width: 100%; } }
+
+    /* ===== BOTTOM NAV MOBILE ===== */
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #E2E8F0; z-index: 50; padding: 4px 0 env(safe-area-inset-bottom, 8px); }
+    .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; background: none; border: none; font-family: inherit; color: var(--text-secondary); position: relative; }
+    .bottom-nav-item.active { color: var(--primary); }
+    .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+    .bottom-nav-item .bnav-label { font-size: 10px; font-weight: 500; }
+    .bottom-nav-item .bnav-dot { position: absolute; top: 4px; right: 8px; width: 8px; height: 8px; background: var(--coral); border-radius: 50%; border: 2px solid white; }
+    @media (max-width: 768px) {
+      .bottom-nav { display: block; }
+      .main { padding-bottom: 72px; }
+    }
+
+    /* ===== TOAST NOTIFICATIONS ===== */
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    @media (max-width: 768px) { .toast-container { top: auto; bottom: 80px; right: 12px; left: 12px; } }
+    .toast { pointer-events: auto; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; background: white; box-shadow: 0 8px 32px rgba(0,0,0,0.12); border: 1px solid #E2E8F0; animation: toastIn 0.3s ease-out; font-size: 14px; max-width: 380px; }
+    .toast.success { border-left: 4px solid var(--mint); }
+    .toast.error { border-left: 4px solid var(--coral); }
+    .toast.warning { border-left: 4px solid #F59E0B; }
+    .toast.info { border-left: 4px solid var(--ocean); }
+    .toast-close { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text-secondary); padding: 0 0 0 8px; }
+    .toast.exiting { animation: toastOut 0.3s ease-in forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
+
+    /* ===== CONFIRM MODAL ===== */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeInOverlay 0.2s; }
+    @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; animation: modalIn 0.3s ease-out; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal h3 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ===== GLOBAL SEARCH ===== */
+    .global-search-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 150; display: flex; align-items: flex-start; justify-content: center; padding: 80px 20px 20px; }
+    .global-search-box { background: white; border-radius: 16px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; animation: modalIn 0.2s ease-out; }
+    .global-search-input { width: 100%; padding: 16px 20px; font-size: 16px; border: none; outline: none; font-family: inherit; background: transparent; }
+    .global-search-results { max-height: 360px; overflow-y: auto; border-top: 1px solid #E2E8F0; }
+    .global-search-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; transition: background 0.15s; }
+    .global-search-item:hover, .global-search-item.selected { background: #F8FAFC; }
+    .global-search-item .gsi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .global-search-hint { padding: 10px 20px; font-size: 12px; color: var(--text-secondary); border-top: 1px solid #F1F5F9; display: flex; justify-content: space-between; }
+    .global-search-hint kbd { background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+    /* ===== NOTIFICATION PANEL ===== */
+    .notif-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 380px; max-width: 100vw; background: white; z-index: 80; box-shadow: -4px 0 24px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.3s ease; overflow-y: auto; }
+    .notif-panel.open { transform: translateX(0); }
+    .notif-panel-header { padding: 20px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 1; }
+    .notif-item { padding: 14px 20px; border-bottom: 1px solid #F1F5F9; cursor: pointer; transition: background 0.15s; }
+    .notif-item:hover { background: #F8FAFC; }
+    .notif-item.unread { border-left: 3px solid var(--primary); }
+
+    /* ===== PULL TO REFRESH ===== */
+    .ptr-indicator { text-align: center; padding: 8px; font-size: 12px; color: var(--text-secondary); transition: all 0.2s; overflow: hidden; max-height: 0; }
+    .ptr-indicator.visible { max-height: 40px; }
+
+    /* ===== SKELETON LOADER ===== */
+    .skeleton { background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ===== DARK MODE ===== */
+    .dark-toggle { width: 40px; height: 22px; border-radius: 11px; border: none; cursor: pointer; position: relative; transition: background 0.3s; padding: 0; }
+    .dark-toggle .toggle-dot { width: 18px; height: 18px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: transform 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .dark-toggle.on .toggle-dot { transform: translateX(18px); }
+    .dark-toggle.on { background: var(--primary); }
+    .dark-toggle:not(.on) { background: #CBD5E1; }
+
+    [data-theme="dark"] {
+      --bg: #0F172A;
+      --surface: #1E293B;
+      --text: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --sidebar-from: #020617;
+      --sidebar-to: #0F172A;
+    }
+    [data-theme="dark"] body { background: #0F172A; color: #F1F5F9; }
+    [data-theme="dark"] .topbar { background: #1E293B; border-color: #334155; }
+    [data-theme="dark"] .card, [data-theme="dark"] .stat-card { background: #1E293B; border-color: #334155; }
+    [data-theme="dark"] .modal { background: #1E293B; }
+    [data-theme="dark"] .global-search-box { background: #1E293B; }
+    [data-theme="dark"] .global-search-item:hover { background: #334155; }
+    [data-theme="dark"] .notif-panel { background: #1E293B; }
+    [data-theme="dark"] .notif-panel-header { background: #1E293B; border-color: #334155; }
+    [data-theme="dark"] .bottom-nav { background: #1E293B; border-color: #334155; }
+    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: #0F172A; color: #F1F5F9; border-color: #334155; }
+    [data-theme="dark"] th { border-color: #334155; color: #94A3B8; }
+    [data-theme="dark"] td { border-color: #1E293B; }
+    [data-theme="dark"] tr:hover td { background: #334155; }
+    [data-theme="dark"] .btn-outline { border-color: #334155; color: #F1F5F9; }
+    [data-theme="dark"] .tab:hover:not(.active) { background: #334155; }
+    [data-theme="dark"] .toast { background: #1E293B; border-color: #334155; }
+    [data-theme="dark"] .module-card { background: #1E293B; border-color: #334155; }
+    [data-theme="dark"] .module-card:hover { border-color: var(--primary); }
+    [data-theme="dark"] .alert-bar.danger { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); }
+    [data-theme="dark"] .alert-bar.warning { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); }
+    [data-theme="dark"] .alert-bar.info { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); }
+    [data-theme="dark"] .alert-bar.success { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3); }
+    [data-theme="dark"] .progress-bar { background: #334155; }
+    [data-theme="dark"] .audit-item { border-color: #334155; }
+    [data-theme="dark"] .notif-item { border-color: #334155; }
+    [data-theme="dark"] .global-search-input { color: #F1F5F9; }
+    [data-theme="dark"] .global-search-results { border-color: #334155; }
+    [data-theme="dark"] .global-search-hint { border-color: #334155; }
+
+    /* ===== IMPROVED MOBILE ===== */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); width: 280px; z-index: 50; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main { margin-left: 0; }
+      .hamburger { display: block; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .modules-grid { grid-template-columns: 1fr; }
+      .content { padding: 16px; padding-bottom: 8px; }
+      .topbar { padding: 12px 16px; }
+      table { font-size: 13px; }
+      th, td { padding: 8px 10px; }
+      .notif-panel { width: 100vw; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .search-bar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback, useMemo } = React;
+
+    // ==================== TOAST SYSTEM ====================
+    let toastId = 0;
+    const ToastContext = React.createContext({ addToast: () => {} });
+
+    function ToastProvider({ children }) {
+      const [toasts, setToasts] = useState([]);
+      const addToast = useCallback((message, type = 'info', duration = 3500) => {
+        const id = ++toastId;
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => {
+          setToasts(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t));
+          setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 300);
+        }, duration);
+      }, []);
+      return React.createElement(ToastContext.Provider, { value: { addToast } },
+        children,
+        React.createElement('div', { className: 'toast-container' },
+          toasts.map(t => React.createElement('div', { key: t.id, className: `toast ${t.type} ${t.exiting ? 'exiting' : ''}` },
+            React.createElement('span', null, { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' }[t.type]),
+            React.createElement('span', { style: { flex: 1 } }, t.message),
+            React.createElement('button', { className: 'toast-close', onClick: () => setToasts(prev => prev.filter(x => x.id !== t.id)) }, '✕')
+          ))
+        )
+      );
+    }
+    const useToast = () => React.useContext(ToastContext);
+
+    // ==================== CONFIRM MODAL ====================
+    function ConfirmModal({ open, title, message, icon, onConfirm, onCancel, confirmText, confirmClass }) {
+      if (!open) return null;
+      return React.createElement('div', { className: 'modal-overlay', onClick: onCancel },
+        React.createElement('div', { className: 'modal', onClick: e => e.stopPropagation() },
+          React.createElement('h3', null, icon && React.createElement('span', null, icon), title),
+          React.createElement('p', { style: { color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 } }, message),
+          React.createElement('div', { className: 'modal-actions' },
+            React.createElement('button', { className: 'btn btn-outline', onClick: onCancel }, 'Annuler'),
+            React.createElement('button', { className: `btn ${confirmClass || 'btn-primary'}`, onClick: onConfirm }, confirmText || 'Confirmer')
+          )
+        )
+      );
+    }
+
+    // ==================== GLOBAL SEARCH ====================
+    function GlobalSearch({ open, onClose, navigate }) {
+      const [query, setQuery] = useState('');
+      const inputRef = React.useRef(null);
+
+      useEffect(() => { if (open && inputRef.current) { inputRef.current.focus(); setQuery(''); } }, [open]);
+      useEffect(() => {
+        const handler = (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); onClose('toggle'); } if (e.key === 'Escape' && open) onClose(); };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+      }, [open, onClose]);
+
+      if (!open) return null;
+
+      const allItems = [
+        { id: 'dashboard', icon: '🏠', label: 'Accueil Admin', category: 'Pages', bg: '#FFF7ED' },
+        { id: 'voyages', icon: '✈️', label: 'Ops Voyages', category: 'Pages', bg: '#FFF7ED' },
+        { id: 'finance', icon: '📊', label: 'Finance & Paiements', category: 'Pages', bg: '#ECFDF5' },
+        { id: 'pros', icon: '✅', label: 'Validation Pro', category: 'Pages', bg: '#FEF3C7' },
+        { id: 'support', icon: '🛟', label: 'Support & Tickets', category: 'Pages', bg: '#FEF2F2' },
+        { id: 'utilisateurs', icon: '👥', label: 'Utilisateurs', category: 'Pages', bg: '#F5F3FF' },
+        { id: 'transport', icon: '🚌', label: 'Transport', category: 'Pages', bg: '#EFF6FF' },
+        { id: 'rooming', icon: '🏨', label: 'Fournisseurs / Hôtels', category: 'Pages', bg: '#FFF7ED' },
+        { id: 'bookings', icon: '💰', label: 'Réservations', category: 'Pages', bg: '#FFF7ED' },
+        { id: 'annulations', icon: '❌', label: 'Annulations', category: 'Pages', bg: '#FEF2F2' },
+        { id: 'documents', icon: '📄', label: 'Docs & Signatures', category: 'Pages', bg: '#F0FDF4' },
+        { id: 'marketing', icon: '📣', label: 'Marketing', category: 'Pages', bg: '#FFF1F2' },
+        { id: 'audit', icon: '🛡️', label: 'Audit Log', category: 'Système', bg: '#F5F3FF' },
+        { id: 'alertes', icon: '🔔', label: 'Alertes', category: 'Système', bg: '#FEF3C7' },
+        { id: 'parametres', icon: '⚙️', label: 'Paramètres', category: 'Système', bg: '#F1F5F9' },
+        { id: 'notifications', icon: '📡', label: 'Monitoring', category: 'Système', bg: '#EFF6FF' },
+        { id: 'exports', icon: '📥', label: 'Exports', category: 'Système', bg: '#F1F5F9' },
+      ];
+      const filtered = query.length > 0 ? allItems.filter(i => i.label.toLowerCase().includes(query.toLowerCase()) || i.category.toLowerCase().includes(query.toLowerCase())) : allItems.slice(0, 6);
+
+      return React.createElement('div', { className: 'global-search-overlay', onClick: onClose },
+        React.createElement('div', { className: 'global-search-box', onClick: e => e.stopPropagation() },
+          React.createElement('input', { ref: inputRef, className: 'global-search-input', placeholder: 'Rechercher une page, un module...', value: query, onChange: e => setQuery(e.target.value), onKeyDown: e => { if (e.key === 'Enter' && filtered.length > 0) { navigate(filtered[0].id); onClose(); } } }),
+          React.createElement('div', { className: 'global-search-results' },
+            filtered.map(item => React.createElement('div', { key: item.id, className: 'global-search-item', onClick: () => { navigate(item.id); onClose(); } },
+              React.createElement('div', { className: 'gsi-icon', style: { background: item.bg } }, item.icon),
+              React.createElement('div', null,
+                React.createElement('div', { style: { fontWeight: 500, fontSize: 14 } }, item.label),
+                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)' } }, item.category)
+              )
+            ))
+          ),
+          React.createElement('div', { className: 'global-search-hint' },
+            React.createElement('span', null, '↑↓ naviguer · ↵ ouvrir · esc fermer'),
+            React.createElement('kbd', null, '⌘K')
+          )
+        )
+      );
+    }
+
+    // ==================== BOTTOM NAV ====================
+    function BottomNav({ page, navigate }) {
+      const items = [
+        { id: 'dashboard', icon: '🏠', label: 'Accueil' },
+        { id: 'voyages', icon: '✈️', label: 'Voyages' },
+        { id: 'finance', icon: '📊', label: 'Finance' },
+        { id: 'support', icon: '🛟', label: 'Support', dot: true },
+        { id: 'pros', icon: '✅', label: 'Pro', dot: true },
+      ];
+      return React.createElement('nav', { className: 'bottom-nav' },
+        React.createElement('div', { className: 'bottom-nav-inner' },
+          items.map(item => React.createElement('button', { key: item.id, className: `bottom-nav-item ${page === item.id ? 'active' : ''}`, onClick: () => navigate(item.id) },
+            React.createElement('span', { className: 'bnav-icon' }, item.icon),
+            React.createElement('span', { className: 'bnav-label' }, item.label),
+            item.dot && React.createElement('span', { className: 'bnav-dot' })
+          ))
+        )
+      );
+    }
+
+    // ==================== NOTIFICATION PANEL ====================
+    function NotifPanel({ open, onClose }) {
+      const notifs = [
+        { id: 1, icon: '🔴', title: 'Paiement échoué — R-452', desc: 'Carte expirée pour Antoine Roux', time: 'Il y a 2h', unread: true },
+        { id: 2, icon: '🟡', title: '2 validations Pro en attente', desc: 'Sophie Bernard et Emma Leroy', time: 'Il y a 1j', unread: true },
+        { id: 3, icon: '🟡', title: 'Remplissage faible — Rome Éternelle', desc: '24% des places à J-75', time: 'Il y a 1j', unread: true },
+        { id: 4, icon: '🔵', title: 'Record CA quotidien', desc: '5 420€ le 15/03', time: 'Il y a 2j', unread: false },
+        { id: 5, icon: '🔵', title: 'Export comptable prêt', desc: 'Mars 2026 disponible', time: 'Il y a 3j', unread: false },
+      ];
+      return React.createElement(React.Fragment, null,
+        open && React.createElement('div', { style: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 79 }, onClick: onClose }),
+        React.createElement('div', { className: `notif-panel ${open ? 'open' : ''}` },
+          React.createElement('div', { className: 'notif-panel-header' },
+            React.createElement('h3', { style: { fontSize: 18, fontWeight: 700 } }, '🔔 Notifications'),
+            React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: onClose }, '✕')
+          ),
+          notifs.map(n => React.createElement('div', { key: n.id, className: `notif-item ${n.unread ? 'unread' : ''}` },
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' } },
+              React.createElement('div', { style: { display: 'flex', gap: 10 } },
+                React.createElement('span', null, n.icon),
+                React.createElement('div', null,
+                  React.createElement('div', { style: { fontWeight: 600, fontSize: 14 } }, n.title),
+                  React.createElement('div', { style: { fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 } }, n.desc)
+                )
+              ),
+              React.createElement('span', { style: { fontSize: 11, color: 'var(--text-secondary)', whiteSpace: 'nowrap' } }, n.time)
+            )
+          ))
+        )
+      );
+    }
+
+    // ==================== CHART COMPONENT ====================
+    function ChartCanvas({ type, data, options, height }) {
+      const canvasRef = React.useRef(null);
+      const chartRef = React.useRef(null);
+      useEffect(() => {
+        if (!canvasRef.current) return;
+        if (chartRef.current) chartRef.current.destroy();
+        const ctx = canvasRef.current.getContext('2d');
+        chartRef.current = new Chart(ctx, {
+          type,
+          data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { family: 'Outfit', size: 12 } } } },
+            scales: type !== 'doughnut' && type !== 'pie' ? { x: { grid: { display: false }, ticks: { font: { family: 'Outfit', size: 11 } } }, y: { grid: { color: '#F1F5F9' }, ticks: { font: { family: 'Outfit', size: 11 } } } } : undefined,
+            ...options
+          }
+        });
+        return () => { if (chartRef.current) chartRef.current.destroy(); };
+      }, [type, data, options]);
+      return React.createElement('div', { style: { position: 'relative', height: height || 260 } },
+        React.createElement('canvas', { ref: canvasRef })
+      );
+    }
+
+    // ==================== DATA ====================
+    const MOCK = {
+      voyages: [
+        { id: 'V-2026-001', nom: 'Marrakech Express', destination: 'Maroc', depart: '2026-04-15', retour: '2026-04-22', places: 48, reservees: 42, statut: 'published', prix: 899, transport: 'bus', pro: 'Marie Dupont' },
+        { id: 'V-2026-002', nom: 'Lisbonne Authentique', destination: 'Portugal', depart: '2026-05-01', retour: '2026-05-06', places: 52, reservees: 52, statut: 'completed', prix: 749, transport: 'avion', pro: 'Jean Martin' },
+        { id: 'V-2026-003', nom: 'Barcelone Fiesta', destination: 'Espagne', depart: '2026-05-10', retour: '2026-05-14', places: 44, reservees: 38, statut: 'ongoing', prix: 649, transport: 'bus', pro: 'Sophie Bernard' },
+        { id: 'V-2026-004', nom: 'Rome Éternelle', destination: 'Italie', depart: '2026-06-01', retour: '2026-06-06', places: 50, reservees: 12, statut: 'pending', prix: 829, transport: 'avion', pro: 'Lucas Petit' },
+        { id: 'V-2026-005', nom: 'Amsterdam Liberté', destination: 'Pays-Bas', depart: '2026-06-15', retour: '2026-06-19', places: 40, reservees: 0, statut: 'pending', prix: 699, transport: 'bus', pro: 'Emma Leroy' },
+        { id: 'V-2026-006', nom: 'Prague Bohème', destination: 'Tchéquie', depart: '2026-07-01', retour: '2026-07-05', places: 46, reservees: 30, statut: 'published', prix: 599, transport: 'bus', pro: 'Marie Dupont' },
+        { id: 'V-2026-007', nom: 'Istanbul Orient', destination: 'Turquie', depart: '2026-07-10', retour: '2026-07-17', places: 48, reservees: 0, statut: 'cancelled', prix: 999, transport: 'avion', pro: 'Jean Martin' },
+      ],
+      users: [
+        { id: 1, nom: 'David Eventy', email: 'eventylife@gmail.com', role: 'ADMIN', statut: 'active', inscrit: '2025-12-01', derniere: '2026-03-17' },
+        { id: 2, nom: 'Marie Dupont', email: 'marie.dupont@pro.com', role: 'PRO', statut: 'active', inscrit: '2026-01-15', derniere: '2026-03-16' },
+        { id: 3, nom: 'Jean Martin', email: 'jean.martin@pro.com', role: 'PRO', statut: 'active', inscrit: '2026-01-20', derniere: '2026-03-15' },
+        { id: 4, nom: 'Sophie Bernard', email: 'sophie@pro.com', role: 'PRO', statut: 'pending', inscrit: '2026-02-10', derniere: '2026-03-14' },
+        { id: 5, nom: 'Lucas Petit', email: 'lucas@pro.com', role: 'PRO', statut: 'active', inscrit: '2026-02-15', derniere: '2026-03-13' },
+        { id: 6, nom: 'Emma Leroy', email: 'emma@pro.com', role: 'PRO', statut: 'pending', inscrit: '2026-03-01', derniere: '2026-03-12' },
+        { id: 7, nom: 'Pierre Moreau', email: 'pierre@client.com', role: 'CLIENT', statut: 'active', inscrit: '2026-01-05', derniere: '2026-03-17' },
+        { id: 8, nom: 'Claire Dubois', email: 'claire@client.com', role: 'CLIENT', statut: 'active', inscrit: '2026-01-10', derniere: '2026-03-16' },
+        { id: 9, nom: 'Antoine Roux', email: 'antoine@client.com', role: 'CLIENT', statut: 'suspended', inscrit: '2026-01-20', derniere: '2026-02-28' },
+        { id: 10, nom: 'Isabelle Garnier', email: 'isabelle@client.com', role: 'CLIENT', statut: 'active', inscrit: '2026-02-01', derniere: '2026-03-15' },
+      ],
+      tickets: [
+        { id: 'T-001', sujet: 'Problème de paiement réservation', client: 'Pierre Moreau', priorite: 'haute', statut: 'open', date: '2026-03-17', messages: 3 },
+        { id: 'T-002', sujet: 'Changement de date voyage', client: 'Claire Dubois', priorite: 'moyenne', statut: 'in_progress', date: '2026-03-16', messages: 5 },
+        { id: 'T-003', sujet: 'Demande remboursement', client: 'Antoine Roux', priorite: 'haute', statut: 'waiting', date: '2026-03-15', messages: 8 },
+        { id: 'T-004', sujet: 'Question sur l\'assurance', client: 'Isabelle Garnier', priorite: 'basse', statut: 'resolved', date: '2026-03-14', messages: 2 },
+        { id: 'T-005', sujet: 'Erreur sur le billet', client: 'Pierre Moreau', priorite: 'haute', statut: 'open', date: '2026-03-17', messages: 1 },
+      ],
+      audit: [
+        { action: 'Voyage publié', entite: 'V-2026-001', acteur: 'David Eventy', date: '2026-03-17 14:30', type: 'voyage' },
+        { action: 'Pro validé', entite: 'Marie Dupont', acteur: 'David Eventy', date: '2026-03-17 13:15', type: 'pro' },
+        { action: 'Paiement reçu', entite: '3 200€ — Résa #R-445', acteur: 'Système', date: '2026-03-17 12:00', type: 'finance' },
+        { action: 'Ticket résolu', entite: 'T-004', acteur: 'David Eventy', date: '2026-03-16 18:45', type: 'support' },
+        { action: 'Export comptable', entite: 'Mars 2026', acteur: 'David Eventy', date: '2026-03-16 17:00', type: 'export' },
+        { action: 'Annulation traitée', entite: 'R-412', acteur: 'David Eventy', date: '2026-03-16 15:30', type: 'annulation' },
+        { action: 'Utilisateur suspendu', entite: 'Antoine Roux', acteur: 'David Eventy', date: '2026-03-16 14:00', type: 'user' },
+        { action: 'Document signé', entite: 'CGV v3.2', acteur: 'Marie Dupont', date: '2026-03-15 11:20', type: 'document' },
+      ],
+      annulations: [
+        { id: 'A-001', reservation: 'R-412', client: 'Antoine Roux', voyage: 'Istanbul Orient', montant: 999, statut: 'pending', date: '2026-03-15', motif: 'Raison personnelle' },
+        { id: 'A-002', reservation: 'R-389', client: 'Pierre Moreau', voyage: 'Marrakech Express', montant: 899, statut: 'approved', date: '2026-03-10', motif: 'Problème santé' },
+        { id: 'A-003', reservation: 'R-356', client: 'Claire Dubois', voyage: 'Prague Bohème', montant: 599, statut: 'rejected', date: '2026-03-08', motif: 'Changement avis' },
+      ],
+      transports: [
+        { id: 'TR-001', type: 'bus', fournisseur: 'TransEuropa', capacite: 52, voyage: 'Marrakech Express', statut: 'confirmed', prix: 4200 },
+        { id: 'TR-002', type: 'avion', fournisseur: 'AirFrance', capacite: 52, voyage: 'Lisbonne Authentique', statut: 'confirmed', prix: 12800 },
+        { id: 'TR-003', type: 'bus', fournisseur: 'FlixPartner', capacite: 48, voyage: 'Barcelone Fiesta', statut: 'pending', prix: 3800 },
+        { id: 'TR-004', type: 'avion', fournisseur: 'Transavia', capacite: 50, voyage: 'Rome Éternelle', statut: 'pending', prix: 9500 },
+      ],
+      hotels: [
+        { id: 'H-001', nom: 'Riad Al Moussika', ville: 'Marrakech', etoiles: 4, chambres: 24, voyage: 'Marrakech Express', prix: 3600, statut: 'confirmed' },
+        { id: 'H-002', nom: 'Hotel Lisboa Central', ville: 'Lisbonne', etoiles: 3, chambres: 26, voyage: 'Lisbonne Authentique', prix: 4800, statut: 'confirmed' },
+        { id: 'H-003', nom: 'Barcelona Inn', ville: 'Barcelone', etoiles: 4, chambres: 22, voyage: 'Barcelone Fiesta', prix: 4200, statut: 'pending' },
+      ],
+    };
+
+    const NAV = [
+      { section: 'Principal', items: [
+        { id: 'dashboard', icon: '🏠', label: 'Accueil Admin' },
+        { id: 'finance', icon: '📊', label: 'Snapshot Finance' },
+      ]},
+      { section: 'Opérations', items: [
+        { id: 'voyages', icon: '✈️', label: 'Ops Voyages' },
+        { id: 'transport', icon: '🚌', label: 'Transport' },
+        { id: 'rooming', icon: '🏨', label: 'Fournisseurs / Hôtels' },
+        { id: 'bookings', icon: '💰', label: 'Réservations' },
+      ]},
+      { section: 'Gestion', items: [
+        { id: 'pros', icon: '✅', label: 'Validation Pro', badge: 2 },
+        { id: 'documents', icon: '📄', label: 'Docs & Signatures' },
+        { id: 'support', icon: '🛟', label: 'Support & Tickets' },
+        { id: 'marketing', icon: '📣', label: 'Marketing' },
+        { id: 'annulations', icon: '❌', label: 'Annulations' },
+      ]},
+      { section: 'Système', items: [
+        { id: 'utilisateurs', icon: '👥', label: 'Utilisateurs' },
+        { id: 'audit', icon: '🛡️', label: 'Audit Log' },
+        { id: 'alertes', icon: '🔔', label: 'Alertes' },
+        { id: 'parametres', icon: '⚙️', label: 'Paramètres' },
+        { id: 'notifications', icon: '📡', label: 'Monitoring' },
+        { id: 'exports', icon: '📥', label: 'Exports' },
+      ]},
+    ];
+
+    // ==================== COMPONENTS ====================
+    const StatCard = ({ icon, label, value, trend, trendDir, urgent, bg }) => (
+      <div className={`stat-card fade-in ${urgent ? 'urgent' : ''}`}>
+        <div className="stat-icon" style={{ background: bg || '#FFF7ED' }}>{icon}</div>
+        <div className="stat-value">{value}</div>
+        <div className="stat-label">{label}</div>
+        {trend && <div className={`stat-trend ${trendDir || 'up'}`}>{trendDir === 'down' ? '↓' : '↑'} {trend}</div>}
+      </div>
+    );
+
+    const StatusBadge = ({ status }) => {
+      const map = { published: 'Publié', pending: 'En attente', ongoing: 'En cours', completed: 'Terminé', cancelled: 'Annulé', active: 'Actif', suspended: 'Suspendu', open: 'Ouvert', in_progress: 'En cours', waiting: 'En attente', resolved: 'Résolu', closed: 'Fermé', confirmed: 'Confirmé', approved: 'Approuvé', rejected: 'Rejeté', ADMIN: 'Admin', PRO: 'Pro', CLIENT: 'Client' };
+      return <span className={`badge-status ${status.toLowerCase()}`}>{map[status] || status}</span>;
+    };
+
+    // ==================== PAGES ====================
+
+    // 1. DASHBOARD
+    const DashboardPage = ({ navigate }) => (
+      <div className="fade-in">
+        <div className="alert-bar danger">⚠️ 2 demandes Pro en attente de validation — <a href="#" onClick={e => {e.preventDefault(); navigate('pros')}} style={{color: 'inherit', fontWeight: 600}}>Traiter maintenant</a></div>
+        <div className="alert-bar warning">💳 3 paiements en attente de confirmation — <a href="#" onClick={e => {e.preventDefault(); navigate('finance')}} style={{color: 'inherit', fontWeight: 600}}>Voir les paiements</a></div>
+
+        <div className="stats-grid">
+          <StatCard icon="✈️" label="Voyages actifs" value="6" trend="+2 ce mois" bg="#FFF7ED" />
+          <StatCard icon="👥" label="Utilisateurs" value="247" trend="+18 cette semaine" bg="#EFF6FF" />
+          <StatCard icon="💰" label="CA Mars" value="42 830€" trend="+15% vs fév" bg="#ECFDF5" />
+          <StatCard icon="🎫" label="Réservations" value="134" trend="+8 aujourd'hui" bg="#F5F3FF" urgent />
+        </div>
+
+        <div className="modules-grid">
+          {[
+            { icon: '✈️', title: 'Ops Voyages', desc: 'Gérer les voyages et réservations', bg: '#FFF7ED', stats: [['Voyages actifs', '6'], ['En attente', '2'], ['Taux remplissage', '78%']], page: 'voyages', live: true },
+            { icon: '🚌', title: 'Transport', desc: 'Bus, avions, logistique', bg: '#EFF6FF', stats: [['Trajets planifiés', '4'], ['Confirmés', '2'], ['Budget transport', '30 300€']], page: 'transport', live: true },
+            { icon: '💰', title: 'Finance', desc: 'Paiements, revenus, trésorerie', bg: '#ECFDF5', stats: [['CA total', '42 830€'], ['En attente', '8 500€'], ['Marge', '32%']], page: 'finance', live: true },
+            { icon: '✅', title: 'Validation Pro', desc: 'Valider les créateurs de voyage', bg: '#FEF3C7', stats: [['En attente', '2'], ['Approuvés', '4'], ['Refusés', '1']], page: 'pros', live: true },
+            { icon: '🛟', title: 'Support', desc: 'Tickets et incidents clients', bg: '#FEF2F2', stats: [['Tickets ouverts', '3'], ['Temps moyen', '2.4h'], ['Satisfaction', '94%']], page: 'support', live: true },
+            { icon: '📄', title: 'Documents', desc: 'CGV, contrats, signatures', bg: '#F0FDF4', stats: [['Documents', '12'], ['À signer', '3'], ['Expirés', '0']], page: 'documents', live: false },
+            { icon: '👥', title: 'Utilisateurs', desc: 'Gestion des comptes', bg: '#F5F3FF', stats: [['Total', '247'], ['Admins', '1'], ['Pros', '6']], page: 'utilisateurs', live: true },
+            { icon: '📣', title: 'Marketing', desc: 'Campagnes et templates', bg: '#FFF1F2', stats: [['Campagnes actives', '2'], ['Taux ouverture', '28%'], ['Contacts', '1 240']], page: 'marketing', live: false },
+          ].map((m, i) => (
+            <div key={i} className={`module-card fade-in delay-${i+1}`} onClick={() => navigate(m.page)}>
+              <div className="module-header">
+                <div className="module-icon" style={{background: m.bg}}>{m.icon}</div>
+                <div>
+                  <div className="module-title">{m.title}</div>
+                  <span className="module-status" style={{background: m.live ? '#ECFDF5' : '#FEF3C7', color: m.live ? '#065F46' : '#92400E'}}>{m.live ? '● Live' : '◯ Bientôt'}</span>
+                </div>
+              </div>
+              <div className="module-desc">{m.desc}</div>
+              <div className="module-stats">
+                {m.stats.map(([l,v], j) => <div key={j} className="module-stat-row"><span>{l}</span><span className="value">{v}</span></div>)}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16}}>
+          <div className="card">
+            <div className="card-title" style={{marginBottom:12}}>📈 CA 7 derniers jours</div>
+            <ChartCanvas type="line" data={{labels:['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'], datasets:[{label:'CA (€)', data:[5420,3200,4100,6800,7200,8900,7210], borderColor:'#FF6B35', backgroundColor:'rgba(255,107,53,0.08)', fill:true, tension:0.4, borderWidth:2, pointRadius:3, pointBackgroundColor:'#FF6B35'}]}} height={180} options={{plugins:{legend:{display:false}}}} />
+          </div>
+          <div className="card">
+            <div className="card-title" style={{marginBottom:12}}>🎫 Réservations par voyage</div>
+            <ChartCanvas type="bar" data={{labels:['Marrakech','Lisbonne','Barcelone','Rome','Amsterdam','Prague'], datasets:[{label:'Réservées', data:[42,52,38,12,0,30], backgroundColor:'rgba(0,119,182,0.7)', borderRadius:4},{label:'Capacité', data:[48,52,44,50,40,46], backgroundColor:'rgba(0,119,182,0.15)', borderRadius:4}]}} height={180} options={{plugins:{legend:{display:true,position:'bottom'}}}} />
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header"><div className="card-title">🕐 Activité récente</div></div>
+          {MOCK.audit.slice(0, 5).map((a, i) => (
+            <div key={i} className="audit-item">
+              <div className="audit-dot" style={{background: {voyage: '#FF6B35', pro: '#06D6A0', finance: '#0077B6', support: '#7B2FF7', export: '#92400E', annulation: '#E63946', user: '#64748B', document: '#0077B6'}[a.type]}} />
+              <div className="audit-content">
+                <div className="audit-action"><strong>{a.action}</strong> — {a.entite}</div>
+                <div className="audit-meta">{a.acteur} · {a.date}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+
+    // 2. VOYAGES
+    const VoyagesPage = ({ navigate }) => {
+      const [tab, setTab] = useState('all');
+      const [search, setSearch] = useState('');
+      const filtered = MOCK.voyages.filter(v => (tab === 'all' || v.statut === tab) && (v.nom.toLowerCase().includes(search.toLowerCase()) || v.destination.toLowerCase().includes(search.toLowerCase())));
+      return (
+        <div className="fade-in">
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 16, flexWrap:'wrap', gap:12}}>
+            <div className="tabs">
+              {[['all','Tous (7)'],['pending','En attente'],['published','Publiés'],['ongoing','En cours'],['completed','Terminés'],['cancelled','Annulés']].map(([k,l]) =>
+                <button key={k} className={`tab ${tab===k?'active':''}`} onClick={()=>setTab(k)}>{l}</button>
+              )}
+            </div>
+            <button className="btn btn-primary" onClick={()=>navigate('voyages-creer')}>+ Nouveau voyage</button>
+          </div>
+          <div className="search-bar">
+            <input className="search-input" placeholder="Rechercher un voyage..." value={search} onChange={e=>setSearch(e.target.value)} />
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead><tr><th>ID</th><th>Voyage</th><th>Destination</th><th>Départ</th><th>Places</th><th>Statut</th><th>Pro</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {filtered.map(v => (
+                    <tr key={v.id}>
+                      <td style={{fontFamily:'monospace', fontSize:12}}>{v.id}</td>
+                      <td><strong>{v.nom}</strong></td>
+                      <td>{v.destination}</td>
+                      <td>{v.depart}</td>
+                      <td><div style={{display:'flex',alignItems:'center',gap:8}}><span>{v.reservees}/{v.places}</span><div className="progress-bar" style={{width:60}}><div className="progress-fill" style={{width:`${(v.reservees/v.places)*100}%`, background: v.reservees/v.places > 0.8 ? 'var(--mint)' : 'var(--ocean)'}} /></div></div></td>
+                      <td><StatusBadge status={v.statut} /></td>
+                      <td>{v.pro}</td>
+                      <td><button className="btn btn-outline btn-sm" onClick={()=>navigate('voyage-detail')}>Détails</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 3. VOYAGE DETAIL
+    const VoyageDetailPage = ({ navigate }) => {
+      const v = MOCK.voyages[0];
+      const { addToast } = useToast();
+      const [confirm, setConfirm] = useState(null);
+      const fillPct = Math.round((v.reservees / v.places) * 100);
+      const remplissageData = {labels:['Réservées','Disponibles'], datasets:[{data:[v.reservees, v.places - v.reservees], backgroundColor:['#06D6A0','#E2E8F0'], borderWidth:0, hoverOffset:4}]};
+      return (
+        <div className="fade-in">
+          <ConfirmModal open={!!confirm} title={confirm?.title} icon={confirm?.icon} message={confirm?.message} confirmText={confirm?.confirmText} confirmClass={confirm?.confirmClass} onConfirm={() => { addToast(confirm?.toast, confirm?.toastType || 'success'); setConfirm(null); }} onCancel={() => setConfirm(null)} />
+          <button className="btn btn-outline" onClick={()=>navigate('voyages')} style={{marginBottom:16}}>← Retour aux voyages</button>
+          <div className="stats-grid">
+            <StatCard icon="🎫" label="Réservations" value={`${v.reservees}/${v.places}`} trend={`${fillPct}% rempli`} bg="#ECFDF5" />
+            <StatCard icon="💰" label="CA prévisionnel" value={`${(v.reservees*v.prix).toLocaleString()}€`} bg="#FFF7ED" />
+            <StatCard icon="🚌" label="Transport" value={v.transport === 'bus' ? 'Bus' : 'Avion'} bg="#EFF6FF" />
+            <StatCard icon="📅" label="Départ dans" value={`${Math.max(0,Math.ceil((new Date(v.depart)-new Date())/(1000*60*60*24)))}j`} bg="#F5F3FF" />
+          </div>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16}}>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:12}}>📋 Informations</div>
+              {[['Nom', v.nom],['Destination', v.destination],['Retour', v.retour],['Prix/pers.', `${v.prix}€`],['Créateur Pro', v.pro],['Statut', v.statut]].map(([l,val],i) => (
+                <div key={i} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid #F1F5F9'}}>
+                  <span style={{color:'var(--text-secondary)', fontSize:14}}>{l}</span>
+                  <span style={{fontWeight:500, fontSize:14}}>{val}</span>
+                </div>
+              ))}
+            </div>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:12}}>🎫 Remplissage</div>
+              <ChartCanvas type="doughnut" data={remplissageData} height={180} options={{cutout:'70%', plugins:{legend:{position:'bottom'}}}} />
+              <div style={{textAlign:'center', marginTop:8, fontSize:24, fontWeight:700, color: fillPct > 80 ? 'var(--mint)' : fillPct > 50 ? 'var(--ocean)' : 'var(--coral)'}}>{fillPct}%</div>
+            </div>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:12}}>⚡ Actions rapides</div>
+              <div style={{display:'flex', flexDirection:'column', gap:8}}>
+                <button className="btn btn-primary" onClick={()=>setConfirm({title:'Approuver ce voyage ?',icon:'✅',message:`Publier "${v.nom}" et ouvrir les réservations ?`,confirmText:'Approuver',toast:`${v.nom} approuvé et publié !`})}>✅ Approuver</button>
+                <button className="btn btn-ocean" onClick={()=>navigate('bookings')}>📋 Réservations</button>
+                <button className="btn btn-outline" onClick={()=>{addToast('Manifeste généré avec succès','success');}}>📄 Générer manifeste</button>
+                <button className="btn btn-outline" onClick={()=>setConfirm({title:'Notifier les voyageurs ?',icon:'🔔',message:`Envoyer une notification aux ${v.reservees} voyageurs de "${v.nom}" ?`,confirmText:'Envoyer',toast:`${v.reservees} voyageurs notifiés`})}>🔔 Notifier</button>
+                <button className="btn btn-danger" onClick={()=>setConfirm({title:'Annuler ce voyage ?',icon:'❌',message:`Annuler "${v.nom}" ? ${v.reservees} réservations seront remboursées.`,confirmText:'Annuler le voyage',confirmClass:'btn-danger',toast:`${v.nom} annulé — ${v.reservees} remboursements en cours`,toastType:'warning'})}>❌ Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 4. CREER VOYAGE
+    const CreerVoyagePage = ({ navigate }) => {
+      const [step, setStep] = useState(0);
+      const steps = ['Infos de base', 'Transport', 'Hébergement', 'Tarification', 'Récapitulatif'];
+      return (
+        <div className="fade-in">
+          <button className="btn btn-outline" onClick={()=>navigate('voyages')} style={{marginBottom:16}}>← Retour</button>
+          <div className="stepper">
+            {steps.map((s, i) => (
+              <React.Fragment key={i}>
+                <div className={`step ${i===step?'active':''} ${i<step?'done':''}`}>
+                  <div className="step-num">{i < step ? '✓' : i+1}</div>
+                  <span>{s}</span>
+                </div>
+                {i < steps.length-1 && <div className="step-line" />}
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="card">
+            {step === 0 && <>
+              <div className="form-group"><label className="form-label">Nom du voyage</label><input className="form-input" placeholder="Ex: Marrakech Express" /></div>
+              <div className="form-group"><label className="form-label">Destination</label><input className="form-input" placeholder="Ville, Pays" /></div>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+                <div className="form-group"><label className="form-label">Date départ</label><input className="form-input" type="date" /></div>
+                <div className="form-group"><label className="form-label">Date retour</label><input className="form-input" type="date" /></div>
+              </div>
+              <div className="form-group"><label className="form-label">Description</label><textarea className="form-input" placeholder="Description du voyage..." /></div>
+            </>}
+            {step === 1 && <>
+              <div className="form-group"><label className="form-label">Mode de transport</label>
+                <select className="form-input"><option>Bus</option><option>Avion</option><option>Mixte</option></select>
+              </div>
+              <div className="form-group"><label className="form-label">Fournisseur</label><input className="form-input" placeholder="Nom du fournisseur" /></div>
+              <div className="form-group"><label className="form-label">Capacité</label><input className="form-input" type="number" placeholder="48" /></div>
+            </>}
+            {step === 2 && <>
+              <div className="form-group"><label className="form-label">Hôtel</label><input className="form-input" placeholder="Nom de l'hôtel" /></div>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+                <div className="form-group"><label className="form-label">Étoiles</label><select className="form-input"><option>3★</option><option>4★</option><option>5★</option></select></div>
+                <div className="form-group"><label className="form-label">Chambres</label><input className="form-input" type="number" placeholder="24" /></div>
+              </div>
+            </>}
+            {step === 3 && <>
+              <div className="form-group"><label className="form-label">Prix par personne (€)</label><input className="form-input" type="number" placeholder="899" /></div>
+              <div className="form-group"><label className="form-label">Acompte (%)</label><input className="form-input" type="number" placeholder="30" /></div>
+              <div className="form-group"><label className="form-label">Assurance optionnelle</label><select className="form-input"><option>Oui</option><option>Non</option></select></div>
+            </>}
+            {step === 4 && <div style={{textAlign:'center', padding:20}}>
+              <div style={{fontSize:48, marginBottom:16}}>📋</div>
+              <h3>Récapitulatif</h3>
+              <p style={{color:'var(--text-secondary)', margin:'12px 0'}}>Vérifiez toutes les informations avant de créer le voyage.</p>
+              <div className="alert-bar info">Mode prototype — la création n'est pas connectée au backend</div>
+            </div>}
+            <div style={{display:'flex', justifyContent:'space-between', marginTop:20}}>
+              <button className="btn btn-outline" onClick={()=>setStep(Math.max(0,step-1))} disabled={step===0}>← Précédent</button>
+              {step < 4 ? <button className="btn btn-primary" onClick={()=>setStep(step+1)}>Suivant →</button> : <button className="btn btn-primary">✅ Créer le voyage</button>}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 5. FINANCE
+    const FinancePage = ({ navigate }) => {
+      const [tab, setTab] = useState('overview');
+      const revenueData = { labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'], datasets: [
+        { label: 'CA réel', data: [22400, 37200, 42830, 0, 0, 0], borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#FF6B35' },
+        { label: 'Prévisionnel', data: [20000, 32000, 40000, 55000, 68000, 82000], borderColor: '#0077B6', backgroundColor: 'transparent', borderDash: [6, 4], tension: 0.4, borderWidth: 2, pointRadius: 0 }
+      ]};
+      const catData = { labels: ['Transport', 'Hébergement', 'Marge Eventy', 'Assurances', 'Divers'], datasets: [{ data: [30300, 12600, 14200, 3200, 2530], backgroundColor: ['#FF6B35', '#0077B6', '#06D6A0', '#7B2FF7', '#64748B'], borderWidth: 0, hoverOffset: 8 }]};
+      const dailyData = { labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'], datasets: [{ label: 'Réservations (€)', data: [5420, 3200, 4100, 6800, 7200, 8900, 7210], backgroundColor: 'rgba(255,107,53,0.7)', borderRadius: 6, barThickness: 28 }]};
+      return (
+        <div className="fade-in">
+          <div className="stats-grid">
+            <StatCard icon="💰" label="CA Mars 2026" value="42 830€" trend="+15% vs fév" bg="#ECFDF5" />
+            <StatCard icon="📥" label="Paiements reçus" value="38 200€" bg="#EFF6FF" />
+            <StatCard icon="⏳" label="En attente" value="8 500€" bg="#FEF3C7" urgent />
+            <StatCard icon="📈" label="Marge brute" value="32%" trend="+3pts" bg="#F5F3FF" />
+          </div>
+          <div className="tabs" style={{marginBottom:16}}>
+            {[['overview','Vue d\'ensemble'],['payments','Paiements'],['payouts','Versements']].map(([k,l]) =>
+              <button key={k} className={`tab ${tab===k?'active':''}`} onClick={()=>setTab(k)}>{l}</button>
+            )}
+          </div>
+          {tab === 'overview' && <>
+            <div style={{display:'grid', gridTemplateColumns:'2fr 1fr', gap:16, marginBottom:16}}>
+              <div className="card">
+                <div className="card-title" style={{marginBottom:16}}>📈 Évolution du chiffre d'affaires</div>
+                <ChartCanvas type="line" data={revenueData} height={280} options={{plugins:{legend:{display:true}}}} />
+              </div>
+              <div className="card">
+                <div className="card-title" style={{marginBottom:16}}>🥧 Répartition des coûts</div>
+                <ChartCanvas type="doughnut" data={catData} height={280} options={{cutout:'65%', plugins:{legend:{position:'bottom'}}}} />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>📊 Réservations cette semaine</div>
+              <ChartCanvas type="bar" data={dailyData} height={220} options={{plugins:{legend:{display:false}}}} />
+            </div>
+          </>}
+          {tab === 'payments' && <div className="card">
+            <div className="card-title" style={{marginBottom:16}}>Derniers paiements</div>
+            <div className="table-container"><table>
+              <thead><tr><th>Client</th><th>Voyage</th><th>Montant</th><th>Date</th><th>Statut</th></tr></thead>
+              <tbody>
+                {[{client:'Pierre Moreau',voyage:'Marrakech Express',montant:'1 798€',date:'17/03',statut:'confirmed'},{client:'Claire Dubois',voyage:'Marrakech Express',montant:'899€',date:'16/03',statut:'confirmed'},{client:'Isabelle Garnier',voyage:'Barcelone Fiesta',montant:'1 947€',date:'16/03',statut:'pending'},{client:'Antoine Roux',voyage:'Istanbul Orient',montant:'999€',date:'15/03',statut:'cancelled'},{client:'Pierre Moreau',voyage:'Prague Bohème',montant:'1 198€',date:'15/03',statut:'confirmed'}].map((p,i) => (
+                  <tr key={i}><td><strong>{p.client}</strong></td><td>{p.voyage}</td><td style={{fontWeight:600}}>{p.montant}</td><td>{p.date}</td><td><StatusBadge status={p.statut} /></td></tr>
+                ))}
+              </tbody>
+            </table></div>
+          </div>}
+          {tab === 'payouts' && <FinancePayoutsContent navigate={navigate} />}
+        </div>
+      );
+    };
+
+    const FinancePayoutsContent = ({ navigate }) => (
+      <div>
+        <div className="stats-grid">
+          <StatCard icon="📤" label="À verser aux fournisseurs" value="18 600€" bg="#FEF3C7" urgent />
+          <StatCard icon="✅" label="Versés ce mois" value="24 200€" bg="#ECFDF5" />
+        </div>
+        <div className="card">
+          <div className="card-title" style={{marginBottom:16}}>Fournisseurs à payer</div>
+          <div className="table-container"><table>
+            <thead><tr><th>Fournisseur</th><th>Type</th><th>Montant</th><th>Voyage</th><th>Échéance</th><th>Actions</th></tr></thead>
+            <tbody>
+              {[{f:'TransEuropa',t:'Transport',m:'4 200€',v:'Marrakech Express',e:'20/03/2026'},{f:'Riad Al Moussika',t:'Hébergement',m:'3 600€',v:'Marrakech Express',e:'22/03/2026'},{f:'AirFrance',t:'Transport',m:'12 800€',v:'Lisbonne',e:'01/04/2026'}].map((p,i) => (
+                <tr key={i}><td><strong>{p.f}</strong></td><td>{p.t}</td><td style={{fontWeight:600}}>{p.m}</td><td>{p.v}</td><td>{p.e}</td><td><button className="btn btn-primary btn-sm">Payer</button></td></tr>
+              ))}
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    );
+
+    // 6. FINANCE PAYOUTS (now integrated as tab in FinancePage)
+
+    // 7. PROS
+    const ProsPage = () => {
+      const [tab, setTab] = useState('all');
+      const [confirm, setConfirm] = useState(null);
+      const [localPros, setLocalPros] = useState(MOCK.users.filter(u => u.role === 'PRO'));
+      const { addToast } = useToast();
+      const handleApprove = (p) => setConfirm({ type: 'approve', pro: p });
+      const handleReject = (p) => setConfirm({ type: 'reject', pro: p });
+      const doAction = () => {
+        if (!confirm) return;
+        setLocalPros(prev => prev.map(p => p.id === confirm.pro.id ? { ...p, statut: confirm.type === 'approve' ? 'active' : 'rejected' } : p));
+        addToast(confirm.type === 'approve' ? `${confirm.pro.nom} approuvé(e) avec succès` : `${confirm.pro.nom} refusé(e)`, confirm.type === 'approve' ? 'success' : 'warning');
+        setConfirm(null);
+      };
+      return (
+        <div className="fade-in">
+          <ConfirmModal open={!!confirm} title={confirm?.type === 'approve' ? 'Approuver ce Pro ?' : 'Refuser ce Pro ?'} icon={confirm?.type === 'approve' ? '✅' : '❌'} message={confirm?.type === 'approve' ? `Voulez-vous approuver ${confirm?.pro?.nom} comme créateur de voyage ?` : `Voulez-vous refuser la demande de ${confirm?.pro?.nom} ?`} confirmText={confirm?.type === 'approve' ? 'Approuver' : 'Refuser'} confirmClass={confirm?.type === 'approve' ? 'btn-primary' : 'btn-danger'} onConfirm={doAction} onCancel={() => setConfirm(null)} />
+          <div className="tabs">
+            {[['all','Tous'],['pending','En attente'],['active','Approuvés'],['rejected','Refusés']].map(([k,l]) =>
+              <button key={k} className={`tab ${tab===k?'active':''}`} onClick={()=>setTab(k)}>{l}</button>
+            )}
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead><tr><th>Nom</th><th>Email</th><th>Statut</th><th>Inscription</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {localPros.filter(p => tab === 'all' || p.statut === tab).map(p => (
+                    <tr key={p.id}><td><strong>{p.nom}</strong></td><td>{p.email}</td><td><StatusBadge status={p.statut} /></td><td>{p.inscrit}</td>
+                      <td>
+                        {p.statut === 'pending' && <div style={{display:'flex', gap:6}}>
+                          <button className="btn btn-primary btn-sm" onClick={() => handleApprove(p)}>✅ Approuver</button>
+                          <button className="btn btn-danger btn-sm" onClick={() => handleReject(p)}>✕</button>
+                        </div>}
+                        {p.statut !== 'pending' && <button className="btn btn-outline btn-sm">Détails</button>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 8. UTILISATEURS
+    const UtilisateursPage = () => {
+      const [search, setSearch] = useState('');
+      const [roleFilter, setRoleFilter] = useState('all');
+      const filtered = MOCK.users.filter(u => (roleFilter === 'all' || u.role === roleFilter) && (u.nom.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase())));
+      return (
+        <div className="fade-in">
+          <div className="search-bar">
+            <input className="search-input" placeholder="Rechercher un utilisateur..." value={search} onChange={e=>setSearch(e.target.value)} />
+            <select className="search-input" style={{maxWidth:150}} value={roleFilter} onChange={e=>setRoleFilter(e.target.value)}>
+              <option value="all">Tous les rôles</option><option value="ADMIN">Admin</option><option value="PRO">Pro</option><option value="CLIENT">Client</option>
+            </select>
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Dernière activité</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {filtered.map(u => (
+                    <tr key={u.id}><td><strong>{u.nom}</strong></td><td>{u.email}</td><td><StatusBadge status={u.role} /></td><td><StatusBadge status={u.statut} /></td><td>{u.derniere}</td>
+                      <td><button className="btn btn-outline btn-sm">Détails</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 9. SUPPORT
+    const SupportPage = () => {
+      const [tab, setTab] = useState('all');
+      const filtered = MOCK.tickets.filter(t => tab === 'all' || t.statut === tab);
+      return (
+        <div className="fade-in">
+          <div className="stats-grid">
+            <StatCard icon="🎫" label="Tickets ouverts" value="3" bg="#FEF2F2" urgent />
+            <StatCard icon="⏱️" label="Temps réponse moyen" value="2.4h" bg="#EFF6FF" />
+            <StatCard icon="😊" label="Satisfaction" value="94%" trend="+2pts" bg="#ECFDF5" />
+            <StatCard icon="📊" label="Total tickets" value="5" bg="#F5F3FF" />
+          </div>
+          <div className="tabs">
+            {[['all','Tous'],['open','Ouverts'],['in_progress','En cours'],['waiting','En attente'],['resolved','Résolus']].map(([k,l]) =>
+              <button key={k} className={`tab ${tab===k?'active':''}`} onClick={()=>setTab(k)}>{l}</button>
+            )}
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead><tr><th>ID</th><th>Sujet</th><th>Client</th><th>Priorité</th><th>Statut</th><th>Messages</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {filtered.map(t => (
+                    <tr key={t.id}><td style={{fontFamily:'monospace'}}>{t.id}</td><td><strong>{t.sujet}</strong></td><td>{t.client}</td>
+                      <td><span style={{color: {haute:'var(--coral)', moyenne:'var(--gold)', basse:'var(--ocean)'}[t.priorite], fontWeight:500}}>{t.priorite}</span></td>
+                      <td><StatusBadge status={t.statut} /></td><td>{t.messages}</td>
+                      <td><button className="btn btn-outline btn-sm">Traiter</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 10. TRANSPORT
+    const TransportPage = () => (
+      <div className="fade-in">
+        <div className="stats-grid">
+          <StatCard icon="🚌" label="Bus planifiés" value="2" bg="#FFF7ED" />
+          <StatCard icon="✈️" label="Vols réservés" value="2" bg="#EFF6FF" />
+          <StatCard icon="💰" label="Budget transport" value="30 300€" bg="#ECFDF5" />
+          <StatCard icon="✅" label="Confirmés" value="2/4" bg="#F5F3FF" />
+        </div>
+        <div className="card">
+          <div className="card-title" style={{marginBottom:16}}>Transports planifiés</div>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Type</th><th>Fournisseur</th><th>Voyage</th><th>Capacité</th><th>Prix</th><th>Statut</th></tr></thead>
+              <tbody>
+                {MOCK.transports.map(t => (
+                  <tr key={t.id}><td style={{fontFamily:'monospace'}}>{t.id}</td><td>{t.type === 'bus' ? '🚌 Bus' : '✈️ Avion'}</td><td><strong>{t.fournisseur}</strong></td>
+                    <td>{t.voyage}</td><td>{t.capacite} places</td><td style={{fontWeight:600}}>{t.prix.toLocaleString()}€</td><td><StatusBadge status={t.statut} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    // 11. ROOMING
+    const RoomingPage = () => (
+      <div className="fade-in">
+        <div className="stats-grid">
+          <StatCard icon="🏨" label="Hôtels partenaires" value="3" bg="#FFF7ED" />
+          <StatCard icon="🛏️" label="Chambres réservées" value="72" bg="#EFF6FF" />
+          <StatCard icon="💰" label="Budget hébergement" value="12 600€" bg="#ECFDF5" />
+        </div>
+        <div className="card">
+          <div className="card-title" style={{marginBottom:16}}>Fournisseurs hébergement</div>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>Hôtel</th><th>Ville</th><th>Étoiles</th><th>Chambres</th><th>Voyage</th><th>Prix total</th><th>Statut</th></tr></thead>
+              <tbody>
+                {MOCK.hotels.map(h => (
+                  <tr key={h.id}><td><strong>{h.nom}</strong></td><td>{h.ville}</td><td>{'⭐'.repeat(h.etoiles)}</td><td>{h.chambres}</td>
+                    <td>{h.voyage}</td><td style={{fontWeight:600}}>{h.prix.toLocaleString()}€</td><td><StatusBadge status={h.statut} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    // 12. BOOKINGS
+    const BookingsPage = () => (
+      <div className="fade-in">
+        <div className="stats-grid">
+          <StatCard icon="🎫" label="Total réservations" value="134" trend="+8 aujourd'hui" bg="#FFF7ED" />
+          <StatCard icon="✅" label="Confirmées" value="118" bg="#ECFDF5" />
+          <StatCard icon="⏳" label="En attente" value="12" bg="#FEF3C7" />
+          <StatCard icon="❌" label="Annulées" value="4" bg="#FEF2F2" />
+        </div>
+        <div className="card">
+          <div className="card-title" style={{marginBottom:16}}>Dernières réservations</div>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>ID</th><th>Client</th><th>Voyage</th><th>Personnes</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
+              <tbody>
+                {[
+                  {id:'R-456', client:'Pierre Moreau', voyage:'Marrakech Express', pers:2, montant:'1 798€', statut:'confirmed', date:'17/03'},
+                  {id:'R-455', client:'Claire Dubois', voyage:'Marrakech Express', pers:1, montant:'899€', statut:'confirmed', date:'16/03'},
+                  {id:'R-454', client:'Isabelle Garnier', voyage:'Barcelone Fiesta', pers:3, montant:'1 947€', statut:'pending', date:'16/03'},
+                  {id:'R-453', client:'Pierre Moreau', voyage:'Prague Bohème', pers:2, montant:'1 198€', statut:'confirmed', date:'15/03'},
+                  {id:'R-452', client:'Antoine Roux', voyage:'Istanbul Orient', pers:1, montant:'999€', statut:'cancelled', date:'14/03'},
+                ].map((r,i) => (
+                  <tr key={i}><td style={{fontFamily:'monospace'}}>{r.id}</td><td><strong>{r.client}</strong></td><td>{r.voyage}</td><td>{r.pers}</td>
+                    <td style={{fontWeight:600}}>{r.montant}</td><td><StatusBadge status={r.statut} /></td><td>{r.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    // 13. ANNULATIONS
+    const AnnulationsPage = () => {
+      const [localAnn, setLocalAnn] = useState(MOCK.annulations);
+      const [confirm, setConfirm] = useState(null);
+      const { addToast } = useToast();
+      const doAction = () => {
+        if (!confirm) return;
+        setLocalAnn(prev => prev.map(a => a.id === confirm.ann.id ? { ...a, statut: confirm.type === 'approve' ? 'approved' : 'rejected' } : a));
+        addToast(confirm.type === 'approve' ? `Annulation ${confirm.ann.id} approuvée — remboursement ${confirm.ann.montant}€` : `Annulation ${confirm.ann.id} refusée`, confirm.type === 'approve' ? 'success' : 'warning');
+        setConfirm(null);
+      };
+      return (
+        <div className="fade-in">
+          <ConfirmModal open={!!confirm} title={confirm?.type === 'approve' ? 'Approuver le remboursement ?' : 'Refuser l\'annulation ?'} icon={confirm?.type === 'approve' ? '💰' : '❌'} message={confirm?.type === 'approve' ? `Rembourser ${confirm?.ann?.montant}€ à ${confirm?.ann?.client} pour ${confirm?.ann?.voyage} ?` : `Refuser la demande d'annulation de ${confirm?.ann?.client} ?`} confirmText={confirm?.type === 'approve' ? 'Rembourser' : 'Refuser'} confirmClass={confirm?.type === 'approve' ? 'btn-primary' : 'btn-danger'} onConfirm={doAction} onCancel={() => setConfirm(null)} />
+          <div className="stats-grid">
+            <StatCard icon="❌" label="En attente" value={localAnn.filter(a=>a.statut==='pending').length} bg="#FEF3C7" urgent />
+            <StatCard icon="✅" label="Traitées" value={localAnn.filter(a=>a.statut!=='pending').length} bg="#ECFDF5" />
+            <StatCard icon="💰" label="Montant total" value={`${localAnn.reduce((s,a)=>s+a.montant,0).toLocaleString()}€`} bg="#EFF6FF" />
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead><tr><th>ID</th><th>Client</th><th>Voyage</th><th>Montant</th><th>Motif</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody>
+                  {localAnn.map(a => (
+                    <tr key={a.id}><td style={{fontFamily:'monospace'}}>{a.id}</td><td><strong>{a.client}</strong></td><td>{a.voyage}</td>
+                      <td style={{fontWeight:600}}>{a.montant}€</td><td>{a.motif}</td><td><StatusBadge status={a.statut} /></td>
+                      <td>{a.statut === 'pending' && <div style={{display:'flex',gap:6}}><button className="btn btn-primary btn-sm" onClick={()=>setConfirm({type:'approve',ann:a})}>Approuver</button><button className="btn btn-danger btn-sm" onClick={()=>setConfirm({type:'reject',ann:a})}>Refuser</button></div>}
+                        {a.statut !== 'pending' && <button className="btn btn-outline btn-sm">Détails</button>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // 14. AUDIT
+    const AuditPage = () => {
+      const [typeFilter, setTypeFilter] = useState('all');
+      const filtered = MOCK.audit.filter(a => typeFilter === 'all' || a.type === typeFilter);
+      return (
+        <div className="fade-in">
+          <div className="search-bar">
+            <select className="search-input" style={{maxWidth:200}} value={typeFilter} onChange={e=>setTypeFilter(e.target.value)}>
+              <option value="all">Toutes les actions</option><option value="voyage">Voyages</option><option value="pro">Pro</option><option value="finance">Finance</option>
+              <option value="support">Support</option><option value="user">Utilisateurs</option><option value="document">Documents</option>
+            </select>
+            <input className="search-input" type="date" style={{maxWidth:180}} />
+          </div>
+          <div className="card">
+            {filtered.map((a, i) => (
+              <div key={i} className="audit-item">
+                <div className="audit-dot" style={{background: {voyage:'#FF6B35', pro:'#06D6A0', finance:'#0077B6', support:'#7B2FF7', export:'#92400E', annulation:'#E63946', user:'#64748B', document:'#0077B6'}[a.type]}} />
+                <div className="audit-content">
+                  <div className="audit-action"><strong>{a.action}</strong> — {a.entite}</div>
+                  <div className="audit-meta">{a.acteur} · {a.date}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    // 15. ALERTES
+    const AlertesPage = () => (
+      <div className="fade-in">
+        <div className="stats-grid">
+          <StatCard icon="🔴" label="Critiques" value="1" bg="#FEF2F2" urgent />
+          <StatCard icon="🟡" label="Avertissements" value="3" bg="#FEF3C7" />
+          <StatCard icon="🔵" label="Informations" value="5" bg="#EFF6FF" />
+        </div>
+        {[
+          {type:'danger', icon:'🔴', title:'Paiement échoué — Résa #R-452', desc:'Le prélèvement Stripe a échoué pour Antoine Roux. Carte expirée.', time:'Il y a 2h'},
+          {type:'warning', icon:'🟡', title:'2 validations Pro en attente depuis 48h', desc:'Sophie Bernard et Emma Leroy attendent votre validation.', time:'Il y a 1j'},
+          {type:'warning', icon:'🟡', title:'Remplissage faible — Rome Éternelle', desc:'Seulement 24% des places réservées à 75 jours du départ.', time:'Il y a 1j'},
+          {type:'warning', icon:'🟡', title:'Contrat fournisseur expire bientôt', desc:'Le contrat TransEuropa expire le 30/04/2026.', time:'Il y a 3j'},
+          {type:'info', icon:'🔵', title:'Nouveau record de CA quotidien', desc:'5 420€ de réservations le 15/03/2026.', time:'Il y a 2j'},
+          {type:'info', icon:'🔵', title:'Export comptable disponible', desc:'L\'export Mars 2026 est prêt à être téléchargé.', time:'Il y a 3j'},
+        ].map((a,i) => (
+          <div key={i} className={`alert-bar ${a.type}`} style={{marginBottom:8}}>
+            <span>{a.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:600}}>{a.title}</div>
+              <div style={{fontSize:13, opacity:0.8}}>{a.desc}</div>
+            </div>
+            <span style={{fontSize:12, whiteSpace:'nowrap'}}>{a.time}</span>
+          </div>
+        ))}
+      </div>
+    );
+
+    // 16. PARAMETRES
+    const ParametresPage = () => (
+      <div className="fade-in">
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+          {[
+            {title:'Général', icon:'⚙️', items:['Nom de la plateforme','Langue par défaut','Fuseau horaire','Mode maintenance']},
+            {title:'Sécurité', icon:'🔒', items:['2FA obligatoire','Durée session','IP whitelist','Politique mots de passe']},
+            {title:'Paiements', icon:'💳', items:['Clés Stripe','TVA marge','Devise par défaut','Acompte minimum']},
+            {title:'Notifications', icon:'🔔', items:['Email admin','Alertes Slack','Seuils d\'alerte','Fréquence rapports']},
+            {title:'RGPD', icon:'🛡️', items:['Durée rétention','Anonymisation','Consentements','Droit à l\'oubli']},
+            {title:'API', icon:'🔌', items:['Clés API','Rate limiting','Webhooks','Logs API']},
+          ].map((s,i) => (
+            <div key={i} className="card fade-in" style={{animationDelay:`${i*0.05}s`}}>
+              <div className="card-header"><div className="card-title">{s.icon} {s.title}</div><button className="btn btn-outline btn-sm">Modifier</button></div>
+              {s.items.map((item,j) => (
+                <div key={j} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid #F1F5F9', fontSize:14}}>
+                  <span>{item}</span><span style={{color:'var(--text-secondary)'}}>Configuré ✓</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+
+    // 17. DOCUMENTS
+    const DocumentsPage = () => (
+      <div className="fade-in">
+        <div className="stats-grid">
+          <StatCard icon="📄" label="Documents" value="12" bg="#EFF6FF" />
+          <StatCard icon="✍️" label="À signer" value="3" bg="#FEF3C7" urgent />
+          <StatCard icon="✅" label="Signés" value="9" bg="#ECFDF5" />
+          <StatCard icon="⚠️" label="Expirés" value="0" bg="#F5F3FF" />
+        </div>
+        <div className="card">
+          <div className="table-container">
+            <table>
+              <thead><tr><th>Document</th><th>Type</th><th>Version</th><th>Signataire</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody>
+                {[
+                  {nom:'CGV Plateforme', type:'Legal', version:'v3.2', signataire:'—', statut:'active', date:'15/03/2026'},
+                  {nom:'Contrat Pro — Marie Dupont', type:'Contrat', version:'v1.0', signataire:'Marie Dupont', statut:'pending', date:'16/03/2026'},
+                  {nom:'Contrat Pro — Jean Martin', type:'Contrat', version:'v1.0', signataire:'Jean Martin', statut:'confirmed', date:'20/01/2026'},
+                  {nom:'Mandat SEPA Template', type:'Template', version:'v2.1', signataire:'—', statut:'active', date:'01/02/2026'},
+                  {nom:'Politique confidentialité', type:'Legal', version:'v2.0', signataire:'—', statut:'pending', date:'17/03/2026'},
+                ].map((d,i) => (
+                  <tr key={i}><td><strong>{d.nom}</strong></td><td>{d.type}</td><td><span style={{fontFamily:'monospace', fontSize:12}}>{d.version}</span></td>
+                    <td>{d.signataire}</td><td><StatusBadge status={d.statut} /></td><td>{d.date}</td>
+                    <td><button className="btn btn-outline btn-sm">Voir</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+
+    // 18. EXPORTS
+    const ExportsPage = () => {
+      const { addToast } = useToast();
+      const [generating, setGenerating] = useState(null);
+      const handleExport = (label) => { setGenerating(label); setTimeout(() => { setGenerating(null); addToast(`${label} généré avec succès — prêt au téléchargement`, 'success'); }, 1500); };
+      return (
+        <div className="fade-in">
+          <div className="card" style={{marginBottom:16}}>
+            <div className="card-title" style={{marginBottom:16}}>Générer un export</div>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:12}}>
+              {[
+                {icon:'📊', label:'Export comptable', desc:'Données financières'},
+                {icon:'👥', label:'Export utilisateurs', desc:'Liste des comptes'},
+                {icon:'✈️', label:'Export voyages', desc:'Détails voyages'},
+                {icon:'🎫', label:'Export réservations', desc:'Toutes les résas'},
+                {icon:'💰', label:'Export paiements', desc:'Historique transactions'},
+                {icon:'📈', label:'Export analytics', desc:'KPIs & métriques'},
+              ].map((e,i) => (
+                <div key={i} className="card" style={{cursor:'pointer', textAlign:'center', padding:16, opacity: generating && generating !== e.label ? 0.5 : 1, transition:'opacity 0.2s'}}>
+                  <div style={{fontSize:32, marginBottom:8}}>{e.icon}</div>
+                  <div style={{fontWeight:600, fontSize:14, marginBottom:4}}>{e.label}</div>
+                  <div style={{fontSize:12, color:'var(--text-secondary)', marginBottom:12}}>{e.desc}</div>
+                  <button className="btn btn-primary btn-sm" disabled={!!generating} onClick={()=>handleExport(e.label)}>
+                    {generating === e.label ? '⏳ Génération...' : '📥 Générer'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-title" style={{marginBottom:16}}>Exports récents</div>
+            {[{nom:'Export comptable Mars 2026', date:'16/03/2026', taille:'2.4 MB'},{nom:'Export utilisateurs', date:'14/03/2026', taille:'156 KB'},{nom:'Export réservations Fév 2026', date:'01/03/2026', taille:'890 KB'}].map((e,i) => (
+              <div key={i} style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:'1px solid #F1F5F9'}}>
+                <div><div style={{fontWeight:500}}>{e.nom}</div><div style={{fontSize:12, color:'var(--text-secondary)'}}>{e.date} · {e.taille}</div></div>
+                <button className="btn btn-outline btn-sm" onClick={()=>addToast(`${e.nom} téléchargé`, 'info')}>↓ Télécharger</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    // 19. MARKETING
+    const MarketingPage = () => (
+      <div className="fade-in">
+        <div className="stats-grid">
+          <StatCard icon="📧" label="Campagnes actives" value="2" bg="#FFF7ED" />
+          <StatCard icon="📬" label="Taux ouverture" value="28%" trend="+3pts" bg="#ECFDF5" />
+          <StatCard icon="👥" label="Base contacts" value="1 240" trend="+85 ce mois" bg="#EFF6FF" />
+          <StatCard icon="🖱️" label="Taux clic" value="4.2%" bg="#F5F3FF" />
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+          <div className="card">
+            <div className="card-title" style={{marginBottom:16}}>Campagnes récentes</div>
+            {[{nom:'Newsletter Mars — Nouveaux voyages', envois:1240, ouvert:'28%', clic:'4.2%', statut:'active'},{nom:'Promo Printemps -15%', envois:890, ouvert:'35%', clic:'6.1%', statut:'completed'},{nom:'Bienvenue nouveaux inscrits', envois:85, ouvert:'62%', clic:'12%', statut:'active'}].map((c,i) => (
+              <div key={i} style={{padding:'12px 0', borderBottom:'1px solid #F1F5F9'}}>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                  <strong style={{fontSize:14}}>{c.nom}</strong>
+                  <StatusBadge status={c.statut === 'active' ? 'active' : 'completed'} />
+                </div>
+                <div style={{display:'flex', gap:16, marginTop:6, fontSize:12, color:'var(--text-secondary)'}}>
+                  <span>📧 {c.envois} envois</span><span>👁️ {c.ouvert} ouvert</span><span>🖱️ {c.clic} clic</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="card">
+            <div className="card-title" style={{marginBottom:16}}>Templates email</div>
+            {['Confirmation réservation','Rappel départ J-7','Bienvenue voyageur','Demande avis post-voyage','Newsletter mensuelle'].map((t,i) => (
+              <div key={i} style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:'1px solid #F1F5F9'}}>
+                <span style={{fontSize:14}}>📄 {t}</span><button className="btn btn-outline btn-sm">Modifier</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+    // 20. NOTIFICATIONS / MONITORING
+    const MonitoringPage = () => {
+      const latencyData = {labels:['00h','04h','08h','12h','16h','20h','24h'], datasets:[{label:'Latence API (ms)', data:[98,85,124,156,134,112,108], borderColor:'#06D6A0', backgroundColor:'rgba(6,214,160,0.1)', fill:true, tension:0.4, borderWidth:2, pointRadius:3, pointBackgroundColor:'#06D6A0'}]};
+      const reqData = {labels:['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'], datasets:[{label:'Requêtes', data:[12400,15200,18300,16800,14200,8900,6200], backgroundColor:'rgba(0,119,182,0.6)', borderRadius:4, barThickness:24}]};
+      const errorData = {labels:['200 OK','301 Redirect','400 Bad','401 Unauth','404 Not Found','500 Server'], datasets:[{data:[89420,2100,340,120,890,45], backgroundColor:['#06D6A0','#0077B6','#F59E0B','#E63946','#7B2FF7','#991B1B'], borderWidth:0}]};
+      return (
+        <div className="fade-in">
+          <div className="stats-grid">
+            <StatCard icon="🟢" label="API Status" value="OK" bg="#ECFDF5" />
+            <StatCard icon="⚡" label="Temps réponse" value="124ms" bg="#EFF6FF" />
+            <StatCard icon="📊" label="Requêtes/min" value="342" bg="#FFF7ED" />
+            <StatCard icon="💾" label="DB Usage" value="67%" bg="#F5F3FF" />
+          </div>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:16}}>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>⚡ Latence API (24h)</div>
+              <ChartCanvas type="line" data={latencyData} height={220} options={{plugins:{legend:{display:false}}}} />
+            </div>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>📊 Requêtes par jour</div>
+              <ChartCanvas type="bar" data={reqData} height={220} options={{plugins:{legend:{display:false}}}} />
+            </div>
+          </div>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:16}}>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>🥧 Codes HTTP</div>
+              <ChartCanvas type="doughnut" data={errorData} height={240} options={{cutout:'60%'}} />
+            </div>
+            <div className="card">
+              <div className="card-title" style={{marginBottom:16}}>Services</div>
+              {[{nom:'API NestJS', statut:'🟢', uptime:'99.9%'},{nom:'PostgreSQL', statut:'🟢', uptime:'99.99%'},{nom:'Redis Cache', statut:'🟢', uptime:'99.8%'},{nom:'Stripe Webhooks', statut:'🟢', uptime:'99.95%'},{nom:'S3 Storage', statut:'🟢', uptime:'99.99%'},{nom:'Email (Resend)', statut:'🟡', uptime:'98.2%'}].map((s,i) => (
+                <div key={i} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid #F1F5F9', fontSize:14}}>
+                  <span style={{fontWeight:500}}>{s.statut} {s.nom}</span>
+                  <div style={{display:'flex', alignItems:'center', gap:8}}>
+                    <div className="progress-bar" style={{width:60}}><div className="progress-fill" style={{width:s.uptime, background: parseFloat(s.uptime)>99.5?'var(--mint)':'#F59E0B'}} /></div>
+                    <span style={{color:'var(--text-secondary)', fontSize:12, minWidth:45}}>{s.uptime}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ==================== MAIN APP ====================
+    const PAGES = {
+      dashboard: { title: 'Accueil Admin', breadcrumb: 'Admin', component: DashboardPage },
+      voyages: { title: 'Ops Voyages', breadcrumb: 'Admin > Opérations > Voyages', component: VoyagesPage },
+      'voyage-detail': { title: 'Détail Voyage', breadcrumb: 'Admin > Voyages > Détail', component: VoyageDetailPage },
+      'voyages-creer': { title: 'Créer un voyage', breadcrumb: 'Admin > Voyages > Nouveau', component: CreerVoyagePage },
+      finance: { title: 'Finance & Paiements', breadcrumb: 'Admin > Finance', component: FinancePage },
+      pros: { title: 'Validation Pro', breadcrumb: 'Admin > Gestion > Validation Pro', component: ProsPage },
+      utilisateurs: { title: 'Utilisateurs', breadcrumb: 'Admin > Système > Utilisateurs', component: UtilisateursPage },
+      support: { title: 'Support & Tickets', breadcrumb: 'Admin > Gestion > Support', component: SupportPage },
+      transport: { title: 'Transport', breadcrumb: 'Admin > Opérations > Transport', component: TransportPage },
+      rooming: { title: 'Fournisseurs / Hôtels', breadcrumb: 'Admin > Opérations > Hôtels', component: RoomingPage },
+      bookings: { title: 'Réservations', breadcrumb: 'Admin > Opérations > Réservations', component: BookingsPage },
+      annulations: { title: 'Annulations', breadcrumb: 'Admin > Gestion > Annulations', component: AnnulationsPage },
+      audit: { title: 'Audit Log', breadcrumb: 'Admin > Système > Audit', component: AuditPage },
+      alertes: { title: 'Alertes & Notifications', breadcrumb: 'Admin > Système > Alertes', component: AlertesPage },
+      parametres: { title: 'Paramètres', breadcrumb: 'Admin > Système > Paramètres', component: ParametresPage },
+      documents: { title: 'Documents & Signatures', breadcrumb: 'Admin > Gestion > Documents', component: DocumentsPage },
+      exports: { title: 'Exports', breadcrumb: 'Admin > Système > Exports', component: ExportsPage },
+      marketing: { title: 'Marketing', breadcrumb: 'Admin > Gestion > Marketing', component: MarketingPage },
+      notifications: { title: 'Monitoring', breadcrumb: 'Admin > Système > Monitoring', component: MonitoringPage },
+    };
+
+    function App() {
+      const [page, setPage] = useState('dashboard');
+      const [sidebarOpen, setSidebarOpen] = useState(false);
+      const [splash, setSplash] = useState(true);
+      const [searchOpen, setSearchOpen] = useState(false);
+      const [notifOpen, setNotifOpen] = useState(false);
+      const [dark, setDark] = useState(() => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+      useEffect(() => { setTimeout(() => setSplash(false), 2000); }, []);
+      useEffect(() => { document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light'); }, [dark]);
+
+      const navigate = useCallback((p) => { setPage(p); setSidebarOpen(false); setSearchOpen(false); setNotifOpen(false); window.scrollTo(0, 0); }, []);
+      const handleSearchToggle = useCallback((action) => { setSearchOpen(prev => action === 'toggle' ? !prev : false); }, []);
+
+      const currentPage = PAGES[page] || PAGES.dashboard;
+      const PageComponent = currentPage.component;
+
+      return (
+        <>
+          {/* Global Search */}
+          <GlobalSearch open={searchOpen} onClose={handleSearchToggle} navigate={navigate} />
+
+          {/* Notification Panel */}
+          <NotifPanel open={notifOpen} onClose={() => setNotifOpen(false)} />
+
+          {/* Splash Screen */}
+          <div className={`splash ${splash ? '' : 'hidden'}`}>
+            <div className="splash-icon">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <defs>
+                  <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#FF6B35" />
+                    <stop offset="50%" stopColor="#06D6A0" />
+                    <stop offset="100%" stopColor="#0077B6" />
+                  </linearGradient>
+                </defs>
+                <polygon points="40,8 72,24 72,56 40,72 8,56 8,24" fill="none" stroke="url(#g1)" strokeWidth="3" />
+                <circle cx="40" cy="30" r="8" fill="white" opacity="0.9" />
+                <path d="M24 52 C24 42 56 42 56 52" fill="white" opacity="0.7" />
+                <circle cx="26" cy="36" r="5" fill="white" opacity="0.6" />
+                <circle cx="54" cy="36" r="5" fill="white" opacity="0.6" />
+                <path d="M36 18 L40 12 L44 18" fill="#FFD700" stroke="#FFD700" strokeWidth="1" />
+                <path d="M34 18 L40 10 L46 18" fill="none" stroke="#FFD700" strokeWidth="1.5" />
+              </svg>
+            </div>
+            <h1 style={{color:'white'}}>Eventy Admin</h1>
+            <p>Portail Administrateur</p>
+            <div className="splash-loader"><div className="splash-loader-bar" /></div>
+          </div>
+
+          {/* Sidebar Overlay */}
+          <div className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)} />
+
+          {/* Sidebar */}
+          <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+            <div className="sidebar-logo">
+              <svg width="40" height="40" viewBox="0 0 40 40">
+                <rect width="40" height="40" rx="10" fill="#0A1628"/>
+                <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#FF6B35"/><stop offset="50%" stopColor="#06D6A0"/><stop offset="100%" stopColor="#0077B6"/></linearGradient></defs>
+                <polygon points="20,6 34,14 34,26 20,34 6,26 6,14" fill="none" stroke="url(#sg)" strokeWidth="2"/>
+                <circle cx="20" cy="16" r="4" fill="white" opacity="0.9"/>
+                <path d="M13 27 C13 22 27 22 27 27" fill="white" opacity="0.7"/>
+                <path d="M18 10 L20 7 L22 10" fill="#FFD700"/>
+              </svg>
+              <div><h1>Eventy</h1><span>Administration</span></div>
+            </div>
+
+            {NAV.map((section, i) => (
+              <div key={i} className="nav-section">
+                <div className="nav-section-title">{section.section}</div>
+                {section.items.map(item => (
+                  <div key={item.id} className={`nav-item ${page === item.id ? 'active' : ''}`} onClick={() => navigate(item.id)}>
+                    <span className="icon">{item.icon}</span>
+                    <span>{item.label}</span>
+                    {item.badge && <span className="badge">{item.badge}</span>}
+                  </div>
+                ))}
+              </div>
+            ))}
+
+            <div className="sidebar-user">
+              <div className="sidebar-user-avatar">DE</div>
+              <div className="sidebar-user-info">
+                <div className="sidebar-user-name">David Eventy</div>
+                <div className="sidebar-user-role">FounderAdmin</div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main */}
+          <main className="main">
+            <div className="topbar">
+              <div className="topbar-left">
+                <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+                <div>
+                  <h2>{currentPage.title}</h2>
+                  <div className="topbar-breadcrumb">{currentPage.breadcrumb}</div>
+                </div>
+              </div>
+              <div className="topbar-right">
+                <button className={`dark-toggle ${dark ? 'on' : ''}`} onClick={() => setDark(!dark)} title="Mode sombre"><div className="toggle-dot" /></button>
+                <button className="btn btn-outline btn-sm" onClick={() => setSearchOpen(true)} title="Recherche (⌘K)">🔍</button>
+                <button className="btn btn-outline btn-sm" style={{position:'relative'}} onClick={() => setNotifOpen(true)}>
+                  🔔 <span style={{position:'absolute', top:-4, right:-4, width:16, height:16, background:'var(--coral)', borderRadius:'50%', fontSize:10, color:'white', display:'flex', alignItems:'center', justifyContent:'center'}}>3</span>
+                </button>
+                <div className="topbar-avatar">DE</div>
+              </div>
+            </div>
+            <div className="content">
+              <PageComponent navigate={navigate} />
+            </div>
+          </main>
+
+          {/* Bottom Nav Mobile */}
+          <BottomNav page={page} navigate={navigate} />
+        </>
+      );
+    }
+
+    // Wrap App with ToastProvider
+    function Root() {
+      return React.createElement(ToastProvider, null, React.createElement(App));
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
+  </script>
+</body>
+</html>

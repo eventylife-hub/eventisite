@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devis - Eventy Life</title>
+    <style type="text/css">
+        body { margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; }
+        table { border-collapse: collapse; }
+        img { max-width: 100%; height: auto; display: block; }
+        a { color: #FF6B35; text-decoration: none; }
+        h1, h2, h3 { font-family: 'Fraunces', serif; margin: 0; }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#FEFCF3;">
+    <table role="presentation" style="width:100%; background-color:#FEFCF3;">
+        <tr>
+            <td align="center" style="padding:20px 0;">
+                <table role="presentation" style="width:100%; max-width:600px; background-color:#FFFFFF; border-radius:8px; box-shadow:0 2px 8px rgba(10,22,40,0.1);">
+                    <!-- Header with Logo -->
+                    <tr>
+                        <td style="padding:40px 30px; background:linear-gradient(135deg, #FF6B35 0%, #0077B6 100%); text-align:center; border-radius:8px 8px 0 0;">
+                            <h1 style="color:#FFFFFF; font-size:28px; margin:0 0 8px 0;">Eventy Life</h1>
+                            <p style="color:#FEFCF3; font-size:12px; margin:0; font-weight:300; letter-spacing:1px;">VOYAGES DE GROUPE</p>
+                        </td>
+                    </tr>
+
+                    <!-- Destination Hero -->
+                    <tr>
+                        <td style="padding:0; background:linear-gradient(135deg, rgba(0,119,182,0.95) 0%, rgba(6,214,160,0.95) 100%); height:200px; display:flex; align-items:center; justify-content:center; text-align:center;">
+                            <div style="color:#FFFFFF; text-align:center;">
+                                <h2 style="font-size:32px; margin:0 0 8px 0;">{{DESTINATION}}</h2>
+                                <p style="font-size:14px; margin:0; font-weight:300;">{{JOURNEY_DURATION}} jours de découvertes magiques</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding:40px 30px;">
+                            <!-- Personalized Greeting -->
+                            <h2 style="color:#0A1628; font-size:24px; margin-bottom:16px;">Bonjour {{FIRST_NAME}},</h2>
+                            <p style="color:#0A1628; font-size:14px; line-height:1.6; margin:0 0 24px 0;">
+                                Voici votre devis personnalisé pour le voyage {{VOYAGE_NAME}}. Ce prix est valable et réservé pour vous jusqu'au {{QUOTE_VALIDITY_DATE}}.
+                            </p>
+
+                            <!-- Price Breakdown Table -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">Détails du tarif</h3>
+                            <table role="presentation" style="width:100%; border:1px solid #E2E8F0; border-radius:4px; overflow:hidden; margin-bottom:24px;">
+                                <tr style="background-color:#F0F9FF;">
+                                    <td style="padding:12px 16px; color:#0077B6; font-size:13px; font-weight:700;">Élément</td>
+                                    <td style="padding:12px 16px; color:#0077B6; font-size:13px; font-weight:700; text-align:right;">Quantité</td>
+                                    <td style="padding:12px 16px; color:#0077B6; font-size:13px; font-weight:700; text-align:right;">Tarif unitaire</td>
+                                    <td style="padding:12px 16px; color:#0077B6; font-size:13px; font-weight:700; text-align:right;">Total</td>
+                                </tr>
+                                <tr style="border-top:1px solid #E2E8F0;">
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px;">Forfait base par personne</td>
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px; text-align:right;">{{PARTICIPANTS_COUNT}}</td>
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px; text-align:right;">{{PRICE_PER_PERSON}}€</td>
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px; font-weight:700; text-align:right;">{{SUBTOTAL_BASE}}€</td>
+                                </tr>
+                                {{#OPTIONS}}
+                                <tr style="border-top:1px solid #E2E8F0;">
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px;">{{OPTION_NAME}}</td>
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px; text-align:right;">{{OPTION_QTY}}</td>
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px; text-align:right;">{{OPTION_PRICE}}€</td>
+                                    <td style="padding:12px 16px; color:#0A1628; font-size:13px; font-weight:700; text-align:right;">{{OPTION_TOTAL}}€</td>
+                                </tr>
+                                {{/OPTIONS}}
+                                <tr style="background-color:#FEFCF3; border-top:2px solid #0077B6;">
+                                    <td colspan="3" style="padding:14px 16px; color:#0A1628; font-size:14px; font-weight:700; text-align:right;">TOTAL:</td>
+                                    <td style="padding:14px 16px; color:#FF6B35; font-size:16px; font-weight:700; text-align:right;">{{TOTAL_PRICE}}€</td>
+                                </tr>
+                            </table>
+
+                            <!-- Pack Sérénité Highlight -->
+                            <table role="presentation" style="width:100%; background:linear-gradient(135deg, #F0FDF4 0%, #DBEAFE 100%); border-left:4px solid #06D6A0; border-radius:4px; padding:20px; margin-bottom:24px;">
+                                <tr>
+                                    <td>
+                                        <h3 style="color:#06D6A0; font-size:16px; margin:0 0 8px 0;">🛡️ Pack Sérénité inclus</h3>
+                                        <ul style="color:#047857; font-size:13px; margin:0; padding-left:20px; line-height:1.8;">
+                                            <li>Assurance voyage complète (annulation, rapatriement)</li>
+                                            <li>Assistance 24/7 pendant toute la durée du voyage</li>
+                                            <li>Couverture incidents et imprévus</li>
+                                            <li>Numéro d'urgence dédié</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Validity Notice -->
+                            <table role="presentation" style="width:100%; background-color:#FFF7ED; border-left:4px solid #FF6B35; border-radius:4px; padding:16px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="color:#7C2D12; font-size:12px; line-height:1.6;">
+                                        ⏰ <strong>Offre valable jusqu'au {{QUOTE_VALIDITY_DATE}}</strong><br>
+                                        Ce tarif vous est réservé. Après cette date, les tarifs peuvent être modifiés selon la disponibilité.
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="{{BOOKING_URL}}" style="display:inline-block; padding:14px 32px; background:linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%); color:#FFFFFF; text-decoration:none; border-radius:4px; font-weight:700; font-size:14px;">Réserver maintenant</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Additional Info -->
+                            <p style="color:#666; font-size:12px; line-height:1.6; margin:0;">
+                                <strong>Questions sur ce devis?</strong><br>
+                                Consultez les détails complets du voyage, les conditions d'annulation, et contactez-nous pour adapter le forfait à vos besoins.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding:30px; background-color:#0A1628; border-radius:0 0 8px 8px; text-align:center;">
+                            <p style="color:#FFFFFF; font-size:12px; margin:0 0 12px 0;">
+                                © 2026 Eventy Life - Tous droits réservés
+                            </p>
+                            <p style="color:#94A3B8; font-size:11px; margin:0 0 8px 0;">
+                                <a href="{{UNSUBSCRIBE_URL}}" style="color:#94A3B8; text-decoration:none;">Se désabonner</a> |
+                                <a href="{{PRIVACY_POLICY_URL}}" style="color:#94A3B8; text-decoration:none;">Politique de confidentialité</a> |
+                                <a href="{{LEGAL_NOTICE_URL}}" style="color:#94A3B8; text-decoration:none;">Mentions légales</a>
+                            </p>
+                            <p style="color:#64748B; font-size:10px; margin:0;">
+                                Eventy Life - Plateforme de voyages de groupe | Paris, France
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

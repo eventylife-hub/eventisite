@@ -1,0 +1,182 @@
+================================================================================
+SECURITY AUDIT: WAITLIST & PRE-RESERVATION SERVICES
+Date: 2026-03-13
+================================================================================
+
+AUDIT SCOPE:
+  • Search: /backend/src/modules for waitlist/pre-reservation services
+  • Check: IDOR, idempotency, pagination, error handling, external calls
+  • Status: Models defined in schema.prisma, NO services implemented yet
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+CRITICAL ISSUES (if services are added without safeguards):
+  1. IDOR Vulnerability — PreReservation model lacks user/owner field
+  2. Missing Idempotency — No duplicate prevention on create
+  3. Financial Data Exposure — depositAmountTTC exposed in errors
+  4. Unchecked Pagination — No limits on list endpoints
+  5. Unsafe External Calls — No try/catch around email/SMS
+
+HIGH PRIORITY SCHEMA ISSUES:
+  • PreReservation: No createdBy field (audit trail missing)
+  • PreReservation: No unique constraint on (travelId, orgCodeId)
+  • WaitlistEntry: No unique constraint on (travelId, email)
+  • Both: No encryption for PII (email, phone)
+
+================================================================================
+MODELS STATUS
+================================================================================
+
+PreReservation Model:
+  Location: /backend/prisma/schema.prisma (line 1606)
+  Fields: id, travelId, orgCodeId, status, depositAmountTTC, etc.
+  Issue: No owner field, no unique constraints, no createdBy
+  Risk: CRITICAL if service doesn't validate ownership
+
+WaitlistEntry Model:
+  Location: /backend/prisma/schema.prisma (line 1647)
+  Fields: id, travelId, email, phone, status
+  Issue: No deduplication, email-only (no user linkage)
+  Risk: HIGH — duplicate registrations possible
+
+Services:
+  Status: NOT IMPLEMENTED
+  Controllers: NOT IMPLEMENTED
+  Tests: NOT IMPLEMENTED
+
+================================================================================
+DELIVERABLES
+================================================================================
+
+1. SECURITY_AUDIT_WAITLIST_PRERESERVATION.md
+   → Complete audit findings, vulnerabilities, checklist for implementation
+
+2. REMEDIATION_TEMPLATES_WAITLIST.md
+   → Code templates for secure implementation
+   → Schema migrations, DTOs, services, controllers, tests
+   → IDOR protection examples, pagination enforcement, error handling
+
+================================================================================
+RECOMMENDATIONS (Priority Order)
+================================================================================
+
+P0 - BLOCKING:
+  [1] Add createdBy field to PreReservation
+  [2] Add @@unique([travelId, orgCodeId]) to PreReservation
+  [3] Add @@unique([travelId, email]) to WaitlistEntry
+
+P1 - HIGH (Before service implementation):
+  [4] Create DTOs with Zod validation
+  [5] Implement PreReservationService with ownership checks
+  [6] Implement WaitlistService with duplicate prevention
+  [7] Create controllers with @UseGuards(JwtAuthGuard, RolesGuard)
+
+P2 - MEDIUM:
+  [8] Add soft-delete support (isDeleted flag)
+  [9] Encrypt PII fields (GDPR compliance)
+  [10] Implement audit logging (createdBy, updatedBy)
+
+================================================================================
+IMPLEMENTATION PATTERNS (from existing code)
+================================================================================
+
+✓ Copy ownership check pattern from travels.service.ts (lines 265-279)
+✓ Use Zod schemas like CreateTravelInputSchema (lines 14-24)
+✓ Reuse RolesGuard and JwtAuthGuard from auth module
+✓ Apply pagination limits similar to TravelsService.findAllPublished()
+✓ Use try/catch around Prisma operations (P2002 handling)
+
+================================================================================
+SECURITY CHECKLIST FOR IMPLEMENTATION
+================================================================================
+
+Access Control:
+  [ ] All GET endpoints check ownership via proProfileId
+  [ ] Admin endpoints use @UseGuards(RolesGuard) + @Roles('ADMIN')
+  [ ] No inline role checks — only guards
+  [ ] Middleware validates JWT before service execution
+
+Input Validation:
+  [ ] All DTOs validated with Zod/class-validator
+  [ ] Pagination: max take = 100, default = 10
+  [ ] Email format validated (RFC 5321)
+  [ ] Phone format validated or rejected
+  [ ] Dates validated (must be future, not past)
+
+Idempotency:
+  [ ] POST endpoints check for existing records
+  [ ] Unique constraints prevent duplicates
+  [ ] Conflict responses on duplicates (409)
+
+Error Handling:
+  [ ] No sensitive data in error messages
+  [ ] No JSON.stringify(entity) in exceptions
+  [ ] Generic responses to users
+  [ ] Try/catch around external calls
+
+Data Protection:
+  [ ] Encrypt PII if required (GDPR)
+  [ ] Audit trail: createdBy, updatedBy
+  [ ] Soft-delete support
+  [ ] No financial data in logs
+
+Testing:
+  [ ] IDOR tests (User A cannot access User B's data)
+  [ ] Duplicate creation blocked
+  [ ] Pagination limits enforced
+  [ ] External call failures handled
+
+================================================================================
+FILES AFFECTED
+================================================================================
+
+Schema Changes (Required):
+  /backend/prisma/schema.prisma — Add createdBy, unique constraints
+
+Services to Create:
+  /backend/src/modules/pre-reservations/pre-reservations.service.ts
+  /backend/src/modules/pre-reservations/pre-reservations.controller.ts
+  /backend/src/modules/pre-reservations/dto/*.ts
+  /backend/src/modules/waitlist/waitlist.service.ts
+  /backend/src/modules/waitlist/waitlist.controller.ts
+  /backend/src/modules/waitlist/dto/*.ts
+
+Test Files:
+  /backend/src/modules/pre-reservations/*.spec.ts
+  /backend/src/modules/waitlist/*.spec.ts
+
+================================================================================
+ESTIMATED EFFORT
+================================================================================
+
+Schema migrations: 0.5 hours
+DTOs + Zod schemas: 1 hour
+Services (both): 2-3 hours
+Controllers: 1 hour
+Tests (IDOR, pagination, duplicates): 1.5-2 hours
+—————————————
+TOTAL: 6-8 hours (with security-first approach)
+
+================================================================================
+CONCLUSION
+================================================================================
+
+Current Status: SAFE (services don't exist yet)
+Risk Level: MANAGEABLE if security measures are built in from day one
+
+Once implemented, apply patterns from travels.service.ts consistently:
+  • Ownership checks via proProfileId
+  • Zod input validation
+  • Guard-based role enforcement
+  • Pagination limits
+  • Error handling
+
+The backend's architecture is solid. These new services just need to follow
+the same security patterns already established in other modules.
+
+See SECURITY_AUDIT_WAITLIST_PRERESERVATION.md for full details.
+See REMEDIATION_TEMPLATES_WAITLIST.md for code templates.
+
+================================================================================

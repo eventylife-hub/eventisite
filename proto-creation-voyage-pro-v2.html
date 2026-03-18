@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Eventy Pro — Créer un voyage (Phase 1)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#0f172a;min-height:100vh;display:flex}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:#1e293b;color:#cbd5e1;flex-shrink:0;display:flex;flex-direction:column;min-height:100vh}
+.sb-logo{padding:18px 16px 14px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:10px}
+.sb-logo .ic{width:30px;height:30px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.sb-logo .tx{font-weight:700;color:#fff;font-size:14px}
+.sb-logo .bx{font-size:9px;background:#6366f1;color:#fff;padding:1px 5px;border-radius:9px;font-weight:600;margin-top:1px}
+.sb-user{padding:10px 14px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:8px}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.un{font-size:12px;font-weight:600;color:#fff}.us{font-size:10px;color:#94a3b8}
+.sb-nav{flex:1;padding:10px 6px}
+.nl{font-size:9px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.08em;padding:6px 8px 3px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:6px;font-size:12px;cursor:pointer;color:#94a3b8;margin-bottom:1px;transition:all .12s}
+.ni:hover{background:#334155;color:#e2e8f0}
+.ni.on{background:#312e81;color:#fff;font-weight:600}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.bc{display:flex;align-items:center;gap:5px;font-size:12px;color:#64748b}
+.bc a{color:#6366f1;font-weight:500;text-decoration:none}
+.tba{display:flex;gap:8px}
+.tbtn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid #e2e8f0;background:#f8fafc;color:#475569;transition:all .12s}
+.tbtn:hover{background:#e2e8f0}
+.tbtn.pri{background:#6366f1;color:#fff;border-color:#6366f1}
+.tbtn.pri:hover{background:#4f46e5}
+
+.content{padding:20px;max-width:940px}
+
+/* PAGE HEADER */
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.ph h1{font-size:20px;font-weight:700;color:#0f172a}
+.ph p{font-size:12px;color:#64748b;margin-top:2px}
+.badge-draft{display:inline-flex;align-items:center;gap:5px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:600}
+.badge-draft::before{content:'';width:6px;height:6px;background:#f59e0b;border-radius:50%}
+
+/* PHASE STEPPER */
+.ps{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center}
+.pstep{display:flex;align-items:center;flex:1}
+.pc{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.pc.a{background:#6366f1;color:#fff;box-shadow:0 0 0 3px #e0e7ff}
+.pc.p{background:#f1f5f9;color:#94a3b8;border:2px solid #e2e8f0}
+.pi{margin-left:9px}
+.pl{font-size:12px;font-weight:600;color:#1e293b}
+.pl.a{color:#6366f1}
+.ps2{font-size:10px;color:#94a3b8;margin-top:1px}
+.pcon{flex:1;height:2px;background:#e2e8f0;margin:0 10px}
+
+/* QUALITY */
+.qc{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.ql{font-size:11px;font-weight:600;color:#475569;white-space:nowrap}
+.qbw{flex:1}
+.qbb{background:#f1f5f9;border-radius:99px;height:7px;overflow:hidden}
+.qbf{height:100%;border-radius:99px;background:linear-gradient(90deg,#6366f1,#8b5cf6);transition:width .3s}
+.qt{font-size:11px;color:#94a3b8;margin-top:3px}
+.qp{font-size:13px;font-weight:700;color:#6366f1;white-space:nowrap}
+
+/* WIZARD */
+.wl{display:flex;gap:16px;align-items:flex-start}
+.wsn{width:175px;flex-shrink:0;background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;position:sticky;top:68px}
+.wst{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;border-bottom:1px solid #f1f5f9;transition:background .1s}
+.wst:last-child{border-bottom:none}
+.wst:hover{background:#f8fafc}
+.wst.on{background:#eef2ff;border-right:3px solid #6366f1}
+.sc{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.sc.a{background:#6366f1;color:#fff}
+.sc.d{background:#22c55e;color:#fff}
+.sc.p{background:#f1f5f9;color:#94a3b8;border:1.5px solid #e2e8f0}
+.sti{flex:1;min-width:0}
+.stl{font-size:11px;font-weight:600;color:#1e293b}
+.stl.a{color:#6366f1}
+.sts{font-size:10px;color:#94a3b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* PANELS */
+.wc{flex:1;min-width:0}
+.sp{display:none;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:22px}
+.sp.on{display:block}
+.st{font-size:17px;font-weight:700;color:#0f172a;margin-bottom:3px}
+.sd{font-size:12px;color:#64748b;margin-bottom:18px}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:600;color:#374151;margin-bottom:5px}
+.fl .r{color:#ef4444;margin-left:2px}
+.fi{width:100%;padding:8px 11px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:12px;color:#1e293b;outline:none;transition:border-color .15s,box-shadow .15s;background:#fff}
+.fi:focus{border-color:#6366f1;box-shadow:0 0 0 3px #eef2ff}
+.fi::placeholder{color:#cbd5e1}
+textarea.fi{resize:vertical;min-height:75px}
+select.fi{cursor:pointer}
+.fh{font-size:10px;color:#94a3b8;margin-top:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* RICH TEXT */
+.rtb{display:flex;gap:2px;padding:5px 7px;background:#f8fafc;border:1.5px solid #e2e8f0;border-bottom:none;border-radius:7px 7px 0 0}
+.rb{padding:3px 7px;border-radius:3px;font-size:10px;font-weight:600;background:none;border:none;cursor:pointer;color:#64748b}
+.rb:hover{background:#e2e8f0}
+.rta{width:100%;padding:8px 11px;border:1.5px solid #e2e8f0;border-radius:0 0 7px 7px;font-size:12px;min-height:90px;resize:vertical;outline:none;color:#1e293b}
+.rta:focus{border-color:#6366f1;box-shadow:0 0 0 3px #eef2ff}
+.cc{font-size:10px;color:#94a3b8;text-align:right;margin-top:3px}
+.cc span{color:#6366f1;font-weight:600}
+
+/* ROOM CARDS */
+.rc{border:1.5px solid #e2e8f0;border-radius:9px;padding:12px;background:#fafafa;margin-bottom:9px}
+.rch{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.rn{font-size:11px;font-weight:700;color:#6366f1;background:#eef2ff;padding:2px 8px;border-radius:9px}
+.xb{background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px;padding:1px 5px;border-radius:4px}
+.xb:hover{background:#fef2f2}
+.addb{width:100%;padding:9px;border:2px dashed #cbd5e1;border-radius:9px;background:none;color:#64748b;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;margin-top:4px}
+.addb:hover{border-color:#6366f1;color:#6366f1;background:#eef2ff}
+.rs{background:#eef2ff;border-radius:7px;padding:9px 12px;margin-top:9px;font-size:11px;color:#4338ca;display:flex;gap:14px}
+
+/* DAYS */
+.dc{border:1.5px solid #e2e8f0;border-radius:9px;overflow:hidden;margin-bottom:9px}
+.dh{background:#f8fafc;padding:10px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #e2e8f0}
+.dn{width:26px;height:26px;background:#6366f1;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.dti{flex:1;padding:5px 9px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:12px;font-weight:600;color:#1e293b;outline:none}
+.dti:focus{border-color:#6366f1}
+.db{padding:11px 12px}
+.ar{display:flex;align-items:center;gap:7px;margin-bottom:6px;background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;padding:5px 9px}
+.at{width:65px;padding:3px 5px;border:1.5px solid #e2e8f0;border-radius:4px;font-size:10px;outline:none;color:#1e293b}
+.al{flex:1;padding:3px 7px;border:1.5px solid #e2e8f0;border-radius:4px;font-size:11px;outline:none;color:#1e293b}
+.aab{background:none;border:none;color:#6366f1;cursor:pointer;font-size:11px;font-weight:500;display:flex;align-items:center;gap:3px;padding:3px 0;margin-top:3px}
+
+/* PHOTOS */
+.cu{border:2px dashed #cbd5e1;border-radius:10px;padding:28px 18px;text-align:center;cursor:pointer;background:#fafafa;transition:all .15s}
+.cu:hover{border-color:#6366f1;background:#eef2ff}
+.cu .ci{font-size:28px;margin-bottom:7px}
+.cu p{font-size:12px;color:#64748b}
+.cu small{font-size:10px;color:#94a3b8;margin-top:3px;display:block}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:11px}
+.pt{aspect-ratio:4/3;border-radius:7px;overflow:hidden;position:relative;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:flex;align-items:center;justify-content:center}
+.pt .ptl{font-size:10px;color:#6366f1;font-weight:600}
+.pt .prm{position:absolute;top:5px;right:5px;width:20px;height:20px;background:rgba(0,0,0,.45);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;cursor:pointer;border:none}
+.padd{aspect-ratio:4/3;border-radius:7px;border:2px dashed #cbd5e1;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fafafa;transition:all .15s;flex-direction:column;gap:3px}
+.padd:hover{border-color:#6366f1;background:#eef2ff}
+.ptip{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;color:#d97706;background:#fffbeb;padding:7px 11px;border-radius:7px}
+
+/* BUS STOPS */
+.sg{margin-bottom:14px}
+.sgl{font-size:11px;font-weight:700;color:#374151;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.dg{width:7px;height:7px;background:#22c55e;border-radius:50%}
+.db2{width:7px;height:7px;background:#3b82f6;border-radius:50%}
+.si{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1.5px solid #e2e8f0;border-radius:7px;margin-bottom:5px;cursor:pointer;transition:all .1s;background:#fff}
+.si:hover{border-color:#a5b4fc;background:#fafafe}
+.si.sel{border-color:#6366f1;background:#eef2ff}
+.sc2{width:14px;height:14px;accent-color:#6366f1;cursor:pointer}
+.sii{flex:1}
+.sn{font-size:12px;font-weight:600;color:#1e293b}
+.sa{font-size:10px;color:#94a3b8;margin-top:1px}
+
+/* OCCURRENCES */
+.ob{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:11px 14px;margin-bottom:13px;display:flex;align-items:center;gap:7px;font-size:12px;color:#15803d}
+.ogf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ogs{padding:7px 11px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:12px;color:#1e293b;background:#fff;outline:none}
+.ogb{padding:7px 14px;background:#6366f1;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.ogb:hover{background:#4f46e5}
+.ol{margin-top:13px}
+.oi{display:flex;align-items:center;gap:11px;padding:8px 11px;border:1px solid #e2e8f0;border-radius:7px;margin-bottom:5px;background:#fff}
+.oidx{font-size:10px;font-weight:700;color:#6366f1;width:22px}
+.odt{font-size:11px;color:#1e293b;flex:1}
+.odur{font-size:10px;color:#94a3b8}
+.ost{font-size:9px;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:9px;font-weight:600}
+
+/* RECAP */
+.rb2{border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;margin-bottom:11px}
+.rbh{background:#f8fafc;padding:9px 13px;font-size:12px;font-weight:700;color:#1e293b;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
+.rbb{padding:11px 13px}
+.rr{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.rr:last-child{margin-bottom:0}
+.rk{color:#64748b}
+.rv{color:#1e293b;font-weight:500;text-align:right;max-width:58%}
+.bok{font-size:10px;background:#f0fdf4;color:#15803d;padding:1px 7px;border-radius:9px;font-weight:600}
+.bwn{font-size:10px;background:#fffbeb;color:#92400e;padding:1px 7px;border-radius:9px;font-weight:600}
+
+/* SUBMIT ZONE */
+.sz{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-top:18px}
+.szt{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:11px}
+.pi2{display:flex;align-items:flex-start;gap:9px;padding:8px 11px;border-radius:7px;margin-bottom:5px;font-size:11px}
+.pi2.ok{background:#f0fdf4;color:#15803d}
+.pi2.nk{background:#fef2f2;color:#991b1b}
+.pi2.wn{background:#fffbeb;color:#92400e}
+.pie{font-size:13px;flex-shrink:0;margin-top:1px}
+.pit{flex:1}
+.pil{font-size:10px;font-weight:600;text-decoration:underline;cursor:pointer;margin-top:2px;color:#ef4444}
+.btn-locked{width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid #d1d5db;background:#f3f4f6;color:#9ca3af;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-active{width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:700;border:none;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(99,102,241,.3);transition:all .15s}
+.btn-active:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.4)}
+.tmb{text-align:center;margin-top:11px;padding:9px;background:#f0f9ff;border-radius:7px;font-size:11px;color:#0369a1}
+
+/* TOGGLE */
+.tr{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #f1f5f9}
+.tl{font-size:12px;font-weight:600;color:#1e293b}
+.tsb{font-size:10px;color:#94a3b8;margin-top:1px}
+.tp{position:relative;width:40px;height:22px;background:#22c55e;border-radius:11px;cursor:not-allowed;opacity:.7}
+.tp::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:3px;left:calc(100% - 19px);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tlt{font-size:9px;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:9px;font-weight:600}
+
+/* BOTTOM BAR */
+.bb{background:#fff;border-top:1px solid #e2e8f0;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;bottom:0;margin-left:-20px;margin-right:-20px;margin-top:20px}
+.bbl{display:flex;align-items:center;gap:9px}
+.bnd{padding:8px 15px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:12px;font-weight:600;color:#475569;background:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .12s}
+.bnd:hover{border-color:#94a3b8;background:#f8fafc}
+.bdp{padding:8px 15px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:12px;font-weight:600;color:#6366f1;background:#eef2ff;cursor:pointer;display:flex;align-items:center;gap:5px}
+.bdp:hover{background:#e0e7ff}
+.bnav{padding:8px 15px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .12s}
+.bprev{background:#f1f5f9;color:#64748b}
+.bprev:hover{background:#e2e8f0}
+.bnxt{background:#6366f1;color:#fff}
+.bnxt:hover{background:#4f46e5}
+
+/* ALERTS */
+.ia{display:flex;align-items:flex-start;gap:7px;padding:9px 12px;background:#eff6ff;border-radius:7px;font-size:11px;color:#1d4ed8;margin-top:11px}
+.sm{display:none;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:9px 12px;border-radius:7px;font-size:12px;font-weight:500;align-items:center;gap:5px;margin-bottom:14px}
+.div{border:none;border-top:1px solid #f1f5f9;margin:14px 0}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="ic">E</div>
+    <div><div class="tx">Eventy Pro</div><div class="bx">PACK VOYAGE</div></div>
+  </div>
+  <div class="sb-user">
+    <div class="av">DM</div>
+    <div><div class="un">David Martin</div><div class="us">CREATOR · VALIDÉ</div></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="nl">Principal</div>
+    <div class="ni">🏠 Accueil</div>
+    <div class="ni">🔔 Notifications <span style="margin-left:auto;background:#ef4444;color:#fff;font-size:9px;padding:1px 5px;border-radius:9px;font-weight:700">3</span></div>
+    <div class="ni">💰 Revenus</div>
+    <div class="nl" style="margin-top:6px">Pack Voyage</div>
+    <div class="ni on">✈️ Créer un voyage</div>
+    <div class="ni">📋 Mes voyages</div>
+    <div class="ni">🌐 Ma page publique</div>
+    <div class="ni">💼 Ventes</div>
+    <div class="nl" style="margin-top:6px">Compte</div>
+    <div class="ni">👤 Mon profil</div>
+    <div class="ni">🏢 Entreprise</div>
+    <div class="ni">📄 Documents <span style="margin-left:auto;background:#f59e0b;color:#fff;font-size:9px;padding:1px 5px;border-radius:9px;font-weight:700">!</span></div>
+    <div class="ni">🏦 Paiements</div>
+    <div class="ni">✅ Validation</div>
+    <div class="ni">🎓 Formation</div>
+    <div class="ni">🎧 Support</div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="bc"><a href="#">Mes voyages</a> <span style="color:#cbd5e1">›</span> <span style="color:#1e293b;font-weight:500">Nouveau voyage</span></div>
+    <div class="tba">
+      <button class="tbtn" onclick="alert('Aperçu de la fiche voyage')">👁 Prévisualiser</button>
+      <button class="tbtn" onclick="saveDraft()">💾 Brouillon</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="sm" id="sm">✅ Brouillon enregistré !</div>
+
+    <div class="ph">
+      <div><h1>Créer un nouveau voyage</h1><p>Remplissez les informations pour soumettre à la validation Eventy</p></div>
+      <div class="badge-draft">BROUILLON · Phase 1</div>
+    </div>
+
+    <!-- PHASE STEPPER -->
+    <div class="ps">
+      <div class="pstep">
+        <div class="pc a">1</div>
+        <div class="pi"><div class="pl a">Phase 1 — Fiche voyage</div><div class="ps2">En cours · BROUILLON</div></div>
+      </div>
+      <div class="pcon"></div>
+      <div class="pstep">
+        <div class="pc p">2</div>
+        <div class="pi"><div class="pl" style="color:#94a3b8">Phase 2 — Transport & ramassage</div><div class="ps2">Après validation Phase 1</div></div>
+      </div>
+      <div class="pcon"></div>
+      <div class="pstep">
+        <div class="pc p">✓</div>
+        <div class="pi"><div class="pl" style="color:#94a3b8">Publication</div><div class="ps2">Réservations ouvertes</div></div>
+      </div>
+    </div>
+
+    <!-- QUALITY BAR -->
+    <div class="qc">
+      <div class="ql">📊 Qualité fiche</div>
+      <div class="qbw">
+        <div class="qbb"><div class="qbf" id="qf" style="width:35%"></div></div>
+        <div class="qt">Ajoutez photo cover + description complète pour atteindre 80%</div>
+      </div>
+      <div class="qp" id="qp">35%</div>
+    </div>
+
+    <!-- WIZARD -->
+    <div class="wl">
+      <!-- NAV STEPS -->
+      <nav class="wsn">
+        <div class="wst on" onclick="go(1)" id="tab1"><div class="sc a" id="sc1">1</div><div class="sti"><div class="stl a" id="stl1">Informations</div><div class="sts">Titre, dates, destination</div></div></div>
+        <div class="wst" onclick="go(2)" id="tab2"><div class="sc p" id="sc2">2</div><div class="sti"><div class="stl" id="stl2">Visuels</div><div class="sts">Photo cover + galerie</div></div></div>
+        <div class="wst" onclick="go(3)" id="tab3"><div class="sc p" id="sc3">3</div><div class="sti"><div class="stl" id="stl3">Hébergement</div><div class="sts">Chambres & tarifs</div></div></div>
+        <div class="wst" onclick="go(4)" id="tab4"><div class="sc p" id="sc4">4</div><div class="sti"><div class="stl" id="stl4">Programme</div><div class="sts">Jour par jour</div></div></div>
+        <div class="wst" onclick="go(5)" id="tab5"><div class="sc p" id="sc5">5</div><div class="sti"><div class="stl" id="stl5">Repas</div><div class="sts">Inclus · MVP</div></div></div>
+        <div class="wst" onclick="go(6)" id="tab6"><div class="sc p" id="sc6">6</div><div class="sti"><div class="stl" id="stl6">Arrêts bus</div><div class="sts">Départ & arrivée</div></div></div>
+        <div class="wst" onclick="go(7)" id="tab7"><div class="sc p" id="sc7">7</div><div class="sti"><div class="stl" id="stl7">Occurrences</div><div class="sts">Planification dates</div></div></div>
+        <div class="wst" onclick="go(8)" id="tab8"><div class="sc p" id="sc8">8</div><div class="sti"><div class="stl" id="stl8">Récapitulatif</div><div class="sts">Vérifier & soumettre</div></div></div>
+      </nav>
+
+      <!-- CONTENT -->
+      <div class="wc">
+
+        <!-- STEP 1 -->
+        <div class="sp on" id="p1">
+          <div class="st">📋 Informations de base</div>
+          <div class="sd">Ces informations seront affichées sur la fiche publique de votre voyage.</div>
+          <div class="fg"><label class="fl">Titre du voyage <span class="r">*</span></label><input class="fi" type="text" value="Week-end à Marrakech 🇲🇦 — Départ toutes villes" placeholder="Ex : Week-end à Paris"/><div class="fh">Soyez précis et accrocheur. Max 100 caractères.</div></div>
+          <div class="fg"><label class="fl">Promesse / accroche <span class="r">*</span></label><input class="fi" type="text" value="4 jours de découverte, hébergement inclus, accompagnement Eventy porte-à-porte" placeholder="Ex : 4 jours de rêve, tout inclus"/></div>
+          <div class="fg">
+            <label class="fl">Description détaillée <span class="r">*</span></label>
+            <div class="rtb"><button class="rb">B</button><button class="rb" style="font-style:italic">I</button><button class="rb">H2</button><button class="rb">• —</button><button class="rb">🔗</button></div>
+            <textarea class="rta">Partez à la découverte de Marrakech, la ville ocre, avec un voyage organisé de A à Z par votre pro de confiance. Au programme : visite de la médina, souks, palais El Badi, et soirée spectacle.
+
+🏨 Hébergement 4★ en demi-pension
+🚌 Transport confortable porte-à-porte
+🎉 Accompagnement terrain inclus</textarea>
+            <div class="cc"><span>318</span> / 2000 caractères</div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Date de départ <span class="r">*</span></label><input class="fi" type="date" value="2026-06-12"/></div>
+            <div class="fg"><label class="fl">Date de retour <span class="r">*</span></label><input class="fi" type="date" value="2026-06-15"/></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label class="fl">Destination <span class="r">*</span></label><input class="fi" type="text" value="Marrakech, Maroc"/></div>
+            <div class="fg"><label class="fl">Ville de départ principale</label><input class="fi" type="text" value="Paris (multi-villes)"/></div>
+          </div>
+          <div class="g3">
+            <div class="fg"><label class="fl">Transport <span class="r">*</span></label><select class="fi"><option selected>🚌 Bus</option><option>✈️ Avion</option><option>🚐 Minibus</option></select></div>
+            <div class="fg"><label class="fl">Capacité <span class="r">*</span></label><input class="fi" type="number" value="42" min="1"/></div>
+            <div class="fg"><label class="fl">Min. pax (NO-GO)</label><input class="fi" type="number" value="30" min="1"/><div class="fh">Seuil décision J-14</div></div>
+          </div>
+          <div class="fg"><label class="fl">Slug SEO</label><div style="display:flex"><span style="padding:8px 9px;background:#f8fafc;border:1.5px solid #e2e8f0;border-right:none;border-radius:7px 0 0 7px;font-size:11px;color:#94a3b8">eventy.fr/voyage/</span><input class="fi" value="week-end-marrakech-depart-paris" style="border-radius:0 7px 7px 0"/></div></div>
+          <div class="ia">💡 Vos données sont sauvegardées automatiquement en brouillon.</div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="sp" id="p2">
+          <div class="st">🖼 Visuels</div>
+          <div class="sd">La photo cover est obligatoire — elle est utilisée sur le listing, les partages et les ventes.</div>
+          <div class="fg"><label class="fl">Photo cover (obligatoire) <span class="r">*</span></label>
+            <div class="cu" onclick="alert('Upload photo cover — S3 presigned URL')"><div class="ci">📸</div><p>Cliquez pour choisir votre photo principale</p><small>JPG, PNG, WebP — 16/9 recommandé — max 10 Mo</small></div>
+          </div>
+          <hr class="div"/>
+          <div class="fg"><label class="fl">Galerie (3–5 recommandées)</label>
+            <div class="pg">
+              <div class="pt"><span class="ptl">Photo 1 ✓</span><button class="prm" onclick="alert('Supprimer')">×</button></div>
+              <div class="pt" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)"><span class="ptl" style="color:#be185d">Photo 2 ✓</span><button class="prm" onclick="alert('Supprimer')">×</button></div>
+              <div class="padd" onclick="alert('Ajouter une photo')"><span style="font-size:18px">➕</span><p style="font-size:10px;color:#94a3b8">Ajouter</p></div>
+            </div>
+            <div class="ptip">⚠️ Ajoutez au moins 1 photo supplémentaire (3 recommandées).</div>
+          </div>
+          <hr class="div"/>
+          <div class="fg" style="opacity:.5"><label class="fl">Vidéo du voyage <span style="font-size:9px;background:#f1f5f9;color:#64748b;padding:1px 6px;border-radius:8px">Bientôt disponible</span></label>
+            <div class="cu" style="cursor:not-allowed"><div class="ci">🎬</div><p>Upload vidéo (feature flag OFF — MVP)</p></div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="sp" id="p3">
+          <div class="st">🏨 Hébergement</div>
+          <div class="sd">Configurez les types de chambres et tarifs par personne (TTC).</div>
+          <div class="rc"><div class="rch"><span class="rn"># Chambre 1</span><button class="xb" onclick="alert('Supprimer')">×</button></div>
+            <div class="g2">
+              <div class="fg"><label class="fl">Type</label><select class="fi"><option>Simple</option><option selected>Double</option><option>Triple</option><option>Quadruple</option><option>Suite</option></select></div>
+              <div class="fg"><label class="fl">Libellé</label><input class="fi" type="text" value="Vue patio"/></div>
+              <div class="fg"><label class="fl">Capacité (pers.)</label><input class="fi" type="number" value="2" min="1" max="8"/></div>
+              <div class="fg"><label class="fl">Prix / pers. (€ TTC)</label><input class="fi" type="number" value="349" step="0.01"/></div>
+              <div class="fg"><label class="fl">Nb de chambres</label><input class="fi" type="number" value="12"/></div>
+            </div>
+          </div>
+          <div class="rc"><div class="rch"><span class="rn"># Chambre 2</span><button class="xb" onclick="alert('Supprimer')">×</button></div>
+            <div class="g2">
+              <div class="fg"><label class="fl">Type</label><select class="fi"><option selected>Simple</option><option>Double</option></select></div>
+              <div class="fg"><label class="fl">Libellé</label><input class="fi" type="text" value="Occupation seule"/></div>
+              <div class="fg"><label class="fl">Capacité (pers.)</label><input class="fi" type="number" value="1"/></div>
+              <div class="fg"><label class="fl">Prix / pers. (€ TTC)</label><input class="fi" type="number" value="429" step="0.01"/></div>
+              <div class="fg"><label class="fl">Nb de chambres</label><input class="fi" type="number" value="6"/></div>
+            </div>
+          </div>
+          <button class="addb" onclick="alert('Ajouter un type de chambre')">➕ Ajouter un type de chambre</button>
+          <div class="rs"><span>🛏 <strong>18</strong> chambres</span><span>👥 <strong>30</strong> places max</span><span>💰 De <strong>349€</strong> à <strong>429€</strong> / pers.</span></div>
+          <div class="ia">💡 Les chambres seront verrouillées après le premier paiement client.</div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="sp" id="p4">
+          <div class="st">🗓 Programme jour par jour</div>
+          <div class="sd">Décrivez le déroulé de chaque journée avec les activités prévues.</div>
+          <button style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:#eef2ff;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:500;color:#4338ca;margin-bottom:13px" onclick="alert('Générer 4 jours depuis les dates 12–15 juin')">📅 Générer automatiquement 4 jours depuis vos dates</button>
+          <div class="dc"><div class="dh"><div class="dn">1</div><input type="text" class="dti" value="Jour 1 — Départ & arrivée"/><button class="xb" style="margin-left:7px" onclick="alert('Supprimer')">×</button></div>
+            <div class="db">
+              <textarea class="fi" rows="2" style="margin-bottom:9px" placeholder="Description générale...">Départ depuis vos villes. Arrivée à Marrakech en soirée.</textarea>
+              <div class="ar"><input type="time" class="at" value="06:00"/><input type="text" class="al" value="Départ Paris — Gare de l'Est"/><button class="xb" onclick="alert('Supprimer')">×</button></div>
+              <div class="ar"><input type="time" class="at" value="08:30"/><input type="text" class="al" value="Départ Lyon — Gare Perrache"/><button class="xb" onclick="alert('Supprimer')">×</button></div>
+              <div class="ar"><input type="time" class="at" value="22:00"/><input type="text" class="al" value="Arrivée hôtel Marrakech — Check-in"/><button class="xb" onclick="alert('Supprimer')">×</button></div>
+              <button class="aab" onclick="alert('Ajouter une activité')">➕ Ajouter une activité</button>
+            </div>
+          </div>
+          <div class="dc"><div class="dh"><div class="dn">2</div><input type="text" class="dti" value="Jour 2 — Médina & souks"/><button class="xb" style="margin-left:7px" onclick="alert('Supprimer')">×</button></div>
+            <div class="db">
+              <textarea class="fi" rows="2" style="margin-bottom:9px">Découverte de la médina UNESCO. Souks, palais El Badi, dîner spectacle.</textarea>
+              <div class="ar"><input type="time" class="at" value="09:00"/><input type="text" class="al" value="Petit déjeuner à l'hôtel"/><button class="xb" onclick="alert('Supprimer')">×</button></div>
+              <div class="ar"><input type="time" class="at" value="10:30"/><input type="text" class="al" value="Visite guidée médina + souks"/><button class="xb" onclick="alert('Supprimer')">×</button></div>
+              <div class="ar"><input type="time" class="at" value="20:00"/><input type="text" class="al" value="Dîner spectacle — Restaurant Chez Ali"/><button class="xb" onclick="alert('Supprimer')">×</button></div>
+              <button class="aab" onclick="alert('Ajouter une activité')">➕ Ajouter une activité</button>
+            </div>
+          </div>
+          <button class="addb" onclick="alert('Ajouter un jour')">➕ Ajouter un jour</button>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="sp" id="p5">
+          <div class="st">🍽 Repas & restauration</div>
+          <div class="sd">Configuration de la restauration. En MVP, la demi-pension est incluse et non modifiable.</div>
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:11px 14px;margin-bottom:14px;font-size:12px;color:#15803d">✅ Eventy garantit la demi-pension (petit-déjeuner + dîner) — inclus dans le prix.</div>
+          <div class="tr"><div><div class="tl">Petit-déjeuner inclus</div><div class="tsb">Buffet à l'hôtel chaque matin</div></div><div style="display:flex;align-items:center;gap:7px"><div class="tp"></div><span class="tlt">MVP — Inclus</span></div></div>
+          <div class="tr"><div><div class="tl">Dîner inclus</div><div class="tsb">Dîner groupé selon programme</div></div><div style="display:flex;align-items:center;gap:7px"><div class="tp"></div><span class="tlt">MVP — Inclus</span></div></div>
+          <div class="tr" style="border-bottom:none"><div><div class="tl">Déjeuner</div><div class="tsb">Libre selon programme</div></div><div style="display:flex;align-items:center;gap:7px"><div class="tp" style="background:#94a3b8"></div><span class="tlt">Non inclus</span></div></div>
+          <hr class="div"/>
+          <div class="fg"><label class="fl">Restrictions alimentaires à prévoir</label>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px">
+              <label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer"><input type="checkbox" checked style="accent-color:#6366f1"/> Végétarien</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer"><input type="checkbox" checked style="accent-color:#6366f1"/> Halal</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer"><input type="checkbox" style="accent-color:#6366f1"/> Sans gluten</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer"><input type="checkbox" style="accent-color:#6366f1"/> Vegan</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="sp" id="p6">
+          <div class="st">📍 Arrêts bus</div>
+          <div class="sd">Sélectionnez vos arrêts de départ et d'arrivée parmi vos arrêts validés Eventy.</div>
+          <div class="sg"><div class="sgl"><div class="dg"></div>Points de départ (3 sélectionnés)</div>
+            <div class="si sel"><input type="checkbox" class="sc2" checked/><div class="sii"><div class="sn">Paris — Gare de l'Est</div><div class="sa">3 rue du 8 mai 1945, 75010 Paris</div></div><span>📍</span></div>
+            <div class="si sel"><input type="checkbox" class="sc2" checked/><div class="sii"><div class="sn">Lyon — Gare Part-Dieu</div><div class="sa">69003 Lyon</div></div><span>📍</span></div>
+            <div class="si sel"><input type="checkbox" class="sc2" checked/><div class="sii"><div class="sn">Marseille — Gare Saint-Charles</div><div class="sa">13001 Marseille</div></div><span>📍</span></div>
+            <div class="si"><input type="checkbox" class="sc2"/><div class="sii"><div class="sn">Bordeaux — Gare Saint-Jean</div><div class="sa">33800 Bordeaux</div></div><span>📍</span></div>
+          </div>
+          <div class="sg"><div class="sgl"><div class="db2"></div>Point d'arrivée (1 sélectionné)</div>
+            <div class="si sel"><input type="checkbox" class="sc2" checked/><div class="sii"><div class="sn">Marrakech — Hôtel Atlas Asni ★★★★</div><div class="sa">Route de Fès, 40000 Marrakech</div></div><span>🏨</span></div>
+          </div>
+          <a href="#" style="font-size:12px;color:#6366f1;font-weight:600;text-decoration:none">+ Créer un nouvel arrêt →</a>
+        </div>
+
+        <!-- STEP 7 -->
+        <div class="sp" id="p7">
+          <div class="st">🔄 Occurrences & planification</div>
+          <div class="sd">Optionnel en Phase 1. Planifiez vos dates de départs. Vous pouvez compléter en Phase 2.</div>
+          <div class="ob">✅ Optionnel — Dates ajoutables ou modifiables en Phase 2.</div>
+          <div class="fg"><label class="fl">Générer des occurrences automatiquement</label>
+            <div class="ogf">
+              <select class="ogs"><option>10 départs</option><option selected>20 départs</option><option>52 départs</option></select>
+              <span style="font-size:12px;color:#475569">à partir du</span>
+              <input type="date" class="ogs" value="2026-06-12"/>
+              <span style="font-size:12px;color:#475569">intervalle : <strong>7 jours</strong></span>
+              <button class="ogb" onclick="alert('Génération de 20 occurrences...')">Générer</button>
+            </div>
+            <div class="fh">Chaque occurrence calcule la date de retour selon la durée du séjour (4 nuits).</div>
+          </div>
+          <div class="ol">
+            <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:7px">3 occurrences planifiées</div>
+            <div class="oi"><div class="oidx">#1</div><div class="odt">12 juin 2026 → 15 juin 2026</div><div class="odur">4 nuits</div><div class="ost">DRAFT</div></div>
+            <div class="oi"><div class="oidx">#2</div><div class="odt">19 juin 2026 → 22 juin 2026</div><div class="odur">4 nuits</div><div class="ost">DRAFT</div></div>
+            <div class="oi"><div class="oidx">#3</div><div class="odt">26 juin 2026 → 29 juin 2026</div><div class="odur">4 nuits</div><div class="ost">DRAFT</div></div>
+          </div>
+          <hr class="div"/>
+          <div class="fg"><label class="fl">Rotations par occurrence (Phase 2)</label><input class="fi" type="number" value="5" min="1" max="10"/><div class="fh">Nombre de ramassages aller (défaut: 5, max: 10).</div></div>
+        </div>
+
+        <!-- STEP 8 -->
+        <div class="sp" id="p8">
+          <div class="st">✅ Récapitulatif & soumission</div>
+          <div class="sd">Vérifiez vos informations avant d'envoyer en validation Eventy.</div>
+
+          <div class="rb2"><div class="rbh">📋 Informations<button onclick="go(1)" style="font-size:10px;background:none;border:none;cursor:pointer;color:#6366f1;font-weight:600">Modifier →</button></div>
+            <div class="rbb">
+              <div class="rr"><span class="rk">Titre</span><span class="rv">Week-end à Marrakech 🇲🇦 — Départ toutes villes</span></div>
+              <div class="rr"><span class="rk">Dates</span><span class="rv">12 juin → 15 juin 2026 (4 nuits)</span></div>
+              <div class="rr"><span class="rk">Destination</span><span class="rv">Marrakech, Maroc</span></div>
+              <div class="rr"><span class="rk">Transport</span><span class="rv">🚌 Bus · 42 places · Min 30 pax</span></div>
+              <div class="rr"><span class="rk">Qualité fiche</span><span class="rv"><span class="bwn">⚠️ 35% — Ajoutez photo cover</span></span></div>
+            </div>
+          </div>
+
+          <div class="rb2"><div class="rbh">🖼 Visuels<button onclick="go(2)" style="font-size:10px;background:none;border:none;cursor:pointer;color:#6366f1;font-weight:600">Modifier →</button></div>
+            <div class="rbb">
+              <div class="rr"><span class="rk">Photo cover</span><span class="rv"><span class="bwn">⚠️ Manquante — Obligatoire</span></span></div>
+              <div class="rr"><span class="rk">Galerie</span><span class="rv">2 photos (3 recommandées)</span></div>
+            </div>
+          </div>
+
+          <div class="rb2"><div class="rbh">🏨 Hébergement<button onclick="go(3)" style="font-size:10px;background:none;border:none;cursor:pointer;color:#6366f1;font-weight:600">Modifier →</button></div>
+            <div class="rbb">
+              <div class="rr"><span class="rk">Double · Vue patio</span><span class="rv">349€/pers · 12 chambres</span></div>
+              <div class="rr"><span class="rk">Simple · Occupation seule</span><span class="rv">429€/pers · 6 chambres</span></div>
+              <div class="rr"><span class="rk">Total</span><span class="rv"><span class="bok">✓ 18 chambres · 30 places max</span></span></div>
+            </div>
+          </div>
+
+          <div class="rb2"><div class="rbh">📍 Arrêts bus<button onclick="go(6)" style="font-size:10px;background:none;border:none;cursor:pointer;color:#6366f1;font-weight:600">Modifier →</button></div>
+            <div class="rbb">
+              <div class="rr"><span class="rk">Départ</span><span class="rv">Paris, Lyon, Marseille (3 arrêts)</span></div>
+              <div class="rr"><span class="rk">Arrivée</span><span class="rv">Marrakech · Atlas Asni ★★★★</span></div>
+            </div>
+          </div>
+
+          <!-- SUBMIT ZONE -->
+          <div class="sz">
+            <div class="szt">🚀 Envoyer Phase 1 en validation Eventy</div>
+            <div>
+              <div class="pi2 ok"><div class="pie">✅</div><div class="pit">Champs requis Phase 1 complétés (titre, dates, hébergement, arrêts)</div></div>
+              <div class="pi2 nk"><div class="pie">🔴</div><div class="pit"><div>Photo cover manquante — obligatoire pour soumettre</div><div class="pil" onclick="go(2)">→ Ajouter la photo cover</div></div></div>
+              <div class="pi2 ok"><div class="pie">✅</div><div class="pit">Déclaration non-salariat signée</div></div>
+              <div class="pi2 nk"><div class="pie">🔴</div><div class="pit"><div>RC Pro — Expirée ou manquante</div><div class="pil" onclick="alert('→ /pro/documents?focus=RC_PRO')">→ Uploader ma RC Pro</div></div></div>
+              <div class="pi2 wn"><div class="pie">⚠️</div><div class="pit"><div>Charte Eventy — Non signée</div><div class="pil" style="color:#d97706" onclick="alert('→ /pro/documents?focus=CHARTE')">→ Signer la Charte</div></div></div>
+              <div class="pi2 ok"><div class="pie">✅</div><div class="pit">SIRET validé · Statut Pro : CREATOR · VALIDÉ</div></div>
+            </div>
+            <button class="btn-locked" disabled>🔒 Envoyer Phase 1 — Prérequis manquants</button>
+            <div class="tmb">🎓 <strong>Mode entraînement actif</strong> — Créez et testez librement votre voyage.<br>Pour envoyer en validation, complétez les prérequis ci-dessus.</div>
+          </div>
+        </div>
+
+      </div><!-- /wc -->
+    </div><!-- /wl -->
+
+    <!-- BOTTOM BAR -->
+    <div class="bb">
+      <div class="bbl">
+        <button class="bnd" onclick="saveDraft()">💾 Enregistrer brouillon</button>
+        <button class="bdp" onclick="alert('Dupliquer ce voyage — Wizard de duplication (nouvelle saison)')">✂️ Dupliquer ce voyage</button>
+      </div>
+      <div style="display:flex;gap:7px">
+        <button class="bnav bprev" id="bp" onclick="prev()">← Précédent</button>
+        <button class="bnav bnxt" id="bn" onclick="next()">Suivant →</button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+let cur=1,tot=8,vis=new Set([1]);
+function go(n){
+  for(let i=1;i<=tot;i++){
+    document.getElementById('p'+i).classList.remove('on');
+    document.getElementById('tab'+i).classList.remove('on');
+    let sc=document.getElementById('sc'+i),stl=document.getElementById('stl'+i);
+    if(sc){sc.className='sc '+(vis.has(i)&&i!==n?'d':'p');sc.textContent=vis.has(i)&&i!==n?'✓':i;}
+    if(stl){stl.className='stl'+(i===n?' a':'');}
+  }
+  document.getElementById('p'+n).classList.add('on');
+  document.getElementById('tab'+n).classList.add('on');
+  let sc=document.getElementById('sc'+n),stl=document.getElementById('stl'+n);
+  if(sc){sc.className='sc a';sc.textContent=n;}
+  if(stl){stl.className='stl a';}
+  cur=n;vis.add(n);
+  document.getElementById('bp').style.display=n===1?'none':'flex';
+  document.getElementById('bn').textContent=n===tot?'Récapitulatif ✅':'Suivant →';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function next(){if(cur<tot)go(cur+1);}
+function prev(){if(cur>1)go(cur-1);}
+function saveDraft(){let m=document.getElementById('sm');m.style.display='flex';setTimeout(()=>m.style.display='none',2500);}
+document.getElementById('bp').style.display='none';
+</script>
+</body>
+</html>

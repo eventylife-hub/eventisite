@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code — Eventy Admin PWA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Outfit', system-ui; background: linear-gradient(135deg, #0A1628 0%, #142438 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white; }
+    .container { text-align: center; max-width: 600px; padding: 40px; }
+    .logo { width: 80px; height: 80px; margin: 0 auto 20px; }
+    h1 { font-size: 28px; margin-bottom: 8px; }
+    .subtitle { color: rgba(255,255,255,0.6); margin-bottom: 32px; }
+    .qr-box { background: white; border-radius: 20px; padding: 24px; display: inline-block; margin-bottom: 24px; }
+    #qrcode { display: inline-block; }
+    #qrcode img { border-radius: 8px; }
+    .url-display { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 20px; margin-bottom: 24px; font-family: monospace; font-size: 14px; word-break: break-all; }
+    .instructions { text-align: left; background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.1); }
+    .instructions h3 { color: #FF6B35; margin-bottom: 12px; }
+    .instructions ol { padding-left: 20px; }
+    .instructions li { margin-bottom: 8px; line-height: 1.5; color: rgba(255,255,255,0.8); }
+    .instructions code { background: rgba(255,107,53,0.2); padding: 2px 8px; border-radius: 4px; font-size: 13px; color: #FF8F5E; }
+    .tab-buttons { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+    .tab-btn { padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: white; cursor: pointer; font-family: inherit; font-size: 14px; }
+    .tab-btn.active { background: #FF6B35; border-color: #FF6B35; }
+    .input-group { display: flex; gap: 8px; margin-bottom: 20px; }
+    .input-group input { flex: 1; padding: 10px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 14px; font-family: monospace; }
+    .input-group button { padding: 10px 20px; border-radius: 10px; border: none; background: #FF6B35; color: white; cursor: pointer; font-family: inherit; font-weight: 600; }
+    .section { margin-top: 24px; }
+    .section h3 { color: #06D6A0; margin-bottom: 8px; font-size: 16px; }
+    .cmd { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px 16px; font-family: monospace; font-size: 13px; color: #06D6A0; margin: 8px 0; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg class="logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="hex" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF6B35"/><stop offset="50%" stop-color="#06D6A0"/><stop offset="100%" stop-color="#0077B6"/></linearGradient></defs>
+      <polygon points="256,106 386,181 386,331 256,406 126,331 126,181" fill="none" stroke="url(#hex)" stroke-width="8"/>
+      <polygon points="256,118 376,187 376,325 256,394 136,325 136,187" fill="#0A1628"/>
+      <polygon points="236,155 256,138 276,155 270,165 242,165" fill="#FFD700"/>
+      <circle cx="256" cy="220" r="28" fill="white" opacity="0.9"/>
+      <path d="M208 296 Q208 260 256 260 Q304 260 304 296" fill="white" opacity="0.7"/>
+      <circle cx="192" cy="235" r="20" fill="white" opacity="0.55"/>
+      <path d="M162 280 Q162 258 192 258 Q222 258 222 280" fill="white" opacity="0.55"/>
+      <circle cx="320" cy="235" r="20" fill="white" opacity="0.55"/>
+      <path d="M290 280 Q290 258 320 258 Q350 258 350 280" fill="white" opacity="0.55"/>
+    </svg>
+
+    <h1>Eventy Admin PWA</h1>
+    <p class="subtitle">Scanne le QR code pour installer l'app sur ton téléphone</p>
+
+    <div class="input-group">
+      <input type="text" id="urlInput" placeholder="URL de l'app (ex: http://192.168.1.x:3000)" />
+      <button onclick="generateQR()">Générer QR</button>
+    </div>
+
+    <div class="qr-box">
+      <div id="qrcode"></div>
+      <p id="qr-placeholder" style="color:#666; padding:40px;">Entrez l'URL ci-dessus puis cliquez Générer</p>
+    </div>
+
+    <div id="url-display" class="url-display" style="display:none"></div>
+
+    <div class="instructions">
+      <h3>📱 Option 1 : Test local (même Wi-Fi)</h3>
+      <ol>
+        <li>Ouvre un terminal dans le dossier <code>admin-pwa/</code></li>
+        <li>Lance : <div class="cmd">node server.js</div></li>
+        <li>Note l'adresse réseau affichée (ex: <code>http://192.168.1.x:3000</code>)</li>
+        <li>Entre cette adresse ci-dessus et clique <strong>Générer QR</strong></li>
+        <li>Scanne le QR code avec ton téléphone (même réseau Wi-Fi)</li>
+        <li>Sur iOS : Safari → bouton Partager → "Sur l'écran d'accueil"</li>
+        <li>Sur Android : Chrome → menu ⋮ → "Installer l'application"</li>
+      </ol>
+    </div>
+
+    <div class="instructions section">
+      <h3 style="color:#0077B6;">🚀 Option 2 : Déployer sur Vercel (accès partout)</h3>
+      <ol>
+        <li>Installe Vercel CLI : <div class="cmd">npm i -g vercel</div></li>
+        <li>Dans le dossier <code>admin-pwa/</code> :</li>
+        <div class="cmd">cd admin-pwa && vercel deploy --prod</div>
+        <li>Copie l'URL Vercel donnée et entre-la ci-dessus</li>
+        <li>Scanne le QR code pour installer la PWA !</li>
+      </ol>
+    </div>
+
+    <div class="instructions section">
+      <h3 style="color:#FFD700;">⚡ Option 3 : Déployer sur Vercel via GitHub</h3>
+      <ol>
+        <li>Pousse le dossier <code>admin-pwa/</code> sur un repo GitHub</li>
+        <li>Va sur <a href="https://vercel.com/new" style="color:#FF6B35;">vercel.com/new</a> → Importer le repo</li>
+        <li>Configure : Output Directory = <code>.</code> (racine)</li>
+        <li>Déploie et utilise l'URL pour le QR code</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    let qrInstance = null;
+    function generateQR() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) return alert('Entre une URL !');
+      document.getElementById('qr-placeholder')?.remove();
+      const qrDiv = document.getElementById('qrcode');
+      qrDiv.innerHTML = '';
+      qrInstance = new QRCode(qrDiv, {
+        text: url,
+        width: 256,
+        height: 256,
+        colorDark: '#0A1628',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+      const display = document.getElementById('url-display');
+      display.style.display = 'block';
+      display.textContent = url;
+    }
+
+    // Auto-detect if running on server
+    if (window.location.hostname !== '' && window.location.protocol !== 'file:') {
+      document.getElementById('urlInput').value = window.location.origin;
+      generateQR();
+    }
+  </script>
+</body>
+</html>

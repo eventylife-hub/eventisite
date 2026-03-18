@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Pack Sérénité — Eventy Life | Voyagez l'esprit tranquille</title>
+  <meta name="description" content="Le Pack Sérénité Eventy : annulation toutes causes 100%, rapatriement frais réels, assistance 24h/24. Inclus dans chaque voyage. Zéro surprise, zéro stress."/>
+  <meta property="og:title" content="Pack Sérénité — Eventy Life"/>
+  <meta property="og:description" content="Voyagez l'esprit tranquille. Assurance complète incluse dans chaque voyage Eventy."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://www.eventylife.fr/pack-serenite"/>
+  <link rel="canonical" href="https://www.eventylife.fr/pack-serenite"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--sun:#FF6B35;--sun-light:#FF8F5E;--ocean:#0077B6;--dark:#0A1628;--mint:#06D6A0;--bg:#FEFCF3;--coral:#E63946}
+    body{font-family:'Outfit',system-ui,sans-serif;color:var(--dark);background:var(--bg);line-height:1.7}
+    h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.3}
+    .container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,var(--dark) 0%,#1a3a5c 50%,var(--ocean) 100%);color:#fff;padding:80px 0 100px;text-align:center;position:relative;overflow:hidden}
+    .hero::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:80px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%)}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);padding:8px 20px;border-radius:30px;font-size:14px;margin-bottom:24px;border:1px solid rgba(255,255,255,.15)}
+    .hero h1{font-size:clamp(32px,5vw,56px);margin-bottom:20px;max-width:700px;margin-left:auto;margin-right:auto}
+    .hero h1 span{background:linear-gradient(135deg,var(--sun),#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{font-size:18px;opacity:.85;max-width:600px;margin:0 auto 32px}
+    .hero-cta{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--sun),var(--sun-light));color:#fff;padding:16px 36px;border-radius:14px;font-size:17px;font-weight:600;text-decoration:none;transition:all .3s;box-shadow:0 8px 30px rgba(255,107,53,.35)}
+    .hero-cta:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(255,107,53,.45)}
+
+    /* GARANTIES */
+    .guarantees{padding:80px 0;position:relative;z-index:1}
+    .guarantees h2{text-align:center;font-size:36px;margin-bottom:12px}
+    .guarantees .subtitle{text-align:center;color:#4A5568;font-size:18px;margin-bottom:48px}
+    .g-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+    .g-card{background:#fff;border-radius:16px;padding:32px 24px;text-align:center;border:1px solid rgba(10,22,40,.06);transition:all .3s;position:relative;overflow:hidden}
+    .g-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08);border-color:var(--sun)}
+    .g-card .g-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
+    .g-card h3{font-size:20px;margin-bottom:8px}
+    .g-card p{color:#4A5568;font-size:15px}
+    .g-card .g-value{font-size:24px;font-weight:700;color:var(--sun);margin-top:12px;font-family:'Fraunces',serif}
+
+    /* COMPARAISON */
+    .compare{padding:80px 0;background:#fff}
+    .compare h2{text-align:center;font-size:36px;margin-bottom:48px}
+    .compare-table{max-width:800px;margin:0 auto;border-radius:16px;overflow:hidden;border:1px solid #E2E8F0}
+    .compare-table table{width:100%;border-collapse:collapse}
+    .compare-table th{padding:16px 20px;text-align:left;font-size:14px;font-weight:600;background:#F8FAFC}
+    .compare-table th:nth-child(2){text-align:center;color:#4A5568}
+    .compare-table th:nth-child(3){text-align:center;background:linear-gradient(135deg,var(--sun),var(--sun-light));color:#fff;font-size:15px}
+    .compare-table td{padding:14px 20px;border-top:1px solid #F1F5F9;font-size:14px}
+    .compare-table td:nth-child(2),.compare-table td:nth-child(3){text-align:center;font-size:18px}
+    .compare-table tr:hover{background:#FEFCF3}
+    .check{color:var(--mint);font-weight:700} .cross{color:#CBD5E1}
+
+    /* TEMOIGNAGES */
+    .testimonials{padding:80px 0}
+    .testimonials h2{text-align:center;font-size:36px;margin-bottom:48px}
+    .t-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+    .t-card{background:#fff;border-radius:16px;padding:28px;border:1px solid rgba(10,22,40,.06)}
+    .t-stars{color:#FFD700;font-size:18px;margin-bottom:12px}
+    .t-text{font-size:15px;color:#4A5568;font-style:italic;margin-bottom:16px;line-height:1.7}
+    .t-author{display:flex;align-items:center;gap:12px}
+    .t-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--ocean));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:14px}
+    .t-name{font-weight:600;font-size:14px}
+    .t-trip{font-size:12px;color:#8896A6}
+
+    /* CTA FINAL */
+    .cta-final{padding:80px 0;background:linear-gradient(135deg,var(--dark),#1a3a5c);text-align:center;color:#fff}
+    .cta-final h2{font-size:36px;margin-bottom:16px}
+    .cta-final p{font-size:18px;opacity:.8;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto}
+    .cta-final .price{font-size:14px;opacity:.6;margin-top:16px}
+
+    /* FOOTER */
+    footer{padding:40px 0;text-align:center;font-size:13px;color:#8896A6;background:var(--bg)}
+    footer a{color:var(--ocean);text-decoration:none}
+
+    /* FAQ */
+    .faq{padding:80px 0;background:#fff}
+    .faq h2{text-align:center;font-size:36px;margin-bottom:48px}
+    .faq-item{max-width:700px;margin:0 auto 16px;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden}
+    .faq-q{padding:16px 20px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px}
+    .faq-q:hover{background:#F8FAFC}
+    .faq-a{padding:0 20px 16px;font-size:14px;color:#4A5568;line-height:1.7;display:none}
+    .faq-item.open .faq-a{display:block}
+    .faq-item.open .faq-arrow{transform:rotate(180deg)}
+    .faq-arrow{transition:transform .2s;font-size:12px}
+
+    @media(max-width:768px){
+      .hero{padding:60px 0 80px}
+      .g-grid,.t-grid{grid-template-columns:1fr}
+      .compare-table{margin:0 12px}
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Product",
+    "name":"Pack Sérénité Eventy",
+    "description":"Assurance voyage complète incluse dans chaque voyage Eventy : annulation toutes causes, rapatriement, assistance 24h.",
+    "brand":{"@type":"Brand","name":"Eventy Life"},
+    "url":"https://www.eventylife.fr/pack-serenite"
+  }
+  </script>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">🛡️ Inclus dans chaque voyage Eventy</div>
+    <h1>Voyagez l'esprit <span>tranquille</span></h1>
+    <p>Le Pack Sérénité couvre tout : annulation, rapatriement, assistance 24h, bagages, frais médicaux. Inclus. Sans supplément.</p>
+    <a href="https://www.eventylife.fr/voyages" class="hero-cta">✈️ Découvrir nos voyages</a>
+  </div>
+</section>
+
+<!-- GARANTIES -->
+<section class="guarantees">
+  <div class="container">
+    <h2>6 garanties, zéro tracas</h2>
+    <p class="subtitle">Tout est inclus dans le prix de votre voyage. Pas d'option cachée.</p>
+    <div class="g-grid">
+      <div class="g-card">
+        <div class="g-icon" style="background:#FFF0E8">🔄</div>
+        <h3>Annulation toutes causes</h3>
+        <p>Maladie, accident, imprévu familial, empêchement professionnel... Vous êtes remboursé à 100%.</p>
+        <div class="g-value">100%</div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon" style="background:#E8F7FC">🚁</div>
+        <h3>Rapatriement</h3>
+        <p>Rapatriement sanitaire en frais réels, partout dans le monde. Ambulance, avion médicalisé si nécessaire.</p>
+        <div class="g-value">Frais réels</div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon" style="background:#E0FFF5">📞</div>
+        <h3>Assistance 24h/24</h3>
+        <p>Une ligne dédiée disponible jour et nuit, 7j/7. En français. Un humain répond toujours.</p>
+        <div class="g-value">24h/24 7j/7</div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon" style="background:#FEF3C7">🧳</div>
+        <h3>Bagages</h3>
+        <p>Perte, vol ou détérioration de vos bagages. Indemnisation rapide sans paperasse interminable.</p>
+        <div class="g-value">1 500€</div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon" style="background:#F0E8FF">🏥</div>
+        <h3>Frais médicaux</h3>
+        <p>Consultation, hospitalisation, médicaments à l'étranger. Pas d'avance de frais.</p>
+        <div class="g-value">50 000€</div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon" style="background:#FFE0E3">🛡️</div>
+        <h3>Responsabilité civile</h3>
+        <p>Dommages causés à des tiers pendant votre voyage. Vous êtes couvert.</p>
+        <div class="g-value">500 000€</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARAISON -->
+<section class="compare">
+  <div class="container">
+    <h2>Eventy vs les autres</h2>
+    <div class="compare-table">
+      <table>
+        <thead><tr><th>Garantie</th><th>Agences classiques</th><th>🛡️ Eventy Pack Sérénité</th></tr></thead>
+        <tbody>
+          <tr><td>Annulation toutes causes</td><td class="cross">❌ Option payante</td><td class="check">✅ Inclus 100%</td></tr>
+          <tr><td>Rapatriement frais réels</td><td class="cross">❌ Plafonnée</td><td class="check">✅ Frais réels</td></tr>
+          <tr><td>Assistance 24h en français</td><td class="cross">❌ Horaires limités</td><td class="check">✅ 24h/24 7j/7</td></tr>
+          <tr><td>Bagages</td><td class="cross">❌ 300-500€ max</td><td class="check">✅ 1 500€</td></tr>
+          <tr><td>Frais médicaux</td><td class="cross">❌ 10-15 000€</td><td class="check">✅ 50 000€</td></tr>
+          <tr><td>RC voyage</td><td class="cross">❌ Rarement incluse</td><td class="check">✅ 500 000€</td></tr>
+          <tr><td>Supplément à payer</td><td style="text-align:center;color:var(--coral);font-weight:600">40-80€/pers.</td><td style="text-align:center;color:var(--mint);font-weight:700;font-size:20px">0€</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TEMOIGNAGES -->
+<section class="testimonials">
+  <div class="container">
+    <h2>Ils ont voyagé l'esprit léger</h2>
+    <div class="t-grid">
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <div class="t-text">Mon père a eu un souci de santé 3 jours avant le départ. Remboursement intégral en 5 jours ouvrés. Aucune autre agence ne propose ça de base.</div>
+        <div class="t-author"><div class="t-avatar">SL</div><div><div class="t-name">Sophie L.</div><div class="t-trip">Marrakech Express — Avril 2026</div></div></div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <div class="t-text">On a perdu une valise à l'aéroport. Un appel, et l'assurance s'est occupée de tout. Indemnisé sous 10 jours. Le Pack Sérénité, c'est vraiment la tranquillité.</div>
+        <div class="t-author"><div class="t-avatar">PM</div><div><div class="t-name">Pierre M.</div><div class="t-trip">Lisbonne Authentique — Mai 2026</div></div></div>
+      </div>
+      <div class="t-card">
+        <div class="t-stars">★★★★★</div>
+        <div class="t-text">Première fois que je réserve un voyage de groupe sans stresser pour l'assurance. Tout est inclus, c'est clair, pas de petites lignes. Bravo Eventy.</div>
+        <div class="t-author"><div class="t-avatar">CD</div><div><div class="t-name">Claire D.</div><div class="t-trip">Barcelone Fiesta — Mai 2026</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container">
+    <h2>Questions fréquentes</h2>
+    <div class="faq-item open">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Le Pack Sérénité est-il vraiment inclus dans le prix ? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Oui, à 100%. Le Pack Sérénité est systématiquement inclus dans le prix affiché de chaque voyage Eventy. Vous n'avez rien à ajouter, rien à cocher, rien à payer en plus. C'est notre engagement fondateur : chaque voyageur Eventy est protégé.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Que couvre exactement l'annulation toutes causes ? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">L'annulation toutes causes vous rembourse 100% du montant payé si vous devez annuler votre voyage, quelle qu'en soit la raison : maladie, accident, décès d'un proche, empêchement professionnel, convocation administrative, ou tout autre motif justifié. Les conditions détaillées sont disponibles dans nos CGV.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Comment fonctionne le rapatriement ? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">En cas de problème médical grave pendant le voyage, notre partenaire assureur organise votre rapatriement en frais réels. Cela peut inclure une ambulance, un avion médicalisé, ou un vol retour adapté. Un seul appel suffit : l'assistance se charge de tout, 24h/24.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Qui est l'assureur partenaire ? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Eventy travaille avec un assureur de premier plan (groupe Groupama / Mutuaide ou équivalent). Le contrat groupe annuel garantit des conditions optimales pour tous nos voyageurs, bien supérieures à ce que vous obtiendriez en souscrivant individuellement.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Puis-je refuser le Pack Sérénité ? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Le Pack Sérénité fait partie intégrante de l'expérience Eventy. Il est inclus dans tous nos voyages et ne peut pas être retiré. C'est ce qui nous permet de garantir que 100% de nos voyageurs sont protégés, et de négocier les meilleures conditions auprès de notre assureur.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="container">
+    <h2>Prêt à voyager sans stress ?</h2>
+    <p>Rejoignez les voyageurs qui ont choisi la tranquillité. Pack Sérénité inclus dans chaque voyage.</p>
+    <a href="https://www.eventylife.fr/voyages" class="hero-cta">🌍 Voir les prochains départs</a>
+    <div class="price">Pack Sérénité inclus — 0€ de supplément</div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 Eventy Life — <a href="https://www.eventylife.fr">eventylife.fr</a> — Immatriculée Atout France n° IMXXXXXXX</p>
+    <p style="margin-top:8px"><a href="/cgv">CGV</a> · <a href="/mentions-legales">Mentions légales</a> · <a href="/confidentialite">Politique de confidentialité</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

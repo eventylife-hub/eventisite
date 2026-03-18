@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur Eventy Life</title>
+    <style type="text/css">
+        body { margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; }
+        table { border-collapse: collapse; }
+        img { max-width: 100%; height: auto; display: block; }
+        a { color: #FF6B35; text-decoration: none; }
+        h1, h2, h3 { font-family: 'Fraunces', serif; margin: 0; }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#FEFCF3;">
+    <table role="presentation" style="width:100%; background-color:#FEFCF3;">
+        <tr>
+            <td align="center" style="padding:20px 0;">
+                <table role="presentation" style="width:100%; max-width:600px; background-color:#FFFFFF; border-radius:8px; box-shadow:0 2px 8px rgba(10,22,40,0.1);">
+                    <!-- Header with Logo -->
+                    <tr>
+                        <td style="padding:40px 30px; background:linear-gradient(135deg, #FF6B35 0%, #0077B6 100%); text-align:center; border-radius:8px 8px 0 0;">
+                            <h1 style="color:#FFFFFF; font-size:28px; margin:0 0 8px 0;">Eventy Life</h1>
+                            <p style="color:#FEFCF3; font-size:12px; margin:0; font-weight:300; letter-spacing:1px;">VOYAGES DE GROUPE</p>
+                        </td>
+                    </tr>
+
+                    <!-- Celebration Banner -->
+                    <tr>
+                        <td style="padding:24px 30px; background:linear-gradient(135deg, #DBEAFE 0%, #D1FAE5 100%); text-align:center;">
+                            <h2 style="color:#0077B6; font-size:24px; margin:0;">Bienvenue {{FIRST_NAME}}! 🎉</h2>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding:40px 30px;">
+                            <!-- Welcome Message -->
+                            <p style="color:#0A1628; font-size:14px; line-height:1.6; margin:0 0 24px 0;">
+                                Votre compte Eventy Life a été confirmé avec succès! Vous êtes maintenant prêt à découvrir et réserver les meilleurs voyages de groupe.
+                            </p>
+
+                            <!-- 3 Steps Section -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:20px;">🚀 3 étapes pour votre premier voyage</h3>
+
+                            <!-- Step 1 -->
+                            <table role="presentation" style="width:100%; margin-bottom:16px;">
+                                <tr>
+                                    <td style="width:50px; vertical-align:top;">
+                                        <div style="width:40px; height:40px; background-color:#FF6B35; border-radius:50%; text-align:center; line-height:40px; color:#FFFFFF; font-weight:700; font-size:18px;">1</div>
+                                    </td>
+                                    <td style="padding-left:16px; vertical-align:top;">
+                                        <h4 style="color:#0A1628; font-size:14px; margin:0 0 4px 0; font-weight:700;">Parcourez les voyages</h4>
+                                        <p style="color:#666; font-size:13px; margin:0;">Découvrez des destinations incroyables adaptées à votre groupe</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Step 2 -->
+                            <table role="presentation" style="width:100%; margin-bottom:16px;">
+                                <tr>
+                                    <td style="width:50px; vertical-align:top;">
+                                        <div style="width:40px; height:40px; background-color:#0077B6; border-radius:50%; text-align:center; line-height:40px; color:#FFFFFF; font-weight:700; font-size:18px;">2</div>
+                                    </td>
+                                    <td style="padding-left:16px; vertical-align:top;">
+                                        <h4 style="color:#0A1628; font-size:14px; margin:0 0 4px 0; font-weight:700;">Recevez un devis personnalisé</h4>
+                                        <p style="color:#666; font-size:13px; margin:0;">Nous calculons le meilleur prix pour votre groupe</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Step 3 -->
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="width:50px; vertical-align:top;">
+                                        <div style="width:40px; height:40px; background-color:#06D6A0; border-radius:50%; text-align:center; line-height:40px; color:#FFFFFF; font-weight:700; font-size:18px;">3</div>
+                                    </td>
+                                    <td style="padding-left:16px; vertical-align:top;">
+                                        <h4 style="color:#0A1628; font-size:14px; margin:0 0 4px 0; font-weight:700;">Réservez et partez!</h4>
+                                        <p style="color:#666; font-size:13px; margin:0;">Confirmez votre voyage et préparez-vous pour l'aventure</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Featured Voyages -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:16px;">✨ Voyages à découvrir</h3>
+
+                            <!-- Voyage Card 1 -->
+                            <table role="presentation" style="width:100%; background-color:#F0F9FF; border-radius:8px; overflow:hidden; margin-bottom:16px;">
+                                <tr>
+                                    <td style="padding:16px;">
+                                        <h4 style="color:#0077B6; font-size:14px; margin:0 0 4px 0; font-weight:700;">{{VOYAGE_1_NAME}}</h4>
+                                        <p style="color:#666; font-size:12px; margin:0 0 8px 0;">{{VOYAGE_1_DESCRIPTION}}</p>
+                                        <p style="color:#FF6B35; font-size:13px; font-weight:700; margin:0;">À partir de {{VOYAGE_1_PRICE}}€ par personne</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Voyage Card 2 -->
+                            <table role="presentation" style="width:100%; background-color:#FEF3C7; border-radius:8px; overflow:hidden; margin-bottom:24px;">
+                                <tr>
+                                    <td style="padding:16px;">
+                                        <h4 style="color:#92400E; font-size:14px; margin:0 0 4px 0; font-weight:700;">{{VOYAGE_2_NAME}}</h4>
+                                        <p style="color:#666; font-size:12px; margin:0 0 8px 0;">{{VOYAGE_2_DESCRIPTION}}</p>
+                                        <p style="color:#FF6B35; font-size:13px; font-weight:700; margin:0;">À partir de {{VOYAGE_2_PRICE}}€ par personne</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="{{DISCOVER_VOYAGES_URL}}" style="display:inline-block; padding:14px 32px; background:linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%); color:#FFFFFF; text-decoration:none; border-radius:4px; font-weight:700; font-size:14px;">Découvrir tous les voyages</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Pack Sérénité Info -->
+                            <table role="presentation" style="width:100%; background-color:#F0FDF4; border-left:4px solid #06D6A0; border-radius:4px; padding:16px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="color:#065F46; font-size:13px; line-height:1.6;">
+                                        <strong>🛡️ Tous nos voyages incluent le Pack Sérénité</strong><br>
+                                        Assurance complète, assistance 24/7 et couverture des imprévus pour voyager l'esprit tranquille.
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Tips -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">💡 Conseils pour bien démarrer</h3>
+                            <ul style="color:#0A1628; font-size:13px; line-height:1.8; margin:0; padding-left:20px;">
+                                <li>Complétez votre profil pour personnaliser vos recommandations</li>
+                                <li>Invitez vos amis et famille à rejoindre votre groupe</li>
+                                <li>Consultez nos guides de voyage et témoignages</li>
+                                <li>Signalez-nous vos préférences de destinations</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+                    <!-- Support Section -->
+                    <tr>
+                        <td style="padding:0 30px 30px 30px;">
+                            <p style="color:#0A1628; font-size:13px; margin:0;">
+                                Questions? <a href="mailto:support@eventylife.com" style="color:#FF6B35; font-weight:600;">Notre équipe est à votre écoute</a>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding:30px; background-color:#0A1628; border-radius:0 0 8px 8px; text-align:center;">
+                            <p style="color:#FFFFFF; font-size:12px; margin:0 0 12px 0;">
+                                © 2026 Eventy Life - Tous droits réservés
+                            </p>
+                            <p style="color:#94A3B8; font-size:11px; margin:0 0 8px 0;">
+                                <a href="{{UNSUBSCRIBE_URL}}" style="color:#94A3B8; text-decoration:none;">Se désabonner</a> |
+                                <a href="{{PRIVACY_POLICY_URL}}" style="color:#94A3B8; text-decoration:none;">Politique de confidentialité</a> |
+                                <a href="{{LEGAL_NOTICE_URL}}" style="color:#94A3B8; text-decoration:none;">Mentions légales</a>
+                            </p>
+                            <p style="color:#64748B; font-size:10px; margin:0;">
+                                Eventy Life - Plateforme de voyages de groupe | Paris, France
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

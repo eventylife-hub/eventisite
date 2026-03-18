@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satisfaction voyage - Eventy Life</title>
+    <style type="text/css">
+        body { margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif; }
+        table { border-collapse: collapse; }
+        img { max-width: 100%; height: auto; display: block; }
+        a { color: #FF6B35; text-decoration: none; }
+        h1, h2, h3 { font-family: 'Fraunces', serif; margin: 0; }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#FEFCF3;">
+    <table role="presentation" style="width:100%; background-color:#FEFCF3;">
+        <tr>
+            <td align="center" style="padding:20px 0;">
+                <table role="presentation" style="width:100%; max-width:600px; background-color:#FFFFFF; border-radius:8px; box-shadow:0 2px 8px rgba(10,22,40,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding:40px 30px; background:linear-gradient(135deg, #FF6B35 0%, #0077B6 100%); text-align:center; border-radius:8px 8px 0 0;">
+                            <h1 style="color:#FFFFFF; font-size:28px; margin:0 0 8px 0;">Eventy Life</h1>
+                            <p style="color:#FEFCF3; font-size:12px; margin:0; font-weight:300; letter-spacing:1px;">VOYAGES DE GROUPE</p>
+                        </td>
+                    </tr>
+
+                    <!-- Thank You Banner -->
+                    <tr>
+                        <td style="padding:24px 30px; background:linear-gradient(135deg, #D1FAE5 0%, #DBEAFE 100%); text-align:center;">
+                            <h2 style="color:#0077B6; font-size:24px; margin:0;">Merci pour ce beau voyage! 💚</h2>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding:40px 30px;">
+                            <!-- Thank You Message -->
+                            <p style="color:#0A1628; font-size:14px; line-height:1.6; margin:0 0 24px 0;">
+                                Nous espérons que votre voyage {{VOYAGE_NAME}} a été mémorable! Vos retours nous permettent d'améliorer continuellement nos services.
+                            </p>
+
+                            <!-- Rating Section -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:16px;">⭐ Comment évalueriez-vous ce voyage?</h3>
+                            <table role="presentation" style="width:100%; background-color:#FEF3C7; border-left:4px solid #FF6B35; border-radius:4px; padding:20px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <p style="color:#92400E; font-size:13px; margin:0 0 12px 0; font-weight:600;">Sélectionnez une note de 1 à 5 étoiles</p>
+                                        <table role="presentation" style="width:100%; max-width:280px; margin:0 auto;">
+                                            <tr>
+                                                <td style="text-align:center; padding:8px;">
+                                                    <a href="{{RATING_1_URL}}" style="display:inline-block; font-size:32px; text-decoration:none; opacity:0.6;">⭐</a>
+                                                </td>
+                                                <td style="text-align:center; padding:8px;">
+                                                    <a href="{{RATING_2_URL}}" style="display:inline-block; font-size:32px; text-decoration:none; opacity:0.6;">⭐</a>
+                                                </td>
+                                                <td style="text-align:center; padding:8px;">
+                                                    <a href="{{RATING_3_URL}}" style="display:inline-block; font-size:32px; text-decoration:none; opacity:0.6;">⭐</a>
+                                                </td>
+                                                <td style="text-align:center; padding:8px;">
+                                                    <a href="{{RATING_4_URL}}" style="display:inline-block; font-size:32px; text-decoration:none; opacity:0.6;">⭐</a>
+                                                </td>
+                                                <td style="text-align:center; padding:8px;">
+                                                    <a href="{{RATING_5_URL}}" style="display:inline-block; font-size:32px; text-decoration:none; opacity:0.6;">⭐</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Survey Section -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">📋 Votre avis compte</h3>
+                            <p style="color:#0A1628; font-size:13px; line-height:1.6; margin:0 0 16px 0;">
+                                Partagez vos impressions sur le voyage, l'organisation, l'hébergement et l'ambiance du groupe. Cela ne prendra que 2 minutes.
+                            </p>
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="{{SURVEY_URL}}" style="display:inline-block; padding:14px 32px; background:linear-gradient(135deg, #FF6B35 0%, #FF8C5A 100%); color:#FFFFFF; text-decoration:none; border-radius:4px; font-weight:700; font-size:14px;">Répondre au sondage</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Photo Gallery CTA -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">📸 Partagez vos photos</h3>
+                            <table role="presentation" style="width:100%; background-color:#F0F9FF; border-left:4px solid #0077B6; border-radius:4px; padding:16px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="color:#0A1628; font-size:13px; line-height:1.6;">
+                                        Vous avez de belles photos du voyage? Partagez-les dans notre galerie commune et revivez ces moments magiques avec le groupe!
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:12px; text-align:center;">
+                                        <a href="{{GALLERY_URL}}" style="display:inline-block; padding:10px 24px; background-color:#DBEAFE; color:#0077B6; text-decoration:none; border-radius:4px; font-weight:600; font-size:13px;">Accéder à la galerie</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Review Section -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">🌟 Vos avis en ligne</h3>
+                            <table role="presentation" style="width:100%; background-color:#FEF3C7; border-left:4px solid #FF6B35; border-radius:4px; padding:16px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="color:#92400E; font-size:13px; line-height:1.6;">
+                                        Votre expérience positive est précieuse pour les futurs voyageurs. Laissez un avis sur Google!
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:12px; text-align:center;">
+                                        <a href="{{GOOGLE_REVIEW_URL}}" style="display:inline-block; padding:10px 24px; background-color:#FEE2E2; color:#92400E; text-decoration:none; border-radius:4px; font-weight:600; font-size:13px;">Laisser un avis Google</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Travel Again Section -->
+                            <h3 style="color:#0A1628; font-size:16px; margin-bottom:12px;">✈️ Prêt pour un nouveau voyage?</h3>
+                            <p style="color:#0A1628; font-size:13px; line-height:1.6; margin:0 0 16px 0;">
+                                Vous avez adoré? Découvrez d'autres destinations incroyables et repartez à l'aventure avec Eventy Life.
+                            </p>
+                            <table role="presentation" style="width:100%; margin-bottom:24px;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="{{NEXT_VOYAGE_URL}}" style="display:inline-block; padding:14px 32px; background:linear-gradient(135deg, #0077B6 0%, #06D6A0 100%); color:#FFFFFF; text-decoration:none; border-radius:4px; font-weight:700; font-size:14px;">Voir les prochains voyages</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Referral Bonus -->
+                            <table role="presentation" style="width:100%; background-color:#F0FDF4; border:2px dashed #06D6A0; border-radius:4px; padding:16px; margin-bottom:24px;">
+                                <tr>
+                                    <td style="color:#065F46; font-size:13px;">
+                                        <strong>🎁 Parrainez vos amis</strong><br>
+                                        Invitez vos proches à rejoindre Eventy Life et recevez une réduction de 10% sur votre prochain voyage!
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-top:12px; text-align:center;">
+                                        <a href="{{REFERRAL_URL}}" style="display:inline-block; padding:10px 24px; background-color:#D1FAE5; color:#065F46; text-decoration:none; border-radius:4px; font-weight:600; font-size:13px;">Mon code de parrainage</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Gratitude -->
+                            <p style="color:#666; font-size:13px; line-height:1.6; margin:0;">
+                                Merci de votre confiance! Vos retours nous aident à créer des expériences de voyage inoubliables.<br><br>
+                                <strong>À bientôt,</strong><br>
+                                L'équipe Eventy Life 🌟
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding:30px; background-color:#0A1628; border-radius:0 0 8px 8px; text-align:center;">
+                            <p style="color:#FFFFFF; font-size:12px; margin:0 0 12px 0;">
+                                © 2026 Eventy Life - Tous droits réservés
+                            </p>
+                            <p style="color:#94A3B8; font-size:11px; margin:0 0 8px 0;">
+                                <a href="{{UNSUBSCRIBE_URL}}" style="color:#94A3B8; text-decoration:none;">Se désabonner</a> |
+                                <a href="{{PRIVACY_POLICY_URL}}" style="color:#94A3B8; text-decoration:none;">Politique de confidentialité</a> |
+                                <a href="{{LEGAL_NOTICE_URL}}" style="color:#94A3B8; text-decoration:none;">Mentions légales</a>
+                            </p>
+                            <p style="color:#64748B; font-size:10px; margin:0;">
+                                Eventy Life - Plateforme de voyages de groupe | Paris, France
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

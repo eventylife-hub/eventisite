@@ -1,0 +1,122 @@
+# Docker Compose pour Eventy Life
+# Services: Next.js Frontend, NestJS Backend, PostgreSQL, Redis
+
+services:
+  # ===== Service Frontend Next.js =====
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000/api}
+        NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY:-}
+    container_name: eventisite-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+    networks:
+      - eventy-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ===== Service Backend NestJS =====
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: 18
+    container_name: eventisite-app
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # SECURITY: Credentials via variables d'environnement — jamais hardcodées
+      DATABASE_URL: postgresql://${POSTGRES_USER:-eventisite}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-eventisite_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      NODE_ENV: production
+      LOG_LEVEL: info
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    networks:
+      - eventy-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - ./backend/logs:/app/logs:rw
+
+  # ===== Service PostgreSQL =====
+  postgres:
+    image: postgres:15-alpine
+    container_name: eventisite-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-eventisite}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-eventisite_db}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    restart: unless-stopped
+    networks:
+      - eventy-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data:rw
+      - ./backend/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-eventisite} -d ${POSTGRES_DB:-eventisite_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # SECURITY: Ne pas exposer les ports DB en production
+    # ports:
+    #   - "5432:5432"
+
+  # ===== Service Redis =====
+  redis:
+    image: redis:7-alpine
+    container_name: eventisite-redis
+    restart: unless-stopped
+    networks:
+      - eventy-network
+    volumes:
+      - redis-data:/data:rw
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$REDIS_PASSWORD redis-cli ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # SECURITY: Ne pas exposer Redis en production
+    # ports:
+    #   - "6379:6379"
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  eventy-network:
+    driver: bridge
