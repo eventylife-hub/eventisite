@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0A1628"/><stop offset="100%" stop-color="#1A2940"/></linearGradient>
+    <linearGradient id="hex" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF6B35"/><stop offset="30%" stop-color="#FFB347"/><stop offset="60%" stop-color="#06D6A0"/><stop offset="100%" stop-color="#0077B6"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="92" fill="url(#bg)"/>
+  <circle cx="100" cy="80" r="2" fill="#FF6B35" opacity="0.4"/>
+  <circle cx="420" cy="120" r="1.5" fill="#0077B6" opacity="0.5"/>
+  <circle cx="80" cy="400" r="2" fill="#0077B6" opacity="0.3"/>
+  <circle cx="440" cy="380" r="1.5" fill="#FF6B35" opacity="0.4"/>
+  <polygon points="256,106 386,181 386,331 256,406 126,331 126,181" fill="none" stroke="url(#hex)" stroke-width="6"/>
+  <polygon points="256,118 376,187 376,325 256,394 136,325 136,187" fill="#0A1628"/>
+  <polygon points="236,155 256,138 276,155 270,165 242,165" fill="#FFD700"/>
+  <circle cx="256" cy="220" r="28" fill="white" opacity="0.9"/>
+  <path d="M208 296 Q208 260 256 260 Q304 260 304 296" fill="white" opacity="0.7"/>
+  <circle cx="192" cy="235" r="20" fill="white" opacity="0.55"/>
+  <path d="M162 280 Q162 258 192 258 Q222 258 222 280" fill="white" opacity="0.55"/>
+  <circle cx="320" cy="235" r="20" fill="white" opacity="0.55"/>
+  <path d="M290 280 Q290 258 320 258 Q350 258 350 280" fill="white" opacity="0.55"/>
+  <text x="256" y="460" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold" font-size="32" opacity="0.9"></text>
+</svg>

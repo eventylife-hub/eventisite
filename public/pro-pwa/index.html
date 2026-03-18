@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#FF6B35" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Eventy Pro" />
+  <link rel="manifest" href="/pro-pwa/manifest.json" />
+  <title>Eventy Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --sun:#FF6B35;--sun-light:#FF8F5E;--sun-glow:#FFF0E8;
+      --ocean:#0077B6;--ocean-light:#E8F7FC;--ocean-deep:#005A8C;
+      --bg:#FEFCF3;--surface:#FFFFFF;--surface-alt:#FFF8ED;
+      --dark:#0A1628;--dark-mid:#142438;
+      --text:#0A1628;--text-sec:#4A5568;--text-muted:#8896A6;
+      --mint:#06D6A0;--mint-soft:#E0FFF5;
+      --coral:#E63946;--coral-soft:#FFE0E3;
+      --violet:#7B2FF7;--violet-soft:#F0E8FF;
+      --warning:#B45309;--border:rgba(10,22,40,.08);
+      --r:14px;
+    }
+    body{font-family:'Outfit',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+    h1,h2,h3,.display{font-family:'Fraunces',Georgia,serif}
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:linear-gradient(180deg,var(--dark),var(--dark-mid));color:#fff;z-index:40;transition:transform .3s;overflow-y:auto;display:flex;flex-direction:column}
+    .sidebar-logo{padding:20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .sidebar-logo h1{font-size:18px;font-weight:700;font-family:'Fraunces',serif}
+    .sidebar-logo span{font-size:11px;color:rgba(255,255,255,.5)}
+    .nav-section{padding:16px 12px 8px}
+    .nav-section-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);margin-bottom:8px;padding:0 8px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .2s;font-size:14px;color:rgba(255,255,255,.65);position:relative}
+    .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+    .nav-item.active{background:rgba(255,107,53,.2);color:var(--sun);font-weight:600}
+    .nav-item .badge{position:absolute;right:8px;background:var(--coral);color:#fff;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600}
+    .sidebar-user{padding:16px;border-top:1px solid rgba(255,255,255,.1);margin-top:auto}
+    .sidebar-user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--ocean));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff}
+    .main{margin-left:260px;min-height:100vh}
+    .topbar{background:#fff;border-bottom:1px solid #E2E8F0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+    .topbar h2{font-size:20px;font-weight:700}
+    .topbar-bc{font-size:12px;color:var(--text-sec)}
+    .topbar-right{display:flex;align-items:center;gap:12px}
+    .hamburger{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer}
+    .content{padding:24px}
+    .card{background:var(--surface);border-radius:var(--r);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #E2E8F0}
+    .card-title{font-size:16px;font-weight:600;margin-bottom:16px;font-family:'Fraunces',serif}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+    .stat-card{background:var(--surface);border-radius:var(--r);padding:20px;border:1px solid #E2E8F0}
+    .stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+    .stat-value{font-size:28px;font-weight:700;font-family:'Fraunces',serif}
+    .stat-label{font-size:13px;color:var(--text-sec);margin-top:4px}
+    .stat-trend{font-size:12px;margin-top:8px;display:flex;align-items:center;gap:4px}
+    .stat-trend.up{color:var(--mint)}.stat-trend.down{color:var(--coral)}
+    .table-container{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th{text-align:left;padding:12px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-sec);border-bottom:2px solid #E2E8F0}
+    td{padding:12px 16px;border-bottom:1px solid #F1F5F9;font-size:14px}
+    tr:hover td{background:#F8FAFC}
+    .badge-s{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+    .badge-s.active,.badge-s.published,.badge-s.confirmed{background:#ECFDF5;color:#065F46}
+    .badge-s.pending{background:#FEF3C7;color:#92400E}
+    .badge-s.cancelled,.badge-s.rejected{background:#FEF2F2;color:#991B1B}
+    .badge-s.ongoing{background:#EFF6FF;color:#1E40AF}
+    .badge-s.completed{background:#F0FDF4;color:#166534}
+    .badge-s.draft{background:#F1F5F9;color:#475569}
+    .btn{padding:8px 16px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+    .btn-sun{background:linear-gradient(135deg,var(--sun),var(--sun-light));color:#fff}
+    .btn-sun:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,107,53,.3)}
+    .btn-ocean{background:linear-gradient(135deg,var(--ocean),#00A8E8);color:#fff}
+    .btn-outline{background:transparent;border:1px solid #E2E8F0;color:var(--text)}
+    .btn-outline:hover{border-color:var(--sun);color:var(--sun)}
+    .btn-danger{background:var(--coral);color:#fff}
+    .btn-sm{padding:6px 12px;font-size:12px}
+    .tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap}
+    .tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;background:transparent;border:none;color:var(--text-sec);transition:all .2s;font-family:inherit}
+    .tab.active{background:var(--sun);color:#fff}
+    .tab:hover:not(.active){background:#F1F5F9}
+    .search-input{padding:10px 16px;border-radius:10px;border:1px solid #E2E8F0;font-size:14px;font-family:inherit;background:var(--surface)}
+    .search-input:focus{outline:none;border-color:var(--sun);box-shadow:0 0 0 3px rgba(255,107,53,.1)}
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+    .form-input{width:100%;padding:10px 14px;border-radius:10px;border:1px solid #E2E8F0;font-size:14px;font-family:inherit}
+    .form-input:focus{outline:none;border-color:var(--sun)}
+    textarea.form-input{min-height:80px;resize:vertical}
+    .progress-bar{height:6px;background:#E2E8F0;border-radius:3px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:3px;transition:width .3s}
+    .alert{padding:12px 20px;border-radius:var(--r);margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:14px}
+    .alert.danger{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+    .alert.warning{background:#FEF3C7;border:1px solid #FDE68A;color:#92400E}
+    .alert.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+    .alert.success{background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46}
+    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E2E8F0;z-index:50;padding:4px 0 env(safe-area-inset-bottom,8px)}
+    .bottom-nav-inner{display:flex;justify-content:space-around}
+    .bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border-radius:12px;cursor:pointer;background:none;border:none;font-family:inherit;color:var(--text-sec);font-size:10px;font-weight:500}
+    .bnav-item.active{color:var(--sun)}
+    .bnav-icon{font-size:20px}
+    .toast-box{position:fixed;top:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+    .toast{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid #E2E8F0;animation:toastIn .3s ease-out;font-size:14px;max-width:380px}
+    .toast.success{border-left:4px solid var(--mint)}.toast.error{border-left:4px solid var(--coral)}
+    @keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+    .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeOv .2s}
+    @keyframes fadeOv{from{opacity:0}to{opacity:1}}
+    .modal{background:#fff;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;animation:modIn .3s ease-out}
+    @keyframes modIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .modal h3{font-size:18px;margin-bottom:16px;font-family:'Fraunces',serif}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+    .dark-toggle{width:40px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .3s;padding:0}
+    .dark-toggle .dot{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .dark-toggle.on .dot{transform:translateX(18px)}
+    .dark-toggle.on{background:var(--sun)}.dark-toggle:not(.on){background:#CBD5E1}
+    [data-theme="dark"]{--bg:#0F172A;--surface:#1E293B;--surface-alt:#1E293B;--text:#F1F5F9;--text-sec:#94A3B8;--text-muted:#64748B;--dark:#020617;--dark-mid:#0F172A;--border:#334155}
+    [data-theme="dark"] body{background:#0F172A;color:#F1F5F9}
+    [data-theme="dark"] .topbar{background:#1E293B;border-color:#334155}
+    [data-theme="dark"] .card,[data-theme="dark"] .stat-card{background:#1E293B;border-color:#334155}
+    [data-theme="dark"] .modal{background:#1E293B}
+    [data-theme="dark"] .bottom-nav{background:#1E293B;border-color:#334155}
+    [data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{background:#0F172A;color:#F1F5F9;border-color:#334155}
+    [data-theme="dark"] th{border-color:#334155;color:#94A3B8}
+    [data-theme="dark"] td{border-color:#1E293B}
+    [data-theme="dark"] tr:hover td{background:#334155}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .fade-in{animation:fadeIn .3s ease-out}
+    .splash{position:fixed;inset:0;background:linear-gradient(135deg,var(--dark),var(--dark-mid));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;transition:opacity .5s}
+    .splash.hidden{opacity:0;pointer-events:none}
+    .splash h1{color:#fff;font-size:24px;font-weight:700;margin:20px 0 8px;font-family:'Fraunces',serif}
+    .splash p{color:rgba(255,255,255,.5);font-size:14px}
+    .splash-bar{width:120px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:24px;overflow:hidden}
+    .splash-bar div{height:100%;background:var(--sun);border-radius:2px;animation:loading 1.5s ease-in-out infinite}
+    @keyframes loading{0%{width:0}50%{width:70%}100%{width:100%}}
+    .sidebar::-webkit-scrollbar{width:4px}
+    .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%);width:240px}
+      .sidebar.open{transform:translateX(0)}
+      .main{margin-left:0}
+      .hamburger{display:block}
+      .bottom-nav{display:block}
+      .bottom-nav-inner{flex-direction:row}
+      .content{padding:16px 12px 80px}
+      .topbar{padding:12px 16px}
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Mock data
+    const mockVoyages = [
+      {id: 1, nom: "Croisière Méditerranée", dates: "15-25 avril 2026", pax: 45, statut: "confirmed", revenus: 18500},
+      {id: 2, nom: "Tour France Autour", dates: "5-18 mai 2026", pax: 32, statut: "ongoing", revenus: 12800},
+      {id: 3, nom: "Alpes & Lacs", dates: "20 juin-4 juillet 2026", pax: 28, statut: "pending", revenus: 11200},
+      {id: 4, nom: "Côte d'Azur Découverte", dates: "1-8 août 2026", pax: 52, statut: "draft", revenus: 0},
+    ];
+
+    const mockReservations = [
+      {id: 101, nom: "Martin Dupont", email: "m.dupont@mail.com", voyage: "Croisière Méditerranée", pax: 2, montant: 850, statut: "confirmed"},
+      {id: 102, nom: "Sophie Lemoine", email: "s.lemoine@mail.com", voyage: "Tour France Autour", pax: 1, montant: 400, statut: "pending"},
+      {id: 103, nom: "Jean Leclerc", email: "j.leclerc@mail.com", voyage: "Alpes & Lacs", pax: 3, montant: 1250, statut: "confirmed"},
+    ];
+
+    // Page Dashboard
+    function PageDashboard() {
+      return (
+        <div className="fade-in">
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #FF6B35, #FF8F5E)'}}>📅</div>
+              <div className="stat-value">4</div>
+              <div className="stat-label">Voyages actifs</div>
+              <div className="stat-trend up">↑ 2 en attente</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #0077B6, #00A8E8)'}}>👥</div>
+              <div className="stat-value">157</div>
+              <div className="stat-label">Passagers totaux</div>
+              <div className="stat-trend up">↑ 32 ce mois</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #06D6A0, #00D9B3)'}}>💰</div>
+              <div className="stat-value">42,5k€</div>
+              <div className="stat-label">Revenus confirmés</div>
+              <div className="stat-trend up">↑ 15% vs mois dernier</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #7B2FF7, #B88DFF)'}}>✓</div>
+              <div className="stat-value">94%</div>
+              <div className="stat-label">Taux de complétude</div>
+              <div className="stat-trend up">↑ 6% depuis hier</div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-title">Voyages récents</div>
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Dates</th>
+                    <th>Pax</th>
+                    <th>Statut</th>
+                    <th>Revenus</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockVoyages.map(v => (
+                    <tr key={v.id}>
+                      <td style={{fontWeight:500}}>{v.nom}</td>
+                      <td>{v.dates}</td>
+                      <td>{v.pax}</td>
+                      <td><span className={`badge-s ${v.statut}`}>{v.statut}</span></td>
+                      <td>{v.revenus ? v.revenus.toLocaleString('fr-FR') + '€' : '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Liste Voyages
+    function PageVoyages({setPage, setPageParams}) {
+      return (
+        <div className="fade-in">
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
+            <input type="text" placeholder="Rechercher un voyage..." className="search-input" style={{flex:1, marginRight:'12px'}} />
+            <button className="btn btn-sun" onClick={() => {setPage('voyages-nouveau'); setPageParams({});}}>+ Nouveau voyage</button>
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Voyage</th>
+                    <th>Dates</th>
+                    <th>Pax</th>
+                    <th>Statut</th>
+                    <th>Revenus</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockVoyages.map(v => (
+                    <tr key={v.id}>
+                      <td style={{fontWeight:500, cursor:'pointer', color:'var(--sun)'}} onClick={() => {setPage('voyage-detail'); setPageParams({id: v.id});}}>{v.nom}</td>
+                      <td>{v.dates}</td>
+                      <td>{v.pax}</td>
+                      <td><span className={`badge-s ${v.statut}`}>{v.statut}</span></td>
+                      <td>{v.revenus ? v.revenus.toLocaleString('fr-FR') + '€' : '-'}</td>
+                      <td><button className="btn btn-sm btn-outline">Voir</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Détail Voyage avec tabs
+    function PageVoyageDetail({id, setPage, setPageParams}) {
+      const [tab, setTab] = useState('overview');
+      const voyage = mockVoyages.find(v => v.id === parseInt(id)) || mockVoyages[0];
+
+      const tabs = [
+        {id: 'overview', label: 'Aperçu'},
+        {id: 'edit', label: 'Éditer'},
+        {id: 'equipe', label: 'Équipe'},
+        {id: 'reservations', label: 'Réservations'},
+        {id: 'restauration', label: 'Restauration'},
+        {id: 'rooming', label: 'Rooming'},
+        {id: 'transport', label: 'Transport'},
+        {id: 'finance', label: 'Finance'},
+        {id: 'factures', label: 'Factures'},
+        {id: 'bilan', label: 'Bilan'},
+      ];
+
+      return (
+        <div className="fade-in">
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
+            <h2>{voyage.nom}</h2>
+            <button className="btn btn-outline" onClick={() => {setPage('voyages'); setPageParams({});}}>← Retour</button>
+          </div>
+
+          <div className="tabs">
+            {tabs.map(t => (
+              <button
+                key={t.id}
+                className={`tab ${tab === t.id ? 'active' : ''}`}
+                onClick={() => setTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {tab === 'overview' && (
+            <div className="card">
+              <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Informations générales</h3>
+              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'16px'}}>
+                <div>
+                  <div style={{fontSize:'12px', color:'var(--text-sec)', marginBottom:'4px'}}>Dates</div>
+                  <div style={{fontSize:'15px', fontWeight:500}}>{voyage.dates}</div>
+                </div>
+                <div>
+                  <div style={{fontSize:'12px', color:'var(--text-sec)', marginBottom:'4px'}}>Passagers</div>
+                  <div style={{fontSize:'15px', fontWeight:500}}>{voyage.pax} participants</div>
+                </div>
+                <div>
+                  <div style={{fontSize:'12px', color:'var(--text-sec)', marginBottom:'4px'}}>Statut</div>
+                  <span className={`badge-s ${voyage.statut}`}>{voyage.statut}</span>
+                </div>
+                <div>
+                  <div style={{fontSize:'12px', color:'var(--text-sec)', marginBottom:'4px'}}>Revenus</div>
+                  <div style={{fontSize:'15px', fontWeight:500, color:'var(--mint)'}}>€{voyage.revenus}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {tab === 'edit' && <EditVoyageTab voyage={voyage} />}
+          {tab === 'equipe' && <EquipeTab voyage={voyage} />}
+          {tab === 'reservations' && <ReservationsTab voyage={voyage} />}
+          {tab === 'restauration' && <RestoTab voyage={voyage} />}
+          {tab === 'rooming' && <RoomingTab voyage={voyage} />}
+          {tab === 'transport' && <TransportTab voyage={voyage} />}
+          {tab === 'finance' && <FinanceTab voyage={voyage} />}
+          {tab === 'factures' && <FacturesTab voyage={voyage} />}
+          {tab === 'bilan' && <BilanTab voyage={voyage} />}
+        </div>
+      );
+    }
+
+    function EditVoyageTab({voyage}) {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Éditer le voyage</h3>
+          <div className="form-group">
+            <label className="form-label">Nom du voyage</label>
+            <input type="text" className="form-input" defaultValue={voyage.nom} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Dates</label>
+            <input type="text" className="form-input" defaultValue={voyage.dates} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Description</label>
+            <textarea className="form-input">Une belle croisière en Méditerranée avec visite des îles grecques...</textarea>
+          </div>
+          <button className="btn btn-sun">Enregistrer les modifications</button>
+        </div>
+      );
+    }
+
+    function EquipeTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Équipe du voyage</h3>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>Rôle</th><th>Nom</th><th>Email</th><th>Téléphone</th></tr></thead>
+              <tbody>
+                <tr><td>Chef de groupe</td><td>Marie Leclerc</td><td>m.leclerc@pro.com</td><td>+33 6 12 34 56 78</td></tr>
+                <tr><td>Guide</td><td>Pierre Moreau</td><td>p.moreau@pro.com</td><td>+33 6 87 65 43 21</td></tr>
+                <tr><td>Accompagnateur</td><td>Sophie Bernard</td><td>s.bernard@pro.com</td><td>+33 6 54 32 10 98</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function ReservationsTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Réservations</h3>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>Client</th><th>Email</th><th>Pax</th><th>Montant</th><th>Statut</th></tr></thead>
+              <tbody>
+                {mockReservations.map(r => (
+                  <tr key={r.id}><td>{r.nom}</td><td>{r.email}</td><td>{r.pax}</td><td>€{r.montant}</td><td><span className={`badge-s ${r.statut}`}>{r.statut}</span></td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function RestoTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Restauration</h3>
+          <div style={{marginBottom:'16px'}}>
+            <label className="form-label">Régime alimentaire à prévoir</label>
+            <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px'}}>
+              <div>✓ Végétarien: 8 passagers</div>
+              <div>✓ Sans gluten: 3 passagers</div>
+              <div>✓ Halal: 2 passagers</div>
+              <div>✓ Sans fruits à coque: 1 passager</div>
+            </div>
+          </div>
+          <button className="btn btn-sun">Mettre à jour les préférences</button>
+        </div>
+      );
+    }
+
+    function RoomingTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Plan de rooming</h3>
+          <div style={{padding:'16px', background:'var(--surface-alt)', borderRadius:'10px', marginBottom:'16px'}}>
+            <div style={{marginBottom:'12px'}}>Chambres doubles: 18</div>
+            <div style={{marginBottom:'12px'}}>Chambres simples: 4</div>
+            <div style={{marginBottom:'12px'}}>Suites: 2</div>
+            <div>Taux d'occupation: 94%</div>
+          </div>
+          <button className="btn btn-sun">Gérer le rooming</button>
+        </div>
+      );
+    }
+
+    function TransportTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Transport & Transfers</h3>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Départ</th><th>Destination</th><th>Statut</th></tr></thead>
+              <tbody>
+                <tr><td>15 avril</td><td>Bus</td><td>Paris CDG</td><td>Hôtel Méditerranée</td><td><span className="badge-s confirmed">Confirmé</span></td></tr>
+                <tr><td>25 avril</td><td>Bus</td><td>Hôtel Méditerranée</td><td>Paris CDG</td><td><span className="badge-s pending">En attente</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function FinanceTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Finance</h3>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'16px'}}>
+            <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px'}}>
+              <div style={{fontSize:'12px', color:'var(--text-sec)'}}>Revenus bruts</div>
+              <div style={{fontSize:'18px', fontWeight:700, color:'var(--sun)'}}>€18,500</div>
+            </div>
+            <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px'}}>
+              <div style={{fontSize:'12px', color:'var(--text-sec)'}}>Dépenses confirmées</div>
+              <div style={{fontSize:'18px', fontWeight:700, color:'var(--coral)'}}>€8,200</div>
+            </div>
+            <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px'}}>
+              <div style={{fontSize:'12px', color:'var(--text-sec)'}}>Marge nette</div>
+              <div style={{fontSize:'18px', fontWeight:700, color:'var(--mint)'}}>€10,300</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function FacturesTab() {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Factures</h3>
+          <div className="table-container">
+            <table>
+              <thead><tr><th>Numéro</th><th>Fournisseur</th><th>Montant</th><th>Statut</th><th>Date</th></tr></thead>
+              <tbody>
+                <tr><td>FA-2026-0124</td><td>Grand Hotel Méditerranée</td><td>€4,200</td><td><span className="badge-s confirmed">Payée</span></td><td>10 mars</td></tr>
+                <tr><td>TR-2026-0015</td><td>Transport Express Bus</td><td>€2,100</td><td><span className="badge-s pending">En attente</span></td><td>12 mars</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    function BilanTab({voyage}) {
+      return (
+        <div className="card">
+          <h3 style={{fontFamily:'Fraunces', fontSize:'16px', marginBottom:'16px'}}>Bilan du voyage</h3>
+          <div className="alert info">Voyage en cours, bilan final disponible après la fin du voyage</div>
+          <div style={{marginTop:'16px'}}>
+            <div className="form-group">
+              <label className="form-label">Taux de satisfaction</label>
+              <div style={{display:'flex', gap:'8px'}}>
+                {[1,2,3,4,5].map(i => <button key={i} className="btn btn-outline" style={{flex:1}}>⭐{i}</button>)}
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Commentaires</label>
+              <textarea className="form-input"></textarea>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Nouveau Voyage
+    function PageNouveauVoyage({setPage, setPageParams}) {
+      return (
+        <div className="fade-in">
+          <div style={{marginBottom:'24px'}}>
+            <button className="btn btn-outline" onClick={() => {setPage('voyages'); setPageParams({});}}>← Retour</button>
+          </div>
+          <div className="card">
+            <h2 style={{fontFamily:'Fraunces', marginBottom:'24px'}}>Créer un nouveau voyage</h2>
+            <div className="form-group">
+              <label className="form-label">Nom du voyage</label>
+              <input type="text" className="form-input" placeholder="ex: Croisière Grecque Été 2026" />
+            </div>
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px'}}>
+              <div className="form-group">
+                <label className="form-label">Date de départ</label>
+                <input type="date" className="form-input" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Date de retour</label>
+                <input type="date" className="form-input" />
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Description</label>
+              <textarea className="form-input" placeholder="Décrivez le voyage..."></textarea>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Nombre de places</label>
+              <input type="number" className="form-input" placeholder="45" />
+            </div>
+            <div style={{display:'flex', gap:'12px'}}>
+              <button className="btn btn-sun">Créer le voyage</button>
+              <button className="btn btn-outline">Annuler</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Réservations
+    function PageReservations() {
+      return (
+        <div className="fade-in">
+          <div style={{marginBottom:'24px'}}>
+            <input type="text" placeholder="Rechercher une réservation..." className="search-input" />
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Voyage</th>
+                    <th>Pax</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockReservations.map(r => (
+                    <tr key={r.id}>
+                      <td>{r.nom}</td>
+                      <td>{r.voyage}</td>
+                      <td>{r.pax}</td>
+                      <td>€{r.montant}</td>
+                      <td><span className={`badge-s ${r.statut}`}>{r.statut}</span></td>
+                      <td>15 mar</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Revenus
+    function PageRevenus() {
+      return (
+        <div className="fade-in">
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #06D6A0, #00D9B3)'}}>💵</div>
+              <div className="stat-value">42,5k€</div>
+              <div className="stat-label">Revenus confirmés</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #FF6B35, #FF8F5E)'}}>📊</div>
+              <div className="stat-value">18,2k€</div>
+              <div className="stat-label">Revenus en attente</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #0077B6, #00A8E8)'}}>📈</div>
+              <div className="stat-value">60,7k€</div>
+              <div className="stat-label">Total projeté</div>
+            </div>
+          </div>
+          <div className="card">
+            <h3 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Détail des revenus</h3>
+            <div className="table-container">
+              <table>
+                <thead><tr><th>Voyage</th><th>Pax</th><th>Montant unitaire</th><th>Montant total</th><th>Statut</th></tr></thead>
+                <tbody>
+                  {mockVoyages.map(v => (
+                    <tr key={v.id}>
+                      <td>{v.nom}</td>
+                      <td>{v.pax}</td>
+                      <td>€{(v.revenus / v.pax).toFixed(0)}</td>
+                      <td style={{fontWeight:600, color:'var(--sun)'}}>€{v.revenus}</td>
+                      <td><span className={`badge-s ${v.statut}`}>{v.statut}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Finance
+    function PageFinance() {
+      return (
+        <div className="fade-in">
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #06D6A0, #00D9B3)'}}>📥</div>
+              <div className="stat-value">42,5k€</div>
+              <div className="stat-label">Entrées confirmées</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #E63946, #F15555)'}}>📤</div>
+              <div className="stat-value">22,3k€</div>
+              <div className="stat-label">Dépenses confirmées</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{background:'linear-gradient(135deg, #7B2FF7, #B88DFF)'}}>💰</div>
+              <div className="stat-value">20,2k€</div>
+              <div className="stat-label">Marge nette</div>
+            </div>
+          </div>
+          <div className="card">
+            <h3 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Synthèse financière</h3>
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px'}}>
+              <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px'}}>
+                <div style={{fontSize:'12px', color:'var(--text-sec)', marginBottom:'4px'}}>Marge brute</div>
+                <div style={{fontSize:'18px', fontWeight:700, color:'var(--mint)'}}>47.5%</div>
+              </div>
+              <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px'}}>
+                <div style={{fontSize:'12px', color:'var(--text-sec)', marginBottom:'4px'}}>Marge nette</div>
+                <div style={{fontSize:'18px', fontWeight:700, color:'var(--sun)'}}>47.5%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Marketing
+    function PageMarketing({setPage, setPageParams}) {
+      return (
+        <div className="fade-in">
+          <div style={{display:'flex', justifyContent:'space-between', marginBottom:'24px'}}>
+            <input type="text" placeholder="Rechercher une campagne..." className="search-input" style={{flex:1, marginRight:'12px'}} />
+            <button className="btn btn-sun" onClick={() => {setPage('marketing-creer'); setPageParams({});}}>+ Créer</button>
+          </div>
+          <div className="card">
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Campagne</th>
+                    <th>Type</th>
+                    <th>Statut</th>
+                    <th>Clics</th>
+                    <th>Conversions</th>
+                    <th>Taux</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{fontWeight:500}}>Croisière Med - Email</td>
+                    <td>Email</td>
+                    <td><span className="badge-s active">Active</span></td>
+                    <td>234</td>
+                    <td>18</td>
+                    <td>7.7%</td>
+                  </tr>
+                  <tr>
+                    <td style={{fontWeight:500}}>Tour France - Facebook</td>
+                    <td>Social</td>
+                    <td><span className="badge-s active">Active</span></td>
+                    <td>512</td>
+                    <td>32</td>
+                    <td>6.2%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Pages Messaging
+    function PageMessagerie() {
+      return (
+        <div className="fade-in">
+          <div style={{display:'grid', gridTemplateColumns:'1fr 2fr', gap:'16px', height:'600px'}}>
+            <div className="card" style={{overflow:'auto'}}>
+              <h3 style={{fontFamily:'Fraunces', marginBottom:'12px'}}>Conversations</h3>
+              {[
+                {id: 1, nom: 'Marie Leclerc', dernier: 'Merci pour les détails...'},
+                {id: 2, nom: 'Hotel Méditerranée', dernier: 'Confirmation de la réservation'},
+                {id: 3, nom: 'Transport Express', dernier: 'Horaires des transfers...'},
+              ].map(conv => (
+                <div key={conv.id} style={{padding:'10px', borderRadius:'8px', cursor:'pointer', background:'var(--surface-alt)', marginBottom:'8px'}}>
+                  <div style={{fontWeight:500, fontSize:'14px'}}>{conv.nom}</div>
+                  <div style={{fontSize:'12px', color:'var(--text-muted)'}}>{conv.dernier}</div>
+                </div>
+              ))}
+            </div>
+            <div className="card" style={{display:'flex', flexDirection:'column'}}>
+              <h3 style={{fontFamily:'Fraunces', marginBottom:'12px'}}>Conversation avec Marie Leclerc</h3>
+              <div style={{flex:1, overflow:'auto', marginBottom:'12px'}}>
+                <div style={{marginBottom:'12px', padding:'10px', background:'var(--ocean-light)', borderRadius:'8px', width:'80%'}}>
+                  <div style={{fontSize:'13px'}}>Bonjour, pouvez-vous confirmer les horaires de départ?</div>
+                  <div style={{fontSize:'11px', color:'var(--text-muted)', marginTop:'4px'}}>14h32</div>
+                </div>
+                <div style={{marginBottom:'12px', padding:'10px', background:'var(--sun-glow)', borderRadius:'8px', width:'80%', marginLeft:'20%'}}>
+                  <div style={{fontSize:'13px'}}>Bonjour, oui bien sûr. Le départ est à 6h30 du Pont de l'Alma.</div>
+                  <div style={{fontSize:'11px', color:'var(--text-muted)', marginTop:'4px'}}>14h45</div>
+                </div>
+              </div>
+              <div style={{display:'flex', gap:'8px'}}>
+                <input type="text" placeholder="Votre message..." className="form-input" style={{margin:0}} />
+                <button className="btn btn-sun">Envoyer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Profil
+    function PageProfil() {
+      return (
+        <div className="fade-in">
+          <div className="card">
+            <h2 style={{fontFamily:'Fraunces', marginBottom:'20px'}}>Mon profil</h2>
+            <div style={{display:'grid', gridTemplateColumns:'auto 1fr', gap:'20px', alignItems:'start', marginBottom:'24px'}}>
+              <div style={{width:'80px', height:'80px', borderRadius:'50%', background:'linear-gradient(135deg, var(--sun), var(--ocean))', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'32px'}}>👤</div>
+              <div>
+                <div style={{fontSize:'16px', fontWeight:600, marginBottom:'4px'}}>David Leclerc</div>
+                <div style={{color:'var(--text-sec)'}}>Pro événements & voyages</div>
+                <div style={{fontSize:'12px', color:'var(--text-muted)', marginTop:'4px'}}>Créateur depuis 2022</div>
+              </div>
+            </div>
+            <div style={{borderTop:'1px solid var(--border)', paddingTop:'16px'}}>
+              <h3 style={{fontFamily:'Fraunces', marginBottom:'12px'}}>Informations</h3>
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input type="email" className="form-input" defaultValue="david.leclerc@pro.com" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Téléphone</label>
+                <input type="tel" className="form-input" defaultValue="+33 6 12 34 56 78" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">SIRET</label>
+                <input type="text" className="form-input" defaultValue="123 456 789 00012" />
+              </div>
+              <button className="btn btn-sun">Enregistrer les modifications</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Paramètres
+    function PageParametres({setPage, setPageParams}) {
+      const [subPage, setSubPage] = useState('general');
+
+      return (
+        <div className="fade-in">
+          <div style={{display:'grid', gridTemplateColumns:'200px 1fr', gap:'16px'}}>
+            <div className="card">
+              <h3 style={{fontFamily:'Fraunces', marginBottom:'12px', fontSize:'14px'}}>Paramètres</h3>
+              {[
+                {id: 'general', label: 'Général'},
+                {id: 'comptes', label: 'Comptes bancaires'},
+                {id: 'equipe', label: 'Équipe'},
+                {id: 'facturation', label: 'Facturation'},
+                {id: 'notifications', label: 'Notifications'},
+              ].map(sub => (
+                <button key={sub.id} className={`btn ${subPage === sub.id ? 'btn-sun' : 'btn-outline'}`} style={{width:'100%', justifyContent:'flex-start', marginBottom:'8px'}} onClick={() => setSubPage(sub.id)}>
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+            <div>
+              {subPage === 'general' && (
+                <div className="card">
+                  <h2 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Paramètres généraux</h2>
+                  <div className="form-group">
+                    <label className="form-label">Nom de l'entreprise</label>
+                    <input type="text" className="form-input" defaultValue="David Leclerc Voyages" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Thème</label>
+                    <select className="form-input">
+                      <option>Clair</option>
+                      <option>Sombre</option>
+                      <option>Auto</option>
+                    </select>
+                  </div>
+                  <button className="btn btn-sun">Enregistrer</button>
+                </div>
+              )}
+              {subPage === 'comptes' && (
+                <div className="card">
+                  <h2 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Comptes bancaires</h2>
+                  <div style={{padding:'12px', background:'var(--surface-alt)', borderRadius:'10px', marginBottom:'16px'}}>
+                    <div style={{fontWeight:500}}>Compte principal</div>
+                    <div style={{fontSize:'12px', color:'var(--text-muted)'}}>IBAN: FR76 3000 6000 8123 4567 890</div>
+                  </div>
+                  <button className="btn btn-sun">Ajouter un compte</button>
+                </div>
+              )}
+              {subPage === 'equipe' && (
+                <div className="card">
+                  <h2 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Gestion de l'équipe</h2>
+                  <div className="table-container">
+                    <table>
+                      <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Action</th></tr></thead>
+                      <tbody>
+                        <tr><td>Marie Leclerc</td><td>m.leclerc@pro.com</td><td>Chef de groupe</td><td><button className="btn btn-sm btn-outline">Modifier</button></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {subPage === 'facturation' && (
+                <div className="card">
+                  <h2 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Facturation</h2>
+                  <div className="form-group">
+                    <label className="form-label">Mention légale sur facture</label>
+                    <textarea className="form-input">Merci pour votre confiance. Nous vous souhaitons un excellent voyage!</textarea>
+                  </div>
+                  <button className="btn btn-sun">Enregistrer</button>
+                </div>
+              )}
+              {subPage === 'notifications' && (
+                <div className="card">
+                  <h2 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Notifications</h2>
+                  <div style={{marginBottom:'16px'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 0', borderBottom:'1px solid var(--border)'}}>
+                      <div>Email pour nouvelles réservations</div>
+                      <input type="checkbox" defaultChecked />
+                    </div>
+                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 0', borderBottom:'1px solid var(--border)'}}>
+                      <div>Rappel des paiements en attente</div>
+                      <input type="checkbox" defaultChecked />
+                    </div>
+                  </div>
+                  <button className="btn btn-sun">Enregistrer</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Support
+    function PageSupport() {
+      return (
+        <div className="fade-in">
+          <div className="card" style={{marginBottom:'16px'}}>
+            <h2 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Centre de support</h2>
+            <input type="text" placeholder="Rechercher une question..." className="search-input" style={{marginBottom:'16px'}} />
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'12px'}}>
+              <button className="btn btn-outline" style={{justifyContent:'flex-start', padding:'12px', height:'auto', flexDirection:'column', alignItems:'flex-start'}}>
+                <div style={{fontWeight:500}}>📖 Documentation</div>
+                <div style={{fontSize:'12px', color:'var(--text-sec)'}}>Guides et tutoriels</div>
+              </button>
+              <button className="btn btn-outline" style={{justifyContent:'flex-start', padding:'12px', height:'auto', flexDirection:'column', alignItems:'flex-start'}}>
+                <div style={{fontWeight:500}}>❓ FAQ</div>
+                <div style={{fontSize:'12px', color:'var(--text-sec)'}}>Questions fréquentes</div>
+              </button>
+              <button className="btn btn-outline" style={{justifyContent:'flex-start', padding:'12px', height:'auto', flexDirection:'column', alignItems:'flex-start'}}>
+                <div style={{fontWeight:500}}>💬 Contacter</div>
+                <div style={{fontSize:'12px', color:'var(--text-sec)'}}>Message direct</div>
+              </button>
+            </div>
+          </div>
+          <div className="card">
+            <h3 style={{fontFamily:'Fraunces', marginBottom:'16px'}}>Tickets support récents</h3>
+            <div className="table-container">
+              <table>
+                <thead><tr><th>Sujet</th><th>Statut</th><th>Créé</th><th>Action</th></tr></thead>
+                <tbody>
+                  <tr><td>Problème de paiement</td><td><span className="badge-s active">En cours</span></td><td>18 mar</td><td><button className="btn btn-sm btn-outline">Voir</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Login
+    function PageLogin({setPage, setPageParams, setUser}) {
+      return (
+        <div style={{minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'20px'}}>
+          <div className="card" style={{maxWidth:'400px', width:'100%'}}>
+            <h1 style={{fontFamily:'Fraunces', fontSize:'28px', marginBottom:'8px', textAlign:'center'}}>Eventy Pro</h1>
+            <p style={{textAlign:'center', color:'var(--text-sec)', marginBottom:'24px'}}>Connexion à votre espace pro</p>
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input type="email" className="form-input" defaultValue="david.leclerc@pro.com" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Mot de passe</label>
+              <input type="password" className="form-input" defaultValue="••••••••" />
+            </div>
+            <button className="btn btn-sun" style={{width:'100%', justifyContent:'center'}} onClick={() => {setUser({id: 1, nom: 'David Leclerc'}); setPage('dashboard'); setPageParams({});}}>Se connecter</button>
+            <div style={{textAlign:'center', marginTop:'16px', fontSize:'14px'}}>
+              <a href="#" style={{color:'var(--ocean)'}} onClick={() => {setPage('forgot-password'); setPageParams({});}}>Mot de passe oublié ?</a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Inscription
+    function PageInscription({setPage, setPageParams}) {
+      return (
+        <div style={{minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'20px'}}>
+          <div className="card" style={{maxWidth:'400px', width:'100%'}}>
+            <h1 style={{fontFamily:'Fraunces', fontSize:'28px', marginBottom:'8px', textAlign:'center'}}>Créer un compte</h1>
+            <p style={{textAlign:'center', color:'var(--text-sec)', marginBottom:'24px'}}>Rejoindre la communauté Eventy Pro</p>
+            <div className="form-group">
+              <label className="form-label">Nom complet</label>
+              <input type="text" className="form-input" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input type="email" className="form-input" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Mot de passe</label>
+              <input type="password" className="form-input" />
+            </div>
+            <button className="btn btn-sun" style={{width:'100%', justifyContent:'center'}}>Créer mon compte</button>
+            <div style={{textAlign:'center', marginTop:'16px', fontSize:'14px'}}>
+              <a href="#" style={{color:'var(--ocean)'}} onClick={() => {setPage('login'); setPageParams({});}}>Déjà inscrit ? Se connecter</a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Page Forgot Password
+    function PageForgotPassword({setPage, setPageParams}) {
+      return (
+        <div style={{minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'20px'}}>
+          <div className="card" style={{maxWidth:'400px', width:'100%'}}>
+            <h1 style={{fontFamily:'Fraunces', fontSize:'28px', marginBottom:'8px', textAlign:'center'}}>Récupérer votre mot de passe</h1>
+            <p style={{textAlign:'center', color:'var(--text-sec)', marginBottom:'24px'}}>Entrez votre email pour recevoir les instructions</p>
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input type="email" className="form-input" />
+            </div>
+            <button className="btn btn-sun" style={{width:'100%', justifyContent:'center'}}>Envoyer les instructions</button>
+            <div style={{textAlign:'center', marginTop:'16px', fontSize:'14px'}}>
+              <a href="#" style={{color:'var(--ocean)'}} onClick={() => {setPage('login'); setPageParams({});}}>Retour à la connexion</a>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Autres pages placeholder
+    function PageArrets() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Points d'arrêt</h2><p style={{marginTop:'16px'}}>Gestion des arrêts de bus</p></div>;
+    }
+
+    function PageOnboarding() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Bienvenue sur Eventy Pro!</h2><p style={{marginTop:'16px'}}>Découvrez comment gérer vos voyages en quelques étapes.</p></div>;
+    }
+
+    function PageFormation() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Centre de formation</h2><p style={{marginTop:'16px'}}>Tutoriels vidéo et webinaires</p></div>;
+    }
+
+    function PageDocuments() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Documents</h2><p style={{marginTop:'16px'}}>Fichiers et templates</p></div>;
+    }
+
+    function PageVendre() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Partager mes voyages</h2><p style={{marginTop:'16px'}}>Liens d'accès pour vos clients</p></div>;
+    }
+
+    function PageCompte() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Gestion du compte</h2><p style={{marginTop:'16px'}}>Informations de compte</p></div>;
+    }
+
+    function PageReleve() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Relevé de revenus</h2><p style={{marginTop:'16px'}}>Détails mensuels des revenus</p></div>;
+    }
+
+    function PageCreerMarketing() {
+      return <div className="fade-in card"><h2 style={{fontFamily:'Fraunces'}}>Créer une campagne marketing</h2><p style={{marginTop:'16px'}}>Lancer une nouvelle campagne</p></div>;
+    }
+
+    // Main App
+    function App() {
+      const [page, setPage] = useState('login');
+      const [pageParams, setPageParams] = useState({});
+      const [user, setUser] = useState(null);
+      const [darkMode, setDarkMode] = useState(false);
+      const [sidebarOpen, setSidebarOpen] = useState(false);
+
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+      }, [darkMode]);
+
+      useEffect(() => {
+        setTimeout(() => {
+          document.querySelector('.splash')?.classList.add('hidden');
+        }, 1500);
+      }, []);
+
+      // Nav items config
+      const navItems = [
+        {id: 'dashboard', label: 'Tableau de bord', icon: '📊'},
+        {id: 'voyages', label: 'Voyages', icon: '✈️'},
+        {id: 'reservations', label: 'Réservations', icon: '🎫'},
+        {id: 'revenus', label: 'Revenus', icon: '💰'},
+        {id: 'finance', label: 'Finance', icon: '📈'},
+        {id: 'arrets', label: 'Points d\'arrêt', icon: '🚌'},
+        {id: 'marketing', label: 'Marketing', icon: '📢'},
+        {id: 'messagerie', label: 'Messagerie', icon: '💬'},
+        {id: 'profil', label: 'Profil', icon: '👤'},
+        {id: 'formation', label: 'Formation', icon: '📚'},
+        {id: 'documents', label: 'Documents', icon: '📄'},
+        {id: 'vendre', label: 'Partager', icon: '🔗'},
+        {id: 'support', label: 'Support', icon: '❓'},
+        {id: 'parametres', label: 'Paramètres', icon: '⚙️'},
+      ];
+
+      if (!user && page !== 'login' && page !== 'inscription' && page !== 'forgot-password') {
+        return <PageLogin setPage={setPage} setPageParams={setPageParams} setUser={setUser} />;
+      }
+
+      return (
+        <>
+          <div className="splash">
+            <h1>Eventy Pro</h1>
+            <p>Chargement en cours</p>
+            <div className="splash-bar"><div /></div>
+          </div>
+
+          {user && (
+            <>
+              <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+                <div className="sidebar-logo">
+                  <h1>Eventy</h1>
+                  <span>Pro</span>
+                </div>
+                <div className="nav-section">
+                  <div className="nav-section-title">Gestion</div>
+                  {navItems.slice(0, 6).map(item => (
+                    <div key={item.id} className={`nav-item ${page === item.id ? 'active' : ''}`} onClick={() => {setPage(item.id); setPageParams({}); setSidebarOpen(false);}}>
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="nav-section">
+                  <div className="nav-section-title">Outils</div>
+                  {navItems.slice(6).map(item => (
+                    <div key={item.id} className={`nav-item ${page === item.id ? 'active' : ''}`} onClick={() => {setPage(item.id); setPageParams({}); setSidebarOpen(false);}}>
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="sidebar-user">
+                  <div className="sidebar-user-avatar">{user.nom.charAt(0)}</div>
+                  <div>
+                    <div style={{fontSize:'13px', fontWeight:600}}>{user.nom}</div>
+                    <div style={{fontSize:'11px', color:'rgba(255,255,255,.5)'}}>Déconnexion</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="main">
+                <div className="topbar">
+                  <div>
+                    <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+                    <h2>
+                      {navItems.find(n => n.id === page)?.label || 'Page'}
+                    </h2>
+                  </div>
+                  <div className="topbar-right">
+                    <button className="dark-toggle" style={{background: darkMode ? 'var(--sun)' : '#CBD5E1'}} onClick={() => setDarkMode(!darkMode)}>
+                      <div className="dot" />
+                    </button>
+                  </div>
+                </div>
+                <div className="content">
+                  {page === 'dashboard' && <PageDashboard />}
+                  {page === 'voyages' && <PageVoyages setPage={setPage} setPageParams={setPageParams} />}
+                  {page === 'voyage-detail' && <PageVoyageDetail id={pageParams.id} setPage={setPage} setPageParams={setPageParams} />}
+                  {page === 'voyages-nouveau' && <PageNouveauVoyage setPage={setPage} setPageParams={setPageParams} />}
+                  {page === 'reservations' && <PageReservations />}
+                  {page === 'revenus' && <PageRevenus />}
+                  {page === 'releve' && <PageReleve />}
+                  {page === 'finance' && <PageFinance />}
+                  {page === 'arrets' && <PageArrets />}
+                  {page === 'marketing' && <PageMarketing setPage={setPage} setPageParams={setPageParams} />}
+                  {page === 'marketing-creer' && <PageCreerMarketing />}
+                  {page === 'messagerie' && <PageMessagerie />}
+                  {page === 'profil' && <PageProfil />}
+                  {page === 'formation' && <PageFormation />}
+                  {page === 'documents' && <PageDocuments />}
+                  {page === 'vendre' && <PageVendre />}
+                  {page === 'onboarding' && <PageOnboarding />}
+                  {page === 'parametres' && <PageParametres setPage={setPage} setPageParams={setPageParams} />}
+                  {page === 'support' && <PageSupport />}
+                  {page === 'compte' && <PageCompte />}
+                </div>
+              </div>
+
+              <div className="bottom-nav">
+                <div className="bottom-nav-inner">
+                  <button className={`bnav-item ${page === 'dashboard' ? 'active' : ''}`} onClick={() => {setPage('dashboard'); setPageParams({});}}>
+                    <div className="bnav-icon">📊</div>
+                    <div className="bnav-label">Accueil</div>
+                  </button>
+                  <button className={`bnav-item ${page === 'voyages' ? 'active' : ''}`} onClick={() => {setPage('voyages'); setPageParams({});}}>
+                    <div className="bnav-icon">✈️</div>
+                    <div className="bnav-label">Voyages</div>
+                  </button>
+                  <button className={`bnav-item ${page === 'reservations' ? 'active' : ''}`} onClick={() => {setPage('reservations'); setPageParams({});}}>
+                    <div className="bnav-icon">🎫</div>
+                    <div className="bnav-label">Résa</div>
+                  </button>
+                  <button className={`bnav-item ${page === 'messagerie' ? 'active' : ''}`} onClick={() => {setPage('messagerie'); setPageParams({});}}>
+                    <div className="bnav-icon">💬</div>
+                    <div className="bnav-label">Chat</div>
+                  </button>
+                  <button className={`bnav-item ${page === 'parametres' ? 'active' : ''}`} onClick={() => {setPage('parametres'); setPageParams({});}}>
+                    <div className="bnav-icon">⚙️</div>
+                    <div className="bnav-label">Params</div>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {!user && (page === 'login' || page === 'inscription' || page === 'forgot-password') && (
+            <>
+              {page === 'login' && <PageLogin setPage={setPage} setPageParams={setPageParams} setUser={setUser} />}
+              {page === 'inscription' && <PageInscription setPage={setPage} setPageParams={setPageParams} />}
+              {page === 'forgot-password' && <PageForgotPassword setPage={setPage} setPageParams={setPageParams} />}
+            </>
+          )}
+        </>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/pro-pwa/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
