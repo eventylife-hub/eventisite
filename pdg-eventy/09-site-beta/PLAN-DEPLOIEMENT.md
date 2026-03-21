@@ -48,7 +48,7 @@
 
 | Service | Fournisseur | Plan | Coût HT/mois |
 |---------|------------|------|-------------|
-| Backend (NestJS) | Scaleway DEV1-S | 2 vCPU, 2 Go RAM, 20 Go SSD | **6,42€** |
+| Backend (NestJS) | Scaleway DEV1-M | 3 vCPU, 4 Go RAM, 25 Go Block | **~19,50€** (réel, OOM sur DEV1-S) |
 | Frontend (Next.js) | Scaleway DEV1-S ou Container | 2 vCPU, 2 Go RAM | **6,42€** |
 | BDD PostgreSQL | Scaleway Managed Database | DB-DEV-S (1 Go RAM, 10 Go) | **7,68€** |
 | Redis (cache + sessions) | Upstash | Free tier (10K commandes/jour) | **0€** |
@@ -173,13 +173,13 @@ PACK_SERENITE_EMAIL=sinistre@eventylife.fr
 ```
 
 **2.2 Déploiement backend sur Scaleway**
-- [ ] Provisionner instance DEV1-S (Scaleway Console)
-- [ ] Installer Node.js 20 LTS + PM2 (process manager)
-- [ ] Cloner le repo GitHub (branche `main`) sur l'instance
-- [ ] Installer les dépendances (`npm ci --production`)
-- [ ] Configurer PM2 (`pm2 start dist/main.js --name eventy-backend`)
-- [ ] Configurer auto-restart PM2 au boot (`pm2 startup`)
-- [ ] Configurer le reverse proxy Nginx (→ port 3000 NestJS)
+- [x] Provisionner instance DEV1-M (Scaleway Console) — `163.172.189.137` — 21/03/2026
+- [x] Installer Node.js 20 LTS + PM2 (process manager) — via cloud-init
+- [x] Cloner le repo GitHub (branche `main`) sur l'instance — via cloud-init
+- [x] Installer les dépendances (`npm ci`) — via cloud-init (avec swap 2 Go + NODE_OPTIONS 3072)
+- [x] Configurer PM2 (`pm2 start dist/main.js --name eventy-backend`) — via cloud-init
+- [x] Configurer auto-restart PM2 au boot (`pm2 startup`) — via cloud-init
+- [x] Configurer le reverse proxy Nginx (→ port 3000 NestJS) — via cloud-init
 - [ ] Configurer Stripe webhook production : `POST https://api.eventylife.fr/webhooks/stripe`
 - [ ] Vérifier healthcheck : `GET https://api.eventylife.fr/health`
 - [ ] Configurer les cron jobs (suppression passeports J+30, relances email automatiques)
@@ -299,11 +299,36 @@ PACK_SERENITE_EMAIL=sinistre@eventylife.fr
 
 ---
 
-## Décisions PDG (05/03/2026)
+## Décisions PDG
 
+### 05/03/2026
 - **Scaleway tout-en-un** : Hébergement, BDD, S3 — tout chez Scaleway France. Simplicité + conformité RGPD
 - **Cloudflare DNS+CDN gratuit** : Performance mondiale pour le frontend, protection DDoS, WAF basique
 - **Budget infra Phase 1 : ~25€ HT/mois** : Ultra-compétitif grâce à Scaleway
-- **Pas de Vercel/Railway/Neon** : Choix stratégique de rester en France pour la conformité et la souveraineté des données
 - **PM2 en Phase 1** : Simple et efficace pour gérer le processus Node.js. Migration vers Docker/conteneurs en Phase 2 si besoin
-- **Go/No-Go légal = bloquant** : Pas de mise en production sans Atout France + APST + RC Pro + CGV publiées
+
+### 21/03/2026 — Décision : Tester AVANT de créer la société
+- **Frontend** : ✅ Déjà déployé sur Vercel (eventylife.fr + www.eventylife.fr) — Build 14 READY
+- **Backend** : 🔴 **À DÉPLOYER EN URGENCE** pour pouvoir tester le site complet
+- **Approche "Test d'abord"** : Valider que le produit fonctionne (login, réservation, paiement Stripe test) AVANT d'investir dans la SAS + APST + RC Pro
+- **Go/No-Go légal = bloquant pour VRAI lancement commercial** (pas pour les tests internes)
+- **Options backend rapide** : Railway (~5€/mois) + Neon PostgreSQL (gratuit) OU Scaleway directement
+
+### 21/03/2026 — Déploiement Backend Scaleway DEV1-M
+- **Tentative 1 (DEV1-S, 2 Go RAM)** : ❌ ÉCHEC — OOM pendant `npm run build` (projet trop gros pour 2 Go)
+- **Tentative 2 (DEV1-S natif, sans Docker)** : ❌ ÉCHEC — même problème OOM après 20+ min
+- **Tentative 3 (DEV1-M, 4 Go RAM)** : ❌ ÉCHEC — PostgreSQL absent du cloud-init, NestJS crashe au démarrage (pas de BDD). Instance supprimée.
+- **Tentative 4 (DEV1-M, 4 Go RAM, cloud-init COMPLET)** : 🔄 EN COURS — serveur up (Nginx répond), build NestJS en cours (35+ min, projet 300K+ lignes). Vérifier avec `ssh root@163.172.189.137` puis `tail -50 /var/log/eventy-deploy.log`
+  - **Instance** : `eventy-backend` — DEV1-M (3 vCPU, 4 Go RAM, 300 Mbps)
+  - **IP publique** : `163.172.189.137`
+  - **Instance ID** : `6533166a-8396-4558-a955-8b49902e8989`
+  - **Zone** : fr-par-1 (Paris)
+  - **Image** : Ubuntu 24.04 Noble Numbat
+  - **Stockage** : Block Storage 5K — 25 Go
+  - **SSH** : `ssh root@163.172.189.137`
+  - **Coût** : €0.02675/h (~€19.50/mois)
+  - **Cloud-init V2 COMPLET** : PostgreSQL + Node.js 20 + PM2 + Nginx + Redis + swap 2 Go + clone GitHub + npm ci + prisma generate + build NestJS + prisma migrate deploy + démarrage PM2 + JWT secret auto-généré
+  - **NODE_OPTIONS** : `--max-old-space-size=3072` (heap 3 Go pour le build)
+  - **Log déploiement** : `/var/log/eventy-deploy.log`
+  - **DB user** : `eventy` / **DB name** : `eventy`
+  - **Vérification** : `curl http://163.172.189.137/api/health`

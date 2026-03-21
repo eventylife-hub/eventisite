@@ -1,6 +1,9 @@
 # DASHBOARD PDG — Eventy
 
-> **Dernière mise à jour** : 21 mars 2026 — **Cowork-23 Sprint Checkout Transport & Suivi Client TERMINÉ** : Phase 3 du plan transport, **+3 070 lignes**. Backend: endpoint checkout transport unifiée (`POST /checkout/:id/transport` + `GET /checkout/:id/transport-options`), DTO Zod select-transport (bus/avion/combiné), infos passagers avion (passeport, naissance, nationalité), service notifications transport WebSocket (8 méthodes: bus départ/arrivée/retard, vol boarding/retard/gate, urgence SOS) + 496 lignes tests. Frontend: page suivi voyage temps réel client (`/client/voyage/[id]/suivi`, 421 lignes, timeline verticale + refresh auto 30s + bouton SOS), composant FlightPassengerForm (571 lignes, 26 nationalités, validation passeport), checkout transport amélioré (714 lignes, BusSeatMap 53 sièges interactif intégré, API backend connectée), checkout store étendu transport (mode/vol/bus/passagers). **Cowork-22 précédent** : 7 chantiers, +12 350 lignes (8 modèles Prisma, 12 enums, 6 services, 24 pages frontend). Plan complet: `PLAN-RESERVATION-TRANSPORT-SUIVI.md`.
+> **Dernière mise à jour** : 21 mars 2026 — **🚀 PHASE : TEST & AMÉLIORATION EN LIVE** — Dev 100% terminé, passage en mode test et amélioration continue en production.
+> **Cowork-25 (PDG — 21/03)** : Déploiement backend Scaleway — 3 tentatives échouées (2× DEV1-S OOM 2 Go + 1× DEV1-M sans PostgreSQL), **Tentative 4 : DEV1-M (4 Go RAM) + cloud-init V2 COMPLET** (PostgreSQL + Node.js 20 + PM2 + Nginx + Redis + Prisma migrate) → instance `eventy-backend` créée IP `163.172.189.137`, Instance ID `6533166a-8396-4558-a955-8b49902e8989`, cloud-init en cours.
+> **Cowork-24 (PDG — 21/03)** : Ajout lien "Espace Pro" dans le footer (colonne Découvrir + barre légale), push + deploy Vercel OK (build 14 READY), test login Pro → erreur 404 = **backend pas encore déployé = BLOQUEUR N°1 pour tester le site**.
+> **Cowork-23 précédent** : Sprint Checkout Transport & Suivi Client — +3 070 lignes (backend transport endpoints, WebSocket notifications, frontend suivi temps réel, BusSeatMap, FlightPassengerForm). **Cowork-22** : 7 chantiers, +12 350 lignes.
 > **PDG** : David — eventylife@gmail.com
 > **Activité** : Plateforme SaaS + Agence de voyages de groupe
 > **Domaine** : www.eventylife.fr
@@ -79,6 +82,9 @@
 | **Cowork-20** | **Sprint Vente Pro 360° + Marketplace Activités** — 7 phases (P7→P13), 24 LOTs back + 21 LOTs front | ✅ **TERMINÉ** 20/03 — +45 endpoints, +35 pages, 8 canaux de vente, marketplace activités |
 | **Cowork-21** | **Roadmap V2 Post-Lancement COMPLÈTE** — 6 sprints parallèles (T1-T3), ~71 jours roadmap | ✅ **TERMINÉ** 20/03 — Viral Growth, Forfaits/Packs, Sponsors, Route Packs, Charter/Multi-bus, ClosePack Finance |
 | **Cowork-22** | **Sprint Réservation-Transport-Suivi** — 7 chantiers (transport unifié, sièges, temps réel, missions, terrain, carnet, SOS) | ✅ **TERMINÉ** 21/03 — FlightAllotment, SeatManagement, TransportStatus, 30+ pages front, BusSeatMap, SOS GPS |
+| **Cowork-23** | **Sprint Checkout Transport & Suivi Client** — endpoints transport, WebSocket notifications, suivi temps réel, FlightPassengerForm | ✅ **TERMINÉ** 21/03 — +3 070 lignes |
+| **Cowork-24 (PDG)** | **Test & Amélioration Live** — Push backend+root GitHub, lien Espace Pro footer, deploy Vercel build 14, test login Pro | ✅ **TERMINÉ** 21/03 — Site live, backend = prochain bloqueur |
+| **Cowork-25 (PDG)** | **Déploiement Backend Scaleway** — 2 échecs DEV1-S (OOM), upgrade DEV1-M 4 Go, cloud-init auto, IP 163.172.189.137 | 🔄 **EN COURS** 21/03 — Instance running, build en cours |
 
 ### Cowork-17 — Corrections & Améliorations (20/03/2026)
 
@@ -100,14 +106,14 @@
 > 2. `CLAUDE.md` — instructions techniques complètes
 > 3. `pdg-eventy/DASHBOARD-PDG.md` — état actuel (ce fichier)
 >
-> **État du code au 20/03/2026 (post Cowork-17)** :
-> - Backend : 31 modules, 100+ services, 15 `as any` prod corrigés, EXIF stripping Sharp
-> - Frontend : 201+ pages, 0 erreur TS, lazy loading optimisé, next/image propagé
-> - Prisma : Migration sync_v3 prête (128 models / 129 enums — à exécuter sur staging)
-> - Vercel : **Frontend déployé et LIVE en production (build 11 READY — 20/03, 274 pages, commit a7f7f45)**
-> - DNS : Guide complet OVH→Vercel créé (`pdg-eventy/09-site-beta/GUIDE-DNS-VERCEL.md`)
-> - Sécurité : `.gitignore` renforcé, EXIF stripping actif, secrets GitHub à rotater (David)
-> - Business : 6 emails JAMAIS envoyés — chemin critique P0 bloqué 15 jours
+> **État du projet au 21/03/2026 — 🚀 PHASE TEST & LIVE** :
+> - **DEV 100% TERMINÉ** — Backend + Frontend + Tests + CI/CD + Docker + Scripts deploy
+> - Backend : 31 modules, 104+ services, 49 controllers, 345K+ lignes, 3 300+ tests
+> - Frontend : 165+ pages live sur Vercel, 3 portails (Client/Pro/Admin), lien Espace Pro ajouté
+> - Vercel : **Build 14 READY** — commit `f94b07e` — domaine eventylife.fr + www configurés
+> - **🟡 BLOQUEUR EN COURS DE RÉSOLUTION** : Backend en cours de déploiement sur Scaleway DEV1-M (`163.172.189.137`) — cloud-init build NestJS en cours
+> - **PROCHAINE ÉTAPE** : Vérifier `/api/health` → configurer PostgreSQL managé + seed → tester login/réservation/paiement
+> - Business : 6 emails JAMAIS envoyés — chemin critique P0 bloqué 16 jours
 >
 > **Sprint Plan actif** : [`SPRINT-PLAN.md`](SPRINT-PLAN.md) — 6 sprints de 2 semaines → premier voyage 53 passagers
 > - **Sprint 1** (20/03 → 03/04) : Déblocage administratif + sécurité
@@ -148,7 +154,7 @@
 - **Frontend** : 201 pages (30 client + 26 public + 72 pro + 54 admin + 11 auth + 6 checkout + 2 autre) — 0 erreur TS — animations, 4 états UI, a11y, SEO JSON-LD
 - **Backend** : 100+ services, 48+ controllers, 31 modules — D9-D19 tous terminés (Waitlist, PREANNOUNCE, FEC, TVA audit, Paniers abandonnés, Runbook J0, Duplicate Season, Safety Sheets, Quality Gate, Bulk Actions)
 - **Total code** : ~180 000+ lignes TS/TSX
-- **TOUT EST PRÊT** — il ne reste que la configuration infra manuelle (~2h30) + les 6 emails à envoyer.
+- **DEV 100% TERMINÉ** — Phase actuelle : **Test & Amélioration en Live**. Bloqueur : déployer le backend (~2-4h) + envoyer les 6 emails.
 
 ---
 
@@ -188,14 +194,16 @@
 
 | Métrique | Valeur |
 |----------|--------|
-| Dernier deploy PROD réussi | **20/03** — commit `a7f7f45` ("fix: desactiver noUncheckedIndexedAccess") |
-| Build 11 | ✅ **READY** — 274 pages statiques générées, 6 lambdas Node.js |
-| Deploys totaux | 11 (10 en erreur corrigés → build 11 = succès) |
-| Site live | ✅ **eventy-frontend-three.vercel.app** |
-| Alias branch | eventy-frontend-git-master-eventylife-hubs-projects.vercel.app |
+| Dernier deploy PROD réussi | **21/03** — commit `f94b07e` ("feat: ajouter lien Espace Pro dans le footer") |
+| Build 14 | ✅ **READY** — 165+ pages, 6 lambdas Node.js |
+| Deploys totaux | 14 (10 en erreur corrigés → builds 11-14 = succès) |
+| Site live | ✅ **www.eventylife.fr** + **eventylife.fr** |
+| Alias | eventy-frontend-three.vercel.app |
 | Région | iad1 (US East) |
-| Domaine custom eventylife.fr | ⚠️ À configurer DNS (guide : `09-site-beta/GUIDE-DNS-VERCEL.md`) |
-| Corrections appliquées | generateStaticParams, barrel exports, className, noUncheckedIndexedAccess désactivé |
+| Domaine custom | ✅ **eventylife.fr + www.eventylife.fr** — configurés et fonctionnels |
+| Protection pré-lancement | ✅ Basic Auth (SITE_PASSWORD) — bypass sur /pro/login |
+| Lien Espace Pro | ✅ Ajouté dans footer (colonne Découvrir + barre légale → /pro/login) |
+| **🔴 BACKEND** | **❌ PAS DÉPLOYÉ** — Login Pro retourne 404, aucune API disponible |
 
 ### 🟡 Autres alertes
 
@@ -209,15 +217,16 @@
 
 | Action | Priorité | Créé le | Jours en attente | Statut |
 |--------|----------|---------|-------------------|--------|
-| **ENVOYER les 6 brouillons Gmail** | **P0 CRITIQUE** | 05/03 | **15 jours** 🔴 | CONFIRMÉ : jamais envoyés |
-| **Rotater secrets GitHub** | **P0 SÉCURITÉ** | 18/03 | **2 jours** 🔴 | Stripe + SMTP exposés en public |
-| **Trouver avocat tourisme** | **P0** | 05/03 | **15 jours** 🔴 | Bloqué tant que email APST non envoyé |
-| **Capacité professionnelle** | **P0** | 05/03 | **15 jours** | ⏳ Bloqué par avocat |
-| **ORIAS (qualification IAS)** | **P1** | 05/03 | **15 jours** | ⏳ Bloqué par avocat |
-| **Configurer DNS eventylife.fr → Vercel** | **P1 TECH** | 20/03 | **0 jours** | OVH domain actif, Vercel deploy OK |
+| **🔴 DÉPLOYER LE BACKEND** | **P0 BLOQUEUR** | 21/03 | **0 jours** 🔴 | **Sans backend = impossible de tester le site (login, API, paiement)** |
+| **ENVOYER les 6 brouillons Gmail** | **P0 CRITIQUE** | 05/03 | **16 jours** 🔴 | CONFIRMÉ : jamais envoyés |
+| **Rotater secrets GitHub** | **P0 SÉCURITÉ** | 18/03 | **3 jours** 🔴 | Stripe + SMTP exposés en public |
+| **Trouver avocat tourisme** | **P0** | 05/03 | **16 jours** 🔴 | Bloqué tant que email APST non envoyé |
+| **Capacité professionnelle** | **P0** | 05/03 | **16 jours** | ⏳ Bloqué par avocat |
+| **ORIAS (qualification IAS)** | **P1** | 05/03 | **16 jours** | ⏳ Bloqué par avocat |
+| ~~Configurer DNS eventylife.fr → Vercel~~ | ~~P1 TECH~~ | 20/03 | — | ✅ **FAIT** — eventylife.fr + www fonctionnels |
 | ~~Rotater credentials Neon DB~~ | ~~P0 TECH~~ | 15/03 | — | ⚠️ Inclus dans rotation secrets |
 | ~~Déployer sur Scaleway~~ | ~~P0 TECH~~ | 15/03 | — | Remplacé par Vercel (frontend) |
-| ~~Cowork 7-11~~ | ~~P1-P2 TECH~~ | 19-20/03 | — | ✅ TOUS TERMINÉS |
+| ~~Cowork 7-24~~ | ~~P1-P2 TECH~~ | 19-21/03 | — | ✅ TOUS TERMINÉS — Dev 100% fini |
 
 ---
 

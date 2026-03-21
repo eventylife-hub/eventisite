@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eventy — Portail Pro Overview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --sun: #FFB81C;
+    --ocean: #0077B6;
+    --dark: #0A1628;
+    --sand: #FEFCF3;
+    --coral: #E63946;
+    --mint: #06D6A0;
+    --violet: #7B2FF7;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--sand);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  .fraunces { font-family: 'Fraunces', serif; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--dark) 0%, #1a2a4a 100%);
+    color: white;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .header h1 { font-size: 2rem; margin-bottom: 8px; }
+  .header .badge {
+    display: inline-block;
+    background: var(--sun);
+    color: var(--dark);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 12px;
+  }
+  .header p { opacity: 0.7; margin-top: 8px; font-size: 0.9rem; }
+
+  /* Navigation tabs */
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 2px solid #E5E0D8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-tab {
+    padding: 14px 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748B;
+    cursor: pointer;
+    border: none;
+    background: none;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { color: var(--ocean); }
+  .nav-tab.active {
+    color: var(--ocean);
+    border-bottom-color: var(--ocean);
+  }
+
+  /* Content */
+  .content { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* KPI Grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border-left: 4px solid var(--sun);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .kpi-card.ocean { border-left-color: var(--ocean); }
+  .kpi-card.mint { border-left-color: var(--mint); }
+  .kpi-card.violet { border-left-color: var(--violet); }
+  .kpi-card.coral { border-left-color: var(--coral); }
+  .kpi-label { font-size: 0.75rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi-value { font-size: 1.8rem; font-weight: 700; margin-top: 4px; }
+  .kpi-sub { font-size: 0.7rem; color: #94A3B8; margin-top: 4px; }
+
+  /* Panels */
+  .panel {
+    background: white;
+    border-radius: 16px;
+    border: 1.5px solid #E5E0D8;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #E5E0D8;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-body { padding: 20px; }
+
+  /* Quick actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .quick-action {
+    padding: 20px 24px;
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+  .quick-action:hover { transform: translateY(-2px); }
+  .quick-action .arrow { font-size: 1.5rem; }
+
+  /* Travel cards */
+  .travel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .travel-card {
+    background: white;
+    border-radius: 16px;
+    border: 1.5px solid #E8F7FC;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .travel-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .travel-cover {
+    height: 140px;
+    background: linear-gradient(135deg, #FF6B35, #FF8F5E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+  .travel-info { padding: 16px; }
+  .travel-title { font-weight: 700; margin-bottom: 8px; }
+  .travel-meta { font-size: 0.8rem; color: #4A5568; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .status-draft { background: #F1F5F9; color: #64748B; }
+  .status-published { background: #ECFDF5; color: #059669; }
+  .status-sales { background: #D1FAE5; color: #065F46; }
+
+  /* Marketing tools grid */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .tool-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1.5px solid #E5E0D8;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .tool-card:hover { border-color: var(--ocean); box-shadow: 0 2px 8px rgba(0,119,182,0.1); }
+  .tool-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .tool-title { font-weight: 600; font-size: 0.85rem; margin-bottom: 2px; }
+  .tool-desc { font-size: 0.75rem; color: #64748B; line-height: 1.4; }
+  .tool-badge {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  /* Activity feed */
+  .activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #F9FAFB;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  .activity-text { font-size: 0.85rem; }
+  .activity-date { font-size: 0.7rem; color: #94A3B8; margin-top: 2px; }
+
+  /* Finance table */
+  .finance-table { width: 100%; border-collapse: collapse; }
+  .finance-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    color: #64748B;
+    text-transform: uppercase;
+    border-bottom: 2px solid #E5E0D8;
+  }
+  .finance-table td {
+    padding: 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #F1F5F9;
+  }
+  .finance-table .amount { text-align: right; font-weight: 600; }
+  .positive { color: var(--mint); }
+  .negative { color: var(--coral); }
+
+  /* Sell page */
+  .sell-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .sell-kpi {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1.5px solid #E5E0D8;
+  }
+  .sell-kpi-label { font-size: 0.75rem; color: #64748B; }
+  .sell-kpi-value { font-size: 1.6rem; font-weight: 700; margin-top: 4px; }
+
+  /* Leaderboard */
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #F9FAFB;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  .leaderboard-item.me {
+    background: rgba(255,184,28,0.1);
+    border: 1.5px solid var(--sun);
+  }
+
+  /* Voyage detail sub-pages */
+  .subpage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .subpage-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1.5px solid #E5E0D8;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .subpage-card:hover { border-color: var(--ocean); transform: translateY(-2px); }
+  .subpage-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .subpage-name { font-weight: 600; font-size: 0.8rem; }
+  .subpage-desc { font-size: 0.7rem; color: #64748B; margin-top: 4px; }
+
+  /* Page counter */
+  .page-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ocean);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Budget bar */
+  .budget-bar {
+    height: 10px;
+    background: #E5E0D8;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .budget-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ocean), var(--mint));
+    border-radius: 5px;
+  }
+
+  /* Two col */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 768px) {
+    .quick-actions, .two-col { grid-template-columns: 1fr; }
+    .sell-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Smooth transitions */
+  .fade-in { animation: fadeIn 0.3s ease-in; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 class="fraunces">Portail Pro Eventy</h1>
+  <p>Vue d'ensemble de l'interface professionnelle</p>
+  <div class="badge">95 pages construites</div>
+</div>
+
+<div class="nav-tabs" id="navTabs">
+  <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+  <button class="nav-tab" data-page="voyages">Mes Voyages</button>
+  <button class="nav-tab" data-page="voyage-detail">Détail Voyage</button>
+  <button class="nav-tab" data-page="vendre">Vendre</button>
+  <button class="nav-tab" data-page="finance">Finance</button>
+  <button class="nav-tab" data-page="marketing">Marketing</button>
+  <button class="nav-tab" data-page="parametres">Paramètres</button>
+  <button class="nav-tab" data-page="all-pages">Toutes les pages</button>
+</div>
+
+<div class="content">
+
+  <!-- ====================== DASHBOARD ====================== -->
+  <div class="page-section active" id="page-dashboard">
+    <div class="fade-in">
+      <h2 class="fraunces" style="font-size:1.6rem; margin-bottom:4px;">Bienvenue, David!</h2>
+      <p style="color:#64748B; margin-bottom:24px; font-size:0.9rem;">Tableau de bord de votre espace professionnel</p>
+
+      <!-- Onboarding Banner -->
+      <div style="background:#dbeafe; padding:16px; border-radius:12px; border-left:4px solid var(--ocean); margin-bottom:24px; display:flex; align-items:center; gap:12px;">
+        <span style="font-size:1.3rem;">⚠️</span>
+        <div style="flex:1;">
+          <strong>Complétez votre inscription</strong>
+          <div style="font-size:0.8rem; color:#64748B; margin-top:2px;">Vous avez complété 4/6 étapes de l'onboarding.</div>
+        </div>
+        <span style="font-weight:700; color:var(--ocean);">67%</span>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Voyages actifs</div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-sub">Cliquer pour voir plus</div>
+        </div>
+        <div class="kpi-card mint">
+          <div class="kpi-label">Réservations</div>
+          <div class="kpi-value">127</div>
+          <div class="kpi-sub">En cours</div>
+        </div>
+        <div class="kpi-card violet">
+          <div class="kpi-label">CA ce mois</div>
+          <div class="kpi-value">45 897 €</div>
+          <div class="kpi-sub">Total: 189 245 €</div>
+        </div>
+        <div class="kpi-card ocean">
+          <div class="kpi-label">Taux d'occupation</div>
+          <div class="kpi-value">78%</div>
+          <div class="kpi-sub">Note: 4.7/5</div>
+        </div>
+      </div>
+
+      <!-- Tendances sparklines -->
+      <h3 class="fraunces" style="font-size:1.1rem; margin-bottom:12px;">Tendances de la semaine</h3>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px;">
+        <div class="panel" style="margin:0;">
+          <div class="panel-body" style="text-align:center;">
+            <div style="font-size:0.75rem; color:#64748B;">Réservations</div>
+            <div style="font-size:1.4rem; font-weight:700;">127</div>
+            <div style="color:var(--mint); font-size:0.8rem; font-weight:600;">↑ 12.5%</div>
+            <svg width="100%" height="40" viewBox="0 0 140 40" style="margin-top:8px;">
+              <polyline fill="none" stroke="var(--ocean)" stroke-width="2" points="0,30 20,20 40,25 60,15 80,18 100,10 120,14 140,12"/>
+            </svg>
+          </div>
+        </div>
+        <div class="panel" style="margin:0;">
+          <div class="panel-body" style="text-align:center;">
+            <div style="font-size:0.75rem; color:#64748B;">Chiffre d'affaires</div>
+            <div style="font-size:1.4rem; font-weight:700;">45 897 €</div>
+            <div style="color:var(--mint); font-size:0.8rem; font-weight:600;">↑ 8.3%</div>
+            <svg width="100%" height="40" viewBox="0 0 140 40" style="margin-top:8px;">
+              <polyline fill="none" stroke="var(--sun)" stroke-width="2" points="0,32 20,22 40,18 60,12 80,15 100,8 120,5 140,10"/>
+            </svg>
+          </div>
+        </div>
+        <div class="panel" style="margin:0;">
+          <div class="panel-body" style="text-align:center;">
+            <div style="font-size:0.75rem; color:#64748B;">Taux d'occupation</div>
+            <div style="font-size:1.4rem; font-weight:700;">78%</div>
+            <div style="color:var(--mint); font-size:0.8rem; font-weight:600;">↑ 4.1%</div>
+            <svg width="100%" height="40" viewBox="0 0 140 40" style="margin-top:8px;">
+              <polyline fill="none" stroke="var(--mint)" stroke-width="2" points="0,28 20,24 40,20 60,22 80,16 100,12 120,14 140,10"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="quick-action" style="background:linear-gradient(135deg, var(--sun), #ffc94d);">
+          <div>
+            <div style="font-size:1.1rem;">Créer un voyage</div>
+            <div style="font-size:0.8rem; opacity:0.9; margin-top:4px;">Lancez votre première offre</div>
+          </div>
+          <span class="arrow">→</span>
+        </div>
+        <div class="quick-action" style="background:linear-gradient(135deg, var(--mint), #52e0b0);">
+          <div>
+            <div style="font-size:1.1rem;">Gérer mes arrêts</div>
+            <div style="font-size:0.8rem; opacity:0.9; margin-top:4px;">Points de départ/arrivée</div>
+          </div>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+
+      <!-- Formation + Activity -->
+      <div class="panel" style="margin-bottom:16px;">
+        <div style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(0,119,182,0.1),rgba(0,119,182,0.2));display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📚</div>
+            <div>
+              <div style="font-weight:600; font-size:0.9rem;">Formation Eventy</div>
+              <div style="font-size:0.75rem; color:#6B7280;">4 modules complétés</div>
+            </div>
+          </div>
+          <span style="background:var(--ocean);color:white;padding:4px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;">Continuer →</span>
+        </div>
+        <div style="padding:0 20px 16px;">
+          <div style="height:8px; background:#E5E0D8; border-radius:4px; overflow:hidden;">
+            <div style="width:67%; height:100%; background:linear-gradient(90deg,var(--ocean),var(--mint)); border-radius:4px;"></div>
+          </div>
+          <div style="text-align:right; font-size:0.8rem; font-weight:700; color:var(--ocean); margin-top:4px;">67%</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel" style="margin:0;">
+          <div class="panel-header">📋 Activité récente</div>
+          <div class="panel-body">
+            <div class="activity-item">
+              <div>
+                <div class="activity-text">Nouvelle réservation — Marrakech Express</div>
+                <div class="activity-date">11 mars 2026</div>
+              </div>
+              <span class="status-badge status-sales">Réservation</span>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div class="activity-text">Paiement reçu — 899,00 € (Barcelone)</div>
+                <div class="activity-date">10 mars 2026</div>
+              </div>
+              <span class="status-badge" style="background:#EFF6FF;color:var(--ocean);">Paiement</span>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div class="activity-text">Nouvel avis 5★ — Rome Éternelle</div>
+                <div class="activity-date">10 mars 2026</div>
+              </div>
+              <span class="status-badge" style="background:#FEF3C7;color:#92400E;">Avis</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin:0;">
+          <div class="panel-header">✈️ Prochains départs</div>
+          <div class="panel-body">
+            <div class="activity-item">
+              <div>
+                <div class="activity-text" style="font-weight:600;">Marrakech Express</div>
+                <div class="activity-date">15 juin 2026</div>
+              </div>
+              <span style="color:var(--ocean); font-weight:600; font-size:0.8rem;">34 résa</span>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div class="activity-text" style="font-weight:600;">Barcelone & Gaudí</div>
+                <div class="activity-date">10 juillet 2026</div>
+              </div>
+              <span style="color:var(--ocean); font-weight:600; font-size:0.8rem;">22 résa</span>
+            </div>
+            <div class="activity-item">
+              <div>
+                <div class="activity-text" style="font-weight:600;">Istanbul & le Bosphore</div>
+                <div class="activity-date">1 août 2026</div>
+              </div>
+              <span style="color:var(--ocean); font-weight:600; font-size:0.8rem;">18 résa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== VOYAGES ====================== -->
+  <div class="page-section" id="page-voyages">
+    <div class="fade-in">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <div>
+          <h2 class="fraunces" style="font-size:1.6rem;">Mes voyages</h2>
+          <p style="color:#64748B; font-size:0.85rem; margin-top:4px;">Gérez tous vos voyages au même endroit</p>
+        </div>
+        <button style="background:var(--sun); color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:600; cursor:pointer; font-size:0.85rem;">+ Créer un voyage</button>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display:flex; gap:0; margin-bottom:16px; border-bottom:2px solid #E5E0D8;">
+        <span style="padding:10px 16px; font-size:0.8rem; font-weight:600; color:var(--ocean); border-bottom:2px solid var(--ocean); margin-bottom:-2px;">Brouillons</span>
+        <span style="padding:10px 16px; font-size:0.8rem; color:#64748B;">En révision</span>
+        <span style="padding:10px 16px; font-size:0.8rem; color:#64748B;">Publiés</span>
+        <span style="padding:10px 16px; font-size:0.8rem; color:#64748B;">Terminés</span>
+        <span style="padding:10px 16px; font-size:0.8rem; color:#64748B;">Annulés</span>
+      </div>
+
+      <div class="travel-grid">
+        <div class="travel-card">
+          <div class="travel-cover">🇲🇦</div>
+          <div class="travel-info">
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+              <div class="travel-title">Marrakech Express</div>
+              <span class="status-badge status-sales">Ventes ouvertes</span>
+            </div>
+            <div class="travel-meta">📍 Marrakech</div>
+            <div class="travel-meta">🗓 15 juin — 22 juin 2026</div>
+            <div class="travel-meta">👥 Capacité: 53 places</div>
+            <button style="width:100%; margin-top:12px; padding:8px; background:#FFF0E8; color:var(--sun); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.8rem;">Voir les détails →</button>
+          </div>
+        </div>
+        <div class="travel-card">
+          <div class="travel-cover" style="background:linear-gradient(135deg,#0077B6,#00A8E8);">🇪🇸</div>
+          <div class="travel-info">
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+              <div class="travel-title">Barcelone & Gaudí</div>
+              <span class="status-badge status-published">Publié</span>
+            </div>
+            <div class="travel-meta">📍 Barcelone</div>
+            <div class="travel-meta">🗓 10 juil — 17 juil 2026</div>
+            <div class="travel-meta">👥 Capacité: 53 places</div>
+            <button style="width:100%; margin-top:12px; padding:8px; background:#FFF0E8; color:var(--sun); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.8rem;">Voir les détails →</button>
+          </div>
+        </div>
+        <div class="travel-card">
+          <div class="travel-cover" style="background:linear-gradient(135deg,#7B2FF7,#A855F7);">🇹🇷</div>
+          <div class="travel-info">
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+              <div class="travel-title">Istanbul & le Bosphore</div>
+              <span class="status-badge status-draft">Brouillon</span>
+            </div>
+            <div class="travel-meta">📍 Istanbul</div>
+            <div class="travel-meta">🗓 1 août — 8 août 2026</div>
+            <div class="travel-meta">👥 Capacité: 53 places</div>
+            <button style="width:100%; margin-top:12px; padding:8px; background:#FFF0E8; color:var(--sun); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.8rem;">Voir les détails →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== VOYAGE DETAIL ====================== -->
+  <div class="page-section" id="page-voyage-detail">
+    <div class="fade-in">
+      <div style="margin-bottom:24px;">
+        <h2 class="fraunces" style="font-size:1.6rem;">Sous-pages d'un voyage</h2>
+        <p style="color:#64748B; font-size:0.85rem; margin-top:4px;">Chaque voyage a <strong>26 sous-pages</strong> de gestion</p>
+      </div>
+
+      <div class="subpage-grid">
+        <div class="subpage-card"><div class="subpage-icon">📋</div><div class="subpage-name">Vue d'ensemble</div><div class="subpage-desc">/voyages/[id]</div></div>
+        <div class="subpage-card"><div class="subpage-icon">✏️</div><div class="subpage-name">Édition</div><div class="subpage-desc">/voyages/[id]/edit</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📊</div><div class="subpage-name">Remplissage</div><div class="subpage-desc">Jauge + conversions</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📝</div><div class="subpage-name">Réservations</div><div class="subpage-desc">Liste des résa</div></div>
+        <div class="subpage-card"><div class="subpage-icon">💰</div><div class="subpage-name">Finance</div><div class="subpage-desc">CA, coûts, marge</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🧾</div><div class="subpage-name">Factures</div><div class="subpage-desc">Génération PDF</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🚌</div><div class="subpage-name">Transport</div><div class="subpage-desc">Bus & itinéraire</div></div>
+        <div class="subpage-card"><div class="subpage-icon">✈️</div><div class="subpage-name">Avion</div><div class="subpage-desc">Vols & allotements</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📋</div><div class="subpage-name">Manifest</div><div class="subpage-desc">Liste passagers</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🏨</div><div class="subpage-name">Rooming</div><div class="subpage-desc">Répartition chambres</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🏢</div><div class="subpage-name">Hotel Blocks</div><div class="subpage-desc">Blocs hôteliers</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🍽️</div><div class="subpage-name">Restauration</div><div class="subpage-desc">Repas & menus</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🎯</div><div class="subpage-name">Activités</div><div class="subpage-desc">Excursions</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📓</div><div class="subpage-name">Carnet</div><div class="subpage-desc">Carnet de voyage</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📦</div><div class="subpage-name">Forfaits</div><div class="subpage-desc">Packs & options</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🤝</div><div class="subpage-name">Sponsors</div><div class="subpage-desc">Partenaires voyage</div></div>
+        <div class="subpage-card"><div class="subpage-icon">👥</div><div class="subpage-name">Équipe</div><div class="subpage-desc">Staff & accompagnateurs</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📊</div><div class="subpage-name">Bilan</div><div class="subpage-desc">Post-voyage</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📋</div><div class="subpage-name">Runbook J-0</div><div class="subpage-desc">Checklist jour J</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🔄</div><div class="subpage-name">Clone Saison</div><div class="subpage-desc">Dupliquer le voyage</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🗺️</div><div class="subpage-name">Aide locale</div><div class="subpage-desc">Ressources locales</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📞</div><div class="subpage-name">Terrain — Appel</div><div class="subpage-desc">Appel d'urgence</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📒</div><div class="subpage-name">Terrain — Contacts</div><div class="subpage-desc">Contacts locaux</div></div>
+        <div class="subpage-card"><div class="subpage-icon">⚠️</div><div class="subpage-name">Terrain — Incidents</div><div class="subpage-desc">Gestion incidents</div></div>
+        <div class="subpage-card"><div class="subpage-icon">👤</div><div class="subpage-name">Terrain — Passagers</div><div class="subpage-desc">Check-in terrain</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== VENDRE ====================== -->
+  <div class="page-section" id="page-vendre">
+    <div class="fade-in">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+        <h2 class="fraunces" style="font-size:1.6rem;">🤝 Vendre Eventy</h2>
+        <span style="background:rgba(255,184,28,0.1); color:var(--sun); padding:4px 12px; border-radius:20px; font-size:0.8rem; font-weight:600;">🏆 #3 ce mois</span>
+      </div>
+
+      <!-- Hub rapide -->
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:24px;">
+        <div class="panel" style="margin:0; padding:12px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <span style="font-size:1.2rem;">📝</span><div><div style="font-size:0.75rem; font-weight:600;">Devis</div><div style="font-size:0.6rem; color:#64748B;">rapide</div></div>
+        </div>
+        <div class="panel" style="margin:0; padding:12px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <span style="font-size:1.2rem;">🔗</span><div><div style="font-size:0.75rem; font-weight:600;">Lien</div><div style="font-size:0.6rem; color:#64748B;">paiement</div></div>
+        </div>
+        <div class="panel" style="margin:0; padding:12px; display:flex; align-items:center; gap:8px; opacity:0.5;">
+          <span style="font-size:1.2rem;">📱</span><div><div style="font-size:0.75rem; font-weight:600;">Widget</div><div style="font-size:0.6rem; color:#64748B;">⏳</div></div>
+        </div>
+        <div class="panel" style="margin:0; padding:12px; display:flex; align-items:center; gap:8px; opacity:0.5;">
+          <span style="font-size:1.2rem;">📊</span><div><div style="font-size:0.75rem; font-weight:600;">Dashboard</div><div style="font-size:0.6rem; color:#64748B;">⏳</div></div>
+        </div>
+      </div>
+
+      <!-- KPIs vente -->
+      <div class="sell-kpi-grid">
+        <div class="sell-kpi"><div class="sell-kpi-label">Clics</div><div class="sell-kpi-value">523</div></div>
+        <div class="sell-kpi"><div class="sell-kpi-label">Conversions</div><div class="sell-kpi-value" style="color:var(--mint);">34</div></div>
+        <div class="sell-kpi"><div class="sell-kpi-label">Taux</div><div class="sell-kpi-value">6.5%</div></div>
+        <div class="sell-kpi"><div class="sell-kpi-label">CA</div><div class="sell-kpi-value" style="color:var(--ocean);">12 722 €</div></div>
+      </div>
+
+      <!-- Dernières ventes -->
+      <div class="panel">
+        <div class="panel-header">🔔 Dernières ventes</div>
+        <div class="panel-body">
+          <div class="activity-item">
+            <div><div class="activity-text">🎉 Marie L. — Marrakech Express — 2 places</div><div class="activity-date">Il y a 1 jour</div></div>
+            <span style="font-weight:600; color:var(--sun);">746 €</span>
+          </div>
+          <div class="activity-item">
+            <div><div class="activity-text">🎉 Pierre R. — Barcelone Fun — 5 places</div><div class="activity-date">Il y a 2 jours</div></div>
+            <span style="font-weight:600; color:var(--sun);">1 495 €</span>
+          </div>
+          <div class="activity-item">
+            <div><div class="activity-text">🎉 Fatima A. — Marrakech Express — 3 places</div><div class="activity-date">Il y a 19 jours</div></div>
+            <span style="font-weight:600; color:var(--sun);">1 119 €</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="panel">
+        <div class="panel-header">📊 Classement vendeurs du mois</div>
+        <div class="panel-body">
+          <div class="leaderboard-item"><div><strong>🥇 Sophie Martin</strong><div style="font-size:0.75rem; color:#64748B;">45 conversions</div></div><span style="font-weight:600; color:var(--ocean);">16 830 €</span></div>
+          <div class="leaderboard-item"><div><strong>🥈 Ahmed Benali</strong><div style="font-size:0.75rem; color:#64748B;">38 conversions</div></div><span style="font-weight:600; color:var(--ocean);">14 212 €</span></div>
+          <div class="leaderboard-item me"><div><strong>🥉 Jean Dupont</strong> <span style="font-size:0.7rem; color:var(--sun);">(vous)</span><div style="font-size:0.75rem; color:#64748B;">34 conversions</div></div><span style="font-weight:600; color:var(--ocean);">12 722 €</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== FINANCE ====================== -->
+  <div class="page-section" id="page-finance">
+    <div class="fade-in">
+      <h2 class="fraunces" style="font-size:1.6rem; margin-bottom:4px;">Dashboard Finance</h2>
+      <p style="color:#64748B; margin-bottom:24px; font-size:0.85rem;">Vue d'ensemble financière de votre activité</p>
+
+      <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);">
+        <div class="kpi-card"><div class="kpi-label">CA TTC</div><div class="kpi-value" style="font-size:1.4rem;">99 082 €</div></div>
+        <div class="kpi-card coral"><div class="kpi-label">Coûts TTC</div><div class="kpi-value" style="font-size:1.4rem;">79 266 €</div></div>
+        <div class="kpi-card mint"><div class="kpi-label">Marge</div><div class="kpi-value" style="font-size:1.4rem; color:var(--mint);">19 816 €</div></div>
+        <div class="kpi-card violet"><div class="kpi-label">TVA Marge</div><div class="kpi-value" style="font-size:1.4rem;">3 303 €</div></div>
+        <div class="kpi-card ocean"><div class="kpi-label">Marge %</div><div class="kpi-value" style="font-size:1.4rem;">20%</div></div>
+      </div>
+
+      <!-- Graphique CA -->
+      <div class="panel">
+        <div class="panel-header">📈 Évolution CA par mois</div>
+        <div class="panel-body" style="display:flex; align-items:end; gap:24px; height:200px; padding-bottom:40px;">
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="background:linear-gradient(to top,var(--ocean),#00A8E8); width:60px; height:120px; border-radius:8px 8px 0 0;"></div>
+            <span style="font-size:0.7rem; color:#64748B;">Jan</span>
+            <span style="font-size:0.7rem; font-weight:600;">34 162 €</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="background:linear-gradient(to top,var(--ocean),#00A8E8); width:60px; height:108px; border-radius:8px 8px 0 0;"></div>
+            <span style="font-size:0.7rem; color:#64748B;">Fév</span>
+            <span style="font-size:0.7rem; font-weight:600;">30 756 €</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="background:linear-gradient(to top,var(--sun),#ffc94d); width:60px; height:120px; border-radius:8px 8px 0 0;"></div>
+            <span style="font-size:0.7rem; color:#64748B;">Mar</span>
+            <span style="font-size:0.7rem; font-weight:600;">34 164 €</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau voyages -->
+      <div class="panel">
+        <div class="panel-header">Voyages (3)</div>
+        <div class="panel-body" style="padding:0;">
+          <table class="finance-table">
+            <thead><tr><th>Voyage</th><th style="text-align:right;">CA TTC</th><th style="text-align:right;">Coûts TTC</th><th style="text-align:right;">Marge</th><th style="text-align:right;">TVA Marge</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Marrakech Express</strong></td><td class="amount">34 162 €</td><td class="amount">27 330 €</td><td class="amount positive">6 832 €</td><td class="amount">1 139 €</td></tr>
+              <tr><td><strong>Barcelone & Gaudí</strong></td><td class="amount">30 756 €</td><td class="amount">24 605 €</td><td class="amount positive">6 151 €</td><td class="amount">1 025 €</td></tr>
+              <tr><td><strong>Istanbul & le Bosphore</strong></td><td class="amount">34 164 €</td><td class="amount">27 331 €</td><td class="amount positive">6 833 €</td><td class="amount">1 139 €</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Virements -->
+      <div class="panel">
+        <div class="panel-header">💳 Virements et commissions</div>
+        <div class="panel-body">
+          <div class="activity-item"><div><div class="activity-text">💳 Virement mensuel — Mars 2026</div><div class="activity-date">15 mars 2026</div></div><div style="display:flex; align-items:center; gap:8px;"><span class="status-badge" style="background:#DCFCE7; color:#166534;">✓ Effectué</span><strong>6 832 €</strong></div></div>
+          <div class="activity-item"><div><div class="activity-text">💳 Virement mensuel — Février 2026</div><div class="activity-date">28 février 2026</div></div><div style="display:flex; align-items:center; gap:8px;"><span class="status-badge" style="background:#DCFCE7; color:#166534;">✓ Effectué</span><strong>6 151 €</strong></div></div>
+          <div class="activity-item"><div><div class="activity-text">🎉 Commission partenaire bonus</div><div class="activity-date">15 février 2026</div></div><div style="display:flex; align-items:center; gap:8px;"><span class="status-badge" style="background:#DCFCE7; color:#166534;">✓ Effectué</span><strong>450 €</strong></div></div>
+          <div class="activity-item"><div><div class="activity-text">↩️ Remboursement annulation client</div><div class="activity-date">18 mars 2026</div></div><div style="display:flex; align-items:center; gap:8px;"><span class="status-badge" style="background:#FEF3C7; color:#92400E;">En attente</span><strong>250 €</strong></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== MARKETING ====================== -->
+  <div class="page-section" id="page-marketing">
+    <div class="fade-in">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <div>
+          <h2 class="fraunces" style="font-size:1.6rem;">Marketing Suite</h2>
+          <p style="color:#64748B; font-size:0.85rem; margin-top:4px;">Tous vos outils marketing en un seul endroit</p>
+        </div>
+        <button style="background:var(--sun); color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:600; cursor:pointer; font-size:0.85rem;">+ Nouvelle campagne</button>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="kpi-card mint"><div class="kpi-label">Campagnes actives</div><div class="kpi-value" style="font-size:1.5rem;">3</div></div>
+        <div class="kpi-card ocean"><div class="kpi-label">Impressions</div><div class="kpi-value" style="font-size:1.5rem;">45 200</div><div class="kpi-sub">CTR 6.97%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Clics</div><div class="kpi-value" style="font-size:1.5rem;">3 150</div></div>
+        <div class="kpi-card mint"><div class="kpi-label">Conversions</div><div class="kpi-value" style="font-size:1.5rem;">127</div><div class="kpi-sub">Taux 4.03%</div></div>
+      </div>
+
+      <!-- Boîte à outils -->
+      <h3 style="font-weight:700; margin-bottom:12px;">Boîte à outils</h3>
+      <div class="tools-grid" style="margin-bottom:24px;">
+        <div class="tool-card"><div class="tool-icon" style="background:#EDE9FE;">🎨</div><div><div class="tool-title">Aesthetic Review <span class="tool-badge" style="background:#EDE9FE; color:#7C3AED;">3 en attente</span></div><div class="tool-desc">Validez vos visuels de voyage</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#FFF7ED;">📱</div><div><div class="tool-title">QR Codes & Supports</div><div class="tool-desc">QR codes, flyers, affiches</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#ECFEFF;">🔗</div><div><div class="tool-title">Shortlinks <span class="tool-badge" style="background:#ECFEFF; color:#0891B2;">3 actifs</span></div><div class="tool-desc">Liens courts e.ty/xxx</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#E0FFF5;">✨</div><div><div class="tool-title">Studio IA <span class="tool-badge" style="background:#E0FFF5; color:var(--mint);">Nouveau</span></div><div class="tool-desc">Prompts accroches & vidéo IA</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#EFF6FF;">📢</div><div><div class="tool-title">Réseaux sociaux</div><div class="tool-desc">Facebook, Instagram, WhatsApp</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#FEF3C7;">🌍</div><div><div class="tool-title">Page Pro publique</div><div class="tool-desc">Votre vitrine : bio, photo, SEO</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#ECFDF5;">👥</div><div><div class="tool-title">Leads & Contacts</div><div class="tool-desc">Leads via QR codes et shortlinks</div></div></div>
+        <div class="tool-card"><div class="tool-icon" style="background:#FEF2F2;">📊</div><div><div class="tool-title">Analytics & Conversions</div><div class="tool-desc">Tableau de bord data complet</div></div></div>
+      </div>
+
+      <!-- Budget -->
+      <div class="panel" style="border-left:4px solid var(--ocean);">
+        <div class="panel-body">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong>Budget marketing</strong>
+            <span style="font-size:0.8rem; color:#64748B;">2 230 € / 5 000 €</span>
+          </div>
+          <div class="budget-bar"><div class="budget-fill" style="width:44.6%;"></div></div>
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#64748B;">
+            <span>Dépensé : 44.6%</span>
+            <span>Reste : 2 770 €</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campagnes -->
+      <h3 style="font-weight:700; margin:24px 0 12px;">Campagnes</h3>
+      <div class="panel">
+        <div class="panel-body" style="padding:12px;">
+          <div style="padding:12px; border-radius:10px; border:1px solid #E5E0D8; margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div><strong style="font-size:0.9rem;">Lancement Été 2026</strong> <span class="status-badge" style="background:#ECFDF5; color:#059669;">Active</span></div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; font-size:0.75rem;">
+              <div><span style="color:#94A3B8;">Budget</span><div style="font-weight:600;">2 500 €</div></div>
+              <div><span style="color:#94A3B8;">Impressions</span><div style="font-weight:600;">28 500</div></div>
+              <div><span style="color:#94A3B8;">Clics</span><div style="font-weight:600;">2 100</div></div>
+              <div><span style="color:#94A3B8;">Conversions</span><div style="font-weight:600; color:var(--mint);">84</div></div>
+            </div>
+          </div>
+          <div style="padding:12px; border-radius:10px; border:1px solid #E5E0D8;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div><strong style="font-size:0.9rem;">Promo Early Bird -15%</strong> <span class="status-badge" style="background:#ECFDF5; color:#059669;">Active</span></div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; font-size:0.75rem;">
+              <div><span style="color:#94A3B8;">Budget</span><div style="font-weight:600;">1 000 €</div></div>
+              <div><span style="color:#94A3B8;">Impressions</span><div style="font-weight:600;">12 000</div></div>
+              <div><span style="color:#94A3B8;">Clics</span><div style="font-weight:600;">780</div></div>
+              <div><span style="color:#94A3B8;">Conversions</span><div style="font-weight:600; color:var(--mint);">31</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== PARAMÈTRES ====================== -->
+  <div class="page-section" id="page-parametres">
+    <div class="fade-in">
+      <h2 class="fraunces" style="font-size:1.6rem; margin-bottom:24px;">Paramètres</h2>
+      <div class="subpage-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="subpage-card"><div class="subpage-icon">👤</div><div class="subpage-name">Profil</div><div class="subpage-desc">Votre fiche pro publique</div></div>
+        <div class="subpage-card"><div class="subpage-icon">💳</div><div class="subpage-name">Comptes</div><div class="subpage-desc">Comptes bancaires</div></div>
+        <div class="subpage-card"><div class="subpage-icon">👥</div><div class="subpage-name">Équipe</div><div class="subpage-desc">Membres & rôles</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🧾</div><div class="subpage-name">Facturation</div><div class="subpage-desc">Abonnement & factures</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🔔</div><div class="subpage-name">Notifications</div><div class="subpage-desc">Préférences alertes</div></div>
+        <div class="subpage-card"><div class="subpage-icon">⚙️</div><div class="subpage-name">Général</div><div class="subpage-desc">Paramètres globaux</div></div>
+      </div>
+
+      <h3 style="font-weight:700; margin:32px 0 16px;">Autres pages Pro</h3>
+      <div class="subpage-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="subpage-card"><div class="subpage-icon">💬</div><div class="subpage-name">Messagerie</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🎫</div><div class="subpage-name">Support</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🔔</div><div class="subpage-name">Notifications</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📄</div><div class="subpage-name">Documents</div></div>
+        <div class="subpage-card"><div class="subpage-icon">💰</div><div class="subpage-name">Revenus</div></div>
+        <div class="subpage-card"><div class="subpage-icon">💳</div><div class="subpage-name">Paiements</div></div>
+        <div class="subpage-card"><div class="subpage-icon">👛</div><div class="subpage-name">Wallet</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📚</div><div class="subpage-name">Formation</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🏢</div><div class="subpage-name">Association</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📍</div><div class="subpage-name">Annuaire</div></div>
+        <div class="subpage-card"><div class="subpage-icon">📋</div><div class="subpage-name">Missions</div></div>
+        <div class="subpage-card"><div class="subpage-icon">🗺️</div><div class="subpage-name">Itinéraires</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== ALL PAGES ====================== -->
+  <div class="page-section" id="page-all-pages">
+    <div class="fade-in">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+        <h2 class="fraunces" style="font-size:1.6rem;">Inventaire complet</h2>
+        <span class="page-count">95 pages</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;">
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#FFF0E8;">🏠 Core (15 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Dashboard • Voyages • Réservations • Finance • Revenus • Paiements • Documents • Messagerie • Notifications • Support • Wallet • Profil • Compte • Formation • Association
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#E8F7FC;">✈️ Voyages (30+ pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Liste • Nouveau • [id] Vue • [id] Edit • Remplissage • Réservations • Finance • Factures • Transport • Avion • Manifest • Rooming • Hotel Blocks • Restauration • Activités • Carnet • Forfaits • Sponsors • Équipe • Bilan • Runbook J-0 • Clone Saison • Aide locale • Terrain (4 sous-pages)
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#E0FFF5;">🤝 Vendre (11 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Hub vente • Dashboard ventes • Classement • Devis • Lien paiement • Mini-landing • Widget • Widget partenaires • Réservation assistée • Notifications vente
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#EDE9FE;">📢 Marketing (11 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Dashboard • Créer campagne • Détail campagne • Analytics • Leads • QR & Print • Réseaux sociaux • Shortlinks • Studio IA • Visuels • Viral Growth
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#FEF3C7;">⚙️ Paramètres (5 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Général • Comptes bancaires • Équipe • Facturation • Notifications
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#FEF2F2;">🎯 Activités Pro (9 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Dashboard • Catalogue • Créer • Calendrier • Réservations • Finance • Profil • Avis • Inscription
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#F1F5F9;">🚌 Transport (2 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Charters • Multi-bus
+          </div>
+        </div>
+
+        <div class="panel" style="margin:0;">
+          <div class="panel-header" style="background:#ECFDF5;">🔐 Auth & Onboarding (5 pages)</div>
+          <div class="panel-body" style="font-size:0.8rem; line-height:2;">
+            Login Pro • Inscription • Forgot Password • Onboarding • Magasin
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Tab navigation
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('page-' + tab.dataset.page).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

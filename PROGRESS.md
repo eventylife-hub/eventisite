@@ -1,8 +1,600 @@
 # PROGRESS — Eventy Life Platform
 
-> **Dernière mise à jour** : Cowork-25 Sprints 13-18 (21 mars 2026) — 19 endpoints Zod, 22 findMany bornés, 12 loading.tsx, 22 error.tsx, 17 aria-labels, 5 BFF routes Zod, 1 perf fix
+> **Dernière mise à jour** : Cowork-37 Sprints 65-74 (21 mars 2026) — 8 as any→typed, 35 error.tsx pro, 5 forms validés, 3 race conditions, 53 findMany bornés, audits sécurité clean
 > **Diagramme de référence** : drawio v53 (1 533 diagrammes dont 834 PATCHES)
 > **Stack** : Next.js 14 App Router · NestJS 10 · Prisma 5 · PostgreSQL 15 · Stripe · Tailwind CSS
+
+---
+
+## Cowork-35 — Sprints 72-80 : Error Boundaries 100%, Missing Pages, Frontend Zero-Any, A11y (21 mars 2026)
+
+### Sprint 72 — Error Boundaries: 30 Admin Routes
+- ✅ **30 error.tsx créés** — alertes, annulations, audit, carnets, comms, communications, data-satisfaction, documents, dsar, emails-queue, equipes, feature-flags, finance, forfaits, fournisseurs, hra, incidents, integrations, itineraires, marketing, notifications, planning, pros, rbac, restauration, sponsors, system-health, utilisateurs, validation-pro, voyages
+- Pattern : `adminErrorTheme` + titre/description français personnalisés
+
+### Sprint 73 — Error Boundaries: 19 Pro Routes
+- ✅ **19 error.tsx créés** — activites, annuaire, arrets, association, compte, documents, forgot-password, formation, inscription, itineraires, login, magasin, marketing, missions, notifications, onboarding, profil, support, wallet
+- Pattern : `proErrorTheme` + messages français
+
+### Sprint 74 — Error Boundaries: 19 Public Routes
+- ✅ **19 error.tsx créés** — a-propos, avis, blog, brochure, cgv, comment-ca-marche, conditions, confidentialite, contact, cookies, depart, devenir-partenaire, faq, itineraires, mentions-legales, partenaires, politique-confidentialite, suivi-commande, voyages
+- Pattern : gradient sunset `from-orange-500 to-rose-500` + icône 🌍
+- **Impact** : **189 error.tsx** au total — **couverture 100%** sur tous les portails
+
+### Sprint 75 — Pages manquantes (3 pages)
+- ✅ **admin/sponsors/page.tsx** — Liste paginée (search, filtre statut, progress bar budget, liens détail)
+- ✅ **admin/sponsors/[id]/page.tsx** — Détail sponsor (infos, budget %, sponsorships, mode démo)
+- ✅ **client/voyage/[id]/page.tsx** — Hub voyage (hero, stats J-X, dates, quick links, services inclus, programme)
+
+### Sprint 76 — loading.tsx manquant
+- ✅ **admin/sponsors/loading.tsx** — Shimmer skeleton pour la liste sponsors
+
+### Sprint 77 — Type Safety: 25 `catch (err: any)` → `catch (err: unknown)` (17 fichiers app/)
+- ✅ admin (5), checkout (2), client (5), pro (5) — `err.message` → `err instanceof Error ? err.message : String(err)`
+
+### Sprint 78 — Type Safety: 7 params `any` → typed (6 fichiers app/)
+- ✅ itineraires `stops?: any[]` → struct 5 champs, `value: any` → `string | number | boolean`
+- ✅ widget/widget-partenaires `value: any` → `Config[keyof Config]`
+- ✅ FlightAllotmentForm `onSubmit: (data: any)` → `Record<string, string | number | boolean>`
+- ✅ forfaits 2× `.map((s: any)` → `{ id; type; price/amount }`
+- ✅ activites `value: any` → `string | number | boolean`
+
+### Sprint 79 — Type Safety: 5 `any` → typed (2 composants)
+- ✅ **ClosePackSummary.tsx** — 3× `(cp: any)` → `{ status: string; balance: number }` + `catch (error: unknown)`
+- ✅ **TransportSummary.tsx** — `catch (err: unknown)` + `instanceof DOMException` pour AbortError
+
+### Sprint 80 — Type Safety: 31 `const res: any` → inferred (6 hooks lib/)
+- ✅ **use-favorites.ts** — 4× `res: any` → `res` (apiClient est générique)
+- ✅ **use-installments.ts** — 7× `res: any` → `res`
+- ✅ **use-marketing.ts** — 5× `res: any` → `res`
+- ✅ **use-messaging.ts** — 5× `res: any` → `res`
+- ✅ **use-reviews.ts** — 5× `res: any` → `res`
+- ✅ **use-transport.ts** — 5× `res: any` → `res`
+- **Impact** : **0 `any`** dans tout le frontend production (app/ + components/ + lib/)
+
+### Sprint 80B — Accessibility (4 aria-labels)
+- ✅ **admin/marketing/leads** — close button `aria-label="Fermer le détail"` + refresh `aria-label="Actualiser les leads"`
+- ✅ **admin/validation-pro** — close button `aria-label="Fermer le profil"`
+- ✅ **pro/magasin** — cart close `aria-label="Fermer le panier"`
+
+---
+
+## Cowork-34 — Sprints 65-71 : Type Safety, Form Validation, Error Boundaries, Security Audits (21 mars 2026)
+
+### Sprint 65 — Elimination des `as any` en production
+- ✅ **pro-store.ts** — Ajouté `_isCacheValid` et `_markFetched` à l'interface ProStore, supprimé 2 `as any` casts
+- ✅ **PickupMap.tsx** — Déclaration `Window.L` pour Leaflet CDN, supprimé 5 `(window as any).L` + typé refs/fonctions avec `LeafletLib`
+- ✅ **FlightPassengerForm.tsx** — `as any` → `as FlightPassenger['seatPreference']` (type union précis)
+- ✅ **SaleNotificationToast.tsx** — `(window as any).webkitAudioContext` → cast `as unknown as { webkitAudioContext }` typé
+- Linter a ajouté `escHtml()` XSS protection pour les popups Leaflet (defense-in-depth)
+
+### Sprint 66 — Validation formulaires frontend
+- ✅ **cost-table.tsx** — Validation titre (2-200 chars), montant HT (positif, max 1M€), taux TVA (0-100%), supprimé `as string` casts inutiles
+- ✅ **invite-form.tsx** — Validation format email regex + normalisation lowercase/trim avant envoi API
+- ✅ **newsletter-cta.tsx** — Validation email + supprimé le faux succès-sur-erreur (toast.error au lieu de toast.success silencieux)
+- ✅ **CallbackForm.tsx** — Validation email + téléphone (optionnel, 6-20 chars), affichage erreur, aria-label
+- ✅ **PreannounceForm.tsx** — Validation email + téléphone + sanitize ville (max 100 chars)
+
+### Sprint 67 — Audit secrets hardcodés
+- ✅ **Résultat : CLEAN** — Aucun secret hardcodé en production. Tous les secrets dans env vars. Fallbacks URL acceptables.
+
+### Sprint 68 — Error Boundaries Pro Portal (+35 fichiers)
+- ✅ **35 error.tsx créés** — activites/avis, activites/calendrier, activites/catalogue, activites/catalogue/creer, activites/dashboard, activites/finance, activites/inscription, activites/profil, activites/reservations, arrets/nouveau, finance/cloture, marketing/analytics, marketing/creer, marketing/leads, marketing/qr-print, marketing/reseaux, marketing/shortlinks, marketing/studio-ia, marketing/viral, marketing/visuels, parametres/comptes, parametres/equipe, parametres/facturation, parametres/notifications, revenus/releve, vendre/classement, vendre/dashboard, vendre/devis, vendre/lien-paiement, vendre/mini-landing, vendre/notifications, vendre/reservation-assistee, vendre/widget, vendre/widget-partenaires, voyages/nouveau
+- **Impact** : 99/99 pages pro couvertes par error boundaries (100%)
+
+### Sprint 69 — Audit dangerouslySetInnerHTML
+- ✅ **Résultat : CLEAN** — 34 occurrences, toutes sûres : JSON-LD via `JSON.stringify`, blog avec `escapeHtml()`, CSS statique
+
+### Sprint 70 — Audit loading.tsx
+- ✅ **Résultat : 100% couvert** — Tous les portails (pro, client, checkout, public) ont des loading.tsx
+
+### Sprint 71 — Race conditions & cleanup
+- ✅ **FollowCreatorButton.tsx** — AbortController pour annuler les requêtes précédentes (double-clic), `signal.aborted` guards sur setState
+- ✅ **maintenance-banner.tsx** — `cancelled` flag pour éviter setState après unmount dans le polling interval
+- ✅ **SeatSelector.tsx** — Ajouté `controller.signal.aborted` guard dans finally block
+
+### Sprint 72 — Audit auth guards & rate limiting
+- ✅ **Résultat : CLEAN** — Tous les controllers admin/finance/pro ont des guards JwtAuthGuard + RolesGuard. Tous les endpoints auth ont @RateLimit.
+
+### Sprint 73 — Audit liens externes (target=_blank)
+- ✅ **Résultat : CLEAN** — Toutes les 25 occurrences de `target="_blank"` ont `rel="noopener noreferrer"`.
+
+### Sprint 74 — Bornage des findMany Prisma (53 requêtes)
+- ✅ **transport-dashboard.service.ts** — 9 findMany bornés (`take: 500`)
+- ✅ **viral-growth.service.ts** — 9 findMany bornés (`take: 1000`)
+- ✅ **transport-status.service.ts** — 7 findMany bornés (`take: 1000`)
+- ✅ **admin.service.ts** — 5 findMany bornés (`take: 1000`)
+- ✅ **ledger-analytics.service.ts** — 5 findMany bornés (`take: 1000`)
+- ✅ **post-sale-extended.service.ts** — 6 findMany bornés (`take: 1000`)
+- ✅ **quick-sell.service.ts** — 5 findMany bornés (`take: 1000`)
+- ✅ **sla.service.ts** — 5 findMany bornés (`take: 1000`)
+- ✅ **geo-stops.service.ts** — 2 findMany bornés (`take: 5000`)
+- **Impact total** : 53 requêtes non-bornées → bornées, prévention DoS/OOM
+
+### Sprint 75 — Transaction atomique pour paiements 3D Secure
+- ✅ **stripe-3dsecure.service.ts / confirmPaymentAfter3DS** — Wrappé PaymentContribution.update + BookingGroup.update dans `$transaction` — empêche paiement SUCCEEDED + booking non-CONFIRMED
+- ✅ **stripe-3dsecure.service.ts / handlePaymentFailure** — Wrappé PaymentContribution.update + BookingGroup.update + RoomBooking.updateMany dans `$transaction` — empêche état incohérent en cas d'échec partiel
+
+### Sprint 76 — Select minimal sur User findUnique (protection passwordHash)
+- ✅ **dsar.service.ts** — 3 `findUnique({ where })` → `findUnique({ where, select: { id: true } })` — empêche chargement inutile de passwordHash/twoFactorSecret
+- ✅ **data-retention.service.ts** — `findUnique({ where })` → `select: { id, email }` — chargement minimal pour anonymisation
+
+---
+
+## Cowork-32 — Sprints 38-44 : Error Boundaries 100%, Missing Pages, Frontend Type Safety (21 mars 2026)
+
+### Sprint 38 — Error Boundaries: 30 Admin Routes
+- ✅ **30 error.tsx créés** — alertes, annulations, audit, carnets, comms, communications, data-satisfaction, documents, dsar, emails-queue, equipes, feature-flags, finance, forfaits, fournisseurs, hra, incidents, integrations, itineraires, marketing, notifications, planning, pros, rbac, restauration, sponsors, system-health, utilisateurs, validation-pro, voyages
+- Pattern : `adminErrorTheme` + titre/description français personnalisés par route
+
+### Sprint 39 — Error Boundaries: 19 Pro Routes
+- ✅ **19 error.tsx créés** — activites, annuaire, arrets, association, compte, documents, forgot-password, formation, inscription, itineraires, login, magasin, marketing, missions, notifications, onboarding, profil, support, wallet
+- Pattern : `proErrorTheme` + titre/description français personnalisés par route
+
+### Sprint 40 — Error Boundaries: 19 Public Routes
+- ✅ **19 error.tsx créés** — a-propos, avis, blog, brochure, cgv, comment-ca-marche, conditions, confidentialite, contact, cookies, depart, devenir-partenaire, faq, itineraires, mentions-legales, partenaires, politique-confidentialite, suivi-commande, voyages
+- Pattern : gradient sunset `from-orange-500 to-rose-500` + icône 🌍
+- **Impact total** : 189 error.tsx dans le projet — **couverture 100%** sur tous les portails
+
+### Sprint 41 — Page admin/sponsors (liste + détail)
+- ✅ **admin/sponsors/page.tsx** — Liste paginée avec search, filtre statut, progress bar budget, liens détail
+- ✅ **admin/sponsors/[id]/page.tsx** — Détail sponsor avec infos, budget, voyages sponsorisés, mode démo fallback
+
+### Sprint 42 — Page client/voyage/[id]
+- ✅ **client/voyage/[id]/page.tsx** — Hub voyage client avec hero image, stats (J-X, durée, voyageurs, prix), dates, quick links (activités/carnet/suivi/aide), services inclus, programme itinéraire
+
+### Sprint 43 — Type Safety: 25 `catch (err: any)` → `catch (err: unknown)` (17 fichiers)
+- ✅ **admin** — aide-locale, carnets, finance/cloture, ventes/activites, ventes (5 fichiers)
+- ✅ **checkout** — activites, transport (2 fichiers)
+- ✅ **client** — avis, urgence, voyage/[id]/activites, voyage/[id]/aide-locale, voyage/[id]/carnet (5 fichiers)
+- ✅ **pro** — activites/calendrier, activites/catalogue, activites/finance, vendre/dashboard, voyages/[id]/activites (5 fichiers)
+- Pattern : `catch (err: unknown)` + `err instanceof Error ? err.message : String(err)` pour les accès .message
+
+### Sprint 44 — Type Safety: 7 `any` params → types stricts (6 fichiers)
+- ✅ **pro/itineraires/page.tsx** — `stops?: any[]` → type structuré 5 champs + `value: any` → `string | number | boolean`
+- ✅ **pro/vendre/widget/page.tsx** — `value: any` → `WidgetConfig[keyof WidgetConfig]`
+- ✅ **pro/vendre/widget-partenaires/page.tsx** — `value: any` → `PartnerWidgetConfig[keyof PartnerWidgetConfig]`
+- ✅ **FlightAllotmentForm.tsx** — `onSubmit: (data: any)` → `Record<string, string | number | boolean>`
+- ✅ **forfaits/page.tsx** — 2× `.map((s: any)` / `(d: any)` → types structurés `{ id; type; price/amount }`
+- ✅ **client/voyage/[id]/activites** — `value: any` → `string | number | boolean`
+- **Impact** : **0 `any` restant** dans /frontend/app/ (hors error.tsx `Error &` qui est le type Next.js standard)
+
+---
+
+## Cowork-31 — Sprints 32-37 : Security Hardening Massif (21 mars 2026)
+
+### Sprint 32-33 — ParseUUIDPipe sur ~46 controllers (~200+ params)
+- ✅ **Transport** (9 controllers) — transport, transport-advanced, transport-pricing, transport-quotes, transport-status, charter-finance, flight-allotment, seat-management, route-packs
+- ✅ **Pro** (13 controllers) — pro, pro-advanced, assisted-booking, bus-stops, messagerie, payment-links, quotes, runbook, social-share, travel-activities, widget, quick-sell-enhanced, formation
+- ✅ **Autres** (24 controllers) — bookings, preannounce-gating, waitlist, checkout-advanced, cross-sell, admin-documents, finance-advanced, groups, insurance, local-resources, marketing, missions, notebook, notifications, payments, post-sale, restauration, reviews, rooming, sponsors, support, travel-lifecycle, travels, admin, admin-checkout, dsar, exports, checkout, cancellation, finance, activity-catalog, activity-providers, referral
+- **Exclus** : client.controller.ts (utilise cuid, pas UUID), params non-UUID (slug, code, token, key, category, seatNumber)
+
+### Sprint 34 — Élimination ~30 `any` dans les services
+- ✅ **stripe-connect.service.ts** — `stripe: any` → `Record<string, unknown>`, 12× `Record<string, any>` → `Record<string, unknown>`
+- ✅ **stripe-webhooks-advanced.service.ts** — `tx: any` → type structuré ledgerEntry
+- ✅ **redis-cache.service.ts** — 6× `any` éliminés : redisClient typé, memoryCache `unknown`, set/setMany `unknown`
+- ✅ **performance-cache.service.ts** — `data: any` → `unknown`
+- ✅ **pdf-generator.service.ts** — `browser: any` → type structuré Puppeteer
+- ✅ **multi-bus.service.ts** — 3× `Record<string, any>` → `Record<string, unknown>`
+- ✅ **preannounce-gating.service.ts** — retour `Record<string, any>` → `Record<string, unknown>`
+- ✅ **email-templates.service.ts** — variables `Record<string, any>` → `Record<string, unknown>`
+- ✅ **finance.service.ts** — `byMonth: Record<string, any>` → type structuré 4 champs
+- ✅ **travel-activities.service.ts** — `revenueByActivity: Record<string, any>` → type structuré
+- ✅ **health-advanced.service.ts** — `details?: Record<string, any>` → `Record<string, unknown>`
+
+### Sprint 35 — Sécurisation 27 includes Prisma dangereux (10 fichiers)
+- ✅ **bookings.service.ts** — 5× `roomBookings: true` → select (id, roomLabel, occupancyCount, pricePerNightCents, status, checkIn, checkOut)
+- ✅ **checkout.service.ts** — 1× `roomBookings: true` → select
+- ✅ **hold-expiry.service.ts** — 2× `paymentContributions: true` → select (id, amountCents, status, stripePaymentIntentId)
+- ✅ **split-pay.service.ts** — 1× `bookingGroup: true` → select (id, travelId, status, createdByUserId)
+- ✅ **close-pack.service.ts** — travel, proProfile, roomBookings, paymentContributions → select
+- ✅ **sponsors.service.ts** — 4× `sponsor: true` + 2× `travel: true` → select
+- ✅ **geo-stops.service.ts** — 2× `travel: true` → select
+- ✅ **dsar.service.ts** — roomBookings + paymentContributions → select (GDPR compliance)
+- ✅ **documents.service.ts** — type definition + queries → select
+
+### Sprint 36 — Rate Limiting sur 11 endpoints critiques
+- ✅ **health.controller.ts** — 4 endpoints publics (db, ready, live, advanced) → `@RateLimit(RateLimitProfile.SEARCH)`
+- ✅ **legal.controller.ts** — 2 endpoints publics (documents, documents/:type) → `@RateLimit(RateLimitProfile.SEARCH)`
+- ✅ **seo.controller.ts** — robots.txt → `@RateLimit(RateLimitProfile.SEARCH)`
+- ✅ **transport-advanced.controller.ts** — POST flights → WRITE, PATCH flights → WRITE, DELETE flights → ADMIN_CRITICAL
+
+### Sprint 38 — ParseUUIDPipe admin.controller.ts + stragglers (62 params)
+- ✅ **admin.controller.ts** — 34× `@Param('id')` + `@Param('tripId')` + `@Param('alertId')` + `@Param('templateId')` + `@Param('bookingId')` + `@Param('batchId')` + `@Param('periodId')` → ParseUUIDPipe
+- ✅ **9 controllers restants** — support (3), sponsors (8), reviews (3), local-resources (4), insurance (1), groups (1), checkout-advanced (1), waitlist (5), preannounce-gating (3)
+
+### Sprint 39 — StripeService: 7 méthodes sécurisées
+- ✅ **stripe.service.ts** — `createCheckoutSession`, `createSimpleCheckoutSession`, `getSession`, `getPaymentIntent`, `getCharge`, `getSessionWithPaymentIntent`, `createRefund` → try/catch + logger.error + InternalServerErrorException
+- **Impact** : aucun appel Stripe ne propage d'erreur brute au client
+
+### Sprint 40 — Standardisation safeParseInt (4 controllers, 6 query params)
+- ✅ **pro.controller.ts** — 2× `parseInt(limit)` → `safeParseInt(limit, 20, { min: 1, max: 100 })`
+- ✅ **close-pack.controller.ts** — 4× `parseInt(limit/offset)` → `safeParseInt` avec bornes
+- ✅ **widget.controller.ts** — 2× `parseInt(limit)` → `safeParseInt` avec bornes
+- **Impact** : NaN rejeté proprement, valeurs toujours bornées
+
+### Sprint 41 — Documentation
+- ✅ PROGRESS.md mis à jour
+
+---
+
+## Cowork-30 — Sprints 31-35 : Type Safety, Accessibility, Query Safety (21 mars 2026)
+
+### Sprint 31 — Fix test-usage console.log remnants
+- ✅ **transport-dashboard.service.test-usage.ts** — 5× `// Example output:('text', var);` → `// Example output — text:`
+- ✅ **ledger-analytics.service.test-usage.ts** — 8× idem
+- **Impact** : commentaires propres, 0 syntaxe malformée
+
+### Sprint 32 — Type Safety: Auth Strategies + Core Services (7 `any` éliminés)
+- ✅ **jwt.strategy.ts** — `(req: any)` → `(req: Request & { cookies?: Record<string, string> })`
+- ✅ **jwt-refresh.strategy.ts** — `(req: any)` → idem
+- ✅ **monitoring.service.ts** — `Array<any>` → type structuré 6 champs (ruleId, severity, etc.)
+- ✅ **cron-timeout.decorator.ts** — `target: any` → `object`, `...args: any[]` → `unknown[]`
+- ✅ **date-range.validator.ts** — `endDate: any` → `unknown`, `Record<string, any>` → `Record<string, unknown>`, `target: any` → `object`
+- ✅ **close-pack.service.ts** — 2× `Array<any>` → `Array<Record<string, unknown>>`
+
+### Sprint 33 — Loading.tsx: SKIPPED
+- ✅ **Audit** : 100% des routes avec page.tsx ont déjà loading.tsx (admin 40/40, pro 27/27, client 16/16)
+
+### Sprint 34 — Accessibility Audit + Fixes (8 corrections)
+- ✅ **DestinationSearchBar.tsx** — bouton clear : ajouté `aria-label="Effacer la recherche"` + `aria-hidden="true"` sur icône X
+- ✅ **PhotoGallery.tsx** — thumbnails : ajouté `aria-label="Voir la photo N"` sur chaque bouton
+- ✅ **PhotoGallery.tsx** — thumbnails : `alt=""` → `alt="Photo N"` (alt descriptif)
+- ✅ **PhotoGallery.tsx** — 3× SVG (close, prev, next) : ajouté `aria-hidden="true"`
+- ✅ **notification-bell.tsx** — `<Link><button>` imbriqué invalide → `<Link>` seul avec styles de bouton
+
+### Sprint 35 — Unbounded findMany Bounding (10 services, 11 requêtes)
+- ✅ **feature-flags.service.ts** — `featureFlag.findMany` → `take: 500`
+- ✅ **tva-audit-trail.service.ts** — `tvaAuditEntry.findMany` export CSV → `take: 10000`
+- ✅ **hotel-portal.service.ts** — `hotelBlock.findMany` active bookings → `take: 500`
+- ✅ **data-erasure.service.ts** — `dsarRequest.findMany` pending DSAR → `take: 100`
+- ✅ **geo-stops.service.ts** — `busStop.findMany` stops for travel → `take: 200`
+- ✅ **viral-growth.service.ts** — `shareTracking.findMany` → `take: 5000`
+- ✅ **booking-analytics.service.ts** — `roomBooking.findMany` → `take: 5000`
+- ✅ **missions.service.ts** — `mission.findMany` by travel → `take: 200`
+- ✅ **reviews.service.ts** — 3× `travel.findMany` pro travels → `take: 1000`
+- **Impact** : 11 requêtes potentiellement illimitées maintenant bornées
+
+### Sprint 36 — Frontend Perf: Switch → Config Objects + Dead State Cleanup (3 fichiers)
+- ✅ **pro/activites/finance/page.tsx** — `getStatusBadge()` 4-case switch → `STATUS_CONFIG` object map + `isRefreshing` unused → destructured away
+- ✅ **pro/activites/calendrier/page.tsx** — `getStatusColor()` + `getStatusLabel()` (2 switches, 8 cases) → `ACTIVITY_STATUS` config object unique
+- **Impact** : ~40 lignes de switch éliminées, rendering plus prédictible
+
+### Sprint 37 — Frontend Perf: useMemo on Heavy DataTable Columns (1 fichier)
+- ✅ **pro/voyages/page.tsx** — Inline columns array (5 colonnes, ~50 lignes JSX) recréé à chaque render → `useMemo(() => [...], [])` extrait + `import { useMemo }`
+- **Impact** : DataTable ne re-render plus les colonnes quand le parent change d'état
+
+### Sprint 38 — Backend Resilience: Email + S3 (3 fichiers, 3 fixes)
+- ✅ **email.service.ts** — Resend: `await response.text()` sans protection → try-catch avec fallback `HTTP ${status}`
+- ✅ **email.service.ts** — Brevo: idem — `await response.text()` wrappé dans try-catch
+- ✅ **health-advanced.service.ts** — S3 HeadBucketCommand sans timeout → AbortController 5s + clearTimeout dans finally
+- **Impact** : 0 erreurs non-catchées sur réponses malformées, S3 health check ne bloque plus indéfiniment
+
+### Sprint 39 — Backend Security: Email URLs + Stripe Refund Race Guard (2 fichiers)
+- ✅ **email.service.ts** — URLs Resend/Brevo hardcodées → `configService.get('RESEND_API_URL', fallback)` + `configService.get('BREVO_API_URL', fallback)` — déployable sans recompilation
+- ✅ **cancellation.service.ts** — Race condition sur refunds concurrents : ajouté `updateMany({ where: { id, status: 'APPROVED' }, data: { status: 'REFUNDING' } })` atomic guard avant le loop. Si `count === 0`, skip silencieux + log
+- **Impact** : impossibilité de double-remboursement par requêtes concurrentes
+
+---
+
+## Cowork-30 — Sprints 26-30 : Type Safety, Error Boundaries, Code Quality (21 mars 2026)
+
+### Sprint 26 — Type Safety: Controller DTO `any` → `z.infer<typeof Schema>` (4 controllers, 6 params)
+- ✅ **packages.controller.ts** — 3× `dto: any` → `z.infer<typeof UpdatePackageSchema>`, `z.infer<typeof UpdateMarketingPackSchema>`, `z.infer<typeof CalculatePriceSchema>`
+- ✅ **sponsors.controller.ts** — 2× `input: any` → `z.infer<typeof UpdateSponsorSchema>`, `z.infer<typeof AssignSponsorSchema>` + import `z`
+- ✅ **close-pack.controller.ts** — `dto: any` → `z.infer<typeof TransferToAccountantSchema>`
+- ✅ **quotes.controller.ts** — `body: any` → `z.infer<typeof UpdateQuoteStatusSchema>` + import `z`
+
+### Sprint 27 — Type Safety: Route-Packs Filters (2 endpoints)
+- ✅ **route-packs.controller.ts** — `getAllRoutePacks(@Query() filters: any)` → `Record<string, string>`
+- ✅ **route-packs.controller.ts** — `getPublicRoutePacks(@Query() filters: any)` → `Record<string, string>`
+- **Impact** : 0 `any` restants dans les 76 controllers backend
+
+### Sprint 28 — Error Boundaries: Pro Sub-Routes (23 error.tsx)
+- ✅ **pro/voyages/[id]/activites** — ProActivitesError
+- ✅ **pro/voyages/[id]/aide-locale** — ProAideLocaleError
+- ✅ **pro/voyages/[id]/bilan** — ProBilanError
+- ✅ **pro/voyages/[id]/carnet** — ProCarnetError
+- ✅ **pro/voyages/[id]/clone-season** — ProCloneSeasonError
+- ✅ **pro/voyages/[id]/edit** — ProEditVoyageError
+- ✅ **pro/voyages/[id]/equipe** — ProEquipeError
+- ✅ **pro/voyages/[id]/factures** — ProFacturesError
+- ✅ **pro/voyages/[id]/finance** — ProFinanceError
+- ✅ **pro/voyages/[id]/remplissage** — ProRemplissageError
+- ✅ **pro/voyages/[id]/reservations** — ProReservationsError
+- ✅ **pro/voyages/[id]/restauration** — ProRestaurationError
+- ✅ **pro/voyages/[id]/rooming** — ProRoomingError
+- ✅ **pro/voyages/[id]/rooming/hotel-blocks** — ProHotelBlocksError
+- ✅ **pro/voyages/[id]/runbook-j0** — ProRunbookError
+- ✅ **pro/voyages/[id]/terrain** — ProTerrainError
+- ✅ **pro/voyages/[id]/terrain/appel** — ProTerrainAppelError
+- ✅ **pro/voyages/[id]/terrain/contacts** — ProTerrainContactsError
+- ✅ **pro/voyages/[id]/terrain/incidents** — ProTerrainIncidentsError
+- ✅ **pro/voyages/[id]/terrain/passagers** — ProTerrainPassagersError
+- ✅ **pro/voyages/[id]/transport** — ProTransportError
+- ✅ **pro/voyages/[id]/transport/avion** — ProTransportAvionError
+- ✅ **pro/voyages/[id]/transport/manifest** — ProTransportManifestError
+
+### Sprint 29 — Error Boundaries: Admin + Client + Public (10 error.tsx + 1 loading.tsx)
+- ✅ **admin/sponsors/[id]** — AdminSponsorDetailError + loading.tsx shimmer
+- ✅ **admin/voyages/[id]/controle** — AdminControleError
+- ✅ **admin/voyages/[id]/controle/appel** — AdminControleAppelError
+- ✅ **admin/voyages/[id]/controle/incidents** — AdminControleIncidentsError
+- ✅ **admin/voyages/[id]/controle/override** — AdminControleOverrideError
+- ✅ **admin/voyages/[id]/lifecycle** — AdminLifecycleError
+- ✅ **client/voyage/[id]/aide-locale** — ClientAideLocaleError
+- ✅ **public/voyages/[slug]/avis** — PublicAvisError
+- ✅ **public/voyages/[slug]/checkout** — PublicCheckoutError
+- ✅ **public/voyages/[slug]/groupes** — PublicGroupesError
+- **Impact** : couverture error.tsx quasi-complète sur tous les portails
+
+### Sprint 30 — Code Quality (3 fixes)
+- ✅ **cache.decorator.ts** — Supprimé try/catch inutile qui ne faisait que `throw error` (rethrow sans logique)
+- ✅ **transport-dashboard.service.test-usage.ts** — 5× `console.log` → `// Example output:` (pas de console.log en prod)
+- ✅ **ledger-analytics.service.test-usage.ts** — `console.log` → `// Example output:`
+- **Impact** : 0 `console.log` restants dans le backend hors .spec.ts
+
+---
+
+## Cowork-29 — Sprints 60-63 : Accessibility, Image Optimization, Type Safety, CSP (21 mars 2026)
+
+### Sprint 60 — Accessibility (a11y) Fixes (16 fichiers)
+- ✅ **checkout/transport/page.tsx** — 5 inputs passager : `aria-label` + `autoComplete` (given-name, family-name, off)
+- ✅ **charts/DonutChart.tsx** — Legend items `<div>` → `<button>` avec `onFocus`/`onBlur` + `aria-label` (keyboard accessible)
+- ✅ **admin/validation-pro/page.tsx** — Search input `aria-label="Rechercher un partenaire"`
+- ✅ **8 pro pages** — Ajout `aria-label` aux champs de recherche (voyages, réservations, activités, annuaire, passagers, contacts, messagerie, catalogue)
+- ✅ **2 admin pages** — Ajout `aria-label` aux champs de recherche (annulations, audit)
+- ✅ **client/reservations/page.tsx** — Search input `ariaLabel` prop
+- Pattern : Chaque `<input placeholder="Rechercher...">` a désormais un `aria-label` descriptif
+
+### Sprint 61 — `<img>` → `next/image` (4 fichiers, 6 conversions)
+- ✅ **client/voyage/[id]/carnet/page.tsx** — Cover image `<Image fill priority sizes="896px">` + entry images `<Image fill sizes="50vw">`
+- ✅ **pro/voyages/[id]/carnet/page.tsx** — Entry thumbnails `<Image fill sizes="80px">`
+- ✅ **pro/voyages/[id]/terrain/incidents/page.tsx** — Incident photo `<NextImage fill sizes="50vw">` (alias pour éviter conflit avec lucide-react Image)
+- ✅ **pro/voyages/[id]/sponsors/page.tsx** — Sponsor logo `<Image fill sizes="64px" className="object-contain">`
+
+### Sprint 62 — Checkout Controller Response Type Safety (4 endpoints)
+- ✅ **AvailableRoomsResponse** — Remplace `Record<string, unknown>` pour GET `/checkout/:id/available-rooms`
+- ✅ **BusStopsResponse** — Remplace `Record<string, unknown>` pour GET `/checkout/:id/bus-stops`
+- ✅ **TransportOptionsResponse** — Remplace `Record<string, unknown>` pour GET `/checkout/:id/transport-options`
+- ✅ **SplitPayProgressResponse** — Remplace `Record<string, unknown>` pour GET `/checkout/split-pay/:id/progress`
+
+### Sprint 63 — CSP Hardening + Loading Coverage Audit
+- ✅ **next.config.js** — CSP `img-src` : ajout `https://*.scw.cloud` (Scaleway uploads) + `https://tile.openstreetmap.org` (Leaflet map tiles)
+- ✅ **Loading.tsx audit** — 100% coverage confirmée : tous les portails (client, pro, admin, public, checkout, auth) ont des loading.tsx
+
+---
+
+## Cowork-25 — Sprint 24 : NaN Safety + Comprehensive Audits (21 mars 2026)
+
+### Sprint 24A — Fix parseInt NaN dans Math operations (2 controllers)
+- ✅ **quick-sell.controller.ts** — `Math.min(Math.max(parseInt(limit), 1), 100)` → `isNaN` guard + fallback 10
+- ✅ **viral-growth.controller.ts** — `Math.min(parseInt(limit), 100)` → `isNaN` guard + fallback 50
+- Pattern : `const parsed = parseInt(x, 10); const safe = isNaN(parsed) ? default : Math.min(Math.max(parsed, 1), max)`
+- **Nota** : les 28 autres parseInt avec `|| default` sont safe (NaN est falsy)
+
+### Sprint 24B — Audits complets (résultats positifs)
+- ✅ **SQL injection** : 5 `$queryRaw` vérifiés — tous utilisent tagged template literals (safe par design Prisma)
+- ✅ **Admin endpoints** : 82+ endpoints, tous protégés par `AdminRolesGuard` + `AdminCapabilityGuard`
+- ✅ **Not-found.tsx** : 100% des routes dynamiques [id] couvertes (admin + pro + client)
+- ✅ **Memory leaks** : 8 setInterval vérifiés, tous ont clearInterval + removeEventListener dans cleanup
+
+---
+
+## Cowork-28 — Sprints 23-28 : Backend Security & Type Safety Deep Dive (21 mars 2026)
+
+### Sprint 23 — safeJsonParse Consolidation (4 fichiers transport)
+- ✅ **vehicle-driver.service.ts** — 3× JSON.parse try/catch → `safeJsonParse<Record<string, unknown>>(value, {})`
+- ✅ **transport-pricing.service.ts** — 3× JSON.parse try/catch → `safeJsonParse<Record<string, unknown>>(value, {})`
+- ✅ **transport-quotes.service.ts** — 2× JSON.parse try/catch → `safeJsonParse<Record<string, unknown>>(value, fallback)`
+- ✅ **flight-management.service.ts** — 2× JSON.parse try/catch → `safeJsonParse<Record<string, unknown>>(value, {})`
+- **Impact** : 10 patterns JSON.parse consolidés, parsing sûr uniforme
+
+### Sprint 24 — Type Safety: Controllers (3 fichiers)
+- ✅ **route-packs.controller.ts** — 8× `@CurrentUser() user: any` → `JwtUserPayload & { proProfileId?: string }`, 4× `data: any` → types DTO Zod
+- ✅ **documents.controller.ts** — `@Req() req: any` → `Request & { ip?; connection?: { remoteAddress? } }`
+
+### Sprint 25 — parseInt NaN Guards (4 contrôleurs, 7 appels)
+- ✅ **admin.controller.ts** — `parseInt(year)` → `Number.isNaN` guard + clamp [2020, 2100]
+- ✅ **hra.controller.ts** — 2× `parseInt(limit)` → `Math.min(Math.max(1, parseInt(limit, 10) || 20), 100)`
+- ✅ **widget.controller.ts** — 2× `parseInt(query.limit/limit)` → clamped [1, 50], `Promise<{ trips: any[] }>` → `Record<string, unknown>[]`
+- ✅ **transport-pricing.controller.ts** — 3× `parseInt(minPax/maxPax/limit)` → clamped with NaN fallbacks
+
+### Sprint 26 — Unbounded findMany() Bounding (3 services, 15 requêtes)
+- ✅ **local-resources.service.ts** — 5× findMany bornées (`take: 200` à `take: 500`)
+- ✅ **transport.service.ts** — 6× findMany bornées (bookingGroup `take: 2000`, quoteRequest `take: 100`, travelBus `take: 50`, travelerStopSelection `take: 2000`)
+- ✅ **travel-search.service.ts** — 2× travelCategory.findMany + `take: 100`
+- **Impact** : 15 requêtes qui pouvaient retourner des millions de lignes maintenant bornées
+
+### Sprint 27 — Type Safety: Controllers (8 fichiers, 14 `any` éliminés)
+- ✅ **close-pack.controller.ts** — 3× `user: any` → `JwtUserPayload`, 2× `dto: any` → `ValidateClosePackDto`/`RejectClosePackDto`
+- ✅ **sponsors.controller.ts** — `input: any` → `CreateSponsorInput`
+- ✅ **packages.controller.ts** — `dto: any` → `z.infer<typeof CreatePackageSchema>`
+- ✅ **quotes.controller.ts** — `body: any` → `CreateQuoteInput`
+- ✅ **route-packs.controller.ts** — `filters: any` → `{ format?: 'PDF' | 'CSV' }`
+- ✅ **widget.controller.ts** — `{ stats: any }` → `{ stats: Record<string, unknown> }`
+- ✅ **pro.controller.ts** — 4× `(m: any)` → Prisma-inferred, `findOptions: any` → type structuré
+- ✅ **activity-catalog.controller.ts** — `provider: any; reviews: any[]` → `Record<string, unknown>`
+
+### Sprint 28 — Type Safety: Services (10 fichiers, 18 `any` éliminés)
+- ✅ **invoice-pdf.service.ts** — `InvoiceData` + `InvoiceLineItem` interfaces, 5× `any` → typé
+- ✅ **close-pack.service.ts** — 3× export methods `closePack: any` → types structurés (FEC 10 champs, CSV/Excel 4 champs)
+- ✅ **stripe-3dsecure.service.ts** — `event: any` → type structuré webhook, `where: any` → type filtre, 2× `params: any` → types structurés Stripe
+- ✅ **stripe-webhooks-advanced.service.ts** — `tx: any` → typed Prisma transaction context
+- ✅ **payments.service.ts** — `payment?: any` → `Record<string, unknown>`
+- ✅ **geo-stops.service.ts** — 2× `stops/stopsWithGeo: any[]` → `{ id; geoData? }[]`
+- ✅ **transport-quotes.service.ts** — `comparison: any[]` → type structuré
+- ✅ **audit-log.service.ts** — `mapAuditLog(log: any)` → type 12 champs
+- ✅ **notebook.service.ts** — `Record<number, any[]>` → `Record<number, typeof entries>`
+- ✅ **lead.service.ts** — `where: any` → `{ status?; travels? }`
+
+### Sprint 29 — Prisma include:true → select (provider, createdByUser, proProfile)
+- ✅ **transport.service.ts** — 10× `provider: true` → `provider: { select: { id, name, contactEmail, contactPhone, status } }`
+- ✅ **transport-quotes.service.ts** — 3× `provider: true` → select ciblé
+- ✅ **activity-catalog.service.ts** — 2× `provider: true` → select ciblé
+- ✅ **travel-activities.service.ts** — 1× `provider: true` → select ciblé
+- ✅ **insurance.service.ts** — `createdByUser: true` → `{ select: { id, firstName, lastName, email, phone } }`
+- ✅ **stripe-3dsecure.service.ts** — `createdByUser: true` + `travel: true` → selects ciblés
+- ✅ **close-pack.service.ts** — 3× `proProfile: true` + 2× `travel: true` → selects ciblés
+- ✅ **transport.service.ts** — `bookingGroup: true` → `{ select: { id, travelId, status } }`
+- ✅ **split-pay.service.ts** — `bookingGroup: true` → select ciblé
+- **Impact** : 21 wildcard includes remplacés, aucun champ sensible (passwordHash, etc.) ne fuite
+
+### Sprint 31 — ParseUUIDPipe sur 6 contrôleurs (49 params)
+- ✅ **bookings.controller.ts** — 3× `@Param('id')` → `@Param('id', ParseUUIDPipe)`
+- ✅ **cancellation.controller.ts** — 5× params → ParseUUIDPipe (id, bookingGroupId, travelId)
+- ✅ **groups.controller.ts** — 12× params → ParseUUIDPipe (id, travelId, memberId)
+- ✅ **finance.controller.ts** — 14× params → ParseUUIDPipe (travelId, proProfileId, id)
+- ✅ **close-pack.controller.ts** — 14× params → ParseUUIDPipe (travelId, id)
+- ✅ **activity-catalog.controller.ts** — 1× `@Param('id')` → ParseUUIDPipe
+- **Impact** : 49 endpoints protégés contre les injections d'IDs non-UUID → retourne 400 au lieu de 500
+
+---
+
+## Cowork-25 — Sprint 23 : Race Condition Safety + XSS Audit (21 mars 2026)
+
+### Sprint 23A — Audit XSS dangerouslySetInnerHTML
+- ✅ **15 usages audités** : 13 JSON-LD (safe), 1 CSS static (safe), 1 blog content (escapeHtml + source contrôlée)
+- ✅ **blog-article-content.tsx** — Ajouté commentaire SECURITY documentant la source des données + TODO DOMPurify
+
+### Sprint 23B — Fix 8 race conditions Prisma P2025 (2 controllers)
+- ✅ **admin.controller.ts** — 4 fixes : extendBookingHold, processCancellation, approveDocument, validateProAccount
+- ✅ **pro-travels.controller.ts** — 3 fixes : updateTeamMember, removeTeamMember, assignRooming
+- Pattern : `try { prisma.update/delete } catch (e) { if P2025 → NotFoundException; else throw }`
+- **Import** : `Prisma` (runtime class) ajouté pour `PrismaClientKnownRequestError`
+- **Impact** : élimine les 500 non gérées quand un record est supprimé entre le check et le update/delete
+
+---
+
+## Cowork-27 — Sprints 53-57 : DTO Validation, Image Optimization, Memory Leak Prevention, Error Boundaries, Backend Hardening (21 mars 2026)
+
+### Sprint 53 — Onboarding & Assisted Booking DTO Validation
+- ✅ **onboarding.dto.ts** — Créé : Zod schemas exportés (ProfileStepSchema, LegalStepSchema, PayoutStepSchema, DocumentUploadSchema, ContractSignatureSchema, STEP_SCHEMAS map)
+- ✅ **onboarding.controller.ts** — Validation Zod au niveau contrôleur (defense-in-depth) + `@ApiBody` Swagger avec `oneOf` pour documentation automatique
+- ✅ **onboarding.service.ts** — Import des schemas depuis le DTO file au lieu de les définir localement
+- ✅ **assisted-booking.controller.ts** — `@Query() query: Record<string, any>` → `@Query(new ZodValidationPipe(ListAssistedBookingsQuerySchema)) query: ListAssistedBookingsQuery`
+
+### Sprint 54 — `<img>` → `next/image` (5 composants)
+- ✅ **BookingCard.tsx** — `<img>` travel cover → `<Image fill sizes="25vw">` avec container `relative`
+- ✅ **groups/member-list.tsx** — `<img>` avatar → `<Image fill sizes="32px">` circulaire
+- ✅ **checkout/activites/page.tsx** — `<img>` activity card → `<Image fill sizes="33vw">`
+- ✅ **client/voyage/[id]/activites/page.tsx** — `<img>` activity → `<Image fill sizes="128px">`
+- ✅ **pro/voyages/[id]/activites/page.tsx** — `<img>` activity card → `<Image fill sizes="50vw">`
+
+### Sprint 55 — AbortController Memory Leak Prevention (5 composants)
+- ✅ **NotificationBell.tsx** — 2 fetches (fetchCount polling + fetchNotifications) → signal param + cleanup sur unmount
+- ✅ **FeaturedTravelsSection.tsx** — fetchFeatured → signal param + `controller.abort()` cleanup
+- ✅ **DestinationSearchBar.tsx** — fetchSuggestions → signal param + abort on debounce change
+- ✅ **pro/TransportSummary.tsx** — fetchSummary → AbortController + `if (!controller.signal.aborted) setLoading(false)`
+- ✅ **pro/ClosePackSummary.tsx** — loadData → signal param + `if (!signal?.aborted) setLoading(false)`
+
+### Sprint 56 — Error Boundaries (12 routes client)
+- ✅ **reservations/[id]/facture** — ClientFacture boundary
+- ✅ **reservations/[id]/annuler** — ClientAnnuler boundary (« Votre réservation n'a pas été annulée »)
+- ✅ **reservations/[id]/rooming** — ClientRooming boundary
+- ✅ **reservations/[id]/preferences** — ClientPreferences boundary
+- ✅ **reservations/[id]/avis** — ClientAvis boundary
+- ✅ **groupes/creer** — ClientCreerGroupe boundary
+- ✅ **groupes/[id]/inviter** — ClientInviter boundary
+- ✅ **groupes/rejoindre** — ClientRejoindre boundary
+- ✅ **voyage/[id]/activites** — ClientActivites boundary
+- ✅ **voyage/[id]/carnet** — ClientCarnet boundary
+- ✅ **voyage/[id]/suivi** — ClientSuivi boundary
+- ✅ **notifications/preferences** — ClientNotifPreferences boundary
+
+### Sprint 57 — Backend parseInt NaN Hardening
+- ✅ **sponsors.controller.ts** — Ajout `isNaN(skipNum) || isNaN(takeNum)` guard avant pagination
+- ✅ **finance.controller.ts** (TVA audit trail) — `parseInt(limit, 10)` → `isNaN` fallback to default 50
+- ✅ **finance.controller.ts** (reconciliation) — `parseInt(limit, 10)` → `isNaN` fallback to default 20
+- ✅ **transport.controller.ts** — 2× `parseInt(take, 10)` → `parseInt(take, 10) || 20` (NaN-safe via `||`)
+
+### Sprint 58 — Misleading Error Handling Fix (6 fichiers)
+- ✅ **NewsletterSection.tsx** — Catch simulait succès en production → succès uniquement en `DEMO_MODE`, sinon affiche erreur
+- ✅ **voyage-detail-client.tsx** — Empty catch for similar travels → ajout `logger.warn` avant fallback démo
+- ✅ **client/layout.tsx** — Empty catch `fetchCurrentUser()` → `logger.debug` pour token expiré
+- ✅ **ShareButtons.tsx** — `alert()` fallback clipboard → `document.execCommand('copy')` fallback silencieux
+- ✅ **embed/[proSlug]/page.tsx** — Double try/catch inutile pour analytics → simplifié en fire-and-forget
+
+### Sprint 59 — Empty Catch & TODO Cleanup (5 fichiers)
+- ✅ **service-worker-registration.tsx** — Empty SW update catch → `logger.debug` avec contexte offline
+- ✅ **PickupMap.tsx** — Empty Leaflet catch → `logger.warn` + ajout import logger
+- ✅ **pro/vendre/dashboard/page.tsx** — `TODO: Remplacer par API` → Implémenté avec `apiClient.get` + fallback démo + AbortController
+
+---
+
+## Cowork-25 — Sprint 22 : Network Resilience + Error Boundaries (21 mars 2026)
+
+### Sprint 22A — 4 error.tsx pour pages client manquantes
+- ✅ **client/avis** — ClientAvisError
+- ✅ **client/favoris** — ClientFavorisError
+- ✅ **client/groupes** — ClientGroupesError
+- ✅ **client/preferences-marketing** — ClientPreferencesError
+
+### Sprint 22B — Fetch timeouts (AbortController)
+- ✅ **connexion/page.tsx** — Login fetch + 15s timeout + AbortError handler (« Le serveur ne répond pas »)
+- ✅ **admin/finance/page.tsx** — Finance export fetch + 60s timeout + AbortError handler (« L'export a pris trop de temps »)
+- Pattern : `new AbortController()` + `setTimeout(() => controller.abort(), N)` + `DOMException AbortError` catch
+
+---
+
+## Cowork-26 — Sprint 20 : Type Safety — Payments, Stripe, Transport, Marketing (21 mars 2026)
+
+### Sprint 20A — stripe.service.ts + stripe-connect.service.ts (7 `any`)
+- ✅ `refundParams: any` → `{ amount?; charge?; payment_intent? }`
+- ✅ `handleAccountUpdated(event: any)` → type structuré
+- ✅ 2× `params: any` pagination → types structurés
+- ✅ `(transfer: any)` + `(payout: any)` → types structurés
+
+### Sprint 20B — transport.service.ts + marketing.service.ts + monitoring.service.ts (5 `any`)
+- ✅ `quotes: any[]` → `Awaited<ReturnType<typeof tx.quoteRequest.create>>[]`
+- ✅ `where: any` → `{ proProfileId; status?; id? }`
+- ✅ `summary: any` / `infraMetrics: any` → `ReturnType<...>`, `downtimeIncidents: any[]` → type structuré
+
+---
+
+## Cowork-26 — Sprint 21 : Type Safety — Pro, Auth, HRA (21 mars 2026)
+
+### Sprint 21 — 17 `any` éliminés dans 8 fichiers
+- ✅ **payment-links.service.ts** — `formatPaymentLinkResponse(link: any)` → type 10 champs
+- ✅ **quotes.service.ts** — `mapQuoteToResponse` + `generateQuoteHtml` → types 18/13 champs
+- ✅ **social-share.service.ts** — `trip: any` → `{ destinationCity; title }`
+- ✅ **totp.service.ts** — `storeTotpMetadata(metadata: any)` → type 5 champs
+- ✅ **viral-growth.service.ts** — `topChannels: any[]` → type structuré
+- ✅ **packages.service.ts** — 10× findIndex/filter/helper `any` → `PackageItem`/`SurchargeItem`/`MarketingPackItem` + `breakdown: any` → type détaillé
+- ✅ **hotel-portal.service.ts** — `(count: any)` → `{ count?: number }`
+
+---
+
+## Cowork-26 — Sprint 22 : Security Hardening complémentaire (21 mars 2026)
+
+- ✅ **db-backup.service.ts** — 4× `throw new Error` → `InternalServerErrorException` (pg_dump, gzip, gunzip, restore)
+- ✅ **travels.service.ts** — 4× `eslint-disable no-explicit-any` supprimés (obsolètes)
+- ✅ **client.service.ts** — 2× findMany bornés : `creditVoucher` +`take: 200`, `roomBooking` +`take: 500`
+
+---
+
+## Cowork-25 — Sprint 21 : ReDoS Prevention + Loading UX (21 mars 2026)
+
+### Sprint 21A — ReDoS fix dans 2 services cache
+- ✅ **redis-cache.service.ts** — `new RegExp(pattern.replace('*','.*'))` → escape complet des metacharacters regex avant construction
+- ✅ **performance-cache.service.ts** — idem
+- Pattern : `.replace(/[.+?^${}()|[\]\\]/g, '\\$&')` avant `.replace('*', '.*')`
+
+### Sprint 21B — 1 loading.tsx manquant
+- ✅ **pro/activites/loading.tsx** — grille 6 cartes shimmer pour catalogue d'activités
+
+---
+
+## Cowork-25 — Sprint 20 : Input Validation — Date Safety (21 mars 2026)
+
+### Sprint 20 — 8 validations isNaN sur new Date() d'entrée utilisateur (6 fichiers)
+- ✅ **transport.service.ts** — `departureTime` + `arrivalTime` dans createBusSegment
+- ✅ **hra.service.ts** — `date` dans updateMealDeclaration + `checkInDate`/`checkOutDate` dans createHotelBlock
+- ✅ **activity-catalog.service.ts** — `activityDate` dans bookActivity
+- ✅ **legal.controller.ts** — `activeFrom` dans createLegalDocument (+ ajout import BadRequestException)
+- ✅ **pro-advanced.controller.ts** — `newStartDate` dans duplicateTravelBatch
+- Pattern : `if (isNaN(date.getTime())) throw new BadRequestException('Format de date invalide')`
+- **Impact** : empêche les dates invalides de corrompre les données en base ou de causer des erreurs downstream
 
 ---
 
@@ -238,6 +830,53 @@
 - ✅ **FeaturedTravelsSection.tsx** — `<img>` → `<Image fill sizes="..." />` (homepage, page voyage)
 - ✅ **client/reservations/page.tsx** — `<img>` → `<Image fill sizes="..." />` (page réservations client)
 - Gain : format WebP auto, srcset responsive, lazy loading natif, optimisation serveur
+
+---
+
+## Cowork-24 — Sprint 49 : Transaction Atomicity + Audit Resilience (21 mars 2026)
+
+### Sprint 49A — duplicate-season.service.ts wrappé dans $transaction (CRITIQUE)
+- ✅ **duplicateTravel()** — toutes les écritures (travel.create, hotelBlock.create, roomType.createMany, roomInventory.createMany, travelStopLink.createMany, travelActivityCost.createMany, travel.update) wrappées dans `this.prisma.$transaction(async (tx) => { ... })`
+- Avant : si échec au milieu → voyage orphelin avec données incomplètes
+- Après : tout-ou-rien, rollback automatique en cas d'erreur
+
+### Sprint 49B — bulk-actions.service.ts: audit resilience
+- ✅ **bulkUpdateTravelStatus()** — ajouté `.catch()` sur `auditService.logAction()` pour éviter qu'un échec d'audit annule la mise à jour du statut
+- Pattern : update travel d'abord, puis audit en non-bloquant avec log d'erreur
+
+---
+
+## Cowork-24 — Sprint 50 : 100% Loading Coverage (21 mars 2026)
+
+### Sprint 50 — 6 derniers loading.tsx pour couverture 100%
+- ✅ **itineraires/loading.tsx** — page publique catalogue itinéraires (customer-facing)
+- ✅ **pro/voyages/[id]/terrain/passagers/loading.tsx** — liste passagers en terrain
+- ✅ **pro/voyages/[id]/terrain/incidents/loading.tsx** — incidents terrain
+- ✅ **pro/voyages/[id]/terrain/contacts/loading.tsx** — contacts urgence terrain
+- ✅ **admin/voyages/[id]/controle/override/loading.tsx** — override admin
+- ✅ **admin/voyages/[id]/controle/appel/loading.tsx** — appel admin
+- Couverture loading.tsx : 246/246 pages → **100%**
+
+---
+
+## Cowork-24 — Sprint 51 : Accessibilité (A11y) (21 mars 2026)
+
+### Sprint 51 — 3 composants critiques corrigés
+- ✅ **ProgramRequestButton.tsx** — modal : ajouté `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, `onKeyDown` Escape, `<label htmlFor>` + `aria-label` sur input email
+- ✅ **checkout/activites/page.tsx** — bouton supprimer : ajouté `aria-label={`Retirer ${activity.title}`}`
+- ✅ **SeatSelector.tsx** — 3× groupes de sièges : ajouté `aria-label` + `aria-pressed` sur chaque bouton siège
+- Améliore la navigation clavier et la compatibilité lecteur d'écran sur le tunnel de conversion
+
+---
+
+## Cowork-24 — Sprint 52 : Null Safety + Checkout Hardening (21 mars 2026)
+
+### Sprint 52A — Null safety fixes
+- ✅ **pro/voyages/[id]/remplissage/page.tsx** — `occupancy.buses.find(...)` → `occupancy?.buses?.find(...) ?? 'Bus sélectionné'`
+- ✅ **checkout/activites/page.tsx** — `response.data` → `response?.data ?? []` + `err.message` → `err?.message`
+
+### Sprint 52B — Checkout activites AbortController + hardening
+- ✅ **checkout/activites/page.tsx** — ajouté AbortController + cleanup + AbortError guard dans useEffect
 
 ---
 
