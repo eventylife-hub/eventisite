@@ -1,6 +1,6 @@
 {
   "name": "Eventy Admin",
-  "short_name": "Eventy Admin",
+  "short_name": "Admin",
   "description": "Portail Administrateur Eventy Life — Gestion voyages de groupe",
   "start_url": "/admin-pwa/",
   "scope": "/admin-pwa/",
@@ -9,6 +9,7 @@
   "theme_color": "#FF6B35",
   "orientation": "portrait-primary",
   "lang": "fr-FR",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/admin-pwa/icon-192.png",
@@ -31,6 +32,23 @@
       "src": "/admin-pwa/icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/admin-pwa/?view=dashboard"
+    },
+    {
+      "name": "Voyages",
+      "short_name": "Voyages",
+      "url": "/admin-pwa/?view=voyages"
+    },
+    {
+      "name": "Finance",
+      "short_name": "Finance",
+      "url": "/admin-pwa/?view=finance"
     }
   ]
 }

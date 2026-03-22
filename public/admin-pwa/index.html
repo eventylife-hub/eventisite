@@ -10,7 +10,7 @@
   <link rel="manifest" href="/admin-pwa/manifest.json" />
   <link rel="icon" href="/admin-pwa/icon-192.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/admin-pwa/icon-512.svg" />
-  <title>Eventy Admin — Portail d'administration</title>
+  <title>Eventy Admin — Portail d'administration sécurisé</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -20,271 +20,1122 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --primary: #FF6B35;
+      --primary-dark: #E55820;
       --primary-light: #FF8F5E;
-      --ocean: #0077B6;
-      --ocean-light: #00A8E8;
-      --bg: #FEFCF3;
-      --surface: #FFFFFF;
-      --sidebar-from: #0A1628;
-      --sidebar-to: #142438;
-      --text: #0A1628;
-      --text-secondary: #64748B;
+      --secondary: #22C55E;
+      --secondary-alt: #06D6A0;
+      --tertiary: #0077B6;
+      --tertiary-light: #48CAE4;
+      --gold: #DAA520;
+      --bg-dark: #0A1628;
+      --bg-darker: #0F1F3A;
+      --surface: #1a2744;
+      --surface-light: #243653;
+      --text-light: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --coral: #E63946;
       --mint: #06D6A0;
       --violet: #7B2FF7;
-      --coral: #E63946;
-      --gold: #92400E;
       --radius: 14px;
+      --radius-lg: 20px;
+      --border-glow: rgba(255, 107, 53, 0.2);
     }
-    body { font-family: 'Outfit', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+      color: var(--text-light);
+      overflow-x: hidden;
+    }
+
+    /* Particle background */
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(20px); } }
+    @keyframes pulse-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
     /* Sidebar */
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: linear-gradient(180deg, var(--sidebar-from), var(--sidebar-to)); color: white; z-index: 40; transition: transform 0.3s ease; overflow-y: auto; }
-    .sidebar-logo { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .sidebar-logo img { width: 40px; height: 40px; border-radius: 10px; }
-    .sidebar-logo h1 { font-size: 18px; font-weight: 700; }
-    .sidebar-logo span { font-size: 11px; color: rgba(255,255,255,0.5); display: block; }
-    .nav-section { padding: 16px 12px 8px; }
-    .nav-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); margin-bottom: 8px; padding: 0 8px; }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: rgba(255,255,255,0.7); position: relative; }
-    .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
-    .nav-item.active { background: rgba(255,107,53,0.2); color: var(--primary); font-weight: 600; }
-    .nav-item .badge { position: absolute; right: 8px; background: var(--coral); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
-    .nav-item .icon { width: 20px; text-align: center; }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #0D1B2A 100%);
+      border-right: 1px solid rgba(255, 107, 53, 0.1);
+      color: var(--text-light);
+      z-index: 40;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+    }
+    .sidebar-logo {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 107, 53, 0.15);
+    }
+    .sidebar-logo-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary-alt) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
+    }
+    .sidebar-logo h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .sidebar-logo span {
+      font-size: 10px;
+      color: var(--text-secondary);
+      display: block;
+      margin-top: -2px;
+    }
+    .nav-section {
+      padding: 20px 12px 12px;
+    }
+    .nav-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      padding: 0 12px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-size: 13px;
+      color: var(--text-secondary);
+      position: relative;
+      margin-bottom: 4px;
+    }
+    .nav-item:hover {
+      background: rgba(255, 107, 53, 0.08);
+      color: var(--text-light);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.25) 0%, rgba(34, 197, 94, 0.15) 100%);
+      color: var(--primary);
+      font-weight: 600;
+      border-right: 2px solid var(--primary);
+    }
+    .nav-item .badge {
+      position: absolute;
+      right: 8px;
+      background: var(--coral);
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .nav-item .icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .sidebar-user {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 107, 53, 0.15);
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--tertiary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+    .sidebar-user-info {
+      flex: 1;
+    }
+    .sidebar-user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+    .sidebar-user-role {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
 
     /* Main content */
-    .main { margin-left: 260px; min-height: 100vh; padding: 0; }
-    .topbar { background: white; border-bottom: 1px solid #E2E8F0; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 30; }
-    .topbar-left { display: flex; align-items: center; gap: 12px; }
-    .topbar-left h2 { font-size: 20px; font-weight: 700; }
-    .topbar-breadcrumb { font-size: 12px; color: var(--text-secondary); }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--ocean)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
-    .hamburger { display: none; background: none; border: none; color: var(--text); font-size: 24px; cursor: pointer; }
+    .main {
+      margin-left: 280px;
+      min-height: 100vh;
+      padding: 0;
+    }
+    .topbar {
+      background: rgba(26, 39, 68, 0.6);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .topbar-left h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+    .topbar-breadcrumb {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .topbar-icon-btn {
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      color: var(--text-light);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .topbar-icon-btn:hover {
+      background: rgba(255, 107, 53, 0.2);
+      border-color: rgba(255, 107, 53, 0.4);
+    }
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--coral);
+      color: white;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .topbar-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--tertiary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .hamburger {
+      display: none;
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      color: var(--text-light);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 20px;
+    }
 
-    .content { padding: 24px; }
+    .content {
+      padding: 28px;
+    }
 
     /* Cards */
-    .card { background: var(--surface); border-radius: var(--radius); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #E2E8F0; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .card-title { font-size: 16px; font-weight: 600; }
+    .card {
+      background: rgba(26, 39, 68, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid rgba(255, 107, 53, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    .card:hover {
+      border-color: rgba(255, 107, 53, 0.2);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-light);
+    }
 
-    /* Stats */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: var(--surface); border-radius: var(--radius); padding: 20px; border: 1px solid #E2E8F0; position: relative; overflow: hidden; }
-    .stat-card.urgent { border-left: 4px solid var(--coral); }
-    .stat-card .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 12px; }
-    .stat-card .stat-value { font-size: 28px; font-weight: 700; }
-    .stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
-    .stat-card .stat-trend { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
-    .stat-card .stat-trend.up { color: var(--mint); }
-    .stat-card .stat-trend.down { color: var(--coral); }
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: rgba(26, 39, 68, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 1px solid rgba(255, 107, 53, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary-alt));
+    }
+    .stat-card:hover {
+      border-color: rgba(255, 107, 53, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(255, 107, 53, 0.2);
+    }
+    .stat-card.urgent {
+      border-color: rgba(230, 57, 70, 0.3);
+    }
+    .stat-card .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 107, 53, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .stat-card .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+    .stat-card .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+    .stat-card .stat-trend {
+      font-size: 12px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .stat-card .stat-trend.up {
+      color: var(--mint);
+    }
+    .stat-card .stat-trend.down {
+      color: var(--coral);
+    }
 
-    /* Table */
-    .table-container { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); border-bottom: 2px solid #E2E8F0; }
-    td { padding: 12px 16px; border-bottom: 1px solid #F1F5F9; font-size: 14px; }
-    tr:hover td { background: #F8FAFC; }
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      text-align: left;
+      padding: 14px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 107, 53, 0.05);
+      font-size: 14px;
+      color: var(--text-light);
+    }
+    tr:hover td {
+      background: rgba(255, 107, 53, 0.05);
+    }
 
     /* Badges */
-    .badge-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-    .badge-status.active, .badge-status.published { background: #ECFDF5; color: #065F46; }
-    .badge-status.pending { background: #FEF3C7; color: #92400E; }
-    .badge-status.cancelled, .badge-status.rejected { background: #FEF2F2; color: #991B1B; }
-    .badge-status.ongoing { background: #EFF6FF; color: #1E40AF; }
-    .badge-status.completed { background: #F0FDF4; color: #166534; }
-    .badge-status.admin { background: #F5F3FF; color: #5B21B6; }
-    .badge-status.pro { background: #FFF7ED; color: #9A3412; }
-    .badge-status.client { background: #EFF6FF; color: #1D4ED8; }
-    .badge-status.suspended { background: #FEF2F2; color: #7F1D1D; }
-    .badge-status.open { background: #FEF2F2; color: #991B1B; }
-    .badge-status.in_progress { background: #EFF6FF; color: #1E40AF; }
-    .badge-status.waiting { background: #FEF3C7; color: #92400E; }
-    .badge-status.resolved { background: #ECFDF5; color: #065F46; }
-    .badge-status.confirmed { background: #ECFDF5; color: #065F46; }
-    .badge-status.approved { background: #ECFDF5; color: #065F46; }
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-status.active,
+    .badge-status.published,
+    .badge-status.completed,
+    .badge-status.approved,
+    .badge-status.confirmed {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--secondary);
+    }
+    .badge-status.pending,
+    .badge-status.waiting {
+      background: rgba(218, 165, 32, 0.15);
+      color: var(--gold);
+    }
+    .badge-status.cancelled,
+    .badge-status.rejected,
+    .badge-status.suspended,
+    .badge-status.open {
+      background: rgba(230, 57, 70, 0.15);
+      color: var(--coral);
+    }
+    .badge-status.ongoing,
+    .badge-status.in_progress {
+      background: rgba(0, 119, 182, 0.15);
+      color: var(--tertiary-light);
+    }
+    .badge-status.admin {
+      background: rgba(123, 47, 247, 0.15);
+      color: var(--violet);
+    }
+    .badge-status.pro {
+      background: rgba(255, 107, 53, 0.15);
+      color: var(--primary-light);
+    }
+    .badge-status.client {
+      background: rgba(0, 119, 182, 0.15);
+      color: var(--tertiary-light);
+    }
 
     /* Buttons */
-    .btn { padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: inherit; }
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
-    .btn-ocean { background: linear-gradient(135deg, var(--ocean), var(--ocean-light)); color: white; }
-    .btn-outline { background: transparent; border: 1px solid #E2E8F0; color: var(--text); }
-    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-danger { background: var(--coral); color: white; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(255, 107, 53, 0.4);
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--secondary-alt), var(--secondary));
+      color: white;
+      box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+    }
+    .btn-secondary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(34, 197, 94, 0.4);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      color: var(--text-light);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 107, 53, 0.1);
+      border-color: rgba(255, 107, 53, 0.5);
+    }
+    .btn-danger {
+      background: rgba(230, 57, 70, 0.15);
+      color: var(--coral);
+      border: 1px solid rgba(230, 57, 70, 0.3);
+    }
+    .btn-danger:hover {
+      background: rgba(230, 57, 70, 0.25);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
 
     /* Tabs */
-    .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; border: none; color: var(--text-secondary); transition: all 0.2s; font-family: inherit; }
-    .tab.active { background: var(--primary); color: white; }
-    .tab:hover:not(.active) { background: #F1F5F9; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255, 107, 53, 0.05);
+      border: 1px solid rgba(255, 107, 53, 0.1);
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-color: var(--primary);
+      color: white;
+    }
+    .tab:hover:not(.active) {
+      border-color: rgba(255, 107, 53, 0.3);
+      color: var(--text-light);
+    }
 
-    /* Search */
-    .search-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .search-input { flex: 1; min-width: 200px; padding: 10px 16px; border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px; font-family: inherit; background: var(--surface); }
-    .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,107,53,0.1); }
-    select.search-input { cursor: pointer; }
+    /* Search & Filter */
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 11px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      font-size: 13px;
+      font-family: inherit;
+      background: rgba(26, 39, 68, 0.5);
+      color: var(--text-light);
+      transition: all 0.2s ease;
+    }
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+      background: rgba(26, 39, 68, 0.7);
+    }
+    select.search-input {
+      cursor: pointer;
+    }
 
     /* Modules grid */
-    .modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .module-card { background: var(--surface); border-radius: var(--radius); padding: 20px; border: 1px solid #E2E8F0; cursor: pointer; transition: all 0.2s; }
-    .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: var(--primary); }
-    .module-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .module-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .module-title { font-weight: 600; font-size: 15px; }
-    .module-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
-    .module-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
-    .module-stats { display: flex; flex-direction: column; gap: 6px; }
-    .module-stat-row { display: flex; justify-content: space-between; font-size: 13px; }
-    .module-stat-row .value { font-weight: 600; }
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .module-card {
+      background: rgba(26, 39, 68, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid rgba(255, 107, 53, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .module-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 107, 53, 0.3);
+      box-shadow: 0 16px 48px rgba(255, 107, 53, 0.2);
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .module-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(34, 197, 94, 0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .module-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-light);
+    }
+    .module-status {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 10px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--secondary);
+    }
+    .module-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .module-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .module-stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .module-stat-row .value {
+      font-weight: 700;
+      color: var(--text-light);
+    }
 
     /* Alert bar */
-    .alert-bar { padding: 12px 20px; border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; font-size: 14px; }
-    .alert-bar.danger { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
-    .alert-bar.warning { background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E; }
-    .alert-bar.info { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1E40AF; }
-    .alert-bar.success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
+    .alert-bar {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      border-left: 4px solid;
+    }
+    .alert-bar.danger {
+      background: rgba(230, 57, 70, 0.1);
+      border-color: var(--coral);
+      color: var(--coral);
+    }
+    .alert-bar.warning {
+      background: rgba(218, 165, 32, 0.1);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .alert-bar.info {
+      background: rgba(0, 119, 182, 0.1);
+      border-color: var(--tertiary);
+      color: var(--tertiary-light);
+    }
+    .alert-bar.success {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
 
-    /* Form */
-    .form-group { margin-bottom: 16px; }
-    .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-    .form-input { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #E2E8F0; font-size: 14px; font-family: inherit; }
-    .form-input:focus { outline: none; border-color: var(--primary); }
-    textarea.form-input { min-height: 80px; resize: vertical; }
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-light);
+    }
+    .form-input {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      font-size: 13px;
+      font-family: inherit;
+      background: rgba(26, 39, 68, 0.5);
+      color: var(--text-light);
+      transition: all 0.2s ease;
+    }
+    .form-input::placeholder {
+      color: var(--text-secondary);
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+      background: rgba(26, 39, 68, 0.7);
+    }
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+    }
 
     /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .modal { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto; }
-    .modal h3 { font-size: 18px; margin-bottom: 16px; }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 107, 53, 0.1);
+      box-shadow: 0 16px 64px rgba(0, 0, 0, 0.4);
+    }
+    .modal h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--text-light);
+    }
 
     /* Audit log */
-    .audit-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F1F5F9; }
-    .audit-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
-    .audit-content { flex: 1; }
-    .audit-action { font-size: 14px; }
-    .audit-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .audit-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 107, 53, 0.05);
+    }
+    .audit-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+      background: var(--primary);
+    }
+    .audit-content {
+      flex: 1;
+    }
+    .audit-action {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+    .audit-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
 
     /* Empty state */
-    .empty-state { text-align: center; padding: 48px 20px; }
-    .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-state p { color: var(--text-secondary); margin-bottom: 20px; }
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+    }
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .empty-state p {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
 
     /* Progress bar */
-    .progress-bar { height: 6px; background: #E2E8F0; border-radius: 3px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 107, 53, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary-alt));
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
 
     /* Stepper */
-    .stepper { display: flex; align-items: center; margin-bottom: 24px; overflow-x: auto; }
-    .step { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; white-space: nowrap; }
-    .step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
-    .step.active .step-num { background: var(--primary); color: white; }
-    .step.done .step-num { background: var(--mint); color: white; }
-    .step:not(.active):not(.done) .step-num { background: #E2E8F0; color: var(--text-secondary); }
-    .step-line { width: 40px; height: 2px; background: #E2E8F0; }
-
-    /* Sidebar user */
-    .sidebar-user { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; display: flex; align-items: center; gap: 10px; }
-    .sidebar-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--ocean)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
-    .sidebar-user-info { flex: 1; }
-    .sidebar-user-name { font-size: 13px; font-weight: 600; }
-    .sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.5); }
-
-    /* Mobile */
-    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 35; }
-
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); width: 280px; z-index: 50; }
-      .sidebar.open { transform: translateX(0); }
-      .sidebar-overlay.open { display: block; }
-      .main { margin-left: 0; }
-      .hamburger { display: block; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .modules-grid { grid-template-columns: 1fr; }
-      .content { padding: 16px; }
-      .topbar { padding: 12px 16px; }
-      table { font-size: 13px; }
-      th, td { padding: 8px 10px; }
+    .stepper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--text-secondary);
+    }
+    .step.active .step-num {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+    .step.done .step-num {
+      background: var(--secondary);
+      color: white;
+    }
+    .step-line {
+      width: 40px;
+      height: 2px;
+      background: rgba(255, 107, 53, 0.1);
     }
 
-    @media (max-width: 480px) {
-      .stats-grid { grid-template-columns: 1fr; }
-      .search-bar { flex-direction: column; }
+    /* Mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 35;
     }
 
-    /* Animations */
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-in { animation: fadeIn 0.3s ease-out; }
+    /* Bottom nav */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 39, 68, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 107, 53, 0.1);
+      z-index: 50;
+      padding: 4px 0 env(safe-area-inset-bottom, 8px);
+    }
+    .bottom-nav-inner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: none;
+      border: none;
+      font-family: inherit;
+      color: var(--text-secondary);
+      position: relative;
+    }
+    .bottom-nav-item.active {
+      color: var(--primary);
+    }
+    .bottom-nav-item .bnav-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .bottom-nav-item .bnav-label {
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .bottom-nav-item .bnav-dot {
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--coral);
+      border-radius: 50%;
+      border: 2px solid var(--bg-dark);
+    }
+
+    /* Toast notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(26, 39, 68, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: toastIn 0.3s ease-out;
+      font-size: 13px;
+      max-width: 380px;
+      color: var(--text-light);
+    }
+    .toast.success {
+      border-left-color: var(--secondary);
+    }
+    .toast.error {
+      border-left-color: var(--coral);
+    }
+    .toast.warning {
+      border-left-color: var(--gold);
+    }
+    .toast.info {
+      border-left-color: var(--tertiary-light);
+    }
+    .toast-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-secondary);
+      padding: 0 0 0 8px;
+    }
+
+    /* Splash screen */
+    .splash {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: opacity 0.5s ease;
+    }
+    .splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .splash-icon {
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.3), rgba(34, 197, 94, 0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      border: 2px solid rgba(255, 107, 53, 0.3);
+      animation: splash-pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes splash-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .splash h1 {
+      color: var(--text-light);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .splash p {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    .splash-loader {
+      width: 120px;
+      height: 3px;
+      background: rgba(255, 107, 53, 0.1);
+      border-radius: 2px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+    .splash-loader-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary-alt));
+      border-radius: 2px;
+      animation: loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes loading {
+      0% { width: 0; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
     .delay-1 { animation-delay: 0.05s; animation-fill-mode: both; }
     .delay-2 { animation-delay: 0.1s; animation-fill-mode: both; }
     .delay-3 { animation-delay: 0.15s; animation-fill-mode: both; }
     .delay-4 { animation-delay: 0.2s; animation-fill-mode: both; }
 
     /* Scrollbar */
-    .sidebar::-webkit-scrollbar { width: 4px; }
-    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 53, 0.2);
+      border-radius: 2px;
+    }
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 53, 0.3);
+    }
 
-    /* Splash screen */
-    .splash { position: fixed; inset: 0; background: linear-gradient(135deg, var(--sidebar-from), var(--sidebar-to)); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; transition: opacity 0.5s; }
-    .splash.hidden { opacity: 0; pointer-events: none; }
-    .splash-icon { width: 120px; height: 120px; border-radius: 28px; margin-bottom: 20px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 60px; }
-    .splash h1 { color: white; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    .splash p { color: rgba(255,255,255,0.5); font-size: 14px; }
-    .splash-loader { width: 120px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 24px; overflow: hidden; }
-    .splash-loader-bar { height: 100%; background: var(--primary); border-radius: 2px; animation: loading 1.5s ease-in-out infinite; }
-    @keyframes loading { 0% { width: 0; } 50% { width: 70%; } 100% { width: 100%; } }
-
-    /* Bottom nav */
-    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #E2E8F0; z-index: 50; padding: 4px 0 env(safe-area-inset-bottom, 8px); }
-    .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
-    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s; background: none; border: none; font-family: inherit; color: var(--text-secondary); position: relative; }
-    .bottom-nav-item.active { color: var(--primary); }
-    .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
-    .bottom-nav-item .bnav-label { font-size: 10px; font-weight: 500; }
-    .bottom-nav-item .bnav-dot { position: absolute; top: 4px; right: 8px; width: 8px; height: 8px; background: var(--coral); border-radius: 50%; border: 2px solid white; }
+    /* Responsive */
     @media (max-width: 768px) {
-      .bottom-nav { display: block; }
-      .main { padding-bottom: 72px; }
+      .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        z-index: 50;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.open {
+        display: block;
+      }
+      .main {
+        margin-left: 0;
+      }
+      .hamburger {
+        display: flex;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .modules-grid {
+        grid-template-columns: 1fr;
+      }
+      .content {
+        padding: 16px;
+      }
+      .topbar {
+        padding: 12px 16px;
+      }
+      .topbar-left h2 {
+        font-size: 18px;
+      }
+      table {
+        font-size: 13px;
+      }
+      th, td {
+        padding: 10px 8px;
+      }
+      .bottom-nav {
+        display: block;
+      }
+      .main {
+        padding-bottom: 72px;
+      }
+      .toast-container {
+        top: auto;
+        bottom: 80px;
+        right: 12px;
+        left: 12px;
+      }
     }
 
-    /* Toast notifications */
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-    @media (max-width: 768px) { .toast-container { top: auto; bottom: 80px; right: 12px; left: 12px; } }
-    .toast { pointer-events: auto; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; background: white; box-shadow: 0 8px 32px rgba(0,0,0,0.12); border: 1px solid #E2E8F0; animation: toastIn 0.3s ease-out; font-size: 14px; max-width: 380px; }
-    .toast.success { border-left: 4px solid var(--mint); }
-    .toast.error { border-left: 4px solid var(--coral); }
-    .toast.warning { border-left: 4px solid #F59E0B; }
-    .toast.info { border-left: 4px solid var(--ocean); }
-    .toast-close { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text-secondary); padding: 0 0 0 8px; }
-    @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-
-    /* Dark mode */
-    [data-theme="dark"] {
-      --bg: #0F172A;
-      --surface: #1E293B;
-      --text: #F1F5F9;
-      --text-secondary: #94A3B8;
-      --sidebar-from: #020617;
-      --sidebar-to: #0F172A;
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .search-bar {
+        flex-direction: column;
+      }
+      .card, .stat-card {
+        padding: 16px;
+      }
+      .topbar-left h2 {
+        font-size: 16px;
+      }
     }
-    [data-theme="dark"] body { background: #0F172A; color: #F1F5F9; }
-    [data-theme="dark"] .topbar { background: #1E293B; border-color: #334155; }
-    [data-theme="dark"] .card, [data-theme="dark"] .stat-card { background: #1E293B; border-color: #334155; }
-    [data-theme="dark"] .modal { background: #1E293B; }
-    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background: #0F172A; color: #F1F5F9; border-color: #334155; }
-    [data-theme="dark"] th { border-color: #334155; color: #94A3B8; }
-    [data-theme="dark"] td { border-color: #334155; }
-    [data-theme="dark"] tr:hover td { background: #334155; }
   </style>
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
     const { useState, useEffect, useCallback, useMemo, useRef } = React;
 
-    // ==================== TOAST SYSTEM ====================
+    // Toast system
     let toastId = 0;
     const ToastContext = React.createContext({ addToast: () => {} });
+
+    function useToast() {
+      return React.useContext(ToastContext);
+    }
 
     function ToastProvider({ children }) {
       const [toasts, setToasts] = useState([]);
@@ -292,209 +1143,304 @@
         const id = ++toastId;
         setToasts(prev => [...prev, { id, message, type }]);
         setTimeout(() => {
-          setToasts(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t));
-          setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 300);
+          setToasts(prev => prev.filter(t => t.id !== id));
         }, duration);
+        return id;
       }, []);
-      return React.createElement(ToastContext.Provider, { value: { addToast } },
+
+      return React.createElement(
+        ToastContext.Provider,
+        { value: { addToast } },
         children,
         React.createElement('div', { className: 'toast-container' },
-          toasts.map(t => React.createElement('div', { key: t.id, className: `toast ${t.type}` },
-            React.createElement('span', null, { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' }[t.type]),
-            React.createElement('span', { style: { flex: 1 } }, t.message),
-            React.createElement('button', { className: 'toast-close', onClick: () => setToasts(prev => prev.filter(x => x.id !== t.id)) }, '✕')
-          ))
-        )
-      );
-    }
-    const useToast = () => React.useContext(ToastContext);
-
-    // ==================== CONFIRM MODAL ====================
-    function ConfirmModal({ open, title, message, icon, onConfirm, onCancel, confirmText, confirmClass }) {
-      if (!open) return null;
-      return React.createElement('div', { className: 'modal-overlay', onClick: onCancel },
-        React.createElement('div', { className: 'modal', onClick: e => e.stopPropagation() },
-          React.createElement('h3', null, icon && React.createElement('span', null, icon), title),
-          React.createElement('p', { style: { color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 } }, message),
-          React.createElement('div', { style: { display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 } },
-            React.createElement('button', { className: 'btn btn-outline', onClick: onCancel }, 'Annuler'),
-            React.createElement('button', { className: `btn ${confirmClass || 'btn-primary'}`, onClick: onConfirm }, confirmText || 'Confirmer')
+          toasts.map(t =>
+            React.createElement('div', { key: t.id, className: `toast ${t.type}` },
+              t.message,
+              React.createElement('button', {
+                className: 'toast-close',
+                onClick: () => setToasts(prev => prev.filter(x => x.id !== t.id))
+              }, '✕')
+            )
           )
         )
       );
     }
 
-    // ==================== CHART COMPONENT ====================
-    function ChartCanvas({ type, data, options, height }) {
+    // Mock data
+    const MOCK = {
+      voyages: [
+        { id: 'V-001', nom: 'Rome Éternelle', status: 'active', dates: '15-22 avr', places: '32/35', prix: '1850€', pro: 'Marie Dupont', remplissage: 91, confirmations: 32 },
+        { id: 'V-002', nom: 'Côte Amalfi', status: 'draft', dates: '28 apr-5 mai', places: '8/28', prix: '2200€', pro: 'Pierre Martin', remplissage: 29, confirmations: 8 },
+        { id: 'V-003', nom: 'Barcelone Vibrant', status: 'ongoing', dates: '10-17 mai', places: '24/30', prix: '1650€', pro: 'Sophie Laurent', remplissage: 80, confirmations: 24 },
+        { id: 'V-004', nom: 'Îles Grecques', status: 'completed', dates: '01-08 avr', places: '30/30', prix: '2800€', pro: 'Marie Dupont', remplissage: 100, confirmations: 30 },
+      ],
+      bookings: [
+        { id: 'R-445', client: 'Jean Dupuis', email: 'jean.dupuis@mail.fr', voyage: 'Rome Éternelle', montant: '1850€', status: 'confirmed', date: '2026-03-15' },
+        { id: 'R-446', client: 'Marie Leclaire', email: 'm.leclaire@mail.fr', voyage: 'Côte Amalfi', montant: '2200€', status: 'pending', date: '2026-03-16' },
+        { id: 'R-447', client: 'Antoine Roux', email: 'a.roux@mail.fr', voyage: 'Barcelone Vibrant', montant: '1650€', status: 'confirmed', date: '2026-03-14' },
+      ],
+      utilisateurs: [
+        { id: 'U-001', nom: 'David Eventy', email: 'david@eventylife.fr', role: 'admin', statut: 'active', inscrit: '2025-06-01', derniere: '2026-03-17 10:00' },
+        { id: 'U-002', nom: 'Marie Dupont', email: 'marie.dupont@mail.fr', role: 'pro', statut: 'active', inscrit: '2025-10-15', derniere: '2026-03-17 09:45' },
+        { id: 'U-003', nom: 'Jean-Luc Moreau', email: 'j.moreau@mail.fr', role: 'client', statut: 'active', inscrit: '2026-01-10', derniere: '2026-03-16 14:30' },
+      ],
+      pros: [
+        { id: 'PRO-001', nom: 'Jean Leclerc', email: 'jean.leclerc@mail.fr', experience: '5 ans', statut: 'pending', date: '2026-03-16' },
+        { id: 'PRO-002', nom: 'Carole Dumont', email: 'carole.dumont@mail.fr', experience: '3 ans', statut: 'approved', date: '2026-03-10' },
+      ],
+      transports: [
+        { id: 'T-001', type: 'bus', fournisseur: 'Transdev', voyage: 'Rome Éternelle', prix: '800', statut: 'confirmed' },
+        { id: 'T-002', type: 'avion', fournisseur: 'Air France', voyage: 'Côte Amalfi', prix: '4500', statut: 'pending' },
+      ],
+      hotels: [
+        { id: 'H-001', nom: 'Hotel Rome Palace', ville: 'Rome', etoiles: 4, chambres: 16, prix: '1200', statut: 'confirmed' },
+        { id: 'H-002', nom: 'Positano Seaside', ville: 'Amalfi', etoiles: 5, chambres: 14, prix: '1600', statut: 'pending' },
+      ],
+      annulations: [
+        { id: 'A-001', client: 'Robert Blanc', voyage: 'Rome Éternelle', montant: '1850', motif: 'Problème de santé', statut: 'pending', date: '2026-03-17' },
+        { id: 'A-002', client: 'Sylvie Marchand', voyage: 'Barcelone', montant: '1650', motif: 'Changement dates', statut: 'approved', date: '2026-03-15' },
+      ],
+      tickets: [
+        { id: 'TK-120', client: 'Gilles Rousseau', objet: 'Remboursement non reçu', priority: 'high', statut: 'open', date: '2026-03-17' },
+        { id: 'TK-121', client: 'Louise Blanc', objet: 'Question itinéraire', priority: 'normal', statut: 'in_progress', date: '2026-03-16' },
+      ],
+      financials: {
+        totalRevenue: '125 800€',
+        thisMonth: '42 300€',
+        thisWeek: '8 900€',
+        pendingPayments: '3 200€',
+        averageTicket: '1 850€',
+      },
+    };
+
+    // Component: StatCard
+    function StatCard({ icon, label, value, bg, urgent = false }) {
+      return React.createElement('div', { className: `stat-card ${urgent ? 'urgent' : ''}` },
+        React.createElement('div', { className: 'stat-icon', style: { background: bg || 'rgba(255, 107, 53, 0.15)' } }, icon),
+        React.createElement('div', { className: 'stat-value' }, value),
+        React.createElement('div', { className: 'stat-label' }, label)
+      );
+    }
+
+    // Component: StatusBadge
+    function StatusBadge({ status }) {
+      const icons = {
+        active: '✓', pending: '⏳', confirmed: '✓', approved: '✓', completed: '✓',
+        cancelled: '✕', rejected: '✕', draft: '📝', ongoing: '▶', admin: '👑', pro: '🎯',
+        client: '👤', open: '🔴', in_progress: '▶', resolved: '✓', waiting: '⏳', suspended: '⛔'
+      };
+      return React.createElement('span', { className: `badge-status ${status}` }, icons[status] || status);
+    }
+
+    // Component: ChartCanvas
+    function ChartCanvas({ type, data, height = 300, options = {} }) {
       const canvasRef = useRef(null);
       const chartRef = useRef(null);
+
       useEffect(() => {
         if (!canvasRef.current) return;
         if (chartRef.current) chartRef.current.destroy();
+
         const ctx = canvasRef.current.getContext('2d');
         chartRef.current = new Chart(ctx, {
           type,
           data,
           options: {
             responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { family: 'Outfit', size: 12 } } } },
-            scales: type !== 'doughnut' && type !== 'pie' ? { x: { grid: { display: false }, ticks: { font: { family: 'Outfit', size: 11 } } }, y: { grid: { color: '#F1F5F9' }, ticks: { font: { family: 'Outfit', size: 11 } } } } : undefined,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false, ...options.plugins?.legend } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: 'rgba(255, 107, 53, 0.05)' }, ticks: { color: '#94A3B8' } },
+              x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+            },
             ...options
           }
         });
-        return () => { if (chartRef.current) chartRef.current.destroy(); };
+
+        return () => {
+          if (chartRef.current) chartRef.current.destroy();
+        };
       }, [type, data, options]);
-      return React.createElement('div', { style: { position: 'relative', height: height || 260 } },
-        React.createElement('canvas', { ref: canvasRef })
-      );
+
+      return React.createElement('canvas', { ref: canvasRef, height, style: { maxHeight: height } });
     }
 
-    // ==================== MOCK DATA ====================
-    const MOCK = {
-      voyages: [
-        { id: 'V-001', nom: 'Marrakech Express', destination: 'Maroc', depart: '2026-04-15', retour: '2026-04-22', places: 48, reservees: 42, statut: 'published', prix: 899, transport: 'bus', pro: 'Marie Dupont' },
-        { id: 'V-002', nom: 'Lisbonne Authentique', destination: 'Portugal', depart: '2026-05-01', retour: '2026-05-06', places: 52, reservees: 52, statut: 'completed', prix: 749, transport: 'avion', pro: 'Jean Martin' },
-        { id: 'V-003', nom: 'Barcelone Fiesta', destination: 'Espagne', depart: '2026-05-10', retour: '2026-05-14', places: 44, reservees: 38, statut: 'ongoing', prix: 649, transport: 'bus', pro: 'Sophie Bernard' },
-        { id: 'V-004', nom: 'Rome Éternelle', destination: 'Italie', depart: '2026-06-01', retour: '2026-06-06', places: 50, reservees: 12, statut: 'pending', prix: 829, transport: 'avion', pro: 'Lucas Petit' },
-        { id: 'V-005', nom: 'Amsterdam Liberté', destination: 'Pays-Bas', depart: '2026-06-15', retour: '2026-06-19', places: 40, reservees: 0, statut: 'pending', prix: 699, transport: 'bus', pro: 'Emma Leroy' },
-      ],
-      users: [
-        { id: 1, nom: 'David Eventy', email: 'eventylife@gmail.com', role: 'ADMIN', statut: 'active', inscrit: '2025-12-01', derniere: '2026-03-17' },
-        { id: 2, nom: 'Marie Dupont', email: 'marie@pro.com', role: 'PRO', statut: 'active', inscrit: '2026-01-15', derniere: '2026-03-16' },
-        { id: 3, nom: 'Jean Martin', email: 'jean@pro.com', role: 'PRO', statut: 'active', inscrit: '2026-01-20', derniere: '2026-03-15' },
-        { id: 4, nom: 'Sophie Bernard', email: 'sophie@pro.com', role: 'PRO', statut: 'pending', inscrit: '2026-02-10', derniere: '2026-03-14' },
-        { id: 5, nom: 'Lucas Petit', email: 'lucas@pro.com', role: 'PRO', statut: 'active', inscrit: '2026-02-15', derniere: '2026-03-13' },
-        { id: 6, nom: 'Emma Leroy', email: 'emma@pro.com', role: 'PRO', statut: 'pending', inscrit: '2026-03-01', derniere: '2026-03-12' },
-        { id: 7, nom: 'Pierre Moreau', email: 'pierre@client.com', role: 'CLIENT', statut: 'active', inscrit: '2026-01-05', derniere: '2026-03-17' },
-        { id: 8, nom: 'Claire Dubois', email: 'claire@client.com', role: 'CLIENT', statut: 'active', inscrit: '2026-01-10', derniere: '2026-03-16' },
-        { id: 9, nom: 'Antoine Roux', email: 'antoine@client.com', role: 'CLIENT', statut: 'suspended', inscrit: '2026-01-20', derniere: '2026-02-28' },
-        { id: 10, nom: 'Isabelle Garnier', email: 'isabelle@client.com', role: 'CLIENT', statut: 'active', inscrit: '2026-02-01', derniere: '2026-03-15' },
-      ],
-      bookings: [
-        { id: 'R-001', client: 'Pierre Moreau', voyage: 'Marrakech Express', montant: 1798, date: '2026-03-17', statut: 'confirmed', places: 2 },
-        { id: 'R-002', client: 'Claire Dubois', voyage: 'Marrakech Express', montant: 899, date: '2026-03-16', statut: 'confirmed', places: 1 },
-        { id: 'R-003', client: 'Isabelle Garnier', voyage: 'Barcelone Fiesta', montant: 1947, date: '2026-03-16', statut: 'pending', places: 3 },
-        { id: 'R-004', client: 'Antoine Roux', voyage: 'Istanbul Orient', montant: 999, date: '2026-03-15', statut: 'cancelled', places: 1 },
-      ],
-      tickets: [
-        { id: 'T-001', sujet: 'Problème de paiement', client: 'Pierre Moreau', priorite: 'haute', statut: 'open', date: '2026-03-17', messages: 3 },
-        { id: 'T-002', sujet: 'Changement de date voyage', client: 'Claire Dubois', priorite: 'moyenne', statut: 'in_progress', date: '2026-03-16', messages: 5 },
-        { id: 'T-003', sujet: 'Demande remboursement', client: 'Antoine Roux', priorite: 'haute', statut: 'waiting', date: '2026-03-15', messages: 8 },
-      ],
-      annulations: [
-        { id: 'A-001', reservation: 'R-412', client: 'Antoine Roux', voyage: 'Istanbul Orient', montant: 999, statut: 'pending', date: '2026-03-15', motif: 'Raison personnelle' },
-        { id: 'A-002', reservation: 'R-389', client: 'Pierre Moreau', voyage: 'Marrakech Express', montant: 899, statut: 'approved', date: '2026-03-10', motif: 'Problème santé' },
-      ],
-      transports: [
-        { id: 'TR-001', type: 'bus', fournisseur: 'TransEuropa', capacite: 52, voyage: 'Marrakech Express', statut: 'confirmed', prix: 4200 },
-        { id: 'TR-002', type: 'avion', fournisseur: 'AirFrance', capacite: 52, voyage: 'Lisbonne Authentique', statut: 'confirmed', prix: 12800 },
-      ],
-      hotels: [
-        { id: 'H-001', nom: 'Riad Al Moussika', ville: 'Marrakech', etoiles: 4, chambres: 24, voyage: 'Marrakech Express', prix: 3600, statut: 'confirmed' },
-        { id: 'H-002', nom: 'Hotel Lisboa Central', ville: 'Lisbonne', etoiles: 3, chambres: 26, voyage: 'Lisbonne Authentique', prix: 4800, statut: 'confirmed' },
-      ],
-    };
+    // Pages
 
-    const NAV = [
-      { section: 'Principal', items: [
-        { id: 'dashboard', icon: '🏠', label: 'Accueil' },
-        { id: 'admin-login', icon: '🔐', label: 'Login Admin' },
-      ]},
-      { section: 'Opérations', items: [
-        { id: 'voyages', icon: '✈️', label: 'Voyages' },
-        { id: 'bookings', icon: '💰', label: 'Réservations' },
-        { id: 'transport', icon: '🚌', label: 'Transport' },
-        { id: 'rooming', icon: '🏨', label: 'Hébergement' },
-        { id: 'documents', icon: '📄', label: 'Documents' },
-      ]},
-      { section: 'Gestion', items: [
-        { id: 'pros', icon: '✅', label: 'Validation Pro', badge: 2 },
-        { id: 'utilisateurs', icon: '👥', label: 'Utilisateurs' },
-        { id: 'support', icon: '🛟', label: 'Support' },
-        { id: 'annulations', icon: '❌', label: 'Annulations' },
-        { id: 'marketing', icon: '📣', label: 'Marketing' },
-      ]},
-      { section: 'Système', items: [
-        { id: 'finance', icon: '📊', label: 'Finance' },
-        { id: 'audit', icon: '🛡️', label: 'Audit' },
-        { id: 'alertes', icon: '🔔', label: 'Alertes' },
-        { id: 'monitoring', icon: '📡', label: 'Monitoring' },
-        { id: 'notifications', icon: '📨', label: 'Notifications' },
-        { id: 'exports', icon: '📥', label: 'Exports' },
-        { id: 'parametres', icon: '⚙️', label: 'Paramètres' },
-      ]},
-    ];
-
-    // ==================== COMPONENTS ====================
-    const StatCard = ({ icon, label, value, trend, trendDir, urgent, bg }) => (
-      React.createElement('div', { className: `stat-card fade-in ${urgent ? 'urgent' : ''}` },
-        React.createElement('div', { className: 'stat-icon', style: { background: bg || '#FFF7ED' } }, icon),
-        React.createElement('div', { className: 'stat-value' }, value),
-        React.createElement('div', { className: 'stat-label' }, label),
-        trend && React.createElement('div', { className: `stat-trend ${trendDir || 'up'}` }, `${trendDir === 'down' ? '↓' : '↑'} ${trend}`)
-      )
-    );
-
-    const StatusBadge = ({ status }) => {
-      const map = { published: 'Publié', pending: 'En attente', ongoing: 'En cours', completed: 'Terminé', cancelled: 'Annulé', active: 'Actif', suspended: 'Suspendu', open: 'Ouvert', in_progress: 'En cours', waiting: 'En attente', resolved: 'Résolu', closed: 'Fermé', confirmed: 'Confirmé', approved: 'Approuvé', rejected: 'Rejeté', ADMIN: 'Admin', PRO: 'Pro', CLIENT: 'Client' };
-      return React.createElement('span', { className: `badge-status ${status.toLowerCase()}` }, map[status] || status);
-    };
-
-    // ==================== PAGES ====================
-
-    // 1. DASHBOARD
-    const DashboardPage = ({ navigate }) => (
-      React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'alert-bar danger' }, '⚠️ 2 demandes Pro en attente de validation'),
-        React.createElement('div', { className: 'alert-bar warning' }, '💳 3 paiements en attente de confirmation'),
+    // 1. Dashboard
+    const DashboardPage = ({ navigate }) => {
+      const { addToast } = useToast();
+      return React.createElement('div', { className: 'fade-in' },
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '✈️', label: 'Voyages actifs', value: '6', trend: '+2 ce mois', bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '👥', label: 'Utilisateurs', value: '247', trend: '+18 cette semaine', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '💰', label: 'CA Mars', value: '42 830€', trend: '+15% vs fév', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '🎫', label: 'Réservations', value: '134', trend: '+8 aujourd\'hui', bg: '#F5F3FF', urgent: true })
+          React.createElement(StatCard, { icon: '💰', label: 'Revenus totaux', value: '125 800€', bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '✈️', label: 'Voyages actifs', value: '4', bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '👥', label: 'Réservations', value: '89', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏳', label: 'En attente', value: '2', bg: 'rgba(218, 165, 32, 0.15)', urgent: true })
         ),
-        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 } },
-          React.createElement('div', { className: 'card' },
-            React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📈 CA 7 derniers jours'),
-            React.createElement(ChartCanvas, { type: 'line', data: { labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'], datasets: [{ label: 'CA (€)', data: [5420, 3200, 4100, 6800, 7200, 8900, 7210], borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#FF6B35' }] }, height: 200, options: { plugins: { legend: { display: false } } } })
+        React.createElement('div', { className: 'card', style: { marginBottom: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '📊 Revenus ce mois'),
+            React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('finance') }, 'Détails')
           ),
-          React.createElement('div', { className: 'card' },
-            React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '🎫 Réservations'),
-            React.createElement(ChartCanvas, { type: 'doughnut', data: { labels: ['Confirmées', 'En attente', 'Annulées'], datasets: [{ data: [125, 6, 3], backgroundColor: ['#06D6A0', '#FEF3C7', '#FEF2F2'], borderWidth: 0 }] }, height: 200, options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } } })
+          React.createElement(ChartCanvas, {
+            type: 'line',
+            data: {
+              labels: ['01', '05', '10', '15', '20', '25', '30'],
+              datasets: [{
+                label: 'Revenus',
+                data: [2000, 3400, 5200, 6800, 8100, 9500, 10200],
+                borderColor: '#FF6B35',
+                backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2
+              }]
+            },
+            height: 280
+          })
+        ),
+        React.createElement('div', { className: 'modules-grid' },
+          [
+            { icon: '✈️', title: 'Voyages', desc: '4 actifs', stat: 'Remplissage: 75%', onclick: () => navigate('voyages') },
+            { icon: '💳', title: 'Réservations', desc: '89 confirmées', stat: 'Taux: 88%', onclick: () => navigate('bookings') },
+            { icon: '👥', title: 'Pros', desc: '8 validés', stat: 'Attente: 2', onclick: () => navigate('pros') },
+            { icon: '🏨', title: 'Hébergement', desc: '12 fournisseurs', stat: 'Confirmés: 10', onclick: () => navigate('rooming') },
+            { icon: '🚌', title: 'Transport', desc: '5 trajets', stat: 'Confirmés: 3', onclick: () => navigate('transport') },
+            { icon: '📞', title: 'Support', desc: '3 tickets', stat: 'Critiques: 1', onclick: () => navigate('support') },
+          ].map((m, i) =>
+            React.createElement('div', {
+              key: i,
+              className: 'module-card',
+              onClick: m.onclick,
+              style: { cursor: 'pointer' }
+            },
+              React.createElement('div', { className: 'module-header' },
+                React.createElement('div', { className: 'module-icon' }, m.icon),
+                React.createElement('div', null,
+                  React.createElement('div', { className: 'module-title' }, m.title),
+                  React.createElement('div', { className: 'module-status' }, m.desc)
+                )
+              ),
+              React.createElement('p', { className: 'module-desc' }, m.stat)
+            )
           )
         )
-      )
-    );
+      );
+    };
 
-    // 2. VOYAGES
+    // 2. Login Page
+    const AdminLoginPage = ({ navigate }) => {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const { addToast } = useToast();
+
+      const handleLogin = () => {
+        if (email && password) {
+          addToast('✓ Connexion réussie', 'success');
+          setTimeout(() => navigate('dashboard'), 500);
+        } else {
+          addToast('Veuillez remplir tous les champs', 'error');
+        }
+      };
+
+      return React.createElement('div', { style: { maxWidth: 420, margin: '80px auto', padding: '20px' } },
+        React.createElement('div', { className: 'card' },
+          React.createElement('div', { style: { textAlign: 'center', marginBottom: 32 } },
+            React.createElement('div', { style: { fontSize: 56, marginBottom: 16 } }, '🔐'),
+            React.createElement('h2', { style: { fontSize: 26, fontWeight: 700, color: 'var(--text-light)', marginBottom: 6 } }, 'Eventy Admin'),
+            React.createElement('p', { style: { color: 'var(--text-secondary)', fontSize: 13 } }, 'Portail sécurisé — Admins uniquement')
+          ),
+          React.createElement('div', { className: 'form-group' },
+            React.createElement('label', { className: 'form-label' }, '📧 Email'),
+            React.createElement('input', {
+              className: 'form-input',
+              type: 'email',
+              placeholder: 'admin@eventylife.fr',
+              value: email,
+              onChange: e => setEmail(e.target.value),
+              onKeyPress: e => e.key === 'Enter' && handleLogin()
+            })
+          ),
+          React.createElement('div', { className: 'form-group' },
+            React.createElement('label', { className: 'form-label' }, '🔑 Mot de passe'),
+            React.createElement('input', {
+              className: 'form-input',
+              type: 'password',
+              placeholder: '••••••••',
+              value: password,
+              onChange: e => setPassword(e.target.value),
+              onKeyPress: e => e.key === 'Enter' && handleLogin()
+            })
+          ),
+          React.createElement('button', {
+            className: 'btn btn-primary',
+            style: { width: '100%', justifyContent: 'center' },
+            onClick: handleLogin
+          }, '🔓 Connexion'),
+          React.createElement('div', { style: { marginTop: 16, padding: '12px', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)', borderRadius: 10, fontSize: 12 } },
+            React.createElement('div', { style: { color: 'var(--secondary)', fontWeight: 600 } }, '📝 Démo'),
+            React.createElement('div', { style: { color: 'var(--text-secondary)', marginTop: 4, fontFamily: 'monospace' } }, 'admin@eventylife.fr / password')
+          )
+        )
+      );
+    };
+
+    // 3. Voyages Page
     const VoyagesPage = ({ navigate }) => {
       const [tab, setTab] = useState('all');
-      const [search, setSearch] = useState('');
-      const filtered = MOCK.voyages.filter(v => (tab === 'all' || v.statut === tab) && v.nom.toLowerCase().includes(search.toLowerCase()));
+      const filtered = MOCK.voyages.filter(v => tab === 'all' || v.status === tab);
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 } },
-          React.createElement('div', { className: 'tabs' },
-            [['all', 'Tous'], ['pending', 'En attente'], ['published', 'Publiés'], ['ongoing', 'En cours'], ['completed', 'Terminés'], ['cancelled', 'Annulés']].map(([k, l]) =>
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '✈️', label: 'Voyages', value: MOCK.voyages.length.toString(), bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '👥', label: 'Places vendues', value: '74', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '💰', label: 'Revenus', value: '137 700€', bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '📊', label: 'Taux remplissage', value: '78%', bg: 'rgba(218, 165, 32, 0.15)' })
+        ),
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '🗺️ Voyages'),
+            React.createElement('button', { className: 'btn btn-primary btn-sm', onClick: () => navigate('voyages-creer') }, '➕ Nouveau')
+          ),
+          React.createElement('div', { className: 'tabs', style: { marginBottom: 20 } },
+            [['all', 'Tous'], ['active', 'Actifs'], ['draft', 'Brouillons'], ['ongoing', 'En cours'], ['completed', 'Terminés']].map(([k, l]) =>
               React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
             )
           ),
-          React.createElement('button', { className: 'btn btn-primary', onClick: () => navigate('voyages-creer') }, '+ Nouveau')
-        ),
-        React.createElement('input', { className: 'search-input', placeholder: 'Rechercher...', value: search, onChange: e => setSearch(e.target.value), style: { marginBottom: 16 } }),
-        React.createElement('div', { className: 'card' },
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Voyage'), React.createElement('th', null, 'Destination'), React.createElement('th', null, 'Départ'), React.createElement('th', null, 'Places'), React.createElement('th', null, 'Statut'), React.createElement('th', null, 'Actions'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'Nom'),
+                  React.createElement('th', null, 'Dates'),
+                  React.createElement('th', null, 'Places'),
+                  React.createElement('th', null, 'Prix'),
+                  React.createElement('th', null, 'Pro'),
+                  React.createElement('th', null, 'Remplissage'),
+                  React.createElement('th', null, 'Statut'),
+                  React.createElement('th', null, 'Actions')
+                )
+              ),
               React.createElement('tbody', null,
-                filtered.map(v => React.createElement('tr', { key: v.id },
-                  React.createElement('td', null, React.createElement('strong', null, v.nom)),
-                  React.createElement('td', null, v.destination),
-                  React.createElement('td', null, v.depart),
-                  React.createElement('td', null, `${v.reservees}/${v.places}`),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: v.statut })),
-                  React.createElement('td', null, React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('voyage-detail') }, 'Détails'))
-                ))
+                filtered.map(v =>
+                  React.createElement('tr', { key: v.id },
+                    React.createElement('td', null, React.createElement('strong', null, v.nom)),
+                    React.createElement('td', null, v.dates),
+                    React.createElement('td', null, v.places),
+                    React.createElement('td', null, v.prix),
+                    React.createElement('td', null, v.pro),
+                    React.createElement('td', null,
+                      React.createElement('div', { className: 'progress-bar', style: { marginBottom: 6 } },
+                        React.createElement('div', { className: 'progress-fill', style: { width: v.remplissage + '%' } })
+                      ),
+                      React.createElement('span', { style: { fontSize: 12 } }, v.remplissage + '%')
+                    ),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: v.status })),
+                    React.createElement('td', null,
+                      React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('voyage-detail'), style: { whiteSpace: 'nowrap' } }, '👁️ Voir')
+                    )
+                  )
+                )
               )
             )
           )
@@ -502,204 +1448,82 @@
       );
     };
 
-    // 3. VOYAGE DETAIL
+    // 4. Voyage Detail
     const VoyageDetailPage = ({ navigate }) => {
       const v = MOCK.voyages[0];
+      const { addToast } = useToast();
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('voyages'), style: { marginBottom: 16 } }, '← Retour'),
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('voyages'), style: { marginBottom: 20 } }, '← Retour'),
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '🎫', label: 'Réservations', value: `${v.reservees}/${v.places}`, bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '💰', label: 'CA', value: `${(v.reservees * v.prix).toLocaleString()}€`, bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '📅', label: 'Départ dans', value: Math.max(0, Math.ceil((new Date(v.depart) - new Date()) / (1000 * 60 * 60 * 24))) + 'j', bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '📍', label: 'Destination', value: v.nom, bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '📅', label: 'Période', value: v.dates, bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '💰', label: 'Prix/personne', value: v.prix, bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '👥', label: 'Confirmations', value: v.confirmations + '/' + v.places.split('/')[1], bg: 'rgba(218, 165, 32, 0.15)' })
         ),
-        React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📋 Détails'),
-          [['Nom', v.nom], ['Destination', v.destination], ['Retour', v.retour], ['Prix/pers.', `${v.prix}€`], ['Pro', v.pro], ['Statut', v.statut]].map(([l, val], i) =>
-            React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #F1F5F9' } },
-              React.createElement('span', { style: { color: 'var(--text-secondary)' } }, l),
-              React.createElement('strong', null, val)
+        React.createElement('div', { className: 'modules-grid' },
+          [
+            { title: '📝 Détails', desc: 'Informations voyage' },
+            { title: '🛏️ Rooming', desc: 'Chambres & hébergement' },
+            { title: '🚌 Transport', desc: 'Trajets & logistique' },
+            { title: '👥 Participants', desc: 'Listes & confirmations' },
+          ].map((m, i) =>
+            React.createElement('div', { key: i, className: 'module-card' },
+              React.createElement('div', { style: { fontWeight: 600, marginBottom: 8 } }, m.title),
+              React.createElement('div', { style: { fontSize: 13, color: 'var(--text-secondary)' } }, m.desc)
             )
           )
         )
       );
     };
 
-    // 4. VOYAGE LIFECYCLE
-    const VoyageLifecyclePage = ({ navigate }) => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('voyages'), style: { marginBottom: 16 } }, '← Retour'),
-        React.createElement('div', { className: 'stepper' },
-          ['Création', 'En édition', 'Publié', 'En cours', 'Terminé'].map((s, i) =>
-            React.createElement(React.Fragment, { key: i },
-              React.createElement('div', { className: `step ${i <= 2 ? (i < 2 ? 'done' : 'active') : ''}` },
-                React.createElement('div', { className: 'step-num' }, i < 2 ? '✓' : i + 1),
-                React.createElement('span', null, s)
-              ),
-              i < 4 && React.createElement('div', { className: 'step-line' })
-            )
-          )
-        ),
-        React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title' }, '📊 Cycle de vie Marrakech Express'),
-          React.createElement('div', { style: { marginTop: 20, padding: '20px 0', borderTop: '1px solid #F1F5F9' } },
-            [
-              { icon: '✅', action: 'Voyage créé', date: '15/01/2026 10:30', par: 'Marie Dupont' },
-              { icon: '📝', action: 'Détails mis à jour', date: '20/01/2026 14:15', par: 'Marie Dupont' },
-              { icon: '🚀', action: 'Publié et ouvert aux réservations', date: '25/01/2026 09:00', par: 'David Eventy' },
-              { icon: '👥', action: '20 réservations', date: '01/02/2026', par: 'Système' },
-              { icon: '✈️', action: 'Voyage en cours', date: '15/04/2026', par: 'Système' },
-            ].map((e, i) => React.createElement('div', { key: i, style: { display: 'flex', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottom: i < 4 ? '1px solid #F1F5F9' : 'none' } },
-              React.createElement('div', { style: { fontSize: 24 } }, e.icon),
-              React.createElement('div', { style: { flex: 1 } },
-                React.createElement('div', { style: { fontWeight: 600 } }, e.action),
-                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 } }, `${e.date} · ${e.par}`)
-              )
-            ))
-          )
-        )
-      );
-    };
-
-    // 5. CREER VOYAGE
-    const CreerVoyagePage = ({ navigate }) => {
-      const [step, setStep] = useState(0);
-      const steps = ['Infos de base', 'Transport', 'Hébergement', 'Tarification', 'Récapitulatif'];
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('voyages'), style: { marginBottom: 16 } }, '← Retour'),
-        React.createElement('div', { className: 'stepper' },
-          steps.map((s, i) =>
-            React.createElement(React.Fragment, { key: i },
-              React.createElement('div', { className: `step ${i === step ? 'active' : ''} ${i < step ? 'done' : ''}` },
-                React.createElement('div', { className: 'step-num' }, i < step ? '✓' : i + 1),
-                React.createElement('span', null, s)
-              ),
-              i < steps.length - 1 && React.createElement('div', { className: 'step-line' })
-            )
-          )
-        ),
-        React.createElement('div', { className: 'card' },
-          step === 0 && React.createElement('div', null,
-            React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Nom'), React.createElement('input', { className: 'form-input', placeholder: 'Ex: Marrakech Express' })),
-            React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Destination'), React.createElement('input', { className: 'form-input', placeholder: 'Ville, Pays' })),
-            React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 } },
-              React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Départ'), React.createElement('input', { className: 'form-input', type: 'date' })),
-              React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Retour'), React.createElement('input', { className: 'form-input', type: 'date' }))
-            )
-          ),
-          step === 1 && React.createElement('div', null,
-            React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Transport'), React.createElement('select', { className: 'form-input' }, React.createElement('option', null, 'Bus'), React.createElement('option', null, 'Avion'))),
-            React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Fournisseur'), React.createElement('input', { className: 'form-input', placeholder: 'Nom' }))
-          ),
-          step === 2 && React.createElement('div', null,
-            React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Hôtel'), React.createElement('input', { className: 'form-input', placeholder: 'Nom' }))
-          ),
-          step === 3 && React.createElement('div', null,
-            React.createElement('div', { className: 'form-group' }, React.createElement('label', { className: 'form-label' }, 'Prix/pers. (€)'), React.createElement('input', { className: 'form-input', type: 'number', placeholder: '899' }))
-          ),
-          step === 4 && React.createElement('div', { style: { textAlign: 'center', padding: 20 } },
-            React.createElement('div', { style: { fontSize: 48, marginBottom: 16 } }, '📋'),
-            React.createElement('h3', null, 'Prêt à créer')
-          ),
-          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: 20 } },
-            React.createElement('button', { className: 'btn btn-outline', onClick: () => setStep(Math.max(0, step - 1)), disabled: step === 0 }, '← Précédent'),
-            step < 4 ? React.createElement('button', { className: 'btn btn-primary', onClick: () => setStep(step + 1) }, 'Suivant →') : React.createElement('button', { className: 'btn btn-primary' }, '✅ Créer')
-          )
-        )
-      );
-    };
-
-    // 6. BOOKINGS (Réservations)
+    // 5. Bookings
     const BookingsPage = ({ navigate }) => {
-      const [search, setSearch] = useState('');
       const [tab, setTab] = useState('all');
-      const filtered = MOCK.bookings.filter(b => (tab === 'all' || b.statut === tab) && (b.client.toLowerCase().includes(search.toLowerCase()) || b.voyage.toLowerCase().includes(search.toLowerCase())));
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'tabs', style: { marginBottom: 16 } },
-          [['all', 'Toutes'], ['confirmed', 'Confirmées'], ['pending', 'En attente'], ['cancelled', 'Annulées']].map(([k, l]) =>
-            React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
-          )
-        ),
-        React.createElement('input', { className: 'search-input', placeholder: 'Rechercher...', value: search, onChange: e => setSearch(e.target.value), style: { marginBottom: 16 } }),
-        React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'table-container' },
-            React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'ID'), React.createElement('th', null, 'Client'), React.createElement('th', null, 'Voyage'), React.createElement('th', null, 'Montant'), React.createElement('th', null, 'Places'), React.createElement('th', null, 'Statut'), React.createElement('th', null, 'Date'))),
-              React.createElement('tbody', null,
-                filtered.map(b => React.createElement('tr', { key: b.id },
-                  React.createElement('td', { style: { fontFamily: 'monospace', fontSize: 12 } }, b.id),
-                  React.createElement('td', null, React.createElement('strong', null, b.client)),
-                  React.createElement('td', null, b.voyage),
-                  React.createElement('td', { style: { fontWeight: 600 } }, b.montant + '€'),
-                  React.createElement('td', null, b.places),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: b.statut })),
-                  React.createElement('td', null, b.date)
-                ))
-              )
-            )
-          )
-        )
-      );
-    };
+      const filtered = MOCK.bookings.filter(b => tab === 'all' || b.status === tab);
 
-    // 7. FINANCE
-    const FinancePage = ({ navigate }) => {
-      const [tab, setTab] = useState('overview');
       return React.createElement('div', { className: 'fade-in' },
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '💰', label: 'CA Mars', value: '42 830€', trend: '+15%', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '📥', label: 'Reçu', value: '38 200€', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '⏳', label: 'En attente', value: '8 500€', bg: '#FEF3C7', urgent: true }),
-          React.createElement(StatCard, { icon: '📈', label: 'Marge', value: '32%', trend: '+3pts', bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '📋', label: 'Réservations', value: MOCK.bookings.length.toString(), bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '✅', label: 'Confirmées', value: '2', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏳', label: 'En attente', value: '1', bg: 'rgba(218, 165, 32, 0.15)' }),
+          React.createElement(StatCard, { icon: '💳', label: 'Paiements reçus', value: '3 700€', bg: 'rgba(255, 107, 53, 0.15)' })
         ),
-        React.createElement('div', { className: 'tabs', style: { marginBottom: 16 } },
-          [['overview', 'Vue d\'ensemble'], ['payments', 'Paiements'], ['payouts', 'Versements']].map(([k, l]) =>
-            React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
-          )
-        ),
-        tab === 'overview' && React.createElement('div', null,
-          React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 } },
-            React.createElement('div', { className: 'card' },
-              React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📈 Chiffre d\'affaires'),
-              React.createElement(ChartCanvas, { type: 'line', data: { labels: ['Jan', 'Fév', 'Mar'], datasets: [{ label: 'CA', data: [22400, 37200, 42830], borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.1)', fill: true, tension: 0.4, borderWidth: 2 }] }, height: 250 })
-            ),
-            React.createElement('div', { className: 'card' },
-              React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '🥧 Coûts'),
-              React.createElement(ChartCanvas, { type: 'doughnut', data: { labels: ['Transport', 'Hébergement', 'Marge'], datasets: [{ data: [30300, 12600, 14200], backgroundColor: ['#FF6B35', '#0077B6', '#06D6A0'], borderWidth: 0 }] }, height: 250, options: { cutout: '65%' } })
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '💳 Réservations'),
+            React.createElement('div', null,
+              React.createElement('input', { className: 'search-input', placeholder: 'Chercher...', style: { display: 'inline-block', width: 200, marginRight: 8 } })
             )
-          )
-        ),
-        tab === 'payments' && React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, 'Paiements reçus'),
+          ),
+          React.createElement('div', { className: 'tabs' },
+            [['all', 'Toutes'], ['confirmed', 'Confirmées'], ['pending', 'En attente']].map(([k, l]) =>
+              React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
+            )
+          ),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Client'), React.createElement('th', null, 'Voyage'), React.createElement('th', null, 'Montant'), React.createElement('th', null, 'Date'), React.createElement('th', null, 'Statut'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'ID'),
+                  React.createElement('th', null, 'Client'),
+                  React.createElement('th', null, 'Voyage'),
+                  React.createElement('th', null, 'Montant'),
+                  React.createElement('th', null, 'Statut'),
+                  React.createElement('th', null, 'Date')
+                )
+              ),
               React.createElement('tbody', null,
-                MOCK.bookings.slice(0, 4).map(b => React.createElement('tr', { key: b.id },
-                  React.createElement('td', null, React.createElement('strong', null, b.client)),
-                  React.createElement('td', null, b.voyage),
-                  React.createElement('td', null, b.montant + '€'),
-                  React.createElement('td', null, b.date),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: b.statut }))
-                ))
-              )
-            )
-          )
-        ),
-        tab === 'payouts' && React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, 'Versements fournisseurs'),
-          React.createElement('div', { className: 'table-container' },
-            React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Fournisseur'), React.createElement('th', null, 'Type'), React.createElement('th', null, 'Montant'), React.createElement('th', null, 'Statut'))),
-              React.createElement('tbody', null,
-                [
-                  { f: 'TransEuropa', t: 'Transport', m: '4 200€', s: 'confirmed' },
-                  { f: 'Riad Al Moussika', t: 'Hôtel', m: '3 600€', s: 'pending' },
-                ].map((p, i) => React.createElement('tr', { key: i },
-                  React.createElement('td', null, React.createElement('strong', null, p.f)),
-                  React.createElement('td', null, p.t),
-                  React.createElement('td', null, p.m),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: p.s }))
-                ))
+                filtered.map(b =>
+                  React.createElement('tr', { key: b.id },
+                    React.createElement('td', null, React.createElement('strong', null, b.id)),
+                    React.createElement('td', null, b.client),
+                    React.createElement('td', null, b.voyage),
+                    React.createElement('td', null, b.montant),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: b.status })),
+                    React.createElement('td', null, b.date)
+                  )
+                )
               )
             )
           )
@@ -707,45 +1531,88 @@
       );
     };
 
-    // 8. FINANCE PAYOUTS (integrated in Finance tab)
+    // 6. Finance
+    const FinancePage = ({ navigate }) => {
+      const { addToast } = useToast();
+      return React.createElement('div', { className: 'fade-in' },
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '💰', label: 'Revenus totaux', value: MOCK.financials.totalRevenue, bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '📈', label: 'Ce mois', value: MOCK.financials.thisMonth, bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '📊', label: 'Cette semaine', value: MOCK.financials.thisWeek, bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏳', label: 'En attente', value: MOCK.financials.pendingPayments, bg: 'rgba(218, 165, 32, 0.15)', urgent: true })
+        ),
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '📊 Évolution revenus'),
+            React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => addToast('Téléchargement en cours...', 'info') }, '⬇️ Export')
+          ),
+          React.createElement(ChartCanvas, {
+            type: 'bar',
+            data: {
+              labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+              datasets: [{
+                label: 'Revenus',
+                data: [8400, 12300, 9800, 11800],
+                backgroundColor: ['rgba(255, 107, 53, 0.3)', 'rgba(34, 197, 94, 0.3)', 'rgba(0, 119, 182, 0.3)', 'rgba(218, 165, 32, 0.3)'],
+                borderColor: ['#FF6B35', '#22C55E', '#0077B6', '#DAA520'],
+                borderWidth: 2
+              }]
+            },
+            height: 300
+          })
+        )
+      );
+    };
 
-    // 9. PROS
+    // 7. Pros
     const ProsPage = ({ navigate }) => {
       const [tab, setTab] = useState('all');
-      const [confirm, setConfirm] = useState(null);
-      const [localPros, setLocalPros] = useState(MOCK.users.filter(u => u.role === 'PRO'));
+      const filtered = MOCK.pros.filter(p => tab === 'all' || p.statut === tab);
       const { addToast } = useToast();
-      const doAction = () => {
-        if (!confirm) return;
-        setLocalPros(prev => prev.map(p => p.id === confirm.pro.id ? { ...p, statut: confirm.type === 'approve' ? 'active' : 'rejected' } : p));
-        addToast(confirm.type === 'approve' ? `${confirm.pro.nom} approuvé(e)` : `${confirm.pro.nom} refusé(e)`, confirm.type === 'approve' ? 'success' : 'warning');
-        setConfirm(null);
-      };
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement(ConfirmModal, { open: !!confirm, title: confirm?.type === 'approve' ? 'Approuver ?' : 'Refuser ?', icon: confirm?.type === 'approve' ? '✅' : '❌', message: confirm?.pro?.nom || '', confirmText: confirm?.type === 'approve' ? 'Approuver' : 'Refuser', confirmClass: confirm?.type === 'approve' ? 'btn-primary' : 'btn-danger', onConfirm: doAction, onCancel: () => setConfirm(null) }),
-        React.createElement('div', { className: 'tabs' },
-          [['all', 'Tous'], ['pending', 'En attente'], ['active', 'Approuvés'], ['rejected', 'Refusés']].map(([k, l]) =>
-            React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
-          )
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '🎯', label: 'Pros validés', value: '8', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏳', label: 'En attente', value: MOCK.pros.filter(p => p.statut === 'pending').length.toString(), bg: 'rgba(218, 165, 32, 0.15)', urgent: true }),
+          React.createElement(StatCard, { icon: '📊', label: 'Taux validation', value: '80%', bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '⭐', label: 'Notation moyenne', value: '4.7/5', bg: 'rgba(255, 107, 53, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '🎯 Professionnels'),
+            React.createElement('button', { className: 'btn btn-primary btn-sm', onClick: () => navigate('pros-invite') }, '➕ Inviter')
+          ),
+          React.createElement('div', { className: 'tabs' },
+            [['all', 'Tous'], ['pending', 'En attente'], ['approved', 'Approuvés']].map(([k, l]) =>
+              React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
+            )
+          ),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Nom'), React.createElement('th', null, 'Email'), React.createElement('th', null, 'Statut'), React.createElement('th', null, 'Inscription'), React.createElement('th', null, 'Actions'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'Nom'),
+                  React.createElement('th', null, 'Email'),
+                  React.createElement('th', null, 'Expérience'),
+                  React.createElement('th', null, 'Statut'),
+                  React.createElement('th', null, 'Actions')
+                )
+              ),
               React.createElement('tbody', null,
-                localPros.filter(p => tab === 'all' || p.statut === tab).map(p => React.createElement('tr', { key: p.id },
-                  React.createElement('td', null, React.createElement('strong', null, p.nom)),
-                  React.createElement('td', null, p.email),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: p.statut })),
-                  React.createElement('td', null, p.inscrit),
-                  React.createElement('td', null,
-                    p.statut === 'pending' && React.createElement('div', { style: { display: 'flex', gap: 6 } },
-                      React.createElement('button', { className: 'btn btn-primary btn-sm', onClick: () => setConfirm({ type: 'approve', pro: p }) }, '✅'),
-                      React.createElement('button', { className: 'btn btn-danger btn-sm', onClick: () => setConfirm({ type: 'reject', pro: p }) }, '✕')
-                    ),
-                    p.statut !== 'pending' && React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('utilisateurs') }, 'Détails')
+                filtered.map(p =>
+                  React.createElement('tr', { key: p.id },
+                    React.createElement('td', null, React.createElement('strong', null, p.nom)),
+                    React.createElement('td', null, p.email),
+                    React.createElement('td', null, p.experience),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: p.statut })),
+                    React.createElement('td', null,
+                      p.statut === 'pending' && React.createElement(React.Fragment, null,
+                        React.createElement('button', { className: 'btn btn-secondary btn-sm', onClick: () => addToast('Pro approuvé', 'success'), style: { marginRight: 4 } }, '✅'),
+                        React.createElement('button', { className: 'btn btn-danger btn-sm', onClick: () => addToast('Pro refusé', 'warning') }, '❌')
+                      )
+                    )
                   )
-                ))
+                )
               )
             )
           )
@@ -753,34 +1620,48 @@
       );
     };
 
-    // 10. UTILISATEURS
+    // 8. Utilisateurs
     const UtilisateursPage = ({ navigate }) => {
       const [search, setSearch] = useState('');
-      const [roleFilter, setRoleFilter] = useState('all');
-      const filtered = MOCK.users.filter(u => (roleFilter === 'all' || u.role === roleFilter) && (u.nom.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase())));
+      const filtered = MOCK.utilisateurs.filter(u => u.nom.toLowerCase().includes(search.toLowerCase()) || u.email.includes(search));
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'search-bar' },
-          React.createElement('input', { className: 'search-input', placeholder: 'Rechercher...', value: search, onChange: e => setSearch(e.target.value) }),
-          React.createElement('select', { className: 'search-input', style: { maxWidth: 150 }, value: roleFilter, onChange: e => setRoleFilter(e.target.value) },
-            React.createElement('option', { value: 'all' }, 'Tous les rôles'),
-            React.createElement('option', { value: 'ADMIN' }, 'Admin'),
-            React.createElement('option', { value: 'PRO' }, 'Pro'),
-            React.createElement('option', { value: 'CLIENT' }, 'Client')
-          )
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '👥', label: 'Utilisateurs', value: MOCK.utilisateurs.length.toString(), bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '⭐', label: 'Admins', value: '1', bg: 'rgba(123, 47, 247, 0.15)' }),
+          React.createElement(StatCard, { icon: '🎯', label: 'Pros', value: '1', bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '👤', label: 'Clients', value: '1', bg: 'rgba(34, 197, 94, 0.15)' })
         ),
-        React.createElement('div', { className: 'card' },
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '👥 Gestion utilisateurs'),
+            React.createElement('input', { className: 'search-input', placeholder: 'Chercher...', value: search, onChange: e => setSearch(e.target.value), style: { width: 250 } })
+          ),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Nom'), React.createElement('th', null, 'Email'), React.createElement('th', null, 'Rôle'), React.createElement('th', null, 'Statut'), React.createElement('th', null, 'Dernière activité'), React.createElement('th', null, 'Actions'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'Nom'),
+                  React.createElement('th', null, 'Email'),
+                  React.createElement('th', null, 'Rôle'),
+                  React.createElement('th', null, 'Statut'),
+                  React.createElement('th', null, 'Inscrit'),
+                  React.createElement('th', null, 'Actions')
+                )
+              ),
               React.createElement('tbody', null,
-                filtered.map(u => React.createElement('tr', { key: u.id },
-                  React.createElement('td', null, React.createElement('strong', null, u.nom)),
-                  React.createElement('td', null, u.email),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: u.role })),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: u.statut })),
-                  React.createElement('td', null, u.derniere),
-                  React.createElement('td', null, React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('utilisateurs-detail') }, 'Détails'))
-                ))
+                filtered.map(u =>
+                  React.createElement('tr', { key: u.id },
+                    React.createElement('td', null, React.createElement('strong', null, u.nom)),
+                    React.createElement('td', null, u.email),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: u.role })),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: u.statut })),
+                    React.createElement('td', null, u.inscrit),
+                    React.createElement('td', null,
+                      React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('utilisateurs-detail') }, '👁️')
+                    )
+                  )
+                )
               )
             )
           )
@@ -788,21 +1669,22 @@
       );
     };
 
-    // 11. UTILISATEURS DETAIL
+    // 9. Utilisateurs Detail
     const UtilisateursDetailPage = ({ navigate }) => {
-      const u = MOCK.users[0];
+      const u = MOCK.utilisateurs[0];
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('utilisateurs'), style: { marginBottom: 16 } }, '← Retour'),
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('utilisateurs'), style: { marginBottom: 20 } }, '← Retour'),
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '👤', label: 'Nom', value: u.nom.split(' ')[0], bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '✉️', label: 'Email', value: u.email.split('@')[0], bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '🎯', label: 'Rôle', value: u.role, bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '📊', label: 'Statut', value: u.statut, bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '🧑', label: 'Nom', value: u.nom, bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '📧', label: 'Email', value: u.email, bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '👑', label: 'Rôle', value: u.role.toUpperCase(), bg: 'rgba(123, 47, 247, 0.15)' }),
+          React.createElement(StatCard, { icon: '✅', label: 'Statut', value: u.statut, bg: 'rgba(34, 197, 94, 0.15)' })
         ),
-        React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📋 Profil complet'),
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '📋 Profil complet'),
           [['Nom', u.nom], ['Email', u.email], ['Rôle', u.role], ['Statut', u.statut], ['Inscrit', u.inscrit], ['Dernière activité', u.derniere]].map(([l, val], i) =>
-            React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #F1F5F9' } },
+            React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid rgba(255, 107, 53, 0.05)' } },
               React.createElement('span', { style: { color: 'var(--text-secondary)' } }, l),
               React.createElement('strong', null, val)
             )
@@ -811,28 +1693,38 @@
       );
     };
 
-    // 12. TRANSPORT
+    // 10. Transport
     const TransportPage = () => {
       return React.createElement('div', { className: 'fade-in' },
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '🚌', label: 'Bus planifiés', value: '3', bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '✈️', label: 'Avions planifiés', value: '2', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '💰', label: 'Budget transport', value: '30 300€', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '✅', label: 'Confirmés', value: '2', bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '🚌', label: 'Bus planifiés', value: '3', bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '✈️', label: 'Avions planifiés', value: '2', bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '💰', label: 'Budget transport', value: '30 300€', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '✅', label: 'Confirmés', value: '2', bg: 'rgba(123, 47, 247, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '🚌 Trajets'),
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '🚌 Trajets'),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Type'), React.createElement('th', null, 'Fournisseur'), React.createElement('th', null, 'Voyage'), React.createElement('th', null, 'Prix'), React.createElement('th', null, 'Statut'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'Type'),
+                  React.createElement('th', null, 'Fournisseur'),
+                  React.createElement('th', null, 'Voyage'),
+                  React.createElement('th', null, 'Prix'),
+                  React.createElement('th', null, 'Statut')
+                )
+              ),
               React.createElement('tbody', null,
-                MOCK.transports.map(t => React.createElement('tr', { key: t.id },
-                  React.createElement('td', null, t.type === 'bus' ? '🚌 Bus' : '✈️ Avion'),
-                  React.createElement('td', null, React.createElement('strong', null, t.fournisseur)),
-                  React.createElement('td', null, t.voyage),
-                  React.createElement('td', null, t.prix + '€'),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: t.statut }))
-                ))
+                MOCK.transports.map(t =>
+                  React.createElement('tr', { key: t.id },
+                    React.createElement('td', null, t.type === 'bus' ? '🚌 Bus' : '✈️ Avion'),
+                    React.createElement('td', null, React.createElement('strong', null, t.fournisseur)),
+                    React.createElement('td', null, t.voyage),
+                    React.createElement('td', null, t.prix + '€'),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: t.statut }))
+                  )
+                )
               )
             )
           )
@@ -840,29 +1732,40 @@
       );
     };
 
-    // 13. ROOMING (Hébergement)
+    // 11. Rooming
     const RoomingPage = () => {
       return React.createElement('div', { className: 'fade-in' },
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '🏨', label: 'Hôtels', value: MOCK.hotels.length.toString(), bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '🛏️', label: 'Chambres', value: MOCK.hotels.reduce((a, b) => a + b.chambres, 0).toString(), bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '💰', label: 'Budget', value: MOCK.hotels.reduce((a, b) => a + b.prix, 0) + '€', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '✅', label: 'Confirmés', value: '2', bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '🏨', label: 'Hôtels', value: MOCK.hotels.length.toString(), bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '🛏️', label: 'Chambres', value: MOCK.hotels.reduce((a, b) => a + b.chambres, 0).toString(), bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '💰', label: 'Budget', value: MOCK.hotels.reduce((a, b) => a + parseInt(b.prix), 0) + '€', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '✅', label: 'Confirmés', value: '2', bg: 'rgba(123, 47, 247, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '🏨 Fournisseurs'),
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '🏨 Fournisseurs'),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Hôtel'), React.createElement('th', null, 'Ville'), React.createElement('th', null, 'Étoiles'), React.createElement('th', null, 'Chambres'), React.createElement('th', null, 'Prix'), React.createElement('th', null, 'Statut'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'Hôtel'),
+                  React.createElement('th', null, 'Ville'),
+                  React.createElement('th', null, 'Étoiles'),
+                  React.createElement('th', null, 'Chambres'),
+                  React.createElement('th', null, 'Prix'),
+                  React.createElement('th', null, 'Statut')
+                )
+              ),
               React.createElement('tbody', null,
-                MOCK.hotels.map(h => React.createElement('tr', { key: h.id },
-                  React.createElement('td', null, React.createElement('strong', null, h.nom)),
-                  React.createElement('td', null, h.ville),
-                  React.createElement('td', null, '⭐'.repeat(h.etoiles)),
-                  React.createElement('td', null, h.chambres),
-                  React.createElement('td', null, h.prix + '€'),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: h.statut }))
-                ))
+                MOCK.hotels.map(h =>
+                  React.createElement('tr', { key: h.id },
+                    React.createElement('td', null, React.createElement('strong', null, h.nom)),
+                    React.createElement('td', null, h.ville),
+                    React.createElement('td', null, '⭐'.repeat(h.etoiles)),
+                    React.createElement('td', null, h.chambres),
+                    React.createElement('td', null, h.prix + '€'),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: h.statut }))
+                  )
+                )
               )
             )
           )
@@ -870,30 +1773,52 @@
       );
     };
 
-    // 14. ANNULATIONS
+    // 12. Annulations
     const AnnulationsPage = ({ navigate }) => {
       const [tab, setTab] = useState('all');
       const filtered = MOCK.annulations.filter(a => tab === 'all' || a.statut === tab);
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'tabs' },
-          [['all', 'Toutes'], ['pending', 'En attente'], ['approved', 'Approuvées'], ['rejected', 'Refusées']].map(([k, l]) =>
-            React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
-          )
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '🔄', label: 'Demandes', value: MOCK.annulations.length.toString(), bg: 'rgba(218, 165, 32, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏳', label: 'En attente', value: MOCK.annulations.filter(a => a.statut === 'pending').length.toString(), bg: 'rgba(218, 165, 32, 0.15)', urgent: true }),
+          React.createElement(StatCard, { icon: '✅', label: 'Approuvées', value: '1', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '💰', label: 'Total à rembourser', value: '3 500€', bg: 'rgba(255, 107, 53, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '🔄 Demandes d\'annulation'),
+          ),
+          React.createElement('div', { className: 'tabs' },
+            [['all', 'Toutes'], ['pending', 'En attente'], ['approved', 'Approuvées'], ['rejected', 'Refusées']].map(([k, l]) =>
+              React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
+            )
+          ),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'ID'), React.createElement('th', null, 'Client'), React.createElement('th', null, 'Voyage'), React.createElement('th', null, 'Montant'), React.createElement('th', null, 'Motif'), React.createElement('th', null, 'Statut'), React.createElement('th', null, 'Actions'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'ID'),
+                  React.createElement('th', null, 'Client'),
+                  React.createElement('th', null, 'Voyage'),
+                  React.createElement('th', null, 'Montant'),
+                  React.createElement('th', null, 'Motif'),
+                  React.createElement('th', null, 'Statut'),
+                  React.createElement('th', null, 'Actions')
+                )
+              ),
               React.createElement('tbody', null,
-                filtered.map(a => React.createElement('tr', { key: a.id },
-                  React.createElement('td', null, a.id),
-                  React.createElement('td', null, React.createElement('strong', null, a.client)),
-                  React.createElement('td', null, a.voyage),
-                  React.createElement('td', null, a.montant + '€'),
-                  React.createElement('td', null, a.motif),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: a.statut })),
-                  React.createElement('td', null, a.statut === 'pending' && React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('annulations-detail') }, 'Voir'))
-                ))
+                filtered.map(a =>
+                  React.createElement('tr', { key: a.id },
+                    React.createElement('td', null, a.id),
+                    React.createElement('td', null, React.createElement('strong', null, a.client)),
+                    React.createElement('td', null, a.voyage),
+                    React.createElement('td', null, a.montant + '€'),
+                    React.createElement('td', null, a.motif),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: a.statut })),
+                    React.createElement('td', null, a.statut === 'pending' && React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('annulations-detail') }, '👁️'))
+                  )
+                )
               )
             )
           )
@@ -901,27 +1826,30 @@
       );
     };
 
-    // 15. ANNULATIONS DETAIL
+    // 13. Annulations Detail
     const AnnulationsDetailPage = ({ navigate }) => {
       const a = MOCK.annulations[0];
       const { addToast } = useToast();
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('annulations'), style: { marginBottom: 16 } }, '← Retour'),
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('annulations'), style: { marginBottom: 20 } }, '← Retour'),
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '👤', label: 'Client', value: a.client, bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '✈️', label: 'Voyage', value: a.voyage, bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '💰', label: 'Remboursement', value: a.montant + '€', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '📅', label: 'Date', value: a.date, bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '👤', label: 'Client', value: a.client, bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '✈️', label: 'Voyage', value: a.voyage, bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '💰', label: 'Remboursement', value: a.montant + '€', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '📅', label: 'Date demande', value: a.date, bg: 'rgba(123, 47, 247, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📋 Demande'),
-          React.createElement('div', { style: { marginBottom: 16 } },
-            React.createElement('div', { style: { marginBottom: 8 } }, React.createElement('strong', null, 'Motif'), React.createElement('p', { style: { color: 'var(--text-secondary)', marginTop: 4 } }, a.motif)),
-            React.createElement('div', null, React.createElement('strong', null, 'Statut'), React.createElement('p', { style: { marginTop: 4 } }, React.createElement(StatusBadge, { status: a.statut })))
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '📋 Demande d\'annulation'),
+          React.createElement('div', { style: { marginBottom: 20 } },
+            React.createElement('div', { style: { marginBottom: 12 } }, React.createElement('strong', null, 'Motif')),
+            React.createElement('p', { style: { color: 'var(--text-secondary)', marginTop: 6 } }, a.motif),
+            React.createElement('div', { style: { marginTop: 16 } }, React.createElement('strong', null, 'Statut')),
+            React.createElement('p', { style: { marginTop: 6 } }, React.createElement(StatusBadge, { status: a.statut }))
           ),
           React.createElement('div', { style: { display: 'flex', gap: 8 } },
             a.statut === 'pending' && React.createElement(React.Fragment, null,
-              React.createElement('button', { className: 'btn btn-primary', onClick: () => addToast('Remboursement approuvé', 'success') }, '✅ Approuver'),
+              React.createElement('button', { className: 'btn btn-secondary', onClick: () => addToast('✓ Remboursement approuvé', 'success') }, '✅ Approuver'),
               React.createElement('button', { className: 'btn btn-danger', onClick: () => addToast('Remboursement refusé', 'warning') }, '❌ Refuser')
             )
           )
@@ -929,244 +1857,54 @@
       );
     };
 
-    // 16. DOCUMENTS
-    const DocumentsPage = () => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '📄', label: 'Documents', value: '12', bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '✍️', label: 'À signer', value: '3', bg: '#FEF3C7', urgent: true }),
-          React.createElement(StatCard, { icon: '✅', label: 'Signés', value: '9', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '⏰', label: 'Expirés', value: '0', bg: '#F5F3FF' })
-        ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📄 Documents en cours'),
-          React.createElement('div', { className: 'table-container' },
-            React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Document'), React.createElement('th', null, 'Type'), React.createElement('th', null, 'Signataires'), React.createElement('th', null, 'Statut'))),
-              React.createElement('tbody', null,
-                [
-                  { name: 'CGV v3.2', type: 'Conditions', signed: '8/10' },
-                  { name: 'Contrat Pro — Marie Dupont', type: 'Contrat', signed: '1/1' },
-                  { name: 'Assurance Voyage 2026', type: 'Assurance', signed: '6/7' },
-                ].map((d, i) => React.createElement('tr', { key: i },
-                  React.createElement('td', null, React.createElement('strong', null, d.name)),
-                  React.createElement('td', null, d.type),
-                  React.createElement('td', null, d.signed),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: d.signed.split('/')[0] === d.signed.split('/')[1] ? 'completed' : 'pending' }))
-                ))
-              )
-            )
-          )
-        )
-      );
-    };
-
-    // 17. MARKETING
-    const MarketingPage = () => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '📧', label: 'Campagnes', value: '2', bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '📖', label: 'Taux ouverture', value: '28%', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '👥', label: 'Contacts', value: '1 240', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '📊', label: 'Clic', value: '342', bg: '#F5F3FF' })
-        ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📣 Campagnes actives'),
-          React.createElement('div', { style: { padding: '20px 0' } },
-            [
-              { name: 'Newsletter Mars', date: '2026-03-15', opens: '340/1240', click: '45', status: 'active' },
-              { name: 'Promo Été 2026', date: '2026-03-10', opens: '520/1200', click: '87', status: 'active' },
-            ].map((c, i) => React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #F1F5F9' } },
-              React.createElement('div', null,
-                React.createElement('strong', null, c.name),
-                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 } }, c.date)
-              ),
-              React.createElement('div', { style: { textAlign: 'right' } },
-                React.createElement('div', { style: { fontWeight: 600 } }, c.opens),
-                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)' } }, `${c.click} clics`)
-              )
-            ))
-          )
-        )
-      );
-    };
-
-    // 18. MONITORING
-    const MonitoringPage = ({ navigate }) => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '✅', label: 'Statut API', value: 'Online', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '⏱️', label: 'Temps réponse', value: '124ms', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '🔄', label: 'Uptime', value: '99.8%', bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '📈', label: 'Requêtes/h', value: '12K', bg: '#F5F3FF' })
-        ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📊 Performance'),
-          React.createElement(ChartCanvas, { type: 'line', data: { labels: ['00h', '06h', '12h', '18h', '24h'], datasets: [{ label: 'Req/min', data: [450, 320, 890, 670, 580], borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.1)', fill: true, tension: 0.4, borderWidth: 2 }] }, height: 250, options: { plugins: { legend: { display: false } } } })
-        )
-      );
-    };
-
-    // 19. MONITORING CRON HISTORY
-    const MonitoringCronPage = ({ navigate }) => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('monitoring'), style: { marginBottom: 16 } }, '← Retour'),
-        React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '⏰ Tâches programmées'),
-          React.createElement('div', { className: 'table-container' },
-            React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Tâche'), React.createElement('th', null, 'Dernière exécution'), React.createElement('th', null, 'Prochain'), React.createElement('th', null, 'Statut'))),
-              React.createElement('tbody', null,
-                [
-                  { task: 'Mise à jour CA quotidienne', last: '2026-03-17 23:45', next: '2026-03-18 23:45', status: 'completed' },
-                  { task: 'Export comptable', last: '2026-03-16 00:15', next: '2026-04-16 00:15', status: 'completed' },
-                  { task: 'Nettoyage sessions', last: '2026-03-17 04:20', next: '2026-03-18 04:20', status: 'pending' },
-                ].map((c, i) => React.createElement('tr', { key: i },
-                  React.createElement('td', null, React.createElement('strong', null, c.task)),
-                  React.createElement('td', null, c.last),
-                  React.createElement('td', null, c.next),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: c.status }))
-                ))
-              )
-            )
-          )
-        )
-      );
-    };
-
-    // 20. ALERTES
-    const AlertesPage = () => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '🔴', label: 'Critiques', value: '0', bg: '#FEF2F2' }),
-          React.createElement(StatCard, { icon: '🟡', label: 'Avertissements', value: '2', bg: '#FEF3C7', urgent: true }),
-          React.createElement(StatCard, { icon: '🔵', label: 'Info', value: '5', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '📨', label: 'Notification', value: 'Emails', bg: '#F5F3FF' })
-        ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '🔔 Alertes actives'),
-          React.createElement('div', { style: { padding: '20px 0' } },
-            [
-              { icon: '🟡', msg: 'Remplissage faible — Rome Éternelle (24%)', severity: 'warning', time: 'Il y a 2h' },
-              { icon: '🟡', msg: '3 paiements en attente', severity: 'warning', time: 'Il y a 1h' },
-              { icon: '🔵', msg: 'Paiement reçu — 3 200€', severity: 'info', time: 'Il y a 30m' },
-            ].map((a, i) => React.createElement('div', { key: i, style: { display: 'flex', gap: 12, padding: '12px 0', borderBottom: '1px solid #F1F5F9' } },
-              React.createElement('span', { style: { fontSize: 20 } }, a.icon),
-              React.createElement('div', { style: { flex: 1 } },
-                React.createElement('div', null, a.msg),
-                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 } }, a.time)
-              )
-            ))
-          )
-        )
-      );
-    };
-
-    // 21. NOTIFICATIONS (Centre de notifications)
-    const NotificationsPage = () => {
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '📨', label: 'Non lues', value: '5', bg: '#FEF3C7', urgent: true }),
-          React.createElement(StatCard, { icon: '✅', label: 'Lues', value: '24', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '🔔', label: 'Aujourd\'hui', value: '8', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '📅', label: 'Cette semaine', value: '34', bg: '#F5F3FF' })
-        ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📬 Notifications'),
-          React.createElement('div', { style: { padding: '20px 0' } },
-            [
-              { icon: '🔴', msg: 'Paiement échoué — R-452', time: '2026-03-17 14:20', unread: true },
-              { icon: '🟡', msg: '2 Pros en attente', time: '2026-03-17 13:15', unread: true },
-              { icon: '🔵', msg: 'Record CA quotidien', time: '2026-03-17 12:00', unread: false },
-            ].map((n, i) => React.createElement('div', { key: i, style: { display: 'flex', gap: 12, padding: '12px 0', borderBottom: '1px solid #F1F5F9', borderLeft: n.unread ? '3px solid var(--primary)' : 'none', paddingLeft: n.unread ? '12px' : '0' } },
-              React.createElement('span', { style: { fontSize: 18 } }, n.icon),
-              React.createElement('div', { style: { flex: 1 } },
-                React.createElement('div', { style: { fontWeight: n.unread ? 600 : 400 } }, n.msg),
-                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 } }, n.time)
-              )
-            ))
-          )
-        )
-      );
-    };
-
-    // 22. AUDIT (Journal d'audit)
-    const AuditPage = () => {
-      const audits = [
-        { action: 'Voyage publié', entite: 'V-001', acteur: 'David Eventy', date: '2026-03-17 14:30', type: 'voyage' },
-        { action: 'Pro validé', entite: 'Marie Dupont', acteur: 'David Eventy', date: '2026-03-17 13:15', type: 'pro' },
-        { action: 'Paiement reçu', entite: '3 200€ — R-445', acteur: 'Système', date: '2026-03-17 12:00', type: 'finance' },
-        { action: 'Utilisateur suspendu', entite: 'Antoine Roux', acteur: 'David Eventy', date: '2026-03-16 14:00', type: 'user' },
-      ];
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '🛡️ Journal d\'audit'),
-          React.createElement('div', { style: { padding: '20px 0' } },
-            audits.map((a, i) => React.createElement('div', { key: i, style: { display: 'flex', gap: 12, padding: '12px 0', borderBottom: '1px solid #F1F5F9' } },
-              React.createElement('div', { className: 'audit-dot', style: { background: { voyage: '#FF6B35', pro: '#06D6A0', finance: '#0077B6', user: '#64748B' }[a.type], marginTop: 4 } }),
-              React.createElement('div', { style: { flex: 1 } },
-                React.createElement('div', { style: { fontWeight: 600 } }, `${a.action} — ${a.entite}`),
-                React.createElement('div', { style: { fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 } }, `${a.acteur} · ${a.date}`)
-              )
-            ))
-          )
-        )
-      );
-    };
-
-    // 23. EXPORTS
-    const ExportsPage = () => {
-      const { addToast } = useToast();
-      return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '📥', label: 'Exports', value: '12', bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '📊', label: 'Comptabilité', value: 'Mars', bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '👥', label: 'Contacts', value: '1 240', bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '💾', label: 'Dernier', value: '16/03', bg: '#F5F3FF' })
-        ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '📥 Exports disponibles'),
-          React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 12 } },
-            [
-              { name: 'Comptabilité Mars 2026', desc: 'Tous les revenus et dépenses', action: 'Exporter' },
-              { name: 'Contacts & Clients', desc: '1 240 adresses emails', action: 'Exporter' },
-              { name: 'Voyages 2026', desc: 'Détail complet des 6 voyages', action: 'Exporter' },
-            ].map((e, i) => React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', border: '1px solid #E2E8F0', borderRadius: '10px' } },
-              React.createElement('div', null,
-                React.createElement('strong', null, e.name),
-                React.createElement('p', { style: { fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 } }, e.desc)
-              ),
-              React.createElement('button', { className: 'btn btn-primary btn-sm', onClick: () => addToast(`${e.name} exporté`, 'success') }, e.action)
-            ))
-          )
-        )
-      );
-    };
-
-    // 24. SUPPORT (Tickets)
+    // 14. Support
     const SupportPage = ({ navigate }) => {
-      const [tab, setTab] = useState('open');
-      const filtered = MOCK.tickets.filter(t => tab === 'open' ? (t.statut === 'open' || t.statut === 'in_progress') : t.statut === tab || t.statut === 'resolved');
+      const [tab, setTab] = useState('all');
+      const filtered = MOCK.tickets.filter(t => tab === 'all' || t.statut === tab);
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('div', { className: 'tabs' },
-          [['open', 'Ouverts'], ['waiting', 'En attente'], ['resolved', 'Résolus']].map(([k, l]) =>
-            React.createElement('button', { key: k, className: `tab ${tab === k || (tab === 'open' && k === 'open') ? 'active' : ''}`, onClick: () => setTab(k) }, l)
-          )
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '🎟️', label: 'Tickets', value: MOCK.tickets.length.toString(), bg: 'rgba(218, 165, 32, 0.15)' }),
+          React.createElement(StatCard, { icon: '🔴', label: 'Critiques', value: '1', bg: 'rgba(230, 57, 70, 0.15)', urgent: true }),
+          React.createElement(StatCard, { icon: '▶️', label: 'En cours', value: '1', bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '✅', label: 'Résolus', value: '12', bg: 'rgba(34, 197, 94, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '📞 Support & Tickets'),
+          ),
+          React.createElement('div', { className: 'tabs' },
+            [['all', 'Tous'], ['open', 'Ouverts'], ['in_progress', 'En cours'], ['resolved', 'Résolus']].map(([k, l]) =>
+              React.createElement('button', { key: k, className: `tab ${tab === k ? 'active' : ''}`, onClick: () => setTab(k) }, l)
+            )
+          ),
           React.createElement('div', { className: 'table-container' },
             React.createElement('table', null,
-              React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'ID'), React.createElement('th', null, 'Sujet'), React.createElement('th', null, 'Client'), React.createElement('th', null, 'Priorité'), React.createElement('th', null, 'Statut'), React.createElement('th', null, 'Msg.'), React.createElement('th', null, 'Actions'))),
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'ID'),
+                  React.createElement('th', null, 'Client'),
+                  React.createElement('th', null, 'Objet'),
+                  React.createElement('th', null, 'Priorité'),
+                  React.createElement('th', null, 'Statut'),
+                  React.createElement('th', null, 'Actions')
+                )
+              ),
               React.createElement('tbody', null,
-                MOCK.tickets.map(t => React.createElement('tr', { key: t.id },
-                  React.createElement('td', null, t.id),
-                  React.createElement('td', null, React.createElement('strong', null, t.sujet)),
-                  React.createElement('td', null, t.client),
-                  React.createElement('td', null, { haute: '🔴', moyenne: '🟡', basse: '🟢' }[t.priorite]),
-                  React.createElement('td', null, React.createElement(StatusBadge, { status: t.statut })),
-                  React.createElement('td', null, t.messages),
-                  React.createElement('td', null, React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('support-detail') }, 'Voir'))
-                ))
+                filtered.map(t =>
+                  React.createElement('tr', { key: t.id },
+                    React.createElement('td', null, React.createElement('strong', null, t.id)),
+                    React.createElement('td', null, t.client),
+                    React.createElement('td', null, t.objet),
+                    React.createElement('td', null,
+                      React.createElement('span', { style: { color: t.priority === 'high' ? 'var(--coral)' : 'var(--gold)', fontWeight: 600 } }, t.priority === 'high' ? '🔴 Haute' : '🟡 Normal')
+                    ),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: t.statut })),
+                    React.createElement('td', null,
+                      React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('support-detail') }, '👁️')
+                    )
+                  )
+                )
               )
             )
           )
@@ -1174,138 +1912,246 @@
       );
     };
 
-    // 25. SUPPORT DETAIL
+    // 15. Support Detail
     const SupportDetailPage = ({ navigate }) => {
       const t = MOCK.tickets[0];
       const { addToast } = useToast();
+
       return React.createElement('div', { className: 'fade-in' },
-        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('support'), style: { marginBottom: 16 } }, '← Retour'),
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('support'), style: { marginBottom: 20 } }, '← Retour'),
         React.createElement('div', { className: 'stats-grid' },
-          React.createElement(StatCard, { icon: '👤', label: 'Client', value: t.client, bg: '#EFF6FF' }),
-          React.createElement(StatCard, { icon: '🎫', label: 'Ticket', value: t.id, bg: '#FFF7ED' }),
-          React.createElement(StatCard, { icon: '💬', label: 'Messages', value: t.messages.toString(), bg: '#ECFDF5' }),
-          React.createElement(StatCard, { icon: '📅', label: 'Ouvert le', value: t.date, bg: '#F5F3FF' })
+          React.createElement(StatCard, { icon: '👤', label: 'Client', value: t.client, bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '🎟️', label: 'ID Ticket', value: t.id, bg: 'rgba(255, 107, 53, 0.15)' }),
+          React.createElement(StatCard, { icon: '📅', label: 'Date', value: t.date, bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏲️', label: 'Priorité', value: t.priority === 'high' ? 'Critique' : 'Normal', bg: t.priority === 'high' ? 'rgba(230, 57, 70, 0.15)' : 'rgba(123, 47, 247, 0.15)' })
         ),
-        React.createElement('div', { className: 'card', style: { marginTop: 16 } },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 16 } }, '💬 Conversation'),
-          React.createElement('div', { style: { padding: '20px 0' } },
-            [
-              { from: 'Client', msg: 'Je n\'arrive pas à payer ma réservation', time: '17/03 10:30' },
-              { from: 'David Eventy', msg: 'Quelle est l\'erreur exacte ?', time: '17/03 10:45' },
-              { from: 'Client', msg: 'Code erreur 403 — Carte refusée', time: '17/03 11:00' },
-            ].map((m, i) => React.createElement('div', { key: i, style: { marginBottom: 12, padding: '12px', background: m.from === 'Client' ? '#F8FAFC' : '#FFF7ED', borderRadius: '10px' } },
-              React.createElement('strong', null, m.from),
-              React.createElement('p', { style: { marginTop: 4, fontSize: 14 } }, m.msg),
-              React.createElement('div', { style: { fontSize: 11, color: 'var(--text-secondary)', marginTop: 4 } }, m.time)
-            ))
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '📬 Détails ticket'),
+          React.createElement('div', { style: { marginBottom: 20 } },
+            React.createElement('div', { style: { marginBottom: 12 } }, React.createElement('strong', null, 'Objet')),
+            React.createElement('p', { style: { color: 'var(--text-secondary)', marginTop: 6 } }, t.objet),
+            React.createElement('div', { style: { marginTop: 16 } }, React.createElement('strong', null, 'Statut')),
+            React.createElement('p', { style: { marginTop: 6 } }, React.createElement(StatusBadge, { status: t.statut }))
           ),
-          React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 16 } },
-            React.createElement('button', { className: 'btn btn-primary', onClick: () => addToast('Ticket résolu', 'success') }, '✅ Résoudre'),
+          React.createElement('div', { style: { display: 'flex', gap: 8 } },
+            React.createElement('button', { className: 'btn btn-secondary', onClick: () => addToast('✓ Ticket résolu', 'success') }, '✅ Résoudre'),
             React.createElement('button', { className: 'btn btn-outline', onClick: () => addToast('Escaladé', 'info') }, '📢 Escalader')
           )
         )
       );
     };
 
-    // 26. PARAMETRES
+    // 16. Parametres
     const ParametresPage = () => {
       const { addToast } = useToast();
+
       return React.createElement('div', { className: 'fade-in' },
         React.createElement('div', { className: 'card' },
-          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '⚙️ Paramètres système'),
-          React.createElement('div', { style: { padding: '20px 0' } },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 24 } }, '⚙️ Paramètres système'),
+          React.createElement('div', null,
             [
               { label: 'Commission Eventy', value: '18%', editable: true },
               { label: 'TVA appliquée', value: '20%', editable: true },
               { label: 'Mode maintenance', value: 'Désactivé', editable: true },
-              { label: 'Email support', value: 'support@eventy.com', editable: true },
+              { label: 'Email support', value: 'support@eventylife.fr', editable: true },
               { label: 'Version API', value: 'v2.3.1', editable: false },
               { label: 'Dernière mise à jour', value: '2026-03-17 02:15', editable: false },
-            ].map((s, i) => React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #F1F5F9' } },
-              React.createElement('span', null, React.createElement('strong', null, s.label)),
-              React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
-                React.createElement('span', { style: { fontFamily: 'monospace', fontSize: 13 } }, s.value),
-                s.editable && React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => addToast('Paramètre mis à jour', 'success') }, '✏️')
+            ].map((s, i) =>
+              React.createElement('div', { key: i, style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid rgba(255, 107, 53, 0.05)' } },
+                React.createElement('span', null, React.createElement('strong', null, s.label)),
+                React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+                  React.createElement('span', { style: { fontFamily: 'monospace', fontSize: 13, color: 'var(--text-secondary)' } }, s.value),
+                  s.editable && React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => addToast('✓ Paramètre mis à jour', 'success') }, '✏️')
+                )
               )
-            ))
+            )
           )
         )
       );
     };
 
-    // 27. ADMIN LOGIN
-    const AdminLoginPage = ({ navigate }) => {
-      const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
+    // 17. Créer voyage
+    const CreerVoyagePage = ({ navigate }) => {
+      const [nom, setNom] = useState('');
       const { addToast } = useToast();
-      const handleLogin = () => {
-        if (email && password) {
-          addToast('Connexion réussie', 'success');
-          navigate('dashboard');
+
+      const handleCreate = () => {
+        if (nom) {
+          addToast('✓ Voyage créé avec succès', 'success');
+          setTimeout(() => navigate('voyages'), 500);
         } else {
-          addToast('Veuillez remplir tous les champs', 'error');
+          addToast('Veuillez remplir le titre', 'error');
         }
       };
-      return React.createElement('div', { className: 'fade-in', style: { maxWidth: 400, margin: '60px auto' } },
+
+      return React.createElement('div', { className: 'fade-in', style: { maxWidth: 600, margin: '0 auto' } },
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('voyages'), style: { marginBottom: 20 } }, '← Retour'),
         React.createElement('div', { className: 'card' },
-          React.createElement('div', { style: { textAlign: 'center', marginBottom: 24 } },
-            React.createElement('div', { style: { fontSize: 48, marginBottom: 12 } }, '🔐'),
-            React.createElement('h2', { style: { fontSize: 24, fontWeight: 700 } }, 'Eventy Admin'),
-            React.createElement('p', { style: { color: 'var(--text-secondary)', fontSize: 14 } }, 'Connexion sécurisée')
+          React.createElement('h2', { style: { fontSize: 20, marginBottom: 24 } }, '✈️ Créer un nouveau voyage'),
+          React.createElement('div', { className: 'form-group' },
+            React.createElement('label', { className: 'form-label' }, 'Titre du voyage'),
+            React.createElement('input', { className: 'form-input', placeholder: 'Ex: Rome Éternelle', value: nom, onChange: e => setNom(e.target.value) })
+          ),
+          React.createElement('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 } },
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Date départ'),
+              React.createElement('input', { className: 'form-input', type: 'date' })
+            ),
+            React.createElement('div', { className: 'form-group' },
+              React.createElement('label', { className: 'form-label' }, 'Date retour'),
+              React.createElement('input', { className: 'form-input', type: 'date' })
+            )
           ),
           React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Email admin'),
-            React.createElement('input', { className: 'form-input', type: 'email', placeholder: 'admin@eventy.com', value: email, onChange: e => setEmail(e.target.value) })
+            React.createElement('label', { className: 'form-label' }, 'Pro responsable'),
+            React.createElement('select', { className: 'form-input' },
+              React.createElement('option', null, '— Sélectionner —'),
+              MOCK.pros.map(p => React.createElement('option', { key: p.id }, p.nom))
+            )
           ),
-          React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { className: 'form-label' }, 'Mot de passe'),
-            React.createElement('input', { className: 'form-input', type: 'password', placeholder: '••••••••', value: password, onChange: e => setPassword(e.target.value) })
-          ),
-          React.createElement('button', { className: 'btn btn-primary', style: { width: '100%', justifyContent: 'center' }, onClick: handleLogin }, '🔓 Connexion'),
-          React.createElement('div', { style: { marginTop: 12, textAlign: 'center', fontSize: 12, color: 'var(--text-secondary)' } }, 'Démo: admin@eventy.com / password')
+          React.createElement('div', { style: { display: 'flex', gap: 8 } },
+            React.createElement('button', { className: 'btn btn-primary', onClick: handleCreate }, '➕ Créer'),
+            React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('voyages') }, 'Annuler')
+          )
         )
       );
     };
 
-    // ==================== MAIN APP ====================
+    // 18. Monitoring
+    const MonitoringPage = ({ navigate }) => {
+      return React.createElement('div', { className: 'fade-in' },
+        React.createElement('div', { className: 'stats-grid' },
+          React.createElement(StatCard, { icon: '✅', label: 'Statut API', value: 'Online', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '⏱️', label: 'Temps réponse', value: '124ms', bg: 'rgba(0, 119, 182, 0.15)' }),
+          React.createElement(StatCard, { icon: '🔄', label: 'Uptime', value: '99.8%', bg: 'rgba(34, 197, 94, 0.15)' }),
+          React.createElement(StatCard, { icon: '📈', label: 'Requêtes/h', value: '12K', bg: 'rgba(255, 107, 53, 0.15)' })
+        ),
+        React.createElement('div', { className: 'card', style: { marginTop: 20 } },
+          React.createElement('div', { className: 'card-header' },
+            React.createElement('h3', { className: 'card-title' }, '📊 Performance système'),
+            React.createElement('button', { className: 'btn btn-outline btn-sm', onClick: () => navigate('monitoring-cron') }, '⏰ Crons')
+          ),
+          React.createElement(ChartCanvas, {
+            type: 'line',
+            data: {
+              labels: ['00h', '06h', '12h', '18h', '24h'],
+              datasets: [{
+                label: 'Req/min',
+                data: [450, 320, 890, 670, 580],
+                borderColor: '#FF6B35',
+                backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2
+              }]
+            },
+            height: 280
+          })
+        )
+      );
+    };
+
+    // 19. Monitoring Cron
+    const MonitoringCronPage = ({ navigate }) => {
+      return React.createElement('div', { className: 'fade-in' },
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => navigate('monitoring'), style: { marginBottom: 20 } }, '← Retour'),
+        React.createElement('div', { className: 'card' },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 20 } }, '⏰ Tâches programmées'),
+          React.createElement('div', { className: 'table-container' },
+            React.createElement('table', null,
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  React.createElement('th', null, 'Tâche'),
+                  React.createElement('th', null, 'Dernière exécution'),
+                  React.createElement('th', null, 'Prochain'),
+                  React.createElement('th', null, 'Statut')
+                )
+              ),
+              React.createElement('tbody', null,
+                [
+                  { task: 'Mise à jour CA quotidienne', last: '2026-03-17 23:45', next: '2026-03-18 23:45', status: 'completed' },
+                  { task: 'Export comptable', last: '2026-03-16 00:15', next: '2026-04-16 00:15', status: 'completed' },
+                  { task: 'Nettoyage sessions', last: '2026-03-17 04:20', next: '2026-03-18 04:20', status: 'pending' },
+                ].map((c, i) =>
+                  React.createElement('tr', { key: i },
+                    React.createElement('td', null, React.createElement('strong', null, c.task)),
+                    React.createElement('td', null, c.last),
+                    React.createElement('td', null, c.next),
+                    React.createElement('td', null, React.createElement(StatusBadge, { status: c.status }))
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    };
+
+    // 20. Audit Log
+    const AuditPage = () => {
+      const audits = [
+        { action: 'Voyage publié', entite: 'V-001', acteur: 'David Eventy', date: '2026-03-17 14:30', type: 'voyage' },
+        { action: 'Pro validé', entite: 'Marie Dupont', acteur: 'David Eventy', date: '2026-03-17 13:15', type: 'pro' },
+        { action: 'Paiement reçu', entite: '3 200€ — R-445', acteur: 'Système', date: '2026-03-17 12:00', type: 'finance' },
+        { action: 'Utilisateur suspendu', entite: 'Antoine Roux', acteur: 'David Eventy', date: '2026-03-16 14:00', type: 'user' },
+        { action: 'Ticket support fermé', entite: 'TK-117', acteur: 'David Eventy', date: '2026-03-16 10:30', type: 'support' },
+      ];
+
+      return React.createElement('div', { className: 'fade-in' },
+        React.createElement('div', { className: 'card' },
+          React.createElement('div', { className: 'card-title', style: { marginBottom: 24 } }, '📜 Journal d\'audit'),
+          React.createElement('div', null,
+            audits.map((a, i) =>
+              React.createElement('div', { key: i, className: 'audit-item' },
+                React.createElement('div', { className: 'audit-dot' }),
+                React.createElement('div', { className: 'audit-content' },
+                  React.createElement('div', { className: 'audit-action' }, React.createElement('strong', null, a.action), ' sur ', React.createElement('strong', null, a.entite)),
+                  React.createElement('div', { className: 'audit-meta' }, a.acteur, ' • ', a.date)
+                )
+              )
+            )
+          )
+        )
+      );
+    };
+
+    // Main App
     function App() {
       const [page, setPage] = useState('dashboard');
       const [sidebarOpen, setSidebarOpen] = useState(false);
       const [splashVisible, setSplashVisible] = useState(true);
-      const navigate = (p) => { setPage(p); setSidebarOpen(false); };
+
+      const navigate = (p) => {
+        setPage(p);
+        setSidebarOpen(false);
+      };
 
       useEffect(() => {
-        const timer = setTimeout(() => setSplashVisible(false), 1500);
+        const timer = setTimeout(() => setSplashVisible(false), 1800);
         return () => clearTimeout(timer);
       }, []);
 
       const pageTitle = {
-        dashboard: 'Accueil Admin',
-        'admin-login': 'Connexion Admin',
-        voyages: 'Opérations Voyages',
-        'voyage-detail': 'Détail Voyage',
-        'voyage-lifecycle': 'Cycle de vie',
-        'voyages-creer': 'Créer un voyage',
-        bookings: 'Réservations',
-        finance: 'Tableau de bord Financier',
-        pros: 'Validation Pro',
-        utilisateurs: 'Gestion Utilisateurs',
-        'utilisateurs-detail': 'Détail Utilisateur',
-        transport: 'Gestion Transport',
-        rooming: 'Fournisseurs & Hébergement',
-        annulations: 'Demandes d\'annulation',
-        'annulations-detail': 'Détail Annulation',
-        documents: 'Documents & Signatures',
-        marketing: 'Campagnes Marketing',
-        monitoring: 'Monitoring Système',
-        'monitoring-cron': 'Historique Cron',
-        alertes: 'Alertes Système',
-        notifications: 'Centre de Notifications',
-        audit: 'Journal d\'Audit',
-        exports: 'Exports de Données',
-        support: 'Support & Tickets',
-        'support-detail': 'Détail Ticket',
-        parametres: 'Paramètres Système',
+        dashboard: '📊 Accueil Admin',
+        'admin-login': '🔐 Connexion Admin',
+        voyages: '✈️ Opérations Voyages',
+        'voyage-detail': '✈️ Détail Voyage',
+        'voyages-creer': '✈️ Créer un voyage',
+        bookings: '💳 Réservations',
+        finance: '💰 Tableau de bord Financier',
+        pros: '🎯 Validation Professionnels',
+        utilisateurs: '👥 Gestion Utilisateurs',
+        'utilisateurs-detail': '👥 Profil Utilisateur',
+        transport: '🚌 Gestion Transport',
+        rooming: '🏨 Hébergement & Fournisseurs',
+        annulations: '🔄 Demandes d\'annulation',
+        'annulations-detail': '🔄 Détail Annulation',
+        support: '📞 Support & Tickets',
+        'support-detail': '📞 Détail Ticket',
+        parametres: '⚙️ Paramètres Système',
+        monitoring: '📊 Monitoring Système',
+        'monitoring-cron': '⏰ Historique Cron',
+        audit: '📜 Journal d\'Audit',
       };
 
       const renderPage = () => {
@@ -1315,7 +2161,6 @@
           'admin-login': <AdminLoginPage {...props} />,
           voyages: <VoyagesPage {...props} />,
           'voyage-detail': <VoyageDetailPage {...props} />,
-          'voyage-lifecycle': <VoyageLifecyclePage {...props} />,
           'voyages-creer': <CreerVoyagePage {...props} />,
           bookings: <BookingsPage {...props} />,
           finance: <FinancePage {...props} />,
@@ -1326,17 +2171,12 @@
           rooming: <RoomingPage />,
           annulations: <AnnulationsPage {...props} />,
           'annulations-detail': <AnnulationsDetailPage {...props} />,
-          documents: <DocumentsPage />,
-          marketing: <MarketingPage />,
-          monitoring: <MonitoringPage {...props} />,
-          'monitoring-cron': <MonitoringCronPage {...props} />,
-          alertes: <AlertesPage />,
-          notifications: <NotificationsPage />,
-          audit: <AuditPage />,
-          exports: <ExportsPage />,
           support: <SupportPage {...props} />,
           'support-detail': <SupportDetailPage {...props} />,
           parametres: <ParametresPage />,
+          monitoring: <MonitoringPage {...props} />,
+          'monitoring-cron': <MonitoringCronPage {...props} />,
+          audit: <AuditPage />,
         };
         return pageMap[page] || <DashboardPage {...props} />;
       };
@@ -1350,63 +2190,161 @@
             React.createElement('div', { className: 'splash-loader-bar' })
           )
         ),
-        React.createElement('div', { className: 'sidebar-overlay', onClick: () => setSidebarOpen(false) }),
+        React.createElement('div', { className: 'sidebar-overlay', style: { display: sidebarOpen ? 'block' : 'none' }, onClick: () => setSidebarOpen(false) }),
         React.createElement('aside', { className: `sidebar ${sidebarOpen ? 'open' : ''}` },
           React.createElement('div', { className: 'sidebar-logo' },
-            React.createElement('div', { style: { fontSize: 28 } }, '🏢'),
+            React.createElement('div', { className: 'sidebar-logo-icon' }, '⬡'),
             React.createElement('div', null,
               React.createElement('h1', null, 'Eventy'),
-              React.createElement('span', null, 'Admin Dashboard')
+              React.createElement('span', null, 'Admin Panel')
             )
           ),
-          NAV.map(section => React.createElement('div', { key: section.section },
-            React.createElement('div', { className: 'nav-section-title' }, section.section),
-            React.createElement('div', { className: 'nav-section' },
-              section.items.map(item => React.createElement('div', { key: item.id, className: `nav-item ${page === item.id ? 'active' : ''}`, onClick: () => navigate(item.id) },
-                React.createElement('span', { className: 'icon' }, item.icon),
-                React.createElement('span', null, item.label),
-                item.badge && React.createElement('span', { className: 'badge' }, item.badge)
-              ))
-            )
-          )),
+          React.createElement('div', { className: 'nav-section' },
+            React.createElement('div', { className: 'nav-section-title' }, 'Principal'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'dashboard' ? 'active' : ''}`,
+              onClick: () => navigate('dashboard'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '📊'), 'Dashboard'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'admin-login' ? 'active' : ''}`,
+              onClick: () => navigate('admin-login'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '🔐'), 'Connexion')
+          ),
+          React.createElement('div', { className: 'nav-section' },
+            React.createElement('div', { className: 'nav-section-title' }, 'Opérations'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'voyages' ? 'active' : ''}`,
+              onClick: () => navigate('voyages'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '✈️'), 'Voyages'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'bookings' ? 'active' : ''}`,
+              onClick: () => navigate('bookings'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '💳'), 'Réservations'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'transport' ? 'active' : ''}`,
+              onClick: () => navigate('transport'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '🚌'), 'Transport'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'rooming' ? 'active' : ''}`,
+              onClick: () => navigate('rooming'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '🏨'), 'Rooming'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'annulations' ? 'active' : ''}`,
+              onClick: () => navigate('annulations'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '🔄'), 'Annulations')
+          ),
+          React.createElement('div', { className: 'nav-section' },
+            React.createElement('div', { className: 'nav-section-title' }, 'Gestion'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'finance' ? 'active' : ''}`,
+              onClick: () => navigate('finance'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '💰'), 'Finance'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'pros' ? 'active' : ''}`,
+              onClick: () => navigate('pros'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '🎯'), 'Pros'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'utilisateurs' ? 'active' : ''}`,
+              onClick: () => navigate('utilisateurs'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '👥'), 'Utilisateurs'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'support' ? 'active' : ''}`,
+              onClick: () => navigate('support'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '📞'), 'Support')
+          ),
+          React.createElement('div', { className: 'nav-section' },
+            React.createElement('div', { className: 'nav-section-title' }, 'Système'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'monitoring' ? 'active' : ''}`,
+              onClick: () => navigate('monitoring'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '📊'), 'Monitoring'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'audit' ? 'active' : ''}`,
+              onClick: () => navigate('audit'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '📜'), 'Audit'),
+            React.createElement('button', {
+              className: `nav-item ${page === 'parametres' ? 'active' : ''}`,
+              onClick: () => navigate('parametres'),
+              style: { width: '100%', textAlign: 'left' }
+            }, React.createElement('span', { className: 'icon' }, '⚙️'), 'Paramètres')
+          ),
           React.createElement('div', { className: 'sidebar-user' },
-            React.createElement('div', { className: 'sidebar-user-avatar' }, 'DE'),
+            React.createElement('div', { className: 'sidebar-user-avatar' }, 'DA'),
             React.createElement('div', { className: 'sidebar-user-info' },
-              React.createElement('div', { className: 'sidebar-user-name' }, 'David'),
-              React.createElement('div', { className: 'sidebar-user-role' }, 'Admin')
+              React.createElement('div', { className: 'sidebar-user-name' }, 'David A.'),
+              React.createElement('div', { className: 'sidebar-user-role' }, 'FounderAdmin')
             )
           )
         ),
-        React.createElement('div', { className: 'main' },
-          React.createElement('div', { className: 'topbar' },
+        React.createElement('main', { className: 'main' },
+          React.createElement('header', { className: 'topbar' },
             React.createElement('div', { className: 'topbar-left' },
               React.createElement('button', { className: 'hamburger', onClick: () => setSidebarOpen(!sidebarOpen) }, '☰'),
-              React.createElement('h2', null, pageTitle[page] || 'Eventy Admin')
+              React.createElement('h2', null, pageTitle[page] || 'Dashboard'),
+              React.createElement('div', { className: 'topbar-breadcrumb' }, page.split('-').join(' / ').toUpperCase())
             ),
             React.createElement('div', { className: 'topbar-right' },
-              React.createElement('div', { className: 'topbar-avatar' }, 'DE')
+              React.createElement('button', { className: 'topbar-icon-btn' }, '🔍'),
+              React.createElement('button', { className: 'topbar-icon-btn', style: { position: 'relative' } }, '🔔', React.createElement('div', { className: 'notification-badge' }, '2')),
+              React.createElement('div', { className: 'topbar-avatar' }, 'DA')
             )
           ),
           React.createElement('div', { className: 'content' },
             renderPage()
           )
+        ),
+        React.createElement('nav', { className: 'bottom-nav' },
+          React.createElement('div', { className: 'bottom-nav-inner' },
+            [
+              { icon: '📊', label: 'Accueil', page: 'dashboard' },
+              { icon: '✈️', label: 'Voyages', page: 'voyages' },
+              { icon: '💳', label: 'Réservations', page: 'bookings' },
+              { icon: '💰', label: 'Finance', page: 'finance' },
+              { icon: '👥', label: 'Utilisateurs', page: 'utilisateurs' },
+            ].map(item =>
+              React.createElement('button', {
+                key: item.page,
+                className: `bottom-nav-item ${page === item.page ? 'active' : ''}`,
+                onClick: () => navigate(item.page)
+              },
+                React.createElement('span', { className: 'bnav-icon' }, item.icon),
+                React.createElement('span', { className: 'bnav-label' }, item.label)
+              )
+            )
+          )
         )
       );
     }
 
-    // ==================== SERVICE WORKER ====================
+    ReactDOM.render(
+      React.createElement(ToastProvider, null,
+        React.createElement(App)
+      ),
+      document.getElementById('root')
+    );
+  </script>
+  <script>
+    // Service Worker Registration
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/admin-pwa/sw.js').catch(() => {});
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/admin-pwa/sw.js', { scope: '/admin-pwa/' })
+          .then(function(reg) { console.log('SW registered:', reg.scope); })
+          .catch(function(err) { console.warn('SW failed:', err); });
       });
     }
-
-    // ==================== RENDER ====================
-    ReactDOM.createRoot(document.getElementById('root')).render(
-      React.createElement(ToastProvider, null,
-        React.createElement(App, null)
-      )
-    );
   </script>
 </body>
 </html>
