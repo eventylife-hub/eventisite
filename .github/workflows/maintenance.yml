@@ -1,0 +1,54 @@
+name: Maintenance - Fix Sentry and Seed Admin
+on:
+  workflow_dispatch:
+jobs:
+  maintenance:
+    name: Fix Sentry and Seed Admin
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and apply fixes
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          timeout: 120s
+          script: |
+            set -e
+            echo "=== Finding sentry.interceptor.js ==="
+            SENTRY=$(find /opt/eventy /root /home -name sentry.interceptor.js 2>/dev/null | grep dist | head -1)
+            if [ -n "$SENTRY" ]; then
+              cp "$SENTRY" "$SENTRY.bak"
+              sed -i 's/transaction\.finish()/transaction?.finish()/g' "$SENTRY"
+              echo "Sentry patched: $SENTRY"
+            else
+              echo "sentry.interceptor.js not found in dist"
+            fi
+            echo "=== Finding backend dir ==="
+            BACKEND=$(find /opt/eventy /root /home -maxdepth 8 -name package.json 2>/dev/null | grep -v node_modules | xargs grep -l prisma 2>/dev/null | head -1 | xargs dirname 2>/dev/null)
+            [ -z "$BACKEND" ] && BACKEND=/opt/eventy/app/backend
+            echo "Backend dir: $BACKEND"
+            cd "$BACKEND"
+            if [ -f .env ]; then set -a && . .env && set +a; fi
+            echo "=== Seeding admin user ==="
+            cat > /tmp/seed_admin.js << 'SEEDEOF'
+const { PrismaClient } = require('@prisma/client');
+const argon2 = require('argon2');
+const prisma = new PrismaClient();
+async function main() {
+  const hash = await argon2.hash('Eventy2026', { type: argon2.argon2id, memoryCost: 65536, timeCost: 3, parallelism: 4 });
+  const u = await prisma.user.upsert({
+    where: { email: 'eventylife@gmail.com' },
+    update: { passwordHash: hash, role: 'ADMIN', emailVerifiedAt: new Date() },
+    create: { email: 'eventylife@gmail.com', passwordHash: hash, firstName: 'David', lastName: 'Admin', role: 'ADMIN', emailVerifiedAt: new Date() }
+  });
+  console.log('Admin OK:', u.email, u.role, 'verified:', u.emailVerifiedAt);
+  await prisma.$disconnect();
+}
+main().catch(e => { console.error(e); process.exit(1); });
+SEEDEOF
+            NODE_PATH="$BACKEND/node_modules" node /tmp/seed_admin.js
+            echo "=== Restarting PM2 ==="
+            pm2 restart eventy-api 2>/dev/null || pm2 restart all 2>/dev/null || true
+            pm2 save 2>/dev/null || true
+            echo "=== Done ==="
