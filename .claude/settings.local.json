@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"/c/Users/paco6/eventisite/.claude/worktrees/practical-matsumoto/frontend/app/\\(pro\\)/pro/voyages/\")",
+      "Bash(git submodule:*)",
+      "Bash(ls -la frontend/app/\"\\(pro\\)\"/pro/voyages/nouveau/)",
+      "Bash(ls -la \"frontend/app/\\(pro\\)/pro/voyages/nouveau/\")",
+      "Bash(ls -la frontend/app/\"\\(admin\\)\"/admin/)",
+      "Bash(ls -la frontend/app/\"\\(public\\)\"/)",
+      "Bash(ls -la frontend/app/\"\\(client\\)\"/client/)",
+      "Bash(ls -R \"frontend/app/\\(admin\\)/admin/\")",
+      "Bash(ls -R \"frontend/app/\\(public\\)/\")",
+      "Bash(wc -l backend/src/modules/travels/*.ts backend/src/modules/pro/travels/*.ts)"
+    ]
+  }
+}
