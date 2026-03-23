@@ -1,0 +1,128 @@
+# Pipeline de sécurité pour Eventy Life
+name: Security - Analyse de Sécurité
+
+on:
+  schedule:
+    # Exécuter chaque lundi à 02:00 UTC
+    - cron: '0 2 * * 1'
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  # ===== JOB AUDIT NPM =====
+  npm-audit:
+    name: Security - Audit NPM
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Vérifier le code source
+      - name: Vérifier le code source
+        uses: actions/checkout@v4
+      
+      # Configurer Node.js 18
+      - name: Configurer Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      # Exécuter l'audit NPM pour le backend
+      - name: Audit NPM - Backend
+        working-directory: backend
+        run: npm audit --audit-level=moderate
+
+      # Exécuter l'audit NPM pour le frontend
+      - name: Audit NPM - Frontend
+        working-directory: frontend
+        run: npm audit --audit-level=moderate
+  
+  # ===== JOB TRIVY SCANNING =====
+  trivy-scan:
+    name: Security - Trivy Scanning Docker
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Vérifier le code source
+      - name: Vérifier le code source
+        uses: actions/checkout@v4
+      
+      # Configurer Docker Buildx
+      - name: Configurer Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # Construire l'image backend pour le scan
+      - name: Construire l'image backend
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          load: true
+          tags: eventy-backend:test
+          cache-from: type=gha
+      
+      # Construire l'image frontend pour le scan
+      - name: Construire l'image frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend
+          load: true
+          tags: eventy-frontend:test
+          cache-from: type=gha
+      
+      # Scanner l'image backend avec Trivy
+      - name: Trivy - Scanner l'image backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: eventy-backend:test
+          format: sarif
+          output: trivy-backend.sarif
+          severity: HIGH,CRITICAL
+      
+      # Scanner l'image frontend avec Trivy
+      - name: Trivy - Scanner l'image frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: eventy-frontend:test
+          format: sarif
+          output: trivy-frontend.sarif
+          severity: HIGH,CRITICAL
+      
+      # Télécharger les résultats SARIF backend
+      - name: Télécharger les résultats SARIF - Backend
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-backend.sarif
+          category: trivy-backend
+      
+      # Télécharger les résultats SARIF frontend
+      - name: Télécharger les résultats SARIF - Frontend
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-frontend.sarif
+          category: trivy-frontend
+  
+  # ===== JOB DEPENDENCY CHECK =====
+  dependency-check:
+    name: Security - Vérification des Dépendances
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Vérifier le code source
+      - name: Vérifier le code source
+        uses: actions/checkout@v4
+      
+      # Vérifier les dépendances non à jour
+      - name: Vérifier les dépendances - Backend
+        working-directory: backend
+        run: |
+          npm outdated || true
+      
+      # Vérifier les dépendances non à jour
+      - name: Vérifier les dépendances - Frontend
+        working-directory: frontend
+        run: |
+          npm outdated || true

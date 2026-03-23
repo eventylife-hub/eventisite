@@ -1,0 +1,235 @@
+# Pipeline de tests de bout en bout pour Eventy Life
+name: E2E - Tests de Bout en Bout
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # ===== JOB BACKEND E2E TESTS (Matrix) =====
+  backend-e2e:
+    name: Backend E2E Tests - Group ${{ matrix.group }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    strategy:
+      matrix:
+        group: [1, 2, 3, 4]
+      fail-fast: false
+    
+    services:
+      # Service PostgreSQL pour les tests E2E
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: eventy_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      # Vérifier le code source
+      - name: Vérifier le code source
+        uses: actions/checkout@v4
+      
+      # Configurer Node.js 18
+      - name: Configurer Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: 'backend/package-lock.json'
+      
+      # Installer les dépendances du backend
+      - name: Installer les dépendances du backend
+        working-directory: backend
+        run: npm ci
+      
+      # Générer les fichiers Prisma
+      - name: Générer les fichiers Prisma
+        working-directory: backend
+        run: npm run prisma:generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+      
+      # Exécuter les migrations Prisma
+      - name: Exécuter les migrations Prisma
+        working-directory: backend
+        run: npm run prisma:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+      
+      # Ensemencer la base de données
+      - name: Ensemencer la base de données
+        working-directory: backend
+        run: npm run prisma:seed
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+        continue-on-error: true
+      
+      # Démarrer le backend en arrière-plan
+      - name: Démarrer le backend
+        working-directory: backend
+        run: |
+          npm run start > /tmp/backend.log 2>&1 &
+          echo $! > /tmp/backend.pid
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+          NODE_ENV: test
+          PORT: 4000
+
+      # Attendre que le backend soit prêt (port 4000)
+      - name: Attendre le démarrage du backend
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:4000/api/health 2>/dev/null; then
+              echo "Backend is ready on port 4000"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+          echo "Backend health check failed"
+          cat /tmp/backend.log
+          exit 1
+      
+      # Exécuter les tests E2E du groupe 1
+      - name: Exécuter les tests E2E - Groupe 1
+        if: matrix.group == 1
+        working-directory: backend
+        run: |
+          npm run test:e2e -- auth.e2e-spec.ts users.e2e-spec.ts travels.e2e-spec.ts booking.e2e-spec.ts payments.e2e-spec.ts checkout.e2e-spec.ts pro.e2e-spec.ts admin.e2e-spec.ts dsar.e2e-spec.ts reviews.e2e-spec.ts
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+          API_URL: http://localhost:4000
+      
+      # Exécuter les tests E2E du groupe 2
+      - name: Exécuter les tests E2E - Groupe 2
+        if: matrix.group == 2
+        working-directory: backend
+        run: |
+          npm run test:e2e -- groups.e2e-spec.ts marketing.e2e-spec.ts transport.e2e-spec.ts finance.e2e-spec.ts restauration.e2e-spec.ts client.e2e-spec.ts insurance.e2e-spec.ts rooming.e2e-spec.ts post-sale.e2e-spec.ts legal.e2e-spec.ts
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+          API_URL: http://localhost:4000
+      
+      # Exécuter les tests E2E du groupe 3
+      - name: Exécuter les tests E2E - Groupe 3
+        if: matrix.group == 3
+        working-directory: backend
+        run: |
+          npm run test:e2e -- documents.e2e-spec.ts exports.e2e-spec.ts uploads.e2e-spec.ts pro-travels.e2e-spec.ts bus-stops.e2e-spec.ts pro-formation.e2e-spec.ts pro-onboarding.e2e-spec.ts pro-quick-sell.e2e-spec.ts pro-revenues.e2e-spec.ts notifications.e2e-spec.ts
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+          API_URL: http://localhost:4000
+      
+      # Exécuter les tests E2E du groupe 4
+      - name: Exécuter les tests E2E - Groupe 4
+        if: matrix.group == 4
+        working-directory: backend
+        run: |
+          npm run test:e2e -- health.e2e-spec.ts seo.e2e-spec.ts webhook.e2e-spec.ts admin-checkout.e2e-spec.ts admin-documents.e2e-spec.ts travel-lifecycle.e2e-spec.ts cancellation.e2e-spec.ts cancellation-comprehensive.e2e-spec.ts
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/eventy_test
+          API_URL: http://localhost:4000
+      
+      # Télécharger les résultats E2E
+      - name: Télécharger les résultats E2E
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results-group-${{ matrix.group }}
+          path: backend/test/e2e/results
+          retention-days: 30
+
+  # ===== JOB FRONTEND PLAYWRIGHT E2E TESTS =====
+  frontend-e2e:
+    name: Frontend E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      # Vérifier le code source
+      - name: Vérifier le code source
+        uses: actions/checkout@v4
+      
+      # Configurer Node.js 18
+      - name: Configurer Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: 'frontend/package-lock.json'
+      
+      # Installer les dépendances du frontend
+      - name: Installer les dépendances du frontend
+        working-directory: frontend
+        run: npm ci
+      
+      # Installer les navigateurs Playwright
+      - name: Installer les navigateurs Playwright
+        working-directory: frontend
+        run: npx playwright install --with-deps
+      
+      # Construire le projet Next.js
+      - name: Construire le projet Next.js
+        working-directory: frontend
+        run: npm run build
+      
+      # Démarrer le serveur frontend en mode production
+      - name: Démarrer le serveur frontend
+        working-directory: frontend
+        run: |
+          npm run start > /tmp/frontend.log 2>&1 &
+          echo $! > /tmp/frontend.pid
+        env:
+          PORT: 3000
+
+      # Attendre que le serveur soit prêt (port 3000)
+      - name: Attendre le démarrage du serveur frontend
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 2>/dev/null; then
+              echo "Frontend server is ready on port 3000"
+              exit 0
+            fi
+            echo "Waiting for frontend server... ($i/30)"
+            sleep 2
+          done
+          echo "Frontend server health check failed"
+          cat /tmp/frontend.log
+          exit 1
+      
+      # Exécuter les tests Playwright
+      - name: Exécuter les tests Playwright E2E
+        working-directory: frontend
+        run: npx playwright test
+        continue-on-error: true
+      
+      # Télécharger les résultats Playwright
+      - name: Télécharger les résultats Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: frontend/playwright-report
+          retention-days: 30
+      
+      # Télécharger les vidéos de test si disponibles
+      - name: Télécharger les vidéos Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-videos
+          path: frontend/test-results
+          retention-days: 30
