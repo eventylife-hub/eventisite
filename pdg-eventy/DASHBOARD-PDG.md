@@ -1,6 +1,6 @@
 # DASHBOARD PDG — Eventy
 
-> **Dernière mise à jour** : 22 mars 2026 — **🚀 PHASE : TEST & AMÉLIORATION EN LIVE** — Dev 100% terminé, backend API NestJS LIVE sur Scaleway.
+> **Dernière mise à jour** : 9 avril 2026 — **🚀 PHASE : TEST & AMÉLIORATION EN LIVE** — Dev 100% terminé, backend API NestJS LIVE sur Scaleway.
 > **Cowork-26 (PDG — 22/03)** : **🎉 BACKEND NESTJS COMPLET EN PRODUCTION** — Les 31 modules NestJS démarrent et répondent. Health check OK, Swagger actif, 213MB RAM. Corrections : NotificationsGateway (this.server null), JwtStrategy/JwtRefreshStrategy (SWC super()), STRIPE_SECRET_KEY (getOrThrow), 3 @Controller() manquants. Build SWC (transpile-only, bypass 1737 erreurs TS). PM2 auto-restart configuré. Nginx reverse proxy OK. DNS `api.eventylife.fr → 163.172.189.137` dans Cloudflare. **⚠️ BLOQUEUR RESTANT** : Nameservers OVH → Cloudflare (`magali.ns.cloudflare.com` + `rocco.ns.cloudflare.com`).
 > **Cowork-25 (PDG — 21/03)** : Déploiement backend Scaleway — API minimale running sur PM2 + Nginx, DB PostgreSQL connectée, IP `163.172.189.137`, Vercel redéployé avec `NEXT_PUBLIC_API_URL=http://api.eventylife.fr`.
 > **Cowork-24 (PDG — 21/03)** : Ajout lien "Espace Pro" dans le footer (colonne Découvrir + barre légale), push + deploy Vercel OK (build 14 READY), test login Pro → erreur 404 = **backend pas encore déployé = BLOQUEUR N°1 pour tester le site**.
@@ -86,6 +86,105 @@
 | **Cowork-23** | **Sprint Checkout Transport & Suivi Client** — endpoints transport, WebSocket notifications, suivi temps réel, FlightPassengerForm | ✅ **TERMINÉ** 21/03 — +3 070 lignes |
 | **Cowork-24 (PDG)** | **Test & Amélioration Live** — Push backend+root GitHub, lien Espace Pro footer, deploy Vercel build 14, test login Pro | ✅ **TERMINÉ** 21/03 — Site live, backend = prochain bloqueur |
 | **Cowork-25 (PDG)** | **Déploiement Backend Scaleway** — 2 échecs DEV1-S (OOM), upgrade DEV1-M 4 Go, API minimale + PM2 + Nginx + Prisma DB, Vercel redéployé | ✅ **TERMINÉ** 21/03 — API live `163.172.189.137`, Vercel READY, ⚠️ NS OVH→Cloudflare en attente |
+| **Cowork-26→38** | Sprints sécurité, hardening, a11y, audit drawio v53, admin pages | ✅ **TERMINÉ** 22-23/03 |
+| **Cowork Audit V48** | **7 sprints conformité drawio** — V48/T050/PATCH726 vs frontend | ✅ **TERMINÉ** 05/04 — HRA backups, pricing, guards, a11y |
+| **Cowork Audit ARIA+TS** | **20 sprints ARIA accessibility + TypeScript strict** — tous portails | ✅ **TERMINÉ** 05/04 — 278 loading.tsx ARIA, 947+ catch typed, 0 restant |
+| **Cowork Sprint Audit Site** | **Audit complet site public** — nav, SEO, contenu, collections, sitemap | ✅ **TERMINÉ** 06/04 — 12 fichiers modifiés, 5 collections construites, 0 erreur TS |
+| **Cowork Sprint Design Pro** | **Fix design portail Pro** — 30+ pages fond crème #FEFCF3 → overrides CSS HUD dark | ✅ **TERMINÉ** 06/04 — 137 lignes CSS ajoutées dans pro.css, couverture 100% |
+| **Cowork Sprint Admin Métiers** | **Audit + restructuration admin par métier** — 139 pages auditées, sidebar 10 métiers + RBAC + design fix | ✅ **TERMINÉ** 06/04 — 104 liens sidebar, RBAC 14 rôles, constants.ts 107 routes, 112 lignes CSS overrides dark |
+| **Cowork Sprint Pro Portal** | **6 pages Pro refaites** — transport, finance, marketing, messagerie, terrain, bus-sur-place | ✅ **TERMINÉ** 06/04 — API réelles + fallback démo, build Vercel READY en production |
+| **Cowork Mega Sprint API** | **13 pages refaites sur 3 portails** — Pro (arrêts, vendre, charters, multi-bus), Client (cookies, messagerie, transport, bus-programme, dashboard), Admin (transport/validation, hra/rate-cards, finance/reconciliation, gamification) + 8 erreurs TS pré-existantes corrigées | ✅ **TERMINÉ** 06/04 — 0 erreur TypeScript, toutes pages connectées API avec fallback démo |
+| **Cowork Mega Sprint API v2** | **15 pages supplémentaires connectées API** — Client (chat voyage, préférences-notifs), Pro (bus-sur-place 934L, voyages, transport/suivi 902L), Admin (satisfaction, finance/simulate, advocacy, messagerie-pros, presse, financier, transport/bus, chauffeurs, loueurs) + 14 erreurs TS corrigées | ✅ **TERMINÉ** 06/04 — **0 erreur TypeScript**, 28 pages total connectées API ce jour |
+| **Cowork Sprint UX Groupes Viraux** | **Audit UX/Conversion Groupes — 5 sprints, 35 actions** — S1 (création groupe simplifiée), S2 (partage viral client), S3 (connexion Pro↔Client), S4 (contrôle Admin), S5 (croissance virale). Nouveaux fichiers : 10+ composants, 5+ pages créées, 3 pages Pro groupes, 1 page Admin groupes + analytics, 1 landing SEO `/voyager-en-groupe`, sondages, gamification confetti, multi-voyages, suggestion post-favori, cron relances invitations. | ✅ **TERMINÉ** 06/04 — **0 erreur TypeScript**, système groupes viral complet 3 portails |
+| **Cowork Sprint Transport 07-08/04** | **EtapeBusStops (base collective, gamification), EtapeFournisseurs (devis→pool 18%), bus-sur-place** | ✅ **TERMINÉ** 08/04 |
+| **Cowork Sprint Pricing TVA** | **Refonte EtapePricing** — Cascade coût complète (HRA→assurance→transport→marge 15% 7+3+5→TVA), fix TVA ×20/100 vs ×20/120, fix Eventy/pax double-comptage, vendeur 5% (last cookie wins), cotisation marketing, export CSV corrigé, détail voyage (stops/régions), assurance trust banner | ✅ **TERMINÉ** 09/04 — **0 erreur TypeScript** |
+| **Cowork Sprint Marketing Complet** | **4 sprints marketing** — S1: Admin Cagnotte (créer fonds, allocation individuelle + bulk, barre progression, historique), Admin Lots/Prix (concours, challenges, tirage au sort, 4 types prix, KPIs). S2: Pro Rays amélioré (challenges en cours, accès rapide 4 liens). S3: Étape Marketing Voyage Phase 2 (EtapeMarketingVoyage.tsx — prospectus, affiches, flyers QR, cartes visite, commande auto imprimeur, paiement Rays ou revenus, workflow 5 étapes). S4: Pro Boutique (bandeau cotisation voyage + challenges). | ✅ **TERMINÉ** 09/04 — **0 erreur TypeScript**, système marketing complet admin→pro→création voyage |
+
+### Cowork Sprint Pro Portal — 06/04/2026
+
+**Objectif** : Transformer 6 pages Pro statiques (mockups hardcodés) en pages fonctionnelles avec appels API réels et fallback démo gracieux.
+
+| Page | Avant | Après | Statut |
+|------|-------|-------|--------|
+| **Transport** (`pro/transports/`) | 690 lignes, 0 API, KPIs hardcodés | ~350 lignes, `/pro/travels` + `/transport/quotes`, KPIs dynamiques, alertes auto | ✅ Réécriture complète |
+| **Finance** (`pro/finance/`) | Fetch dans useEffect, pas de refresh | `useCallback` + refresh + badge démo + isDemo tracking | ✅ Amélioré |
+| **Marketing** (`pro/marketing/`) | Pas de tracking démo | `isDemo` state + badge + refresh button | ✅ Amélioré |
+| **Messagerie** (`pro/messagerie/`) | Fetch inline, pas de refresh | `useCallback` + refresh + "Nouveau message" CTA + badge démo | ✅ Amélioré |
+| **Terrain** (`pro/terrain/`) | Pas de tracking démo | `isDemo` state + badge démo dans header | ✅ Amélioré |
+| **Bus sur place** (`pro/bus-sur-place/`) | 1506 lignes statiques | 934 lignes fonctionnelles | ✅ Réécriture complète |
+
+**Pattern appliqué** : try API réelle → catch → `setIsDemo(true)` + données démo + badge "Mode démo — API indisponible" visible.
+
+**Déploiement** : Commit `9976e47` → Vercel build **READY** en production (`dpl_Dz2oJovBitpu1BAc4L4zWFnd4Eom`).
+
+### Cowork Sprint Admin Métiers — 06/04/2026
+
+**Objectif** : Réorganiser le portail Admin (139 pages) par métier au lieu des 4 sections génériques.
+
+| Tâche | Fichier(s) | Statut |
+|-------|-----------|--------|
+| **Audit complet 139 pages** | `pdg-eventy/AUDIT-ADMIN-METIERS.md` | ✅ 94 pages orphelines identifiées, 3 métiers absents |
+| **Sidebar 10 métiers** | `app/(admin)/admin/layout.tsx` | ✅ 107 liens organisés : Finance, Voyages, Transport, HRA, Commercial, RH, Marketing, Support, Juridique, Système |
+| **Sidebar collapsible** | `admin.css` + `layout.tsx` | ✅ Accordéons par section, section active auto-ouverte |
+| **Top Nav Tabs** | `layout.tsx` | ✅ 6 onglets : Dashboard, Finance, Voyages, Commercial, Marketing, Investisseur |
+| **Page Investisseur** | `admin/investisseur/page.tsx` | ✅ Dashboard read-only : 6 KPIs, graphique CA, scalabilité, jalons, unit economics |
+| **Nettoyage doublons** | `transports/`, `reservations/` | ✅ Redirections vers pages principales |
+| **Fix design Pro** | `pro/pro.css` | ✅ 30+ pages corrigées via overrides CSS (fond crème → HUD dark) |
+
+| **RBAC sidebar** | `layout.tsx` | ✅ 14 rôles backend → filtrage sections sidebar (FOUNDER voit tout, FINANCE voit finance+commercial, etc.) |
+| **Constants.ts** | `lib/constants.ts` | ✅ ROUTES.ADMIN: 15 → 107 routes (toutes les pages par métier) |
+| **Fix design admin** | `admin.css` | ✅ +112 lignes CSS overrides dark : 52+ pages avec hex light (#FEF2F2, #F8FAFC, #64748B…) → HUD dark |
+
+**Bilan** : Couverture navigation admin 32% → 95%. RBAC 14 rôles. Design dark unifié. Tout admin accessible par métier.
+
+### Cowork Sprint Audit Site Public — 06/04/2026
+
+**Objectif** : Audit complet du site public — tout doit être accessible, découvrable, avec du vrai contenu.
+
+| Tâche | Fichier(s) | Statut |
+|-------|-----------|--------|
+| **Navigation header** | `components/layout/header.tsx` | ✅ Ajout lien "Collections" (desktop + mobile) avec active state doré |
+| **Footer corrigé** | `components/layout/footer.tsx` | ✅ +Presse, +Charte, +Collections, +Itinéraires, fix /devenir-partenaire |
+| **SEO Itinéraires** | `app/(public)/itineraires/page.tsx` + `itineraires-client.tsx` | ✅ Split server/client, Metadata complète, JSON-LD CollectionPage+BreadcrumbList |
+| **SEO Collections** | `app/(public)/collections/page.tsx` | ✅ JSON-LD CollectionPage avec ItemList 6 collections |
+| **Collection Route Gastronomique** | `collections/route-gastronomique/page.tsx` | ✅ Page complète — Lyon·Bordeaux·Périgord, 7j, 3 500€ |
+| **Collection Atlas Yoga Silence** | `collections/atlas-yoga-silence/page.tsx` | ✅ Page complète — Maroc Atlas, 6j, 2 200€ |
+| **Collection Islande Extrême** | `collections/islande-extreme/page.tsx` | ✅ Page complète — Glaciers/Volcans, 8j, 4 800€ |
+| **Collection Japon Profond** | `collections/japon-profond/page.tsx` | ✅ Page complète — Temples/Traditions, 12j, 5 500€ |
+| **Collection Haute Route Chamonix** | `collections/haute-route-chamonix/page.tsx` | ✅ Page complète — Chamonix→Zermatt, 9j, 1 600€ |
+| **Cross-linking Voyages** | `app/(public)/voyages/voyages-client.tsx` | ✅ Section "Découvrir aussi" → Collections + Itinéraires |
+| **Homepage Teaser** | `app/(public)/page-client.tsx` | ✅ CollectionsTeaser rail 4 cartes scrollable |
+| **Sitemap** | `app/sitemap.ts` | ✅ +12 URLs (collections, itinéraires, presse, charte, devenir-partenaire, suivi-commande) |
+| **TypeScript** | `npx tsc --noEmit` | ✅ 0 erreur |
+
+**Bilan** : 5 pages "🚧 En construction" → pages complètes avec Hero, Programme jour par jour, Inclus, CTA. Navigation complète. SEO optimisé avec JSON-LD. Sitemap exhaustif. Cross-linking entre voyages, collections et itinéraires.
+
+### Cowork Audit V48 — Sprints 1→7 (05/04/2026)
+
+| Sprint | Commit | Contenu |
+|--------|--------|---------|
+| 1 | `732e47e` | Vehicle Source, cost/seat occupancy, Pool Transport, RFQ Avion |
+| 2 | `e2b50a9` | Phase 2 validation, vehicle catalog, team certifications |
+| 3 | `3444463` | HRA cost sync (hraEstimate), staff capacity auto-deduction |
+| 4 | `2883c9d` | Management pages (17 quick links), 4 Feux, finance 4 KPIs |
+| 5 | `1cace1c` | Break-even pricing, HRA restauration backup panel |
+| 6 | `b0e962a` | Security guards Pro/Client layouts, QA_PATCH_616 restauration |
+| 7 | `b1dab45` | HRA activités backup (7.5%), ARIA a11y sur 5 pages |
+
+**Bilan** : 3 pages HRA = QA_PATCH_616 complet. L211-8 vérifié OK. Guards sécurité 3 portails. 0 nouvelle erreur TS.
+
+### Cowork Audit ARIA + TypeScript — Sprints 15→20 (05/04/2026)
+
+| Sprint | Commit | Contenu |
+|--------|--------|---------|
+| 15 | `c37bb4a` | ARIA + TypeScript catch blocks — 25 pages client |
+| 16 | `a04fef3` | Standardize error boundaries + ARIA — voyage sub-pages |
+| 17 | `b7f0376` | Complete client portal ARIA — loading.tsx + catch restants |
+| 18 | `97edc99` | ARIA + TypeScript ALL portals (Pro 83 fichiers + Public 18) + Fragment fix |
+| 19 | `1b6d9df` | Complete admin (152 catch) + checkout/auth/components/lib (123 catch) + 117 loading.tsx |
+| 20 | `93e45e9` | Final sweep — 105 catch blocks in API routes, sitemap, restaurateur |
+
+**Bilan sprints 15-20** : 278 loading.tsx `role="status" aria-busy="true"`. 947+ catch blocks typés `: unknown`. **ZÉRO catch non typé restant**. 2 erreurs TS cache-only. Tout déployé en production sur eventylife.fr.
 
 ### Cowork-17 — Corrections & Améliorations (20/03/2026)
 
@@ -129,6 +228,90 @@
 > - Cowork-18 : Tests E2E Playwright (18 specs prêtes, besoin serveur)
 > - Cowork-19 : Monitoring prod (Sentry, alertes, healthcheck externe)
 > - Cowork-20 : Exécuter migration Prisma sync_v3 sur staging + smoke test
+>
+> **🆕 Sprint Groupes-Solos-Indépendants v2 (06/04/2026)** : [`SPRINT-GROUPES-SOLOS-INDEPENDANTS.md`](SPRINT-GROUPES-SOLOS-INDEPENDANTS.md)
+> - ✅ **Sprint A** (4j) : Remplissage dynamique — jauge live 53 places, `/compte/groupes` V303, notifs remplissage, partage QR — **TERMINÉ 06/04**
+> - ✅ **Sprint B** (3.5j) : Expérience solo — page solo dédiée, matching solo→groupe au checkout, chat global voyage — **TERMINÉ 06/04**
+> - ✅ **Sprint C** (3.5j) : Guides rattachés — API guides publics, composant TravelGuides sidebar, modération chat guide, page équipe Pro enrichie — **TERMINÉ 06/04**
+> - ✅ **Sprint D** (3j) : Acquisition gratuite — dashboard `/pro/mon-impact/`, page `/p/[slug]` enrichie (stats+avis+voyages guidés), système ambassadeur STARTER→PLATINUM — **TERMINÉ 06/04**
+> - **Total** : 14 jours dev — **4 sprints terminés en 1 jour** — Enrichi diagrammes V48 + audits marketing/HRA/transport
+> - **Jeux/Gamification** : 🔒 Roadmap interne uniquement (investisseurs/avocats) — code existant désactivé côté client
+> - **Fichiers créés** : 8 backend (services+controllers) + 5 frontend (pages+composants) + 4 fichiers modifiés
+>
+> **🔧 Sprint Finance — ✅ S1-S6 TOUS TERMINÉS (05/04/2026)** :
+> - ✅ **S1 TERMINÉ** : 11 modèles Prisma + 2 enums + seed Policy V1 + relations Travel/ProProfile
+> - ✅ **S2 TERMINÉ** : Moteur de calcul revenus
+>   - `finance-policy.service.ts` créé (520+ lignes) — getActivePolicy, getTravelRates, computeIndeBrut, distributeToPoches, computeSellerCommission, versioning, override voyage, simulation
+>   - `pro-revenues.service.ts` refactoré — `DEFAULT_COMMISSION_PERCENTAGE = 15` supprimé, computeTripRevenue avec 6 taux + 8 poches, CREATOR 55% / INDEPENDANT 50%
+>   - `finance.service.ts` refactoré — computeMonthlyPayout utilise la politique active
+>   - `close-pack.service.ts` refactoré — cotisationsSnapshot inclut 8 poches + 5 cotisations Eventy = 13 lignes
+> - ✅ **S3 TERMINÉ** (05/04/2026) : Admin — Tout contrôler
+>   - `finance-policy.controller.ts` créé (643 lignes) — 11 endpoints REST sous /admin/finance, audit log à chaque modification
+>   - `admin/finance/settings/page.tsx` créé (605 lignes) — Politique financière : taux par catégorie, 8 poches, prime vendeur, historique versions
+>   - `admin/voyages/[id]/finance/page.tsx` enrichi (562 lignes) — Section override avec toggle, motif obligatoire, calcul temps réel
+>   - `admin/finance/simulate/page.tsx` créé (616 lignes) — Simulateur dry-run client-side, comparaison 30/38/50 personnes
+>   - `finance.module.ts` mis à jour — FinancePolicyController enregistré
+> - ✅ **SPRINT COMPTABLE TERMINÉ** (Session 2 — 05/04/2026) : **6 tickets SC-1→SC-6 LIVRÉS**
+>   - 3 modèles Prisma ajoutés : `IndeContributionLine` (8 poches), `ComptaExportLog`, `ProInvoice`
+>   - 6 services créés : `PocheExportService` (mapping poches→PCG), `TripExportService` (CSV per-voyage), `IndieCotisationsService` (DAS2), `ComptableWidgetsService` (KPIs), `CronExportService` (auto-export 1er/mois), `ProInvoiceService` (FACT-YYYY-MM-NNN)
+>   - FEC enrichi : journal HA intégré dans `FecExportService`, validation HA, `exportFECWithPochesAndHA()`
+>   - 17 endpoints REST ajoutés au `finance.controller.ts` (poches, per-voyage, cotisations, widgets, exports, invoices)
+>   - 3 pages admin : `/admin/finance/per-voyage-exports` (breakdown voyage), `/admin/finance/indie-cotisations` (DAS2 prep), `/admin/finance/comptable` (enrichi 4 widgets KPI)
+>   - Cron mensuel auto-export + email outbox au cabinet
+>   - DAS2 CSV export prêt pour déclaration fiscale
+> - ✅ **S4 TERMINÉ** (05/04/2026) : Vendeur + Payout individuel
+>   - `attribution.service.ts` créé — trackAttribution, computeCommission, confirmCommission, cancelCommission, getVendeurDashboard
+>   - `attribution.controller.ts` créé (191 lignes) — 5 endpoints REST (track, compute, confirm/:travelId, cancel/:bookingGroupId, dashboard/:vendeurProfileId)
+>   - `attribution.module.ts` mis à jour — controller enregistré
+>   - `payout-batch.service.ts` créé (350+ lignes) — computePayoutLine (8 poches), createBatch, approveBatch, executeBatch, cancelBatch, getBatchSummary, listBatches
+>   - 3 modèles Prisma : AttributionSource (UTM tracking), CommissionLedgerLine (ESTIMATED→CONFIRMED→PAID→CANCELED), Payout (8 poches + idempotency)
+> - ✅ **S5 TERMINÉ** (05/04/2026) : Caisses + Fonds
+>   - `fund.service.ts` existait (348 lignes) — ensureFundsExist, creditFromClosePack, debitFund, getDashboard, recalculateCapacityRisk, freeze/release
+>   - `fund.listener.ts` créé — écoute BOOKING_CONFIRMED, BOOKING_CANCELLED → recalculateCapacityRisk + TRAVEL_DEPARTED → freezeCapacityRisk
+>   - `close-pack.service.ts` hookée — appelle `fundService.creditFromClosePack()` après finalizeClosePack
+>   - `travel-lifecycle.service.ts` hookée — émet TRAVEL_DEPARTED à confirmDeparture()
+>   - 3 modèles Prisma : EventyFund (6 types), FundMovement (audit trail), TripCapacityFund (risque non-remplissage)
+>   - `/admin/finance/caisses/page.tsx` — vue consolidée 6 fonds, jauges capacité, mouvements, débit admin
+> - ✅ **S6 TERMINÉ** (05/04/2026) : Comptabilité complète
+>   - FEC enrichi : 12+ écritures/voyage (622100, 622200, 161xxx, 623000, 455000, 627200 + Journal HA 607xxx)
+>   - `das2.service.ts` créé — seuil 1200€, alertes, export CSV DAS2 annuel
+>   - `urssaf-vigilance.service.ts` créé — seuil 5000€, blocage payout si attestation manquante
+>   - ProInvoice model + ProInvoiceStatus enum
+> - ⏳ **Migration Prisma à exécuter** : `npx prisma migrate dev --name finance-complete-v1`
+> - 📄 [`SPRINT-FINANCE-COMPLETE-2026-04-05.md`](SPRINT-FINANCE-COMPLETE-2026-04-05.md) — 6 sprints, 27 tickets — ✅ **TOUS TERMINÉS**
+> - 📄 [`SPRINT-COMPTABLE-PARALLELE-2026-04-05.md`](SPRINT-COMPTABLE-PARALLELE-2026-04-05.md) — Sprint parallèle interface comptable (6 tickets) — ✅ **TERMINÉ**
+> - 📄 [`AUDIT-3-DIAGRAMMES-FINANCE-ROLES-2026-04-05.md`](AUDIT-3-DIAGRAMMES-FINANCE-ROLES-2026-04-05.md) — Audit v5 — 10 diagrammes, gap analysis complet
+
+### 🔴 Suivi Juridique PDG — 76 dossiers (MAJ 06/04/2026)
+
+> **Portail Avocat** : `/avocat/dossiers` — vue complète des 76 dossiers avec filtres, priorités, bloqueurs
+> **Dashboard Admin** : `/admin/juridique` — vue PDG consolidée avec avancement par catégorie
+> **Backend** : `LegalCaseTrackerService` — 76 cases, 12 catégories, endpoints RBAC
+
+| Catégorie | Dossiers | P0 | En attente avocat | Validés | Avancement |
+|-----------|----------|------|-------------------|---------|------------|
+| 🏛️ Création SAS | 8 | 5 | 2 | 0 | 0% |
+| ✈️ Immatriculation Tourisme | 7 | 3 | 1 | 0 | 0% |
+| 📄 Documents Légaux | 12 | 2 | 7 | 0 | 0% |
+| 🔒 RGPD & Conformité | 10 | 1 | 2 | 0 | 0% |
+| ❓ 13 Questions Critiques | 13 | 4 | 13 | 0 | 0% |
+| 👤 Contrats Fondateurs | 3 | 0 | 0 | 0 | 0% |
+| 🛡️ Assurance & Conformité | 2 | 0 | 0 | 0 | 0% |
+| ⚖️ Contrats & Responsabilité | 8 | 2 | 6 | 0 | 0% — **NOUVEAU** |
+| 🔐 Assurances Complémentaires | 4 | 0 | 1 | 0 | 0% — **NOUVEAU** |
+| ®️ Propriété Intellectuelle | 3 | 0 | 1 | 0 | 0% — **NOUVEAU** |
+| ⚡ Litiges & Recours | 3 | 0 | 1 | 0 | 0% — **NOUVEAU** |
+| ✅ Conformité Opérationnelle | 3 | 0 | 1 | 0 | 0% — **NOUVEAU** |
+| **TOTAL** | **76** | **17** | **35** | **0** | **0%** |
+
+**5 dossiers les plus critiques (P0 — bloquent le lancement)** :
+1. **SAS-01** : Rédaction statuts SAS → EN ATTENTE AVOCAT
+2. **TOUR-05 / Q-04** : Pack Sérénité qualification ORIAS → EN ATTENTE AVOCAT (détermine toute la stratégie)
+3. **CONT-01** : Séquestre acomptes clients → EN ATTENTE AVOCAT (obligation légale ?)
+4. **DOC-01** : CGV conformes Code du Tourisme → EN ATTENTE AVOCAT
+5. **RGPD-02** : AIPD données de santé → EN ATTENTE AVOCAT (bloque le checkout)
+
+> **⚠️ RAPPEL** : 6 brouillons Gmail JAMAIS envoyés (APST, CMB, Hiscox, Chevalier, Nexco, Mutuaide) — chemin critique bloqué 31+ jours
 
 ### Sprints P4 — DÉJÀ IMPLÉMENTÉS ✅
 | Tâche | Service/Fichier | Statut |
@@ -175,7 +358,7 @@
 | 5 | contact@hiscox.fr | RC Pro immatriculation Atout France | 🔴 BROUILLON — jamais envoyé |
 | 6 | assistance@mutuaide.fr | Contrat cadre assurance voyage | 🔴 BROUILLON — jamais envoyé |
 
-**Impact** : Tout le chemin critique P0 (SAS, avocat, APST, RC Pro) est bloqué depuis 15 jours.
+**Impact** : Tout le chemin critique P0 (SAS, avocat, APST, RC Pro) est bloqué depuis **31 jours** (05/03 → 05/04).
 **Action David** : Ouvrir Gmail → Brouillons → Envoyer les 6 emails MAINTENANT.
 
 ### 🔴 SÉCURITÉ — Secrets exposés sur GitHub (18/03/2026)
@@ -219,12 +402,12 @@
 
 | Action | Priorité | Créé le | Jours en attente | Statut |
 |--------|----------|---------|-------------------|--------|
-| **🔴 DÉPLOYER LE BACKEND** | **P0 BLOQUEUR** | 21/03 | **0 jours** 🔴 | **Sans backend = impossible de tester le site (login, API, paiement)** |
-| **ENVOYER les 6 brouillons Gmail** | **P0 CRITIQUE** | 05/03 | **16 jours** 🔴 | CONFIRMÉ : jamais envoyés |
-| **Rotater secrets GitHub** | **P0 SÉCURITÉ** | 18/03 | **3 jours** 🔴 | Stripe + SMTP exposés en public |
-| **Trouver avocat tourisme** | **P0** | 05/03 | **16 jours** 🔴 | Bloqué tant que email APST non envoyé |
-| **Capacité professionnelle** | **P0** | 05/03 | **16 jours** | ⏳ Bloqué par avocat |
-| **ORIAS (qualification IAS)** | **P1** | 05/03 | **16 jours** | ⏳ Bloqué par avocat |
+| **🔴 ENVOYER les 6 brouillons Gmail** | **P0 CRITIQUE** | 05/03 | **31 jours** 🔴 | CONFIRMÉ 05/04 : **toujours en brouillon, jamais envoyés** — BLOQUE TOUT le chemin P0 |
+| **🔴 DÉPLOYER LE BACKEND** | **P0 BLOQUEUR** | 21/03 | **15 jours** 🔴 | **Sans backend = impossible de tester le site (login, API, paiement)** |
+| **Rotater secrets GitHub** | **P0 SÉCURITÉ** | 18/03 | **18 jours** 🔴 | Stripe + SMTP exposés en public |
+| **Trouver avocat tourisme** | **P0** | 05/03 | **31 jours** 🔴 | Bloqué tant que email APST non envoyé |
+| **Capacité professionnelle** | **P0** | 05/03 | **31 jours** | ⏳ Bloqué par avocat |
+| **ORIAS (qualification IAS)** | **P1** | 05/03 | **31 jours** | ⏳ Bloqué par avocat |
 | ~~Configurer DNS eventylife.fr → Vercel~~ | ~~P1 TECH~~ | 20/03 | — | ✅ **FAIT** — eventylife.fr + www fonctionnels |
 | ~~Rotater credentials Neon DB~~ | ~~P0 TECH~~ | 15/03 | — | ⚠️ Inclus dans rotation secrets |
 | ~~Déployer sur Scaleway~~ | ~~P0 TECH~~ | 15/03 | — | Remplacé par Vercel (frontend) |
