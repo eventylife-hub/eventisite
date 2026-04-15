@@ -95,6 +95,16 @@
 
 - ⚠️ **Aucun error boundary** → ✅ Ajouté `maisons/error.tsx` avec `maisonsErrorTheme` (dark luxury amber)
 
+### 2.4 Problèmes détectés
+
+| # | Problème | Sévérité | Pages |
+|---|----------|----------|-------|
+| 1 | `loading` state déclaré mais jamais consommé (pas de skeleton) | 🟡 P1 | Toutes les 8 catégories |
+| 2 | Bouton "Refuser" mission = pas de onClick sur hebergement | 🟡 P1 | hebergement |
+| 3 | Boutons "Accepter/Refuser" ne persistent pas vers API | 🟡 P1 | hebergement, activites, restauration |
+| 4 | 5 pages sont des clones identiques (165 lignes, seules les données changent) | 🟢 P2 | coordination, decoration, image-souvenirs, securite, transport |
+| 5 | `ACCENT` const déclarée mais jamais utilisée | 🟢 P2 | 5 pages clones |
+
 ---
 
 ## 3. Portail /ambassadeur (7 pages)
@@ -113,10 +123,20 @@
 | `/ambassadeur/catalogue` | ✅ Complet | Demo | ⭐⭐⭐ | Catalogue voyages à vendre |
 | `/ambassadeur/ventes` | ✅ Complet | Demo | ⭐⭐⭐ | Historique ventes |
 | `/ambassadeur/commissions` | ✅ Complet | Demo | ⭐⭐⭐ | Suivi commissions |
-| `/ambassadeur/outils` | ✅ Complet | Demo | ⭐⭐⭐ | QR, liens, flyers |
-| `/ambassadeur/profil` | ✅ Complet | Demo | ⭐⭐⭐ | Profil ambassadeur |
+| `/ambassadeur/outils` | ✅ Complet | **100% mock** | ⭐⭐⭐ | QR placeholder, liens, templates WhatsApp/Email — **0 appel API** |
+| `/ambassadeur/profil` | ✅ Complet | Demo + API read | ⭐⭐⭐ | Bouton "Enregistrer" **visuel uniquement** — ne persiste pas |
 
-### 3.3 Problème corrigé
+### 3.3 Problèmes détectés
+
+| # | Problème | Sévérité | Page |
+|---|----------|----------|------|
+| 1 | Bouton "Enregistrer" profil = `setSaved(true)` sans appel API | 🟡 P1 | profil |
+| 2 | QR code = placeholder (cadre en pointillés, pas de génération) | 🟡 P1 | outils |
+| 3 | 0 appel API sur outils — tracking ref `AMB-001` hardcodé | 🟡 P1 | outils |
+| 4 | Bouton "Exporter CSV" ventes = décoratif (pas de onClick) | 🟢 P2 | ventes |
+| 5 | `toLocaleString` inconsistant sur commissions | 🟢 P2 | commissions |
+
+### 3.4 Problème corrigé
 
 - ⚠️ **Aucun error boundary** → ✅ Ajouté `ambassadeur/error.tsx` avec `ambassadeurErrorTheme` (dark cyan)
 
