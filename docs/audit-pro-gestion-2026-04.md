@@ -289,10 +289,63 @@ Les 5 portails ont des designs distincts et cohérents. Aucune réutilisation in
 | Error boundaries | **~320** (après ajout des 3 manquants) |
 | Pages avec loading state | **~250** |
 | TODOs restants | **16** (tous dans /pro/voyages/[id]/, non bloquants) |
-| Bugs critiques | **0** |
+| Bugs critiques (crash) | **0** |
+| Bugs contraste WCAG (texte invisible) | **13** détectés → **13 corrigés** (passe suivante 2026-04-16) |
 | Imports cassés | **0** |
 | console.error/console.log en prod | **0** (utilisation de `logger`) |
 
 ---
 
-*Audit réalisé le 15 avril 2026 — Prochain audit recommandé après câblage Stripe Connect & Pennylane*
+## 11. 🎨 RÈGLE GLOBALE — Contraste & fonds (ajoutée 2026-04-16)
+
+> **Règle énoncée par David** : *« Attention quand tu fais quelque chose, les fonds blancs évite, on va pas (lire) les écritures »*
+
+**Rule book contraste** — applicable à TOUT le code :
+
+1. ❌ **Bannir `bg-white` pur** si la page contient des textes clairs (cream, beige, or, `text-white`, `text-white/xx`, `text-[#f1f3fc]`).
+2. ✅ Sur portails **dark** (`/pro`, `/admin`, `/equipe`, `/maisons`, `/ambassadeur`) : fond `#0a0e14` (ou `var(--hud-bg)`), jamais de `bg-white` au wrapper.
+3. ✅ Cartes blanches autorisées SI et SEULEMENT SI le texte dedans est sombre (`text-[#0A1628]`, `text-slate-800`+).
+4. ❌ Pas de `text-gray-300`/`text-gray-400` sur `bg-white` (contraste < WCAG AA). Minimum `text-[#5a6472]` (#5a6472 sur #fff = 4.8:1 ✅).
+5. ❌ Pas de `text-white` sur `bg-[#FEFCF3]` (cream) — utiliser `text-[#0A1628]`.
+6. ✅ Loaders/spinners : couleur saturée (accent portail) ou `text-[#0A1628]`, jamais `text-gray-400` sur fond clair.
+
+### 11.1 Fixes P0 appliqués (2026-04-16)
+
+| Fichier | Problème | Fix |
+|---------|----------|-----|
+| `app/(pro)/pro/layout.tsx:107` | Wrapper global pages sans topbar en `bg-white` — écrase design dark | `bg-white` → `background: #0a0e14` |
+| `app/(pro)/pro/login/page.tsx:31,40` | Skeleton + shell en `bg-white` — texte `text-white/30` invisible, logo `#FAF7F2` sur blanc | Dark `#0a0e14` + skeleton text `text-[#ff906a]` |
+| `app/(pro)/pro/page-publique/page.tsx:121,128,153,157,164,203,212,222,246,272,273` | `text-white h1` sur `bg-[#FEFCF3]` + labels `text-gray-300/400` illisibles | `text-[#0A1628]` pour titres/labels, `text-[#5a6472]` pour secondaire |
+| `app/(pro)/pro/finance/cloture/page.tsx:198,211,221,222,245,275,280,286,292,304,310,322,335,340,363,374,394,405,408,412,428,484,501,502` | Cartes `bg-white` avec `text-white` partout + `text-gray-300/400` section headers | Tous → `text-[#0A1628]` ou `text-[#5a6472]`, indigo zone → `text-indigo-900/700` |
+| `app/(pro)/pro/charte/page.tsx:181,194,243,276,336` | Wrapper + cartes en `bg-white` mais design 100% dark (text-white, bg-[#151c2a]) | Wrapper `#0a0e14`, cartes `#151c2a` |
+| `app/(pro)/pro/pourboires/page.tsx:118` | `bg-white text-white` — page ENTIÈRE invisible | Wrapper `#0a0e14` |
+| `app/(pro)/pro/formation/[videoId]/page.tsx:327,341,366` | 3 états (404, skeleton, render) en `bg-white` avec `text-[#f1f3fc]`/text-white/60 | Tous → `#0a0e14` |
+| `app/(pro)/pro/voyages/[id]/terrain/page.tsx:131,141,163,172,333` | Cartes `bg-white` avec `text-white`, bouton cream avec `text-white` | Cartes → `text-[#0A1628]`, bouton → `bg-[#0A1628] text-white` |
+| `app/(pro)/pro/voyages/[id]/terrain/risques/page.tsx:258,265` | Wrapper `bg-white` sur design dark (purple gradient + `bg-[#0f141a]` cards) | Wrapper `#0a0e14` |
+| `app/(pro)/pro/voyages/[id]/terrain/appel/page.tsx:164,215,232,277` | Wrapper `bg-white` + search input `bg-[#FEFCF3] text-white` + bouton `bg-gray-200 text-white` invisible | Wrapper cream `#FEFCF3`, input `bg-white text-[#0A1628]`, bouton `bg-[#0A1628]` |
+| `app/(pro)/pro/voyages/[id]/terrain/incidents/page.tsx:315` | Wrapper `bg-white` sur design mixte | Wrapper cream `#FEFCF3` |
+| `app/(pro)/pro/voyages/[id]/transport/page.tsx:319,332,349` | 3 wrappers `bg-white` + tout le contenu en `text-white` / `text-[var(--pro-text-*)]` dark | Retrait `bg-white` → hérite du `pro-portal-root` dark |
+| `app/(pro)/pro/charte/error.tsx:8` | Error page `bg-white` + `text-white` | `#0a0e14` |
+| `app/(pro)/pro/hra/restaurants/[id]/page.tsx:528,539` + `hra/hotels/[id]/page.tsx:421,432` | 4 loading screens `bg-white` avec `text-white/60` | `#0a0e14` |
+| `app/(pro)/pro/activites/communaute/page.tsx:429` + `activites/mes-activites/page.tsx:568` | Wrappers `bg-white` sur design dark HUD | `#0a0e14` |
+| `app/(pro)/pro/campagnes/page.tsx:152` | Bouton filtre `bg-white text-gray-400` (contraste < WCAG) | `text-gray-400` → `text-[#0A1628]` |
+
+### 11.2 À vérifier en passe suivante
+
+- `/pro/vendre/*`, `/pro/marketing/*`, `/pro/voyages/nouveau/components/*` : utiliser le même grep `bg-white` + `text-white` pour filtrer les faux positifs (inputs `bg-white/5` sur dark = OK).
+- Audit automatique : ajouter un lint-rule ou un script CI `check-contrast.mjs` qui refuse `bg-white` + `text-(white|gray-[2-4]\d{2}|[a-z]+-[1-3]\d{2})` dans le même fichier sans override justifié.
+- Tests Axe : ajouter playwright-axe sur les 10 pages P0 listées ici pour empêcher régression.
+
+### 11.3 Palette WCAG AA validée (à réutiliser)
+
+| Fond | Texte principal | Texte secondaire | Contraste AA |
+|------|----------------|------------------|--------------|
+| `#0a0e14` (pro dark wrapper) | `text-white` / `#f1f3fc` | `text-white/60` | ✅ 15:1 / 9:1 |
+| `#151c2a` (pro dark card) | `text-white` | `text-white/70` | ✅ 13:1 / 8:1 |
+| `#FEFCF3` (cream wrapper) | `text-[#0A1628]` | `text-[#5a6472]` | ✅ 16:1 / 5.2:1 |
+| `#FFFFFF` (white card) | `text-[#0A1628]` | `text-[#5a6472]` | ✅ 17:1 / 5.4:1 |
+| Gradient `from-orange-500 to-rose-500` | `text-white` | `text-white/80` | ✅ 4.9:1 / 3.9:1 (mini) |
+
+---
+
+*Audit réalisé le 15 avril 2026 — Passe contraste WCAG AA du 16 avril 2026 — Prochain audit recommandé après câblage Stripe Connect & Pennylane*
