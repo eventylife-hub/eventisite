@@ -1,8 +1,8 @@
 # 🚀 État du Projet Eventy — Document maître
 
-> **Dernière mise à jour** : 16 avril 2026
-> **Statut global** : 🟢 **Production-ready** — backend live sur Scaleway, frontend live sur Vercel, 360 pages frontend auditées, 0 bug critique.
-> **Phase** : Lancement Gamme Standard imminent. Gamme Luxe = Phase 2.
+> **Dernière mise à jour** : 18 avril 2026
+> **Statut global** : 🟢 **Production-ready** — backend live sur Scaleway, frontend live sur Vercel, **529 pages frontend** auditées, 0 bug critique.
+> **Phase** : Lancement Gamme Standard imminent (preset MVP feature-flags actif). Gamme Luxe = Phase 2.
 > **PDG** : David — eventylife@gmail.com
 
 Ce document est le **tableau de bord produit** d'Eventy. Il rassemble vision, chiffres, architecture, IA, features livrées et à venir. À lire par tout nouveau co-fondateur, Ambassadeur, investisseur.
@@ -70,21 +70,24 @@ Pour le vocabulaire → [`VOCABULAIRE-EVENTY.md`](./VOCABULAIRE-EVENTY.md)
 | **Backend — indexes DB** | 313 |
 | **Backend — events émis** | 46 |
 | **Prisma — lignes de schema** | 3 232 |
-| **Frontend — pages** | **360** (247 initial + 113 enrichissements récents) |
+| **Frontend — pages** | **529** (360 + 169 enrichissements 17-18 avril : gamification hub, univers, CRM pro, /independant/, /admin/securite, /admin/gamification, /pro/evenements, bus-sur-place refonte, arrêts Leaflet) |
 | **Frontend — error boundaries** | ~320 |
 | **Frontend — Next.js App Router** | 14.x |
 | **Frontend — `'use client'`** | 95%+ (ISR sélectif sur public) |
+| **Frontend — SEO** | metadata + JSON-LD sur tous les points d'entrée publics (TravelAgency, TouristTrip, Product+AggregateRating, FAQPage, BreadcrumbList, ProfilePage, WebSite, Organization), sitemap.xml dynamique, robots.txt avec crawlers IA autorisés |
+| **Frontend — Perf** | 35 `next/dynamic` (voyage/[slug] tabs, cartes, NewsletterCTA), 41 `loading="lazy"`, images AVIF/WebP, tree-shaking barrel exports (lucide-react, date-fns, zod, zustand, recharts), cache immuable `/_next/static`, `output: standalone` |
 
-### Utilisateurs (portails)
+### Utilisateurs (portails) — inventaire 18/04/2026
 | Portail | Pages | Rôle |
 |---------|-------|------|
-| **Public** | 29 | Tout le monde (SEO, marketing, checkout) |
-| **Voyageur** (`/client/*`) | 33 | Voyageurs connectés |
-| **Créateur** (`/pro/*`) | 160 | Créateurs (PRO) + Admin (staff) |
-| **Admin / Équipe Eventy** (`/admin/*`) | 168 | Équipe Eventy uniquement |
-| **Maisons** (`/maisons/*`) | 9 | Maisons HRA partenaires |
-| **Ambassadeur** (`/ambassadeur/*`) | 7 | Revendeurs du réseau |
-| **Équipe — 14 Pôles** (`/equipe/*`) | 16 | Cockpit interne par Pôle |
+| **Public** | 49 | Tout le monde (SEO, marketing, checkout) |
+| **Voyageur** (`/client/*`) | 70 | Voyageurs connectés — inclut `/client/gamification`, `/client/univers`, `/client/evenements`, `/client/hauts-faits`, `/client/challenges`, `/client/tribus`, `/client/social` |
+| **Créateur** (`/pro/*`) | 172 | Créateurs (PRO) + Admin (staff) — inclut `/pro/voyageurs` (CRM), `/pro/incidents`, `/pro/evenements`, `/pro/bus-sur-place` (rotations + devis combiné), `/pro/arrets` (Leaflet) |
+| **Admin / Équipe Eventy** (`/admin/*`) | 182 | Équipe Eventy uniquement — inclut `/admin/securite/incidents-voyageurs`, `/admin/gamification/{hauts-faits,trophees,evenements}` |
+| **Maisons** (`/maisons/*`) | 15 | Maisons HRA partenaires |
+| **Ambassadeur** (`/ambassadeur/*`) | 10 | Revendeurs du réseau |
+| **Équipe — 14 Pôles** (`/equipe/*`) | 22 | Cockpit interne par Pôle — inclut `/equipe/securite/incidents-voyageurs`, `/equipe/qualite/hauts-faits` |
+| **Indépendant** (`/independant/*`) | 9 | **Nouveau portail mobile-first** (stubs — feature flag OFF) |
 | **Auth / Checkout** | 18 | Tout le monde |
 
 ---
@@ -247,6 +250,26 @@ Liste exhaustive des features en production, ordonnée chronologiquement par cha
 - **Fix bugs CSS** : var navy, opacity 0 voyage cards, /pro crash, /equipe crash, tarification wizard bloc média blanc — _commits `0adf571`, `8f2002a`, `4eb03cc`_
 - **RBAC complet** — 14 rôles backend, filtrage sidebar, gamification endpoints — _commits `307dbd2`, `67504b5`_
 - **Feature Flags système groupes** — backend + admin UI + 23 flags, break-glass, audit log — _commit `f255497`_
+
+### Avril 2026 — Sprint 17-18 (Gamification + MVP lancement + portails latéraux + toile virale)
+
+- **Toile virale Eventy** — `ShareToolkit` universel (frontend@1dbd059) : 4 portails Partager, générateurs sociaux IA (`lib/ia/prompts/social.ts`), tracking partage (`lib/share/tracking.ts`, `generators.ts`)
+- **Bus-stops live** — `BusStopLiveCard`, API `/api/pro/bus-stops/[id]/{hra,parcours,pois,updates}`, `lib/types/arrets-live.ts`
+- **Cascade loueurs transport** — `lib/transport/cascade-loueurs.ts`, `email-loueur.ts`, `tarification-lines.ts`, `CascadeTransportPreview` composant
+- **Gamification hub Voyageur** — `/client/gamification` (hauts-faits, défis, Rays, Cookies, classement, trophées 5 tiers, saisons, points partenaires) + `/client/hauts-faits` + `/client/challenges` + `/client/classement` — _commit `6e8b6fb`_
+- **Univers d'activités** — `/client/univers` : 10 univers thématiques (sport, culture, soirées, bien-être, tournois, éphémères, famille, pro, créatif, nature) — _commit `6e8b6fb`_
+- **Événements sur-mesure** — `/client/evenements` (demande Voyageur) + `/pro/evenements` (manifeste liberté de création + formulaire type libre) — _commit `6e8b6fb`_
+- **CRM Pro voyageurs** — `/pro/voyageurs` (fiches, segments, interactions), `/pro/incidents`, validation hauts-faits depuis `groupes/[id]` — _commit `9ee657c`_
+- **Incidents voyageurs** — `/admin/securite/incidents-voyageurs` + `/equipe/securite/incidents-voyageurs` + `/equipe/qualite/hauts-faits` — _commit `9ee657c`_
+- **Admin Gamification** — `/admin/gamification/{hauts-faits,trophees,evenements}` — _commit `9ee657c`_
+- **Nouveau portail Indépendant** — `/independant/*` mobile-first, 9 pages stubs (feature flag OFF) — _commit `9ee657c`_
+- **Preset MVP Lancement (feature flags)** — 22 nouveaux toggles (gamif / finance / B2B / portails), ComingSoonPlaceholder partout, guards gamif pro, preset "MVP Lancement" gamif OFF désactivable 1-click depuis `/admin/feature-flags`, fix `equipe/finance` Math.max — _commit `f8a44f8`_
+- **Refonte `/pro/arrets`** — carte Leaflet dark + toggle liste/carte + breadcrumb "Préparation Bus > Arrêts" — _commit `44cb8fb`_
+- **Refonte `/pro/bus-sur-place`** — rotation planner (auto-boucle + manuel, pattern sur N semaines), devis combiné loueurs 2 lignes (A/R + sur-place) avec auto-sélection par destination — _commit `44cb8fb`_
+- **Bibliothèque partagée bus-sur-place** — trajets partagés entre Créateurs, réutilisation mutualisée — _commit `b64e059`, frontend@179da0e_
+- **Passe contraste WCAG AA** — `bg-white` bannis du dark HUD, doc règle globale — _commit `2daa65e`_
+- **Audit finance poches** — `docs/audit-finance-poches-2026-04.md`, trajectoire euro par euro — _commit `8d700fb`_
+- **SEO renforcé** — ProfilePage JSON-LD + BreadcrumbList sur `/createur/[slug]`, schémas TouristTrip/Product/AggregateRating/FAQPage sur `/voyages/[slug]`, schémas TravelAgency/FAQPage/Breadcrumb sur `/` — _commit courant_
 
 ### En cours (avril 2026)
 - Câblage **Stripe Connect payouts Créateurs** (~8h)

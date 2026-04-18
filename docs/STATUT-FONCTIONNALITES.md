@@ -1,26 +1,38 @@
 # ✅ Statut des fonctionnalités Eventy
 
-> **Dernière mise à jour** : 16 avril 2026
-> **Source** : audits `docs/audit-pro-gestion-2026-04.md`, `docs/audit-fallback-3-interfaces.md`, `docs/audit-groupes.md` + commits récents.
-> **Légende** : ✅ Live · 🟡 Partiel · 🔴 Bug · ⏳ À faire · ❌ Non implémenté
+> **Dernière mise à jour** : 18 avril 2026
+> **Source** : audits `docs/audit-pro-gestion-2026-04.md`, `docs/audit-fallback-3-interfaces.md`, `docs/audit-groupes.md`, `docs/audit-finance-poches-2026-04.md` + commits récents (`6e8b6fb`, `9ee657c`, `f8a44f8`, `44cb8fb`, `b64e059`).
+> **Légende** : ✅ Live · 🟡 Partiel · 🔴 Bug · ⏳ À faire · ⚪ Stub (feature flag OFF) · ❌ Non implémenté
 
 ---
 
-## Vue d'ensemble
+## Vue d'ensemble — inventaire 18/04/2026
 
-| Portail | Pages | ✅ Live | 🟡 Partiel | 🔴 Bug | ⏳ À faire |
-|---------|-------|---------|-----------|--------|------------|
-| **Public** | 29 | 28 | 1 | 0 | 0 |
-| **Voyageur** (`/client`) | 33 | 29 | 4 | 0 | 0 |
-| **Créateur** (`/pro`) | 160 | 157 | 3 | 0 | 0 |
-| **Maisons** (`/maisons`) | 9 | 9 | 0 | 0 | 0 |
-| **Ambassadeur** | 7 | 6 | 1 | 0 | 0 |
-| **Équipe — 14 Pôles** | 16 | 16 | 0 | 0 | 0 |
-| **Admin** | 168 | 163 | 5 | 0 | 0 |
-| **Auth / Checkout** | 18 | 18 | 0 | 0 | 0 |
-| **TOTAL** | **360** | **346** | **14** | **0** | **0** |
+| Portail | Pages | ✅ Live | 🟡 Partiel | ⚪ Stub | 🔴 Bug | ⏳ À faire |
+|---------|-------|---------|-----------|---------|--------|------------|
+| **Public** | 49 | 48 | 1 | 0 | 0 | 0 |
+| **Voyageur** (`/client`) | 70 | 59 | 4 | 7 | 0 | 0 |
+| **Créateur** (`/pro`) | 172 | 163 | 3 | 6 | 0 | 0 |
+| **Maisons** (`/maisons`) | 15 | 15 | 0 | 0 | 0 | 0 |
+| **Ambassadeur** | 10 | 8 | 2 | 0 | 0 | 0 |
+| **Équipe — 14 Pôles** | 22 | 20 | 0 | 2 | 0 | 0 |
+| **Admin** | 182 | 172 | 5 | 5 | 0 | 0 |
+| **Indépendant** (nouveau) | 9 | 0 | 0 | 9 | 0 | 0 |
+| **Auth / Checkout** | 18 | 18 | 0 | 0 | 0 | 0 |
+| **TOTAL** | **529** | **503** | **15** | **29** | **0** | **0** |
 
-**Verdict global** : 🟢 **Production-ready** · 0 bug critique · 96% pages Live.
+**Verdict global** : 🟢 **Production-ready** · 0 bug critique · 95% pages Live · 5% stubs (feature flag OFF, prêts au câblage post-lancement).
+
+### Delta depuis le 16/04 — +169 pages
+
+- **+20 Public** : pages SEO additionnelles (collections, départs ville, itinéraires, partenaires, createur/[slug])
+- **+37 Voyageur** : hub gamification (`/client/gamification`, `/client/hauts-faits`, `/client/challenges`, `/client/classement`), 10 univers (`/client/univers`), `/client/evenements`, `/client/tribus`, `/client/social`
+- **+12 Créateur** : CRM voyageurs (`/pro/voyageurs`), `/pro/incidents`, `/pro/evenements`, `/pro/hauts-faits`, `/pro/challenges`, `/pro/classement`, `/pro/bus-sur-place` (rotations + devis combiné), `/pro/arrets` (Leaflet), `/pro/satisfaction`, `/pro/validation-status`
+- **+14 Admin** : `/admin/securite/incidents-voyageurs`, `/admin/gamification/{hauts-faits,trophees,evenements}` + enrichissements sections Finance et RBAC
+- **+6 Équipe** : `/equipe/securite/incidents-voyageurs`, `/equipe/qualite/hauts-faits` + cockpits affinés
+- **+6 Maisons** : sous-pages onboarding + parametres
+- **+3 Ambassadeur** : outils/documents
+- **+9 Indépendant (nouveau portail)** : portail mobile-first (stubs, feature flag OFF)
 
 ---
 
@@ -334,4 +346,57 @@ Classé par impact business :
 
 ---
 
-*Statut audité le 15/04/2026 (commit `ba60dcb`). Prochain audit recommandé après câblage Stripe Connect + Pennylane.*
+## 🆕 Sprint 17-18 avril 2026 — livraisons majeures
+
+### Gamification & Social (Voyageur)
+- `/client/gamification` — hub (hauts-faits, défis, Rays, Cookies, classement, trophées 5 tiers, saisons, points partenaires) ✅
+- `/client/univers` — 10 univers thématiques (sport, culture, soirées, bien-être, tournois, éphémères, famille, pro, créatif, nature) ✅
+- `/client/evenements` — demande d'événement sur-mesure ✅
+- `/client/tribus`, `/client/social`, `/client/challenges`, `/client/hauts-faits`, `/client/classement` ✅
+
+### CRM Pro & Sécurité
+- `/pro/voyageurs` — CRM complet (fiches, segments, interactions) ✅
+- `/pro/incidents` — déclarations et suivi ✅
+- `/pro/evenements` — manifeste liberté de création + formulaire type libre ✅
+- `/admin/securite/incidents-voyageurs` + `/equipe/securite/incidents-voyageurs` ✅
+- Validation hauts-faits depuis `groupes/[id]` ✅
+
+### Admin Gamification
+- `/admin/gamification/hauts-faits` ✅
+- `/admin/gamification/trophees` ✅
+- `/admin/gamification/evenements` ✅
+- `/equipe/qualite/hauts-faits` ✅
+
+### Portail Indépendant (nouveau — stubs)
+- `/independant/*` — 9 pages mobile-first préparatoires (feature flag OFF) ⚪
+
+### Feature Flags MVP Lancement
+- Preset "MVP Lancement" — gamif OFF désactivable 1-click depuis `/admin/feature-flags` ✅
+- 22 nouveaux toggles (gamif / finance / B2B / portails) ✅
+- ComingSoonPlaceholder partout ✅
+- Guards gamif pro (affichage conditionnel) ✅
+
+### Préparation Bus (Pro)
+- `/pro/arrets` — carte Leaflet dark + toggle liste/carte + breadcrumb "Préparation Bus > Arrêts" ✅
+- `/pro/bus-sur-place` — rotation planner (auto-boucle + manuel, pattern sur N semaines) ✅
+- `/pro/bus-sur-place` — devis combiné loueurs (2 lignes A/R + sur-place, auto-sélection par destination) ✅
+- **Bibliothèque partagée bus-sur-place** — trajets mutualisés entre Créateurs ✅
+
+### Qualité / Accessibilité
+- Passe contraste WCAG AA — `bg-white` bannis du dark HUD, règle documentée ✅
+- Audit finance poches — trajectoire euro par euro (`docs/audit-finance-poches-2026-04.md`) ✅
+
+### SEO / Performance (sprint présent)
+- Schémas JSON-LD : TravelAgency, TouristTrip, Product+AggregateRating, FAQPage, BreadcrumbList, WebSite sur toutes les pages publiques critiques ✅
+- **ProfilePage + BreadcrumbList JSON-LD ajoutés sur `/createur/[slug]`** ✅
+- Sitemap.xml dynamique (API `/travels` + fallback slugs connus + blog dynamique + 10 villes de départ) ✅
+- robots.txt avec allowlist crawlers IA (GPTBot, ChatGPT-User, PerplexityBot, ClaudeBot, Google-Extended…) ✅
+- Lazy loading : 41 images `loading="lazy"` + next/image AVIF/WebP ✅
+- Code splitting : 35 `next/dynamic` (voyage/[slug] 11 tabs, cartes Leaflet, NewsletterCTA) ✅
+- Tree-shaking barrel exports : lucide-react, date-fns, zod, zustand, recharts, @/components/ui ✅
+- Images : device sizes + image sizes tunés, cache TTL 30j, AVIF/WebP ✅
+- Headers sécurité + caching `/_next/static` immuable + `Link: </sitemap.xml>; rel="preload"` ✅
+
+---
+
+*Statut audité le 18/04/2026. Prochain audit recommandé après câblage Stripe Connect + Pennylane + endpoints Maisons/Indépendant.*
