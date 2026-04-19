@@ -1,7 +1,7 @@
 # 🚀 État du Projet Eventy — Document maître
 
-> **Dernière mise à jour** : 18 avril 2026
-> **Statut global** : 🟢 **Production-ready** — backend live sur Scaleway, frontend live sur Vercel, **529 pages frontend** auditées, 0 bug critique.
+> **Dernière mise à jour** : 19 avril 2026
+> **Statut global** : 🟢 **Production-ready** — backend live sur Scaleway, frontend live sur Vercel, **789 pages Next.js** (543+ routes documentées), 0 bug critique.
 > **Phase** : Lancement Gamme Standard imminent (preset MVP feature-flags actif). Gamme Luxe = Phase 2.
 > **PDG** : David — eventylife@gmail.com
 
@@ -59,7 +59,10 @@ Pour le vocabulaire → [`VOCABULAIRE-EVENTY.md`](./VOCABULAIRE-EVENTY.md)
 ### Technique
 | Indicateur | Valeur |
 |-----------|--------|
-| **Lignes de code** | ~296 500+ |
+| **Lignes de code total** | **~229,000** (frontend ~146k tsx+ts+css · backend ~83k ts) |
+| **Frontend — fichiers tsx+ts** | **2,710 fichiers** (2,321 tsx · 389 ts) · 65k tsx + 71k ts + 9.5k css |
+| **Backend — fichiers ts** | **905 fichiers** · ~83k lignes |
+| **Frontend — pages Next.js** | **789 page.tsx** (routes techniques) / **543+ routes documentées** |
 | **Backend — modules NestJS** | **31** |
 | **Backend — endpoints REST** | 200+ |
 | **Backend — services** | 100+ |
@@ -70,24 +73,26 @@ Pour le vocabulaire → [`VOCABULAIRE-EVENTY.md`](./VOCABULAIRE-EVENTY.md)
 | **Backend — indexes DB** | 313 |
 | **Backend — events émis** | 46 |
 | **Prisma — lignes de schema** | 3 232 |
-| **Frontend — pages** | **529** (360 + 169 enrichissements 17-18 avril : gamification hub, univers, CRM pro, /independant/, /admin/securite, /admin/gamification, /pro/evenements, bus-sur-place refonte, arrêts Leaflet) |
 | **Frontend — error boundaries** | ~320 |
 | **Frontend — Next.js App Router** | 14.x |
 | **Frontend — `'use client'`** | 95%+ (ISR sélectif sur public) |
 | **Frontend — SEO** | metadata + JSON-LD sur tous les points d'entrée publics (TravelAgency, TouristTrip, Product+AggregateRating, FAQPage, BreadcrumbList, ProfilePage, WebSite, Organization), sitemap.xml dynamique, robots.txt avec crawlers IA autorisés |
 | **Frontend — Perf** | 35 `next/dynamic` (voyage/[slug] tabs, cartes, NewsletterCTA), 41 `loading="lazy"`, images AVIF/WebP, tree-shaking barrel exports (lucide-react, date-fns, zod, zustand, recharts), cache immuable `/_next/static`, `output: standalone` |
 
-### Utilisateurs (portails) — inventaire 18/04/2026
+### Utilisateurs (portails) — inventaire 19/04/2026
 | Portail | Pages | Rôle |
 |---------|-------|------|
 | **Public** | 49 | Tout le monde (SEO, marketing, checkout) |
 | **Voyageur** (`/client/*`) | 70 | Voyageurs connectés — inclut `/client/gamification`, `/client/univers`, `/client/evenements`, `/client/hauts-faits`, `/client/challenges`, `/client/tribus`, `/client/social` |
-| **Créateur** (`/pro/*`) | 172 | Créateurs (PRO) + Admin (staff) — inclut `/pro/voyageurs` (CRM), `/pro/incidents`, `/pro/evenements`, `/pro/bus-sur-place` (rotations + devis combiné), `/pro/arrets` (Leaflet) |
-| **Admin / Équipe Eventy** (`/admin/*`) | 182 | Équipe Eventy uniquement — inclut `/admin/securite/incidents-voyageurs`, `/admin/gamification/{hauts-faits,trophees,evenements}` |
-| **Maisons** (`/maisons/*`) | 15 | Maisons HRA partenaires |
+| **Créateur** (`/pro/*`) | 173 | Créateurs (PRO) + Admin (staff) — inclut `/pro/voyageurs` (CRM), `/pro/incidents`, `/pro/evenements`, `/pro/bus-sur-place` (rotations + devis combiné), `/pro/arrets` (Leaflet), `/pro/wallet` (refonte premium) |
+| **Admin / Équipe Eventy** (`/admin/*`) | 186 | Équipe Eventy uniquement — inclut `/admin/securite/incidents-voyageurs`, `/admin/gamification/{hauts-faits,trophees,evenements}`, sélecteur portail, mode présentation visiteurs |
+| **Maisons** (`/maisons/*`) | 16 | Maisons HRA partenaires |
 | **Ambassadeur** (`/ambassadeur/*`) | 10 | Revendeurs du réseau |
-| **Équipe — 14 Pôles** (`/equipe/*`) | 22 | Cockpit interne par Pôle — inclut `/equipe/securite/incidents-voyageurs`, `/equipe/qualite/hauts-faits` |
+| **Équipe — 14 Pôles** (`/equipe/*`) | 23 | Cockpit interne par Pôle — inclut `/equipe/securite/incidents-voyageurs`, `/equipe/qualite/hauts-faits`, `/equipe/comptage` |
 | **Indépendant** (`/independant/*`) | 9 | **Nouveau portail mobile-first** (stubs — feature flag OFF) |
+| **Transporteur** (stub Phase 2) | — | Portail dédié loueurs/chauffeurs (feature flag OFF) |
+| **Comptable** (stub Phase 2) | — | Portail expert-comptable : exports FEC, TVA marge, Pennylane (feature flag OFF) |
+| **Assureur** (stub Phase 2) | — | Portail assureur : caisse assurance, sinistres, documents (feature flag OFF) |
 | **Auth / Checkout** | 18 | Tout le monde |
 
 ---
@@ -270,6 +275,16 @@ Liste exhaustive des features en production, ordonnée chronologiquement par cha
 - **Passe contraste WCAG AA** — `bg-white` bannis du dark HUD, doc règle globale — _commit `2daa65e`_
 - **Audit finance poches** — `docs/audit-finance-poches-2026-04.md`, trajectoire euro par euro — _commit `8d700fb`_
 - **SEO renforcé** — ProfilePage JSON-LD + BreadcrumbList sur `/createur/[slug]`, schémas TouristTrip/Product/AggregateRating/FAQPage sur `/voyages/[slug]`, schémas TravelAgency/FAQPage/Breadcrumb sur `/` — _commit courant_
+
+### Avril 2026 — Sprint 19 (Wallet premium + Admin UX + Design /pro)
+
+- **Refonte `/pro/wallet`** — portefeuille financier premium : Rays, Cookies, balance, historique, virements — _commit `f29d543`_
+- **Sélecteur portail admin** — switch rapide entre portails (Pro / Client / Maisons / Admin) depuis n'importe quelle page admin — _commit `63d4ba6`_
+- **Mode présentation visiteurs** — vue "public" du portail admin pour démonstrations investisseurs / recrutement co-fondateurs — _commit `63d4ba6`_
+- **Palette or/ambre global portail Créateur** — accent `#b45309` (ambre) cohérent sur tout `/pro` + header portal — _commit `763c97f`_
+- **Audit global Lucide icons** — harmonisation icônes + fix build errors frontend — _commit `da838c9`_
+- **Fix apostrophes** : `/pro/caisse-remplacement`, `/pro/urgences`, `/urgence` (textes conformes) — _commit `9ef5805`_
+- **Métriques techniques (audit 19/04/2026)** : ~229,000 lignes de code (frontend ~146k + backend ~83k) · 2,710 fichiers tsx+ts · 905 fichiers ts backend · 789 page.tsx
 
 ### En cours (avril 2026)
 - Câblage **Stripe Connect payouts Créateurs** (~8h)

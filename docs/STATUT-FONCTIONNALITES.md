@@ -1,7 +1,7 @@
 # ✅ Statut des fonctionnalités Eventy
 
-> **Dernière mise à jour** : 19 avril 2026
-> **Source** : audits `docs/audit-pro-gestion-2026-04.md`, `docs/audit-fallback-3-interfaces.md`, `docs/audit-groupes.md`, `docs/audit-finance-poches-2026-04.md`, `docs/AUDIT-COMPTAGE-NFC-2026-04.md` + commits récents.
+> **Dernière mise à jour** : 19 avril 2026 — Sprint 19 + audit lignes de code
+> **Source** : audits `docs/audit-pro-gestion-2026-04.md`, `docs/audit-fallback-3-interfaces.md`, `docs/audit-groupes.md`, `docs/audit-finance-poches-2026-04.md`, `docs/AUDIT-COMPTAGE-NFC-2026-04.md` + commits `da838c9`, `f29d543`, `63d4ba6`, `763c97f`, `9ef5805`.
 > **Légende** : ✅ Live · 🟡 Partiel · 🔴 Bug · ⏳ À faire · ⚪ Stub (feature flag OFF) · ❌ Non implémenté
 
 ---
@@ -407,4 +407,182 @@ Classé par impact business :
 
 ---
 
-*Statut audité le 18/04/2026. Prochain audit recommandé après câblage Stripe Connect + Pennylane + endpoints Maisons/Indépendant.*
+---
+
+## 🚀 Sprint 19 avril 2026 — livraisons du jour
+
+### Wallet & Portefeuille financier
+- `/pro/wallet` — refonte complète portefeuille financier premium (Rays, Cookies, balance, historique, virements) ✅
+
+### Admin UX
+- Sélecteur portail admin — switch rapide Pro / Client / Maisons / Admin depuis n'importe quelle page ✅
+- Mode présentation visiteurs — vue "public" du portail admin (démonstrations investisseurs / co-fondateurs) ✅
+
+### Design & Identité /pro
+- Palette or/ambre global portail Créateur — accent `#b45309` cohérent sur tout `/pro` + header portal ✅
+
+### Correctifs qualité
+- Fix apostrophes : `/pro/caisse-remplacement`, `/pro/urgences`, `/urgence` ✅
+- Audit global Lucide icons + fix build errors ✅
+
+---
+
+## 📋 Inventaire complet des fonctionnalités livrées (19/04/2026)
+
+### Création de voyage
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Wizard multi-étapes (8 rubriques ergonomiques) | ✅ |
+| Timeline studio (partition de musique) | ✅ |
+| Tarification (15% = 5+7+3, transport 82/18) | ✅ |
+| Restauration modèle Eventy (repas inclus/optionnels) | ✅ |
+| Circuits multi-hôtels rotation | ✅ |
+| Fiche sécurité par pays auto-remplie | ✅ |
+| Départ aéroport option | ✅ |
+| Bus sur place — rotations + planificateur | ✅ |
+| Occurrences avec indépendants | ✅ |
+| Auto-sélection médias + bibliothèque `/pro/medias/` | ✅ |
+| Taxes internationales — 12 pays, calcul auto | ✅ |
+| Seuil minimal garanti (40-45 pax, on part quand même) | ✅ |
+
+### Finance & Paiements
+| Fonctionnalité | Statut |
+|----------------|--------|
+| 8 poches financières (trésorerie, caisse remplacement, assurance 1, fournisseurs...) | ✅ |
+| Cascade paiements automatique | ✅ |
+| Caisse Remplacement (poche 7) | ✅ |
+| Caisse Assurance 1 | ✅ |
+| Seuil minimum garanti | ✅ |
+| Validation départs 30→0 jours | ✅ |
+| Payout batch Créateurs | ✅ |
+| Rapprochement Stripe/Pennylane (stubs intégrés) | ✅ (stub) |
+| Wallet Créateur premium (`/pro/wallet`) | ✅ |
+| Export CSV tarification | ✅ |
+| ClosePack (`/pro/voyages/[id]/bilan`) | ✅ |
+
+### HRA / Maisons
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Panel admin dynamique 7 onglets | ✅ |
+| Portail Maisons (`/maisons/*`) | ✅ |
+| Négociation — chambres/repas gratuits | ✅ |
+| Boutiques partenaires | ✅ |
+| Bars — points de rencontre | ✅ |
+| Auto-inscription + validation (INVITED → ACTIVE) | ✅ |
+| Paiements HRA + relances 3 niveaux | ✅ |
+| Rate cards + cascades tarifaires | ✅ |
+| Onboarding queue admin | ✅ |
+
+### Voyageur (Client)
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Fiche voyage Netflix (`/voyages/[slug]`) | ✅ |
+| Mode voyage épique (hub voyage immersif) | ✅ |
+| Groupes / tribus / social | ✅ |
+| Clans (stubs Phase 2) | ⚪ (stub) |
+| Confidentialité — visible/discret/anonyme | ✅ |
+| Checklist pré-départ | ✅ |
+| Wallet Voyageur (Rays, Cookies) | ✅ |
+| SOS GPS urgence | ✅ |
+| Documents voyage | ✅ |
+| Pourboire Créateur | ✅ |
+
+### Gamification
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Hub gamification (`/client/gamification`) | ✅ |
+| Hauts-faits + défis | ✅ |
+| Trophées 5 tiers + saisons | ✅ |
+| Monnaie Rays + Cookies | ✅ |
+| Classement Voyageurs | ✅ |
+| Points partenaires | ✅ |
+| Univers thématiques 10 (sport, culture, soirées...) | ✅ |
+| Événements sur-mesure Voyageur + Créateur | ✅ |
+| Guards gamif pro (feature flag MVP OFF) | ✅ |
+| Admin gamification (hauts-faits, trophées, événements) | ✅ |
+| Preset MVP Lancement — 22 toggles 1-click | ✅ |
+
+### Marketing
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Panel marketing avec calendrier | ✅ |
+| Prospectus / affiches / flyers templates | ✅ |
+| QR code trackés | ✅ |
+| Affiliation (lien personnalisé) | ✅ |
+| Consent banner cookies RGPD | ✅ |
+| ShareToolkit 10 plateformes | ✅ |
+| Générateurs sociaux IA (prompts Claude) | ✅ |
+| Studio IA (`/pro/marketing/studio-ia`) — Claude Sonnet | ✅ |
+| Segments, acquisition, rétention, referral, advocacy | ✅ |
+| Cagnotte + lots/prix | ✅ |
+| Rays boutique | ✅ |
+
+### Assurances & Sécurité
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Audit complet assurances-sécurité | ✅ |
+| Interface assureur (stubs Phase 2) | ⚪ (stub) |
+| Caisse assurance interactive | ✅ |
+| Incidents voyageurs (`/admin/securite/incidents-voyageurs`) | ✅ |
+| Gestion de crise remplacement | ✅ |
+| Bracelets NFC comptage (stubs Phase 2) | ⚪ (stub) |
+| Fiche sécurité par pays (admin auto-remplie) | ✅ |
+
+### Support
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Tickets multi-métier | ✅ |
+| 9 branches métier | ✅ |
+| SLA automatique | ✅ |
+| Réponse IA niveau 1 (Claude) | ✅ |
+
+### Data & Analytics
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Analytics intelligence client | ✅ |
+| Enquêtes satisfaction | ✅ |
+| Rapports auto | ✅ |
+| Cohortes + forecasting (Phase 2) | ⏳ |
+
+### Transport
+| Fonctionnalité | Statut |
+|----------------|--------|
+| Occurrences — arbre par aéroport | ✅ |
+| Portail transporteur (stubs Phase 2) | ⚪ (stub) |
+| Faisabilité automatique arrêts bus | ✅ |
+| Bus sur place — rotations planificateur | ✅ |
+| Bibliothèque trajets partagés entre Créateurs | ✅ |
+| Cascade loueurs transport | ✅ |
+| Devis combiné loueurs (A/R + sur-place) | ✅ |
+| Arrêts Leaflet dark (`/pro/arrets`) | ✅ |
+| Croisières (stubs Phase 2) | ⚪ (stub) |
+| FlightAllotment + SeatManagement | ✅ |
+| BusSeatMap + SOS GPS | ✅ |
+
+### Réglementaire & Conformité
+| Fonctionnalité | Statut |
+|----------------|--------|
+| RGPD complet (consent banner, DSAR, export/delete) | ✅ |
+| CGV Code du Tourisme | ✅ |
+| APST/Atout France (immatriculation en cours) | 🟡 (en cours) |
+| Mentions légales + politique cookies | ✅ |
+| Automatisation conformité | ✅ |
+| Données hébergées France (Scaleway Paris) | ✅ |
+
+### Technique
+| Indicateur | Valeur |
+|-----------|--------|
+| **Lignes de code total** | **~229,000** (frontend ~146k tsx+ts+css · backend ~83k ts) — audit 19/04/2026 |
+| **Pages Next.js** | **789 page.tsx** (routes techniques) · **543+ routes documentées** |
+| **Fichiers frontend** | 2,710 (tsx+ts) |
+| **Fichiers backend** | 905 (ts) |
+| Dark premium WCAG AA | ✅ — bg-white banni du dark HUD |
+| SEO JSON-LD complet | ✅ — TravelAgency, TouristTrip, Product, FAQPage, BreadcrumbList, ProfilePage |
+| Feature flags 22+ toggles | ✅ — preset MVP Lancement |
+| Error boundaries | ~320 |
+| next/dynamic code splitting | 35 |
+| Lazy loading images | 41 |
+
+---
+
+*Statut audité le 19/04/2026. Prochain audit recommandé après câblage Stripe Connect + Pennylane + endpoints Maisons/Indépendant.*
