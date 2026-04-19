@@ -1,7 +1,7 @@
 # ✅ Statut des fonctionnalités Eventy
 
-> **Dernière mise à jour** : 18 avril 2026
-> **Source** : audits `docs/audit-pro-gestion-2026-04.md`, `docs/audit-fallback-3-interfaces.md`, `docs/audit-groupes.md`, `docs/audit-finance-poches-2026-04.md` + commits récents (`6e8b6fb`, `9ee657c`, `f8a44f8`, `44cb8fb`, `b64e059`).
+> **Dernière mise à jour** : 19 avril 2026
+> **Source** : audits `docs/audit-pro-gestion-2026-04.md`, `docs/audit-fallback-3-interfaces.md`, `docs/audit-groupes.md`, `docs/audit-finance-poches-2026-04.md`, `docs/AUDIT-COMPTAGE-NFC-2026-04.md` + commits récents.
 > **Légende** : ✅ Live · 🟡 Partiel · 🔴 Bug · ⏳ À faire · ⚪ Stub (feature flag OFF) · ❌ Non implémenté
 
 ---
@@ -12,16 +12,24 @@
 |---------|-------|---------|-----------|---------|--------|------------|
 | **Public** | 49 | 48 | 1 | 0 | 0 | 0 |
 | **Voyageur** (`/client`) | 70 | 59 | 4 | 7 | 0 | 0 |
-| **Créateur** (`/pro`) | 172 | 163 | 3 | 6 | 0 | 0 |
-| **Maisons** (`/maisons`) | 15 | 15 | 0 | 0 | 0 | 0 |
+| **Créateur** (`/pro`) | 173 | 163 | 3 | 7 | 0 | 0 |
+| **Maisons** (`/maisons`) | 16 | 15 | 0 | 1 | 0 | 0 |
 | **Ambassadeur** | 10 | 8 | 2 | 0 | 0 | 0 |
-| **Équipe — 14 Pôles** | 22 | 20 | 0 | 2 | 0 | 0 |
-| **Admin** | 182 | 172 | 5 | 5 | 0 | 0 |
+| **Équipe — 14 Pôles** | 23 | 20 | 0 | 3 | 0 | 0 |
+| **Admin** | 186 | 172 | 5 | 9 | 0 | 0 |
 | **Indépendant** (nouveau) | 9 | 0 | 0 | 9 | 0 | 0 |
 | **Auth / Checkout** | 18 | 18 | 0 | 0 | 0 | 0 |
-| **TOTAL** | **529** | **503** | **15** | **29** | **0** | **0** |
+| **TOTAL** | **536** | **503** | **15** | **36** | **0** | **0** |
 
-**Verdict global** : 🟢 **Production-ready** · 0 bug critique · 95% pages Live · 5% stubs (feature flag OFF, prêts au câblage post-lancement).
+**Verdict global** : 🟢 **Production-ready** · 0 bug critique · 94% pages Live · 7% stubs (feature flag OFF, prêts au câblage post-lancement).
+
+### Delta depuis le 18/04 — +7 pages comptage NFC (Phase 2)
+
+- **+4 Admin** : `/admin/comptage` (hub global) + `/admin/comptage/bracelets` + `/admin/comptage/restauration` + `/admin/comptage/activites` — stubs dark premium (feature flag `nfc_bracelets_enabled` OFF)
+- **+1 Maisons** : `/maisons/comptage` — vue restaurateur/HRA avec live feed scans (stub)
+- **+1 Créateur** : `/pro/voyages/[id]/comptage` — comptage voyage temps réel (stub)
+- **+1 Équipe** : `/equipe/comptage` — cockpit supervision NFC/QR + anomalies (stub)
+- **Nouveau doc** : `docs/AUDIT-COMPTAGE-NFC-2026-04.md` — audit techno, comparatif NFC/RFID/QR, architecture, feature flags
 
 ### Delta depuis le 16/04 — +169 pages
 
