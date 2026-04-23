@@ -257,7 +257,50 @@
 | TODO-LEGAL-P4-031 | P2 | Procedure reclamation B2B (15j reponse) | C. comm. L.441 | pas_commence |
 | TODO-LEGAL-P4-032 | P3 | Mediation commerciale si litige | CPC art. 131 | pas_commence |
 
-**Total Phase 4** : 21 TODOs (P1=7, P2=11, P3=3)
+## 4.5 Partenaires activites (laser game, escape room, parc, bowling, karting)
+
+Eventy vend des activites via un reseau de partenaires operateurs (laser game, escape rooms, parcs d'attractions, bowling, karting, etc.). Eventy agit en distributeur avec commission. Le partenaire reste responsable de la prestation.
+
+| ID | Prio | Description | Reference | Statut |
+|----|------|-------------|-----------|--------|
+| TODO-LEGAL-P4-040 | P1 | Contrat type partenaire activite (laser game, escape room, parc, bowling, karting) | C. comm. L.441 | pas_commence |
+| TODO-LEGAL-P4-041 | P1 | Clause commission Eventy (% transparent sur prix public ou tarif negocie) | C. comm. L.441-3 | pas_commence |
+| TODO-LEGAL-P4-042 | P1 | Paliers remise volume — bareme degressif CA mensuel (seuils + %) | C. comm. L.442 | pas_commence |
+| TODO-LEGAL-P4-043 | P1 | Responsabilite activite : partenaire responsable prestation (Eventy = distributeur) | Code civ. 1231-1 | pas_commence |
+| TODO-LEGAL-P4-044 | P1 | Attestation RC Pro partenaire activite — annuelle + montants minimum | Code ass. L.112 | pas_commence |
+| TODO-LEGAL-P4-045 | P1 | Conditions negociation tarifs + clause renegociation annuelle | C. comm. L.441-3 | pas_commence |
+| TODO-LEGAL-P4-046 | P2 | Clause exclusivite territoriale (si Eventy exclusif sur zone geographique) | TFUE art. 101 | pas_commence |
+| TODO-LEGAL-P4-047 | P2 | Duree engagement minimum + preavis resiliation (3 mois suggere) | C. comm. L.442-1 | pas_commence |
+| TODO-LEGAL-P4-048 | P1 | Gestion no-show / annulation client (qui rembourse, qui conserve) | C. conso L.221-28 | pas_commence |
+| TODO-LEGAL-P4-049 | P1 | Protection mineurs — seuils age activites a risque, accompagnement | Code civ. art. 1242 | pas_commence |
+| TODO-LEGAL-P4-050 | P1 | Reversement commission + cadence paiement (mensuel J+30) | C. comm. L.441 | pas_commence |
+| TODO-LEGAL-P4-051 | P2 | Propriete intellectuelle visuels et noms activites utilises par Eventy | CPI L.111 | pas_commence |
+| TODO-LEGAL-P4-052 | P2 | Integration billetterie — responsabilite API + transfert donnees | RGPD art. 28 | pas_commence |
+| TODO-LEGAL-P4-053 | P2 | Resolution litige client final — SAV partenaire / Eventy | Code conso L.611 | pas_commence |
+| TODO-LEGAL-P4-054 | P2 | Conformite ERP partenaire (etablissement recevant public) | Code const. art. R.123 | pas_commence |
+| TODO-LEGAL-P4-055 | P3 | Audit qualite annuel prestation partenaire (notes clients) | — | pas_commence |
+
+### Modele de bareme commission suggere (a valider)
+
+| Palier | CA mensuel Eventy via partenaire | Commission Eventy | Remise partenaire |
+|--------|----------------------------------|-------------------|-------------------|
+| 1 | 0 — 2 000 EUR | 15 % | — |
+| 2 | 2 001 — 5 000 EUR | 18 % | 3 % sur prix public |
+| 3 | 5 001 — 10 000 EUR | 20 % | 5 % sur prix public |
+| 4 | > 10 000 EUR | 22 % | 8 % sur prix public |
+
+Objectif : aligner les interets — plus le partenaire vend via Eventy, plus il gagne en volume.
+
+### Points de vigilance juridique
+
+- **Responsabilite** : Eventy est distributeur, le partenaire reste seul responsable de la prestation (securite, qualite, accessibilite). Clause explicite dans le contrat pour eviter requalification.
+- **Assurance** : chaque partenaire doit fournir annuellement une attestation RC Pro couvrant la prestation vendue. Sans attestation valide = pas d'activite commercialisable.
+- **No-show client** : definir qui conserve les sommes (partenaire 70% / Eventy 30% suggere).
+- **Annulation partenaire** : si partenaire annule, indemnisation client + penalite partenaire fixe (50% de la reservation minimum).
+- **Mineurs** : certaines activites ont des seuils d'age legaux (karting = 8 ans min avec accompagnement). A documenter par activite.
+- **ERP** : verification que chaque partenaire a bien un avis favorable de la commission de securite. Piece requise avant signature.
+
+**Total Phase 4** : 37 TODOs (P1=16, P2=17, P3=4)
 
 ---
 
@@ -330,9 +373,9 @@
 | 1     | Lancement vitrine                    | 20    | 13 | 6  | 1  | en_cours     |
 | 2     | Premiers clients voyageurs           | 29    | 22 | 7  | 0  | pas_commence |
 | 3     | Jeux et activites                    | 28    | 14 | 13 | 1  | pas_commence |
-| 4     | Packs et partenaires magasins        | 21    | 7  | 11 | 3  | pas_commence |
+| 4     | Packs, partenaires magasins & activites | 37 | 16 | 17 | 4  | pas_commence |
 | 5     | B2B, marques, evenementiel, fondation| 27    | 4  | 12 | 11 | pas_commence |
-| **Total** |                                  | **125** | **60** | **49** | **16** |        |
+| **Total** |                                  | **141** | **69** | **55** | **17** |        |
 
 ---
 
