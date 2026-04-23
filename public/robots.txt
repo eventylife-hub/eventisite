@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-pwa/
+Disallow: /pro-pwa/
+Disallow: /api/
+
+Sitemap: https://eventylife.fr/sitemap.xml

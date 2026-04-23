@@ -7,8 +7,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Eventy Pro" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Portail partenaires Eventy Life — gestion voyages, activites, revenus." />
   <link rel="manifest" href="/manifest.json" />
-  <title>Eventy Pro</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/icon-192.svg" sizes="192x192" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon-512.svg" />
+  <title>Eventy Pro — Portail partenaires</title>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -145,6 +152,27 @@
       .bottom-nav-inner{flex-direction:row}
       .content{padding:16px 12px 80px}
       .topbar{padding:12px 16px}
+      .topbar h2{font-size:16px}
+      .stats-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+      .stat-card{padding:14px}
+      .stat-value{font-size:22px}
+      .card{padding:16px}
+      th,td{padding:10px 8px;font-size:13px}
+      .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+      .tab{white-space:nowrap}
+      .toast-box{top:auto;bottom:80px;right:12px;left:12px}
+      .modal{padding:18px;max-height:90vh}
+      .btn{min-height:42px}
+      .btn-sm{min-height:36px}
+    }
+    @media(max-width:480px){
+      .stats-grid{grid-template-columns:1fr}
+      .topbar h2{font-size:15px}
+      .sidebar{width:85vw}
+      .content{padding:12px 10px 80px}
+      .stat-value{font-size:20px}
+      .modal-actions{flex-direction:column-reverse}
+      .modal-actions .btn{width:100%;justify-content:center}
     }
   </style>
 </head>
