@@ -246,6 +246,108 @@
 | TODO-VAL-011 | P3 | Scoring auto a posteriori (ventes vs estimé) |
 | TODO-VAL-012 | P3 | Onboarding gaming : quel trophée pour ce partenaire ? |
 
+## MARGE — Marge activités vendues (`/admin/activites/marges`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-MARGE-001 | P1 | % marge cible paramétrable par type activité (laser 20%, musée 15%, spa 25%) |
+| TODO-MARGE-002 | P1 | Grille tarifaire négociée auto par partenaire (prix public vs contrat) |
+| TODO-MARGE-003 | P1 | Alerte temps réel si marge < cible (email, Slack, dashboard) |
+| TODO-MARGE-004 | P1 | Recharts marge par activité (courbe 12M, comparatif partenaires) |
+| TODO-MARGE-005 | P1 | Classement partenaires par rentabilité mensuelle (top + flop) |
+| TODO-MARGE-006 | P2 | Simulation marge : "si je négocie -5%, impact mensuel ?" |
+| TODO-MARGE-007 | P2 | Export CSV comptable mensuel (fournisseurs + ventes + marge) |
+| TODO-MARGE-008 | P2 | Scoring partenaire : marge + volume + NPS + ponctualité |
+| TODO-MARGE-009 | P2 | Reversement auto partenaire (Stripe Connect split) |
+| TODO-MARGE-010 | P2 | Calcul marge dual : CA voyage vs gaming par activité |
+| TODO-MARGE-011 | P3 | Prédictif IA : marges futures selon tendance + saison |
+| TODO-MARGE-012 | P3 | Marge gap analyzer : écart prix public marché vs nos ventes |
+
+## NEGO — Négociation partenaires (`/admin/activites/negociation`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-NEGO-001 | P1 | Paliers volume auto : 10-50 (-10%), 50-200 (-20%), 200+ (-30%) |
+| TODO-NEGO-002 | P1 | Dashboard : palier actuel, volume restant pour palier suivant |
+| TODO-NEGO-003 | P1 | Templates emails négo (proposition, relance, signature) voyage+gaming |
+| TODO-NEGO-004 | P1 | Contrat cadre volumétrique auto-réévalué |
+| TODO-NEGO-005 | P2 | Simulation impact financier tarifaire |
+| TODO-NEGO-006 | P2 | Historique négo (versions, changements tarifs) |
+| TODO-NEGO-007 | P2 | Scoring partenaire (volume + marge + NPS + ponctualité) |
+| TODO-NEGO-008 | P2 | Alertes opportunités (partenaires près palier supérieur) |
+| TODO-NEGO-009 | P2 | Clauses cross-portal : bonus palier si actif voyage + gaming |
+| TODO-NEGO-010 | P3 | IA recommande meilleure offre (marché + historique) |
+| TODO-NEGO-011 | P3 | Compétition interne team partenariats |
+| TODO-NEGO-012 | P3 | Benchmarking externe (Airbnb 15% → viser 18%) |
+
+## CONTRAT — Contrats activités (`/admin/activites/contrats`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-CONTRAT-001 | P1 | Template contrat validé avocat tourisme (Me Dubois) |
+| TODO-CONTRAT-002 | P1 | 8 clauses auto (commission, annulation, assurance, respo, durée, excl., confid., volume) |
+| TODO-CONTRAT-003 | P1 | Signature électronique DocuSign + S3 + archive 10 ans |
+| TODO-CONTRAT-004 | P1 | Contrat couvre voyage + gaming (clauses dual) |
+| TODO-CONTRAT-005 | P1 | Alerte 90j/60j/30j avant expiration |
+| TODO-CONTRAT-006 | P2 | Versioning contrats (diff clauses) |
+| TODO-CONTRAT-007 | P2 | Renouvellement 1-clic si conditions inchangées |
+| TODO-CONTRAT-008 | P2 | Clauses volumétriques auto-ajustées selon palier |
+| TODO-CONTRAT-009 | P2 | Multi-langues FR/EN/IT/ES |
+| TODO-CONTRAT-010 | P2 | Intégration outil juridique (Legalfly, PandaDoc) |
+| TODO-CONTRAT-011 | P3 | IA analyse contrat (clauses abusives/manquantes) |
+| TODO-CONTRAT-012 | P3 | Avocat-bot FAQ partenaires (RGPD, respo) |
+
+## COMPTA-ACT — Flux comptables activités (`/comptable/activites`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-COMPTA-ACT-001 | P1 | Écriture auto : 7015 ventes + 6041 achats + TVA sur marge |
+| TODO-COMPTA-ACT-002 | P1 | Split Stripe Connect : reversement partenaire auto |
+| TODO-COMPTA-ACT-003 | P1 | TVA sur marge : calcul auto régime tourisme |
+| TODO-COMPTA-ACT-004 | P1 | Export FEC mensuel réglementaire |
+| TODO-COMPTA-ACT-005 | P1 | Ventilation voyage vs gaming (analytique) |
+| TODO-COMPTA-ACT-006 | P2 | Rapprochement bancaire auto Stripe ↔ banque |
+| TODO-COMPTA-ACT-007 | P2 | Facturation partenaires mensuelle (Pennylane) |
+| TODO-COMPTA-ACT-008 | P2 | Déclaration TVA trimestrielle pré-remplie |
+| TODO-COMPTA-ACT-009 | P2 | Suivi encours clients (réservé non facturé) |
+| TODO-COMPTA-ACT-010 | P2 | Alerte avoirs / remboursements > seuil |
+| TODO-COMPTA-ACT-011 | P3 | Prévisionnel trésorerie activités (3M rolling) |
+| TODO-COMPTA-ACT-012 | P3 | DAS2 auto partenaires > 1200€/an |
+
+## HRA-VENTE — Connexion systèmes HRA (`/admin/hra/systemes-connectes`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-HRA-VENTE-001 | P1 | Import calendrier externe (Google Calendar OAuth, iCal, Calendly API) |
+| TODO-HRA-VENTE-002 | P1 | Lien site/Insta/FB du HRA sur sa fiche publique |
+| TODO-HRA-VENTE-003 | P1 | API Calendly / Booksy / Airtable → sync dispos 2-way |
+| TODO-HRA-VENTE-004 | P1 | Détection conflits planning (vente directe vs Eventy) |
+| TODO-HRA-VENTE-005 | P1 | Commission conditionnelle : % si vente Eventy, 0 si HRA direct |
+| TODO-HRA-VENTE-006 | P2 | Webhook temps réel : résa HRA → blocage créneau Eventy |
+| TODO-HRA-VENTE-007 | P2 | Widget embed Eventy sur site HRA |
+| TODO-HRA-VENTE-008 | P2 | WhatsApp Business API : détails résa au HRA |
+| TODO-HRA-VENTE-009 | P2 | OAuth Meta (Insta/FB) : lire dispos stories |
+| TODO-HRA-VENTE-010 | P2 | Onboarding connecteur wizard 3 étapes non-tech |
+| TODO-HRA-VENTE-011 | P3 | Scraping léger site HRA (fallback si pas d'API) |
+| TODO-HRA-VENTE-012 | P3 | Zapier / Make.com pour stacks exotiques |
+
+## HRA-CROSS — Ventes croisées HRA (`/admin/hra/ventes-croisees`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-HRA-CROSS-001 | P1 | Dashboard HRA "Ventes Eventy vs Directes" temps réel |
+| TODO-HRA-CROSS-002 | P1 | Push notif HRA nouvelle résa Eventy (mobile + email) |
+| TODO-HRA-CROSS-003 | P1 | Chat direct HRA ↔ client (pré/jour J/post) |
+| TODO-HRA-CROSS-004 | P1 | Ajustement prix/dispos/description par HRA (portail) |
+| TODO-HRA-CROSS-005 | P1 | Détails client transmis HRA (allergies, accessibilité) |
+| TODO-HRA-CROSS-006 | P2 | Scoring HRA : top Eventy vs inactifs |
+| TODO-HRA-CROSS-007 | P2 | Alertes conflit planning simultané |
+| TODO-HRA-CROSS-008 | P2 | Bonus HRA premium si ≥ 60% ventes Eventy |
+| TODO-HRA-CROSS-009 | P2 | Coaching auto HRA sous-performants (tips, vidéos) |
+| TODO-HRA-CROSS-010 | P2 | Dashboard partenariat HRA exportable PDF mensuel |
+| TODO-HRA-CROSS-011 | P3 | Simulation HRA : "si 50% Eventy, CA = ?" |
+| TODO-HRA-CROSS-012 | P3 | Challenge trimestriel HRA top Eventy (prize) |
+
 ## DUAL — Interface duale Voyage + Gaming (transversal)
 
 | ID | Priorité | Description |
@@ -275,8 +377,14 @@
 | ENER (énergie partout) | 12 | 4 | 5 | 3 |
 | DEFI (défis groupes) | 12 | 5 | 4 | 3 |
 | VAL (validation équipe) | 12 | 4 | 5 | 3 |
+| MARGE (marge activités) | 12 | 5 | 5 | 2 |
+| NEGO (négociation) | 12 | 4 | 5 | 3 |
+| CONTRAT (contrats) | 12 | 5 | 5 | 2 |
+| COMPTA-ACT (compta) | 12 | 5 | 5 | 2 |
+| HRA-VENTE (systèmes) | 12 | 5 | 5 | 2 |
+| HRA-CROSS (ventes HRA) | 12 | 5 | 5 | 2 |
 | DUAL (interface duale) | 8 | 4 | 3 | 1 |
-| **TOTAL** | **148** | **52** | **63** | **33** |
+| **TOTAL** | **220** | **82** | **93** | **45** |
 
 ---
 
