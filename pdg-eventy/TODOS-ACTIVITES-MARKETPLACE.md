@@ -348,6 +348,74 @@
 | TODO-HRA-CROSS-011 | P3 | Simulation HRA : "si 50% Eventy, CA = ?" |
 | TODO-HRA-CROSS-012 | P3 | Challenge trimestriel HRA top Eventy (prize) |
 
+## HRA-CREA — Création self-service HRA (`/createur/activites/creation`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-HRA-CREA-001 | P1 | Wizard 5 étapes mobile-first (85% HRA créent depuis mobile) |
+| TODO-HRA-CREA-002 | P1 | Upload photos compressé + stripping EXIF + preview instantané |
+| TODO-HRA-CREA-003 | P1 | Autocomplete Mapbox adresse + map interactive |
+| TODO-HRA-CREA-004 | P1 | Calendrier dispos intégré (récurrent / one-shot) + sync GCal |
+| TODO-HRA-CREA-005 | P1 | Publication dual : 1 activité = 2 rendus (voyage + gaming) auto |
+| TODO-HRA-CREA-006 | P2 | IA copywriter : brief 3 lignes → titre + description ton Eventy |
+| TODO-HRA-CREA-007 | P2 | Banque photos royalty-free si pas de photo |
+| TODO-HRA-CREA-008 | P2 | Auto-traduction FR/EN/IT/ES |
+| TODO-HRA-CREA-009 | P2 | Checklist inclus/non-inclus + matériel requis |
+| TODO-HRA-CREA-010 | P2 | Suggestion prix concurrence locale + marge cible |
+| TODO-HRA-CREA-011 | P3 | Détection visages + floutage auto non-consentants |
+| TODO-HRA-CREA-012 | P3 | Génération vidéo shorts auto (photos + musique libre) |
+
+## HRA-VENTE-DASH — Dashboard vente HRA (`/createur/activites/ventes`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-HRA-VENTE-DASH-001 | P1 | Consolidation Eventy voyage + gaming + ventes directes |
+| TODO-HRA-VENTE-DASH-002 | P1 | Calcul auto commission (18% sur Eventy, 0% sur direct) |
+| TODO-HRA-VENTE-DASH-003 | P1 | Export PDF mensuel pour comptable HRA |
+| TODO-HRA-VENTE-DASH-004 | P1 | Graphique comparatif canaux (Eventy/site/Insta/bouche) |
+| TODO-HRA-VENTE-DASH-005 | P1 | Revenus nets par activité (commission + TVA + net) |
+| TODO-HRA-VENTE-DASH-006 | P2 | Prédictif : estimation ventes/mois avant publication |
+| TODO-HRA-VENTE-DASH-007 | P2 | Notification paiements reçus (mail + push) |
+| TODO-HRA-VENTE-DASH-008 | P2 | Historique transactions + reçus téléchargeables |
+| TODO-HRA-VENTE-DASH-009 | P2 | Comparaison anonyme vs moyenne HRA similaires |
+| TODO-HRA-VENTE-DASH-010 | P3 | Widget embed Eventy pour site HRA (génération auto) |
+| TODO-HRA-VENTE-DASH-011 | P3 | Parrainage HRA : invite collègue → bonus commission 1 mois |
+| TODO-HRA-VENTE-DASH-012 | P3 | Lien bio Eventy pour Insta (comme Linktree) |
+
+## HRA-SYS — Systèmes self-service HRA (`/createur/activites/systemes`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-HRA-SYS-001 | P1 | OAuth flow 1-clic : GCal, Calendly, Facebook, Insta |
+| TODO-HRA-SYS-002 | P1 | Sync 2-way : résa Eventy → bloque externe + inverse |
+| TODO-HRA-SYS-003 | P1 | Widget embed auto-généré (script à coller sur site) |
+| TODO-HRA-SYS-004 | P1 | Health check quotidien + alerte HRA si token expiré |
+| TODO-HRA-SYS-005 | P1 | Logs sync visibles par HRA (transparence totale) |
+| TODO-HRA-SYS-006 | P2 | WhatsApp Business : notifs résa + chat client |
+| TODO-HRA-SYS-007 | P2 | Import historique 6 mois à la connexion |
+| TODO-HRA-SYS-008 | P2 | Multi-calendriers (pro + perso en lecture seule) |
+| TODO-HRA-SYS-009 | P2 | Détection conflits + proposition résolution auto |
+| TODO-HRA-SYS-010 | P2 | Export .ics de toutes résas Eventy vers agenda perso |
+| TODO-HRA-SYS-011 | P3 | Zapier / Make.com : recipes HRA (Trello, Notion, Airtable) |
+| TODO-HRA-SYS-012 | P3 | Scraping fallback site HRA si pas d'API |
+
+## HRA-RESA — Réservations + chat HRA (`/createur/activites/reservations`)
+
+| ID | Priorité | Description |
+|----|----------|-------------|
+| TODO-HRA-RESA-001 | P1 | Inbox unifiée toutes sources (Eventy voyage + gaming + directs) |
+| TODO-HRA-RESA-002 | P1 | Chat temps réel client ↔ HRA (WebSocket) avec historique |
+| TODO-HRA-RESA-003 | P1 | Push notif nouvelle résa + message (mobile + email) |
+| TODO-HRA-RESA-004 | P1 | Détails client transmis (allergies, accessibilité, occasion) |
+| TODO-HRA-RESA-005 | P1 | Actions rapides : confirmer / annuler / demander info |
+| TODO-HRA-RESA-006 | P2 | Templates messages (conf J-7, rappel J-1, post avis) |
+| TODO-HRA-RESA-007 | P2 | Pièces jointes chat (photos lieu, menu, itinéraire PDF) |
+| TODO-HRA-RESA-008 | P2 | Appel audio/vidéo dans l'app (brief complexe) |
+| TODO-HRA-RESA-009 | P2 | Traduction auto messages FR/EN/IT/ES |
+| TODO-HRA-RESA-010 | P2 | Tags conversation (VIP, rappeler, allergies) |
+| TODO-HRA-RESA-011 | P3 | Suggestions IA réponses contextuelles |
+| TODO-HRA-RESA-012 | P3 | Résumé automatique longue conversation (points clés) |
+
 ## DUAL — Interface duale Voyage + Gaming (transversal)
 
 | ID | Priorité | Description |
@@ -381,10 +449,14 @@
 | NEGO (négociation) | 12 | 4 | 5 | 3 |
 | CONTRAT (contrats) | 12 | 5 | 5 | 2 |
 | COMPTA-ACT (compta) | 12 | 5 | 5 | 2 |
-| HRA-VENTE (systèmes) | 12 | 5 | 5 | 2 |
-| HRA-CROSS (ventes HRA) | 12 | 5 | 5 | 2 |
+| HRA-VENTE (admin systèmes) | 12 | 5 | 5 | 2 |
+| HRA-CROSS (admin ventes HRA) | 12 | 5 | 5 | 2 |
+| HRA-CREA (création self-service) | 12 | 5 | 5 | 2 |
+| HRA-VENTE-DASH (dashboard HRA) | 12 | 5 | 5 | 2 |
+| HRA-SYS (systèmes self-service) | 12 | 5 | 5 | 2 |
+| HRA-RESA (résas + chat) | 12 | 5 | 5 | 2 |
 | DUAL (interface duale) | 8 | 4 | 3 | 1 |
-| **TOTAL** | **220** | **82** | **93** | **45** |
+| **TOTAL** | **268** | **102** | **113** | **53** |
 
 ---
 
