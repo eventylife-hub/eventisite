@@ -1,7 +1,7 @@
 # 🚀 État du Projet Eventy — Document maître
 
-> **Dernière mise à jour** : 19 avril 2026
-> **Statut global** : 🟢 **Production-ready** — backend live sur Scaleway, frontend live sur Vercel, **789 pages Next.js** (543+ routes documentées), 0 bug critique.
+> **Dernière mise à jour** : 24 avril 2026
+> **Statut global** : 🟢 **Production-ready** — backend live sur Scaleway, frontend live sur Vercel, **1 118 pages Next.js** (32 portails), 0 bug critique.
 > **Phase** : Lancement Gamme Standard imminent (preset MVP feature-flags actif). Gamme Luxe = Phase 2.
 > **PDG** : David — eventylife@gmail.com
 
@@ -59,10 +59,16 @@ Pour le vocabulaire → [`VOCABULAIRE-EVENTY.md`](./VOCABULAIRE-EVENTY.md)
 ### Technique
 | Indicateur | Valeur |
 |-----------|--------|
-| **Lignes de code total** | **~229,000** (frontend ~146k tsx+ts+css · backend ~83k ts) |
-| **Frontend — fichiers tsx+ts** | **2,710 fichiers** (2,321 tsx · 389 ts) · 65k tsx + 71k ts + 9.5k css |
-| **Backend — fichiers ts** | **905 fichiers** · ~83k lignes |
-| **Frontend — pages Next.js** | **789 page.tsx** (routes techniques) / **543+ routes documentées** |
+| **Lignes de code total** | **~1 184 000** (frontend ~876k tsx+ts+css · backend ~308k ts) |
+| **Frontend — fichiers tsx** | **2 733 fichiers** · 640 531 lignes |
+| **Frontend — fichiers ts** | **1 760 fichiers** · 224 323 lignes |
+| **Frontend — fichiers css** | **12 fichiers** · 11 392 lignes |
+| **Frontend — TOTAL** | **4 505 fichiers** · **876 246 lignes** |
+| **Backend — fichiers ts** | **905 fichiers** · **307 932 lignes** |
+| **Frontend — pages Next.js** | **1 118 page.tsx** — 32 portails distincts |
+| **Frontend — composants tsx** | **319 fichiers** · 61 790 lignes dans `/components` |
+| **Frontend — app/tsx (pages+layouts)** | **2 391 fichiers** · 573 489 lignes dans `/app` |
+| **Frontend — lib/** | **144 fichiers** · 39 475 lignes |
 | **Backend — modules NestJS** | **31** |
 | **Backend — endpoints REST** | 200+ |
 | **Backend — services** | 100+ |
@@ -73,27 +79,37 @@ Pour le vocabulaire → [`VOCABULAIRE-EVENTY.md`](./VOCABULAIRE-EVENTY.md)
 | **Backend — indexes DB** | 313 |
 | **Backend — events émis** | 46 |
 | **Prisma — lignes de schema** | 3 232 |
+| **Frontend — portails distincts** | **32** (admin, pro, client, equipe, public, maisons, jeux, ambassadeur, independant, staff, comptable, employes, avocat, restaurateur, independants, guide, createur, traiteur, photographe, fleuriste, decorateur, coordinateur, chauffeur, animateur, accompagnateur, checkout, auth, influenceur, voyageur, transporteur, demo, assureur) |
 | **Frontend — error boundaries** | ~320 |
 | **Frontend — Next.js App Router** | 14.x |
 | **Frontend — `'use client'`** | 95%+ (ISR sélectif sur public) |
 | **Frontend — SEO** | metadata + JSON-LD sur tous les points d'entrée publics (TravelAgency, TouristTrip, Product+AggregateRating, FAQPage, BreadcrumbList, ProfilePage, WebSite, Organization), sitemap.xml dynamique, robots.txt avec crawlers IA autorisés |
 | **Frontend — Perf** | 35 `next/dynamic` (voyage/[slug] tabs, cartes, NewsletterCTA), 41 `loading="lazy"`, images AVIF/WebP, tree-shaking barrel exports (lucide-react, date-fns, zod, zustand, recharts), cache immuable `/_next/static`, `output: standalone` |
 
-### Utilisateurs (portails) — inventaire 19/04/2026
-| Portail | Pages | Rôle |
-|---------|-------|------|
-| **Public** | 49 | Tout le monde (SEO, marketing, checkout) |
-| **Voyageur** (`/client/*`) | 70 | Voyageurs connectés — inclut `/client/gamification`, `/client/univers`, `/client/evenements`, `/client/hauts-faits`, `/client/challenges`, `/client/tribus`, `/client/social` |
-| **Créateur** (`/pro/*`) | 173 | Créateurs (PRO) + Admin (staff) — inclut `/pro/voyageurs` (CRM), `/pro/incidents`, `/pro/evenements`, `/pro/bus-sur-place` (rotations + devis combiné), `/pro/arrets` (Leaflet), `/pro/wallet` (refonte premium) |
-| **Admin / Équipe Eventy** (`/admin/*`) | 186 | Équipe Eventy uniquement — inclut `/admin/securite/incidents-voyageurs`, `/admin/gamification/{hauts-faits,trophees,evenements}`, sélecteur portail, mode présentation visiteurs |
-| **Maisons** (`/maisons/*`) | 16 | Maisons HRA partenaires |
-| **Ambassadeur** (`/ambassadeur/*`) | 10 | Revendeurs du réseau |
-| **Équipe — 14 Pôles** (`/equipe/*`) | 23 | Cockpit interne par Pôle — inclut `/equipe/securite/incidents-voyageurs`, `/equipe/qualite/hauts-faits`, `/equipe/comptage` |
-| **Indépendant** (`/independant/*`) | 9 | **Nouveau portail mobile-first** (stubs — feature flag OFF) |
-| **Transporteur** (stub Phase 2) | — | Portail dédié loueurs/chauffeurs (feature flag OFF) |
-| **Comptable** (stub Phase 2) | — | Portail expert-comptable : exports FEC, TVA marge, Pennylane (feature flag OFF) |
-| **Assureur** (stub Phase 2) | — | Portail assureur : caisse assurance, sinistres, documents (feature flag OFF) |
-| **Auth / Checkout** | 18 | Tout le monde |
+### Utilisateurs (portails) — inventaire réel 24/04/2026 (comptage `find`)
+| Portail | page.tsx | Rôle |
+|---------|----------|------|
+| **Admin** (`/admin/*`) | **275** | Équipe Eventy — finance, voyages, monitoring, gamification, RBAC, sécurité |
+| **Pro / Créateur** (`/pro/*`) | **211** | Créateurs (PRO) — dashboard, voyages, marketing, finance, transport, CRM |
+| **Client / Voyageur** (`/client/*`) | **126** | Voyageurs connectés — réservations, groupes, gamification, wallet |
+| **Équipe / Pôles** (`/equipe/*`) | **98** | 14 Pôles internes — cockpits, sécurité, qualité, comptage |
+| **Public** (`/public/*`) | **63** | SEO, marketing, catalogue voyages, blog |
+| **Maisons HRA** (`/maisons/*`) | **33** | Hôtels/restos/activités partenaires |
+| **Jeux** (`/jeux/*`) | **26** | Gamification avancée |
+| **Ambassadeur** (`/ambassadeur/*`) | **23** | Revendeurs réseau |
+| **Indépendant** (`/independant/*`) | **19** | Mobile-first (feature flag OFF) |
+| **Staff** (`/staff/*`) | **18** | Portail staff interne |
+| **Comptable** (`/comptable/*`) | **18** | Exports FEC, TVA marge, Pennylane (Phase 2) |
+| **Employes** (`/employes/*`) | **17** | Portail employés |
+| **Avocat** (`/avocat/*`) | **17** | Portail juridique |
+| **Métiers** (11 portails) | **10–11 chacun** | restaurateur, independants, guide, createur, traiteur, photographe, fleuriste, decorateur, coordinateur, chauffeur, animateur, accompagnateur |
+| **Auth / Checkout** | **18** | Tout le monde |
+| **Influenceur** (`/influenceur/*`) | **8** | Portail influenceurs |
+| **Voyageur** (`/voyageur/*`) | **6** | Portail voyageur standalone |
+| **Transporteur** (`/transporteur/*`) | **4** | Loueurs/chauffeurs (Phase 2) |
+| **Assureur** (`/assureur/*`) | **4** | Portail assureur (Phase 2) |
+| **Demo** (`/demo/*`) | **4** | Démo investisseurs |
+| **TOTAL** | **1 118** | **32 portails distincts** |
 
 ---
 
@@ -284,7 +300,7 @@ Liste exhaustive des features en production, ordonnée chronologiquement par cha
 - **Palette or/ambre global portail Créateur** — accent `#b45309` (ambre) cohérent sur tout `/pro` + header portal — _commit `763c97f`_
 - **Audit global Lucide icons** — harmonisation icônes + fix build errors frontend — _commit `da838c9`_
 - **Fix apostrophes** : `/pro/caisse-remplacement`, `/pro/urgences`, `/urgence` (textes conformes) — _commit `9ef5805`_
-- **Métriques techniques (audit 19/04/2026)** : ~229,000 lignes de code (frontend ~146k + backend ~83k) · 2,710 fichiers tsx+ts · 905 fichiers ts backend · 789 page.tsx
+- **Métriques techniques (audit 24/04/2026)** : ~1 184 000 lignes de code (frontend ~876k + backend ~308k) · 4 505 fichiers frontend · 905 fichiers ts backend · **1 118 page.tsx** · **32 portails**
 
 ### En cours (avril 2026)
 - Câblage **Stripe Connect payouts Créateurs** (~8h)

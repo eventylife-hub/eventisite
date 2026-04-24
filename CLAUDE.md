@@ -157,20 +157,24 @@ Tous les fichiers de pilotage sont dans `pdg-eventy/` :
 - **Budget** : 15 000€ - 50 000€
 - **Stack** : NestJS 10 (31 modules) + Next.js 14 + Prisma + PostgreSQL
 - **Tests** : 3 300+ tests passants
-- **Code** : ~296 500 lignes
+- **Code** : ~1 184 000 lignes (frontend ~876k · backend ~308k) — audit réel 24/04/2026
 
-### Architecture 3 portails (mis à jour 2026-03-22 — inventaire réel)
-- **Portail Public** : `app/(public)/` — **29 pages** (accueil, voyages, blog, CGV, FAQ, contact, itinéraires, départs, devenir-partenaire...) — design gradient sunset premium
-- **Portail Client** : `app/(client)/client/` — **33 pages** (dashboard, réservations, groupes, favoris, wallet, paiements, profil, voyage/[id]/*...) — espace client connecté
-- **Portail Pro** : `app/(pro)/pro/` — **96 pages** (dashboard, voyages/[id]/*, vendre/*, marketing/*, finance, terrain, transport, activités, messagerie...) — rôle PRO ou ADMIN
-- **Portail Admin** : `app/(admin)/admin/` — **68 pages** (dashboard, finance/*, voyages/[id]/controle/*, monitoring, utilisateurs, sponsors, RBAC...) — rôle ADMIN uniquement
-- **Auth** : 11 pages (connexion, inscription, mot-de-passe-oublié, vérification-email, admin-login...)
-- **Checkout** : 7 pages (start, step-1/2/3, activités, transport, confirmation)
-- **Autre** : 3 pages (embed, maintenance, offline)
-- **Total** : **247 pages frontend**
-- **Backend NestJS** : 31 modules (admin, auth, bookings, cancellation, checkout, client, cron, documents, email, exports, finance, groups, health, hra, insurance, legal, marketing, notifications, payments, post-sale, pro, public, restauration, reviews, rooming, seo, support, transport, travels, uploads, users)
+### Architecture 32 portails (mis à jour 2026-04-24 — comptage réel `find`)
+- **Portail Admin** : `app/(admin)/` — **275 pages** — finance, voyages, monitoring, gamification, RBAC, sécurité
+- **Portail Pro / Créateur** : `app/(pro)/` — **211 pages** — dashboard, voyages, marketing, finance, transport, CRM
+- **Portail Client / Voyageur** : `app/(client)/` — **126 pages** — réservations, groupes, gamification, wallet
+- **Portail Équipe / Pôles** : `app/(equipe)/` — **98 pages** — 14 cockpits Pôles internes
+- **Portail Public** : `app/(public)/` — **63 pages** — SEO, marketing, catalogue, blog
+- **Portail Maisons HRA** : `app/(maisons)/` — **33 pages** — hôtels/restos/activités partenaires
+- **Portail Jeux** : `app/(jeux)/` — **26 pages** — gamification avancée
+- **Portail Ambassadeur** : `app/(ambassadeur)/` — **23 pages** — revendeurs réseau
+- **Portails Métiers** (18 portails) : accompagnateur, animateur, assureur, avocat, chauffeur, comptable, coordinateur, createur, decorateur, employes, fleuriste, guide, independant, independants, influenceur, photographe, restaurateur, staff, traiteur, transporteur, voyageur — **4 à 19 pages chacun**
+- **Auth + Checkout + Demo** : 9 + 9 + 4 pages
+- **Total** : **1 118 page.tsx** · **32 portails distincts**
+- **Frontend** : 2 733 fichiers tsx · 1 760 fichiers ts · 12 css → **876 246 lignes**
+- **Backend NestJS** : 31 modules (admin, auth, bookings, cancellation, checkout, client, cron, documents, email, exports, finance, groups, health, hra, insurance, legal, marketing, notifications, payments, post-sale, pro, public, restauration, reviews, rooming, seo, support, transport, travels, uploads, users) → **307 932 lignes** (905 fichiers)
 - Le frontend Next.js est le VRAI produit — les PWA (admin-pwa/, pro-pwa/) sont des apps standalone complémentaires
-- Les 3 portails ont des designs, layouts et composants distincts. Ne pas réutiliser les composants client pour pro/admin.
+- Les portails ont des designs, layouts et composants distincts. Ne pas mélanger les composants entre portails.
 
 ---
 
