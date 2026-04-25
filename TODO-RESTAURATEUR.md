@@ -3,6 +3,12 @@
 > Audit du 2026-04-25
 > Style cible : dark `#0A0E14` · gold `#D4A853` · glassmorphism
 > Apostrophes JSX : `&apos;` dans le texte, `'` dans le code JS
+>
+> **MODÈLE MARKETPLACE** : les restaurateurs sont des **indépendants partenaires** à leur compte (propriétaires/gérants de restaurant), pas des employés Eventy. Eventy leur confie les services repas pour les groupes de voyageurs. Modèle 82/18 (82% marge Eventy, 18% reversé sur la marge).
+> Les 3 niveaux sont :
+> 1. **Indépendant / Pro** — le portail du restaurateur partenaire (portail actuel `/restaurateur/`)
+> 2. **Coordinateur Eventy** — employé Eventy qui supervise le réseau de partenaires restaurateurs
+> 3. **Admin Eventy** — accès total, config, reporting, RBAC
 
 ---
 
@@ -485,7 +491,7 @@ Pages concernées :
 
 ---
 
-## Ordre d'implémentation suggéré
+## Ordre d'implémentation suggéré (niveau INDÉPENDANT)
 
 1. `layout.tsx` — thème gold + sidebar complète avec tous les liens
 2. `menus/page.tsx` — cœur du portail
@@ -497,3 +503,294 @@ Pages concernées :
 8. `documents/page.tsx`
 9. `support/page.tsx`
 10. Correction thème pages existantes (batch)
+
+---
+
+## NIVEAU 2 — Vue COORDINATEUR RESTAURATION (Eventy interne)
+
+> Route : `/restaurateur/responsable/`
+> Qui : coordinateur interne Eventy avec rôle `RESPONSABLE_RESTAURATION`
+> Rôle : supervise le réseau de restaurateurs partenaires indépendants, valide les déclarations, gère les incidents, pilote la qualité
+> ⚠️ Ce n'est PAS un manager de restaurant — c'est un employé Eventy qui coordonne les partenaires
+
+### État actuel
+Inexistant — tout est à créer.
+
+### Pages à créer (5)
+
+| Page | Route | Priorité |
+|------|-------|---------|
+| Dashboard superviseur | `/restaurateur/responsable` | P0 |
+| Validation déclarations | `/restaurateur/responsable/validation` | P0 |
+| Partenaires | `/restaurateur/responsable/partenaires` | P1 |
+| Incidents | `/restaurateur/responsable/incidents` | P1 |
+| Reporting | `/restaurateur/responsable/reporting` | P2 |
+
+### Layout COORDINATEUR
+
+```
+Coordination
+  📊 Dashboard          /restaurateur/responsable
+  ✅ Validation          /restaurateur/responsable/validation
+  ⚠️  Incidents          /restaurateur/responsable/incidents
+
+Réseau partenaires
+  🍽️  Partenaires        /restaurateur/responsable/partenaires
+  📈 Reporting           /restaurateur/responsable/reporting
+
+→ Retour vue standard
+```
+
+---
+
+### C1. Dashboard coordinateur restauration
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Coordination Restauration · Mai 2026                    │
+│  Coordinatrice : Amélie Blanc                            │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │Partenaires│ │ Déclarat.│ │Anomalies │ │ CA mois  │  │
+│  │ actifs   │ │ à valider│ │ ouvertes │ │          │  │
+│  │    8     │ │    6     │ │    2     │ │ 14 800 € │  │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+│                                                          │
+│  Services du jour — Vue globale                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ Restaurant           Voyage         PAX   Statut │   │
+│  │ Riad El Fenn         Marrakech       22   ✓ OK   │   │
+│  │ Quinta do Crasto     Porto           35   ⏳ PEN │   │
+│  │ Acqua e Farina       Rome            28   ✓ OK   │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                          │
+│  Alertes urgentes                                        │
+│  → Quinta do Crasto : déjeuner non déclaré (délai 30m)  │
+│  → Riad El Fenn : anomalie PAX dîner à traiter          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### C2. Validation déclarations
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Validation des déclarations · 6 en attente              │
+├─────────────────────────────────────────────────────────┤
+│  [En attente (6)] [Validées (48)] [Anomalies (2)]        │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ 🌙 Riad El Fenn — Dîner · 12 mai 2026           │   │
+│  │    Attendus : 22 · Déclarés : 20 (écart -2)      │   │
+│  │    Voyage : Marrakech — Riad & Médina             │   │
+│  │    [✓ Valider 20] [⚠️ Créer anomalie] [Contacter]│   │
+│  ├──────────────────────────────────────────────────┤   │
+│  │ ☀️ Quinta do Crasto — PDJ · 18 mai 2026          │   │
+│  │    Attendus : 35 · Déclarés : 35                 │   │
+│  │    Voyage : Porto Summer Vibes                   │   │
+│  │    [✓ Valider] [Voir détails]                    │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### C3. Partenaires restaurateurs
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Réseau restaurateurs · 8 partenaires actifs  [+ Inviter]│
+├─────────────────────────────────────────────────────────┤
+│  [Actifs] [En période d'essai] [Suspendus]               │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Nom               Ville        Voyages  Note  Statut   │
+│  ──────────────────────────────────────────────────────  │
+│  Riad El Fenn      Marrakech      12     ★4.9  🟢 Actif │
+│  Quinta do Crasto  Porto           8     ★4.7  🟢 Actif │
+│  Acqua e Farina    Rome            6     ★4.8  🟢 Actif │
+│  Hotel Arts (rest) Barcelone       4     ★4.5  🟡 Essai │
+│                                                          │
+│  [Voir profil] [Planning] [Contacter] [Suspendre]        │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### C4. Reporting qualité restauration
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Reporting Restauration · T2 2026            [Export]   │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Repas servis : 1 240 · Anomalies : 8 (0.6%)            │
+│  Taux validation J0 : 94%                               │
+│  Note moyenne clients : 4.78 / 5                        │
+│  CA réseau : 44 400 € · Marge Eventy 82% : 36 408 €    │
+│                                                          │
+│  Top performers                                          │
+│  ① Riad El Fenn — ★ 4.90 — 12 voyages — 0 incident     │
+│  ② Acqua e Farina — ★ 4.80 — 6 voyages — 1 incident    │
+│  ③ Quinta do Crasto — ★ 4.70 — 8 voyages — 2 incidents │
+│                                                          │
+│  Alertes qualité                                         │
+│  → Hotel Arts (Barcelone) : note en baisse (4.45)       │
+│  → 2 anomalies de PAX non résolues > 48h                │
+│                                                          │
+│  [Export CSV] [Rapport mensuel PDF]                     │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Données démo :**
+```ts
+const PARTNERS = [
+  { id:'r1', name:'Riad El Fenn', city:'Marrakech', country:'MA', travelsTotal:12, rating:4.9, status:'ACTIF', incidents:0 },
+  { id:'r2', name:'Quinta do Crasto', city:'Porto', country:'PT', travelsTotal:8, rating:4.7, status:'ACTIF', incidents:2 },
+  { id:'r3', name:'Acqua e Farina', city:'Rome', country:'IT', travelsTotal:6, rating:4.8, status:'ACTIF', incidents:1 },
+  { id:'r4', name:'Restaurant Hotel Arts', city:'Barcelone', country:'ES', travelsTotal:4, rating:4.5, status:'TRIAL', incidents:1 },
+]
+```
+
+---
+
+## NIVEAU 3 — Vue ADMIN
+
+> Route : `/admin/metiers/restaurateur/` (portail admin Eventy)
+> Qui : administrateur Eventy — accès total, configuration, reporting financier, RBAC
+> **État actuel** : ❌ Aucune page n'existe — à créer entièrement
+> (À la différence de l'animateur qui a déjà 1 page admin)
+
+### Pages à créer (5)
+
+| Page | Route | Contenu |
+|------|-------|---------|
+| Vue principale | `/admin/metiers/restaurateur` | Dashboard admin : réseau partenaires, KPIs, alertes, planning global |
+| Tarifs & grilles | `/admin/metiers/restaurateur/tarifs` | Tarifs par type de service, marges, TVA restauration |
+| Permissions | `/admin/metiers/restaurateur/permissions` | RBAC : qui valide les déclarations, qui gère les incidents |
+| Config | `/admin/metiers/restaurateur/config` | Délais déclaration, seuils anomalie, types de service autorisés |
+| Reporting financier | `/admin/metiers/restaurateur/reporting` | CA total, marge 82/18, top partenaires, analyse qualité |
+
+---
+
+### A1. Page principale admin restaurateur
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Admin — Métier Restaurateur                             │
+│  [Partenaires] [Planning] [Finance] [Config]             │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ─── Onglet Partenaires ───                             │
+│                                                          │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │Partenaires│ │ Actifs   │ │Voyages   │ │ CA total │  │
+│  │  total   │ │          │ │ ce mois  │ │  YTD     │  │
+│  │   8      │ │    7     │ │    5     │ │ 44 400 € │  │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+│                                                          │
+│  Partenaires par statut                                  │
+│  Actifs : 7 · Essai : 1 · Suspendus : 0 · Blacklist : 0│
+│                                                          │
+│  Voyages à couvrir sans restaurant assigné               │
+│  → Islande 25 mai : restaurant non assigné              │
+│  → Santorin 5 juin : restaurant non assigné             │
+│  [Assigner un partenaire →]                              │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### A2. Tarifs & grilles tarifaires
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Grilles tarifaires — Restauration        [+ Nouvelle]   │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Service             Tarif/pers HT  TVA   Inclus        │
+│  ──────────────────────────────────────────────────────  │
+│  Petit-déjeuner          15–25 €     10%  Boissons      │
+│  Déjeuner (formule)      25–45 €     10%  Eau, café     │
+│  Dîner (formule)         40–70 €     10%  Eau, café     │
+│  Buffet découverte       35–60 €     10%  Boissons      │
+│  Dîner gastronomique     70–120 €    10%  Eau, vins     │
+│                                                          │
+│  Modèle reversement : 82% Eventy / 18% partenaire       │
+│  (marge nette Eventy après reversement)                  │
+│  [Modifier] [Historique]                                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+### A3. Config métier
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Configuration — Métier Restaurateur                     │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Délais de déclaration                                   │
+│  Petit-déjeuner : déclarer avant [10]h00                 │
+│  Déjeuner       : déclarer avant [15]h00                 │
+│  Dîner          : déclarer avant [23]h00                 │
+│  Tolérance écart PAX sans anomalie : [± 2] personnes     │
+│                                                          │
+│  Seuils d'alerte                                         │
+│  Note moyenne minimum acceptable   : [4.0] / 5          │
+│  Anomalies max/mois avant examen   : [3]                 │
+│  Taux déclaration J0 minimum       : [90] %              │
+│                                                          │
+│  Services activés                                        │
+│  ☑ Petit-déjeuner  ☑ Déjeuner  ☑ Dîner  ☑ Buffet      │
+│  ☐ Brunch (désactivé)  ☐ Cocktail (désactivé)           │
+│                                                          │
+│  [Sauvegarder]                                           │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Données démo :**
+```ts
+const TARIFS_RESTO = [
+  { type:'BREAKFAST', labelFR:'Petit-déjeuner', minHT:1500, maxHT:2500, tva:10, drinksIncluded:true },
+  { type:'LUNCH',     labelFR:'Déjeuner',       minHT:2500, maxHT:4500, tva:10, drinksIncluded:false },
+  { type:'DINNER',    labelFR:'Dîner',           minHT:4000, maxHT:7000, tva:10, drinksIncluded:false },
+  { type:'BUFFET',    labelFR:'Buffet',          minHT:3500, maxHT:6000, tva:10, drinksIncluded:true },
+  { type:'GASTRO',    labelFR:'Dîner gastro',    minHT:7000, maxHT:12000, tva:10, drinksIncluded:true },
+]
+```
+
+---
+
+## Ordre d'implémentation global (3 niveaux)
+
+### Phase A — Indépendant partenaire (priorité max)
+1. `layout.tsx` — thème gold + sidebar complète
+2. `menus/page.tsx`
+3. `commandes/page.tsx`
+4. `stocks/page.tsx` (nouveau)
+5. `planning/page.tsx` (nouveau)
+6. `reservations/page.tsx`
+7. `revenus/page.tsx`
+8. `documents/page.tsx`
+9. `support/page.tsx`
+10. Correction thème pages existantes
+
+### Phase B — Coordinateur Eventy
+11. `restaurateur/responsable/layout.tsx`
+12. `restaurateur/responsable/page.tsx` — dashboard
+13. `restaurateur/responsable/validation/page.tsx`
+14. `restaurateur/responsable/partenaires/page.tsx`
+15. `restaurateur/responsable/incidents/page.tsx`
+16. `restaurateur/responsable/reporting/page.tsx`
+
+### Phase C — Admin Eventy
+17. `admin/metiers/restaurateur/page.tsx` (créer)
+18. `admin/metiers/restaurateur/tarifs/page.tsx`
+19. `admin/metiers/restaurateur/config/page.tsx`
+20. `admin/metiers/restaurateur/reporting/page.tsx`
+21. `admin/metiers/restaurateur/permissions/page.tsx`
