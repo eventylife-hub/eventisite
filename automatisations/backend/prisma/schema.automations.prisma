@@ -1,0 +1,225 @@
+// ────────────────────────────────────────────────────────────
+// Tables ajoutées pour le module Automations
+// À fusionner avec backend/prisma/schema.prisma
+// ────────────────────────────────────────────────────────────
+
+model AutomationRun {
+  id              String   @id @default(cuid())
+  automationName  String
+  status          String   // running | success | failed | skipped
+  startedAt       DateTime
+  endedAt         DateTime?
+  durationMs      Int?
+  itemsProcessed  Int?
+  payload         Json?
+  error           String?
+  retriesCount    Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@index([automationName, startedAt])
+  @@index([status])
+}
+
+model AutomationSetting {
+  id               String   @id @default(cuid())
+  automationName   String   @unique
+  enabled          Boolean  @default(true)
+  scheduleCron     String?
+  lastRunAt        DateTime?
+  nextRunAt        DateTime?
+  ownerUserId      String?
+  notes            String?
+  updatedAt        DateTime @updatedAt
+  createdAt        DateTime @default(now())
+}
+
+model AuditLogAutomations {
+  id                String   @id @default(cuid())
+  automationRunId   String?
+  entityType        String
+  entityId          String
+  action            String
+  beforeState       Json?
+  afterState        Json?
+  actor             String   @default("system")
+  createdAt         DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([automationRunId])
+  @@index([createdAt])
+}
+
+model AutomationDedupe {
+  key        String   @id
+  result     Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model BookingSequence {
+  year     Int  @id
+  lastSeq  Int
+}
+
+model InvoiceSequence {
+  year     Int  @id
+  lastSeq  Int
+}
+
+model CreatorInvoiceSequence {
+  yearMonth String @id
+  lastSeq   Int
+}
+
+model ScheduledNotification {
+  id                 String   @id @default(cuid())
+  bookingId          String?
+  clientId           String
+  channel            String   // email | sms | push
+  template           String
+  sendAt             DateTime
+  status             String   @default("pending") // pending | sent | failed
+  retriesCount       Int      @default(0)
+  lastError          String?
+  sentAt             DateTime?
+  createdAt          DateTime @default(now())
+
+  @@index([sendAt, status])
+  @@index([clientId])
+}
+
+model OutboundEmail {
+  id                       String   @id @default(cuid())
+  scheduledNotificationId  String?
+  to                       String?
+  clientId                 String?
+  template                 String
+  variables                Json?
+  status                   String   @default("queued") // queued | sent | failed
+  sentAt                   DateTime?
+  error                    String?
+  createdAt                DateTime @default(now())
+}
+
+model OutboundSms {
+  id                       String   @id @default(cuid())
+  scheduledNotificationId  String?
+  to                       String?
+  clientId                 String?
+  template                 String?
+  content                  String?
+  status                   String   @default("queued")
+  sentAt                   DateTime?
+  error                    String?
+  createdAt                DateTime @default(now())
+}
+
+model OutboundPush {
+  id                       String   @id @default(cuid())
+  scheduledNotificationId  String?
+  userId                   String?
+  clientId                 String?
+  template                 String?
+  title                    String?
+  body                     String?
+  status                   String   @default("queued")
+  sentAt                   DateTime?
+  error                    String?
+  createdAt                DateTime @default(now())
+}
+
+model NfcOrder {
+  id                   String   @id @default(cuid())
+  travelId             String   @unique
+  externalOrderRef     String   @unique
+  quantity             Int
+  status               String   // placed | shipped | delivered | cancelled
+  trackingNumber       String?
+  shippingFullName     String
+  shippingLine1        String
+  shippingLine2        String?
+  shippingPostalCode   String
+  shippingCity         String
+  shippingCountry      String
+  estimatedDeliveryAt  DateTime
+  deliveredAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model NfcBracelet {
+  id          String   @id @default(cuid())
+  uid         String   @unique
+  travelId    String
+  clientId    String?
+  bookingId   String?
+  status      String   // provisioned | shipped | delivered | attached | active | retired
+  attachedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([travelId])
+  @@index([clientId])
+}
+
+model CreatorInvoice {
+  id              String   @id @default(cuid())
+  invoiceNumber   String   @unique
+  creatorId       String
+  periodFrom      DateTime
+  periodTo        DateTime
+  amountEur       Decimal  @db.Decimal(10, 2)
+  vatLegend       String
+  status          String   // pending-payment | paid | failed
+  pdfUrl          String?
+  lineItems       Json
+  issuedAt        DateTime
+  paidAt          DateTime?
+  paymentRef      String?
+  createdAt       DateTime @default(now())
+
+  @@index([creatorId, issuedAt])
+}
+
+model VatMarginReport {
+  id                  String   @id @default(cuid())
+  yearMonth           String   @unique
+  periodFrom          DateTime
+  periodTo            DateTime
+  totalRevenueTtcEur  Decimal  @db.Decimal(12, 2)
+  totalCostTtcEur     Decimal  @db.Decimal(12, 2)
+  totalMarginTtcEur   Decimal  @db.Decimal(12, 2)
+  vatOnMarginEur      Decimal  @db.Decimal(12, 2)
+  marginHtEur         Decimal  @db.Decimal(12, 2)
+  bookingsCount       Int
+  computedAt          DateTime
+  createdAt           DateTime @default(now())
+}
+
+model FecExport {
+  id             String   @id @default(cuid())
+  year           Int      @unique
+  fileName       String
+  fileUrl        String
+  linesWritten   Int
+  bytesWritten   Int
+  generatedAt    DateTime
+  createdAt      DateTime @default(now())
+}
+
+model TravelGroup {
+  id              String   @id @default(cuid())
+  bookingId       String   @unique
+  travelId        String
+  leaderClientId  String
+  size            Int
+  createdAt       DateTime @default(now())
+}
+
+model IcsFile {
+  id          String   @id @default(cuid())
+  bookingId   String   @unique
+  content     String   @db.Text
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
