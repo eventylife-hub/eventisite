@@ -7,13 +7,30 @@
 
 ## Fichiers
 
+### Dossier complet APST/Atout France
 | Fichier | Description |
 |---------|-------------|
-| `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.docx` | Dossier final, prêt à dépôt après validation avocat |
-| `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.pdf` | Version PDF "à imprimer" (122 pages, 411 KB) |
+| `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.docx` | Dossier final, prêt à dépôt après validation avocat (158 KB · 47 500 mots) |
+| `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.pdf` | Version PDF "à imprimer" — header avec titre, footer avec pagination + mention "Confidentiel" (119 pages · 435 KB) |
+
+### Résumé exécutif (banquier / investisseur)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Resume-Executif.docx` | Synthèse 2 pages A4 (14 KB) — bandeau d'en-tête + tableaux denses + bandeau de contact |
+| `Eventy-Life-Resume-Executif.pdf` | Version PDF imprimable (2 pages exactes · 10 KB) |
+
+### Documents complémentaires
+| Fichier | Description |
+|---------|-------------|
 | `PROCESSUS-ATOUT-FRANCE.md` | Détail opérationnel du processus Atout France (chronologie, pièces, coûts, contacts) |
-| `../../scripts/garanties/build-dossier-garantie.js` | Générateur Node.js du dossier .docx |
-| `../../scripts/garanties/docx-to-pdf.py` | Convertisseur .docx → .pdf via mammoth + xhtml2pdf |
+
+### Scripts générateurs
+| Fichier | Description |
+|---------|-------------|
+| `../../scripts/garanties/build-dossier-garantie.js` | Générateur Node.js du dossier complet .docx |
+| `../../scripts/garanties/docx-to-pdf.py` | Convertisseur dossier complet .docx → .pdf imprimable (header/footer/pagination) |
+| `../../scripts/garanties/build-resume-executif.js` | Générateur Node.js du résumé exécutif 2 pages .docx |
+| `../../scripts/garanties/resume-to-pdf.py` | Convertisseur résumé exécutif .docx → .pdf imprimable |
 
 ## Régénération
 
@@ -26,14 +43,26 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
-### Conversion .docx → .pdf
+### Conversion dossier complet .docx → .pdf imprimable
 
 ```bash
 python scripts/garanties/docx-to-pdf.py
 ```
 
 Pré-requis : `pip install mammoth xhtml2pdf` (déjà installé sur le poste PDG).
-Sortie : `docs/garanties/Eventy-Life-Dossier-Garantie-Financiere-COMPLET.pdf` (122 pages).
+Sortie : `docs/garanties/Eventy-Life-Dossier-Garantie-Financiere-COMPLET.pdf` (119 pages, header + footer paginé).
+
+### Génération du résumé exécutif (2 pages banquier / investisseur)
+
+```bash
+NODE_PATH="$(npm root -g)" node scripts/garanties/build-resume-executif.js \
+  docs/garanties/Eventy-Life-Resume-Executif.docx
+python scripts/garanties/resume-to-pdf.py
+```
+
+Sortie :
+- `docs/garanties/Eventy-Life-Resume-Executif.docx` (14 KB)
+- `docs/garanties/Eventy-Life-Resume-Executif.pdf` (2 pages exactes, 10 KB)
 
 ## Enrichissements v11 — peaufinage formel + cohérence + relecture finale
 
