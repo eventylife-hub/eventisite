@@ -19,6 +19,12 @@
 | `Eventy-Life-Resume-Executif.docx` | Synthèse 2 pages A4 (14 KB) — bandeau d'en-tête + tableaux denses + bandeau de contact |
 | `Eventy-Life-Resume-Executif.pdf` | Version PDF imprimable (2 pages exactes · 10 KB) |
 
+### Courriers d'accompagnement formels (Atout France + APST)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Courriers-APST-AtoutFrance.docx` | Deux lettres formelles : (1) demande d'immatriculation Atout France, (2) demande d'adhésion APST + octroi garantie financière (13 KB) |
+| `Eventy-Life-Courriers-APST-AtoutFrance.pdf` | Version PDF imprimable à signer manuscritement (4 pages · 11 KB) |
+
 ### Documents complémentaires
 | Fichier | Description |
 |---------|-------------|
@@ -31,6 +37,8 @@
 | `../../scripts/garanties/docx-to-pdf.py` | Convertisseur dossier complet .docx → .pdf imprimable (header/footer/pagination) |
 | `../../scripts/garanties/build-resume-executif.js` | Générateur Node.js du résumé exécutif 2 pages .docx |
 | `../../scripts/garanties/resume-to-pdf.py` | Convertisseur résumé exécutif .docx → .pdf imprimable |
+| `../../scripts/garanties/build-courriers.js` | Générateur Node.js des courriers Atout France + APST .docx |
+| `../../scripts/garanties/courriers-to-pdf.py` | Convertisseur courriers .docx → .pdf imprimable à signer |
 
 ## Régénération
 
@@ -63,6 +71,22 @@ python scripts/garanties/resume-to-pdf.py
 Sortie :
 - `docs/garanties/Eventy-Life-Resume-Executif.docx` (14 KB)
 - `docs/garanties/Eventy-Life-Resume-Executif.pdf` (2 pages exactes, 10 KB)
+
+### Génération des courriers d'accompagnement Atout France + APST
+
+```bash
+NODE_PATH="$(npm root -g)" node scripts/garanties/build-courriers.js \
+  docs/garanties/Eventy-Life-Courriers-APST-AtoutFrance.docx
+python scripts/garanties/courriers-to-pdf.py
+```
+
+Sortie :
+- `docs/garanties/Eventy-Life-Courriers-APST-AtoutFrance.docx` (13 KB)
+- `docs/garanties/Eventy-Life-Courriers-APST-AtoutFrance.pdf` (4 pages, 11 KB)
+
+Les deux lettres sont à imprimer en deux exemplaires originaux, à signer manuscritement par David Eventy, et à transmettre :
+- Lettre 1 → ATOUT FRANCE, 79-81 rue de Clichy, 75009 Paris
+- Lettre 2 → APST, 15 avenue Carnot, 75017 Paris (+ envoi numérique à info@apst.travel)
 
 ## Enrichissements v11 — peaufinage formel + cohérence + relecture finale
 
