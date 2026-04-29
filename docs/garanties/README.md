@@ -10,6 +10,7 @@
 | Fichier | Description |
 |---------|-------------|
 | `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.docx` | Dossier final, prêt à dépôt après validation avocat |
+| `PROCESSUS-ATOUT-FRANCE.md` | Détail opérationnel du processus Atout France (chronologie, pièces, coûts, contacts) |
 | `../../scripts/garanties/build-dossier-garantie.js` | Générateur Node.js du dossier |
 
 ## Régénération
@@ -20,6 +21,19 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 ```
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
+
+## Enrichissements v6 (par rapport à v5)
+
+- **Cas de référence Atout France** : voyage type 700 € TTC + vérification croisée euro par euro (1.4)
+- **Encart visuel "Liberté de l'économie"** (Table avec bordures double orange + ombrage crème) + tableau comparatif extractif vs distributif (2.4)
+- **Engagements chiffrés opposables** : plafond marge 12 %, plancher redistribution 6 %, délais versements (2.4.1)
+- **Chronologie officielle J0 / J+30 / J+60** détaillée + variante d'urgence 45 jours + suite post-IM (12.0, 12.0.1, 12.0.2)
+- **Plan de rapatriement et continuité voyageurs** : 8 étapes en cas de défaillance (9.2.1)
+- **Cellule de crise voyageurs** : composition, délais d'activation (9.2.2)
+- **Quatre scénarios concrets de rapatriement** (9.2.3)
+- **Barème indicatif APST d'indemnisation des voyageurs** (9.2.4)
+- **6 fiches profil de gouvernance** (Président, Resp. opérations, CTO, DAF, Marketing, Support) avec statut, périmètre, profil, mois cible, rémunération, rôle conformité (10.1.1)
+- **Synthèse équipe-cible** M0 / M6 / M12 / M24 (10.1.2)
 
 ## Enrichissements v5 (par rapport à v2)
 
@@ -91,9 +105,9 @@ Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
 ## Notes sur la production
 
-- Format A4, 2 416 paragraphes, ~27 600 mots, ~97 KB (v5 — phase d'enrichissement profonde)
+- Format A4, 2 780 paragraphes, ~31 400 mots, ~108 KB (v6 — phase d'enrichissement profonde finale)
 - Validé schéma OOXML (validate.py PASSED)
-- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k)
+- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k)
 - Police Calibri, palette Eventy (orange #E87722, bleu #1F4E79)
 - Sommaire automatique cliquable (TOC champs Word/LibreOffice)
 - Header + footer avec pagination
