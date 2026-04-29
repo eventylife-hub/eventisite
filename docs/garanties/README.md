@@ -21,20 +21,24 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
-## Sommaire du dossier (12 parties + cover + lettre + sommaire + mot final)
+## Sommaire du dossier (16 parties + cover + lettre + sommaire + mot final)
 
-1. **Présentation d'Eventy Life** — identité, vision, positionnement, modèle économique distribué (HRA + 5% vendeur + 3% créateur), trajectoire de croissance, plateforme technique
-2. **Eventy & la France** — ancrage territorial, création de valeur économique, liberté de l'économie, satisfaction du besoin client, pérennité
+1. **Présentation d'Eventy Life** — identité, vision, positionnement, modèle économique distribué (HRA + 5% vendeur + 3% créateur), trajectoire de croissance, plateforme technique, **architecture de traçabilité des fonds**
+2. **Eventy & la France** — ancrage territorial, création de valeur économique, liberté de l'économie, satisfaction du besoin client, **secteur tourisme français (8% PIB, 2M emplois)**, pérennité
 3. **Cadre légal et obligations réglementaires** — Code du Tourisme, directive UE 2015/2302, garantie illimitée, obligations corrélatives, droits du voyageur
-4. **Données financières prévisionnelles** — hypothèses, CR An 1 (16 M€) et An 2 (80 M€), plan de trésorerie 24 mois, calibrage de la garantie demandée (1,6 M€), budget conformité
+4. **Données financières prévisionnelles** — hypothèses, CR An 1 (16 M€) et An 2 (80 M€), plan de trésorerie 24 mois, calibrage de la garantie (1,6 M€), budget conformité, **scénarios pessimiste/central/optimiste**, **ratios financiers**, **bilan prévisionnel synthétique**, **CAF**
 5. **Pièces juridiques de référence** — checklist 20 pièces, statuts SAS, clauses structurantes, pacte d'associés
 6. **Capacité professionnelle du dirigeant** — voies de justification, choix retenu, engagement formation
-7. **Garanties offertes et protection du consommateur** — 4 niveaux de protection, compte séquestre, Pack Sérénité, CGV, médiation MTV, RGPD
+7. **Garanties offertes et protection du consommateur** — 4 niveaux de protection, compte séquestre, Pack Sérénité, CGV, médiation MTV, RGPD, **politique LCB-FT et KYC**
 8. **Choix du garant — analyse comparée** — APST vs Groupama vs caution bancaire, choix retenu et arguments
-9. **Calendrier opérationnel** — chemin critique 10-14 semaines
-10. **Engagements solennels** — conformité, transparence, financiers, opérationnels, coopération
-11. **Annexes** — index des 10 annexes
-12. **Sources réglementaires et bibliographiques**
+9. **Analyse de risques et plan de continuité d'activité** — cartographie 7 familles de risques, PCA 4 scénarios, fonds de réserve volontaire
+10. **Gouvernance et contrôle interne** — organes, plan de recrutement, conseils externes, procédures, rémunération dirigeant
+11. **Indicateurs de pilotage et reporting** — KPIs financiers / qualité / écosystème, cadence rapports
+12. **Calendrier opérationnel** — chemin critique 10-14 semaines
+13. **Engagements solennels** — conformité, transparence, financiers, opérationnels, coopération
+14. **FAQ APST anticipée** — 12 questions classiques de commission d'admission
+15. **Annexes** — index + contenu réel : A (CV dirigeant), D (extraits CGV), E (catalogue 5 voyages), F (liste partenaires types), G (déclaration sur l'honneur), H (schéma plateforme), I (formulaire info précontractuelle)
+16. **Sources réglementaires et bibliographiques**
 
 ## Cadre légal de référence
 
@@ -66,7 +70,7 @@ Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
 ## Notes sur la production
 
-- Format A4, 970+ paragraphes, ~11 000 mots, ~47 KB
+- Format A4, 1 635 paragraphes, ~20 000 mots, ~74 KB (v2 — phase d'enrichissement)
 - Validé schéma OOXML (validate.py PASSED)
 - Police Calibri, palette Eventy (orange #E87722, bleu #1F4E79)
 - Sommaire automatique cliquable (TOC champs Word/LibreOffice)

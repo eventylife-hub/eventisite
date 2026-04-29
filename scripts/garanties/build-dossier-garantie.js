@@ -489,6 +489,25 @@ function partie1Presentation() {
       ],
     }),
     P("Cette infrastructure permet une traçabilité complète des fonds reçus des voyageurs, une conformité native à la directive (UE) 2015/2302, et une scalabilité supérieure à celle d'une agence traditionnelle. C'est aussi la garantie qu'en cas de défaillance, tout fonds reçu est tracé et donc remboursable."),
+
+    H2("1.8. Architecture de traçabilité des fonds — détail technique"),
+    P("La protection des fonds clients ne tient pas qu'à la garantie financière. Elle tient aussi — et peut-être surtout — à la traçabilité opérationnelle de chaque euro reçu. Eventy Life a conçu son architecture pour que chaque mouvement financier soit horodaté, signé, journalisé et auditable."),
+    H3("Le flux d'argent — étape par étape"),
+    Numbered("Le voyageur réserve sur eventylife.fr et paie via Stripe (carte bancaire SCA, Apple Pay, Google Pay). Le paiement est PCI-DSS niveau 1, fort 3DS2."),
+    Numbered("Stripe Connect crédite un compte de paiement Eventy dédié à l'opérateur. Une référence interne unique relie le paiement au voyage, au voyageur et au créateur."),
+    Numbered("Une écriture est créée en base de données dans la table `payments` avec les champs : montant, devise, méthode, idVoyageur, idVoyage, idCréateur, idVendeur, idHRA, statut, dateAttendueLibération."),
+    Numbered("Le `LedgerService` du backend NestJS produit en parallèle une écriture dans le grand livre interne — système de double écriture vérifiable a posteriori."),
+    Numbered("Au déclenchement contractuel (échéance fournisseur, départ du voyage), Stripe Transfer libère les sommes vers le compte de paiement du HRA, du transporteur ou du créateur, avec mémo détaillé."),
+    Numbered("Une déclaration trimestrielle automatisée extrait des données un état des fonds clients en transit, prêt à transmettre à l'APST."),
+    H3("Garanties techniques associées"),
+    Bullet("Stockage chiffré au repos (PostgreSQL chiffré côté infrastructure)."),
+    Bullet("Communications chiffrées en transit (TLS 1.3, certificats Let's Encrypt automatisés)."),
+    Bullet("Logs d'audit conservés 5 ans minimum, accessibles en lecture aux auditeurs APST/Atout France sur demande motivée."),
+    Bullet("Sauvegardes journalières chiffrées vers un second site européen (Scaleway Amsterdam)."),
+    Bullet("Procédure de restauration testée trimestriellement avec rapport interne."),
+    Bullet("Aucune donnée bancaire complète stockée chez Eventy — délégation intégrale à Stripe (compatibilité PCI-DSS « SAQ-A »)."),
+    H3("Une carte personnelle pour le voyageur — la « clé Eventy »"),
+    P("Chaque voyageur dispose, dans son espace personnel sur eventylife.fr, d'un récapitulatif en temps réel : sommes versées, voyage concerné, statut (réservé / en attente / confirmé / livré), nom et coordonnées du garant financier (APST), nom et coordonnées du médiateur (MTV). Cette transparence radicale n'est pas une option — c'est la norme Eventy. Elle est rendue possible par l'architecture technique propriétaire."),
     PB(),
   ];
 }
@@ -554,7 +573,27 @@ function partie2Plaidoyer() {
     H3("Pourquoi cela compte pour Atout France et l'APST"),
     P("Eventy se présente comme un opérateur de voyages au sens strict du Code du Tourisme — pas comme une plateforme événementielle ni un réseau social. Notre activité réglementée est centrée sur la vente et l'organisation de voyages à forfait, conformément aux articles L211-1 et suivants. Toutes les obligations de garantie financière, de RC Pro, d'information précontractuelle et de médiation s'appliquent intégralement, sans exception et sans contournement."),
 
-    H2("2.6. Pérennité — un modèle conçu pour durer"),
+    H2("2.6. Le tourisme français — un secteur stratégique national"),
+    P("Le tourisme représente l'un des piliers les plus solides de l'économie française. Eventy Life entend prendre sa part à cette dynamique nationale, dans le strict respect du cadre réglementaire et avec la volonté de renforcer le tissu d'opérateurs français face à la concurrence des plateformes mondialisées."),
+    makeTable({
+      widths: [4680, 4680],
+      header: ["Indicateur structurel", "Donnée de cadrage"],
+      rows: [
+        ["Part du tourisme dans le PIB français", "Environ 8 % du PIB national"],
+        ["Emplois directs et indirects (secteur tourisme)", "Plus de 2 millions"],
+        ["Position de la France dans le tourisme mondial", "1er pays touristique du monde par nombre de visiteurs internationaux"],
+        ["Place du tourisme intérieur (Français en France)", "Majoritaire en volume — opportunité directe Eventy"],
+        ["Tendance post-2020 — voyage de groupe", "Forte reprise — quête de lien social, de partage, de sécurité"],
+        ["Tendance régulatoire", "Renforcement progressif des protections voyageurs (UE 2015/2302, RGPD)"],
+      ],
+    }),
+    P("Eventy Life se positionne sur trois lignes de force qui correspondent à des besoins de marché identifiés :"),
+    Bullet("Le voyage de groupe organisé — segment résilient, peu impacté par les cycles, recherche de convivialité."),
+    Bullet("Le tourisme intérieur français et le proche européen — durables, en croissance, accessibles en bus."),
+    Bullet("La professionnalisation des indépendants du voyage — un réservoir de talents qui mérite une plateforme moderne."),
+    P("À l'échelle macroéconomique, l'écosystème Eventy contribue à trois priorités stratégiques nationales : (i) la souveraineté économique sur la chaîne de valeur du tourisme — en redistribuant la marge en France plutôt qu'à des plateformes extra-européennes ; (ii) la création d'emplois indépendants qualifiés — créateurs, accompagnateurs, animateurs ; (iii) le soutien au tissu HRA local — hôtels, restaurants, activités — souvent fragilisé par la dépendance aux OTA mondialisées."),
+
+    H2("2.7. Pérennité — un modèle conçu pour durer"),
     P("La pérennité d'Eventy repose sur quatre piliers complémentaires."),
     Numbered("Faibles coûts fixes structurels : la plateforme technique tourne pour environ 49 € par mois en hébergement. Le levier de profitabilité est exceptionnel."),
     Numbered("Modèle scalable : le coût marginal d'un voyage supplémentaire est proche de zéro. Doubler le volume ne double pas les coûts fixes."),
@@ -763,6 +802,80 @@ function partie4Finance() {
       ],
     }),
     P("Le budget total de conformité An 1 est compris entre 17 000 € et 22 000 €, intégralement provisionné dans la trésorerie de lancement."),
+
+    H2("4.7. Scénarios prévisionnels — pessimiste, central, optimiste"),
+    P("La sincérité d'un dossier financier repose autant sur le scénario central que sur la capacité à modéliser des scénarios alternatifs. Eventy Life présente une vue à trois scénarios pour permettre à l'APST et à l'avocat de jauger la robustesse du modèle."),
+    makeTable({
+      widths: [3200, 2050, 2050, 2060],
+      header: ["Indicateur clé An 1", "Pessimiste", "Central", "Optimiste"],
+      rows: [
+        ["Cadence cible T4 (voyages/sem)", "5", "10", "15"],
+        ["Voyageurs annuels", "≈ 8 000", "≈ 16 000 − 20 000", "≈ 28 000"],
+        ["CA voyage HT annuel", "8 000 000 €", "16 000 000 €", "24 000 000 €"],
+        ["Résultat avant impôt", "≈ 50 000 €", "≈ 428 500 €", "≈ 850 000 €"],
+        ["Résultat net An 1", "≈ 38 000 €", "≈ 321 500 €", "≈ 640 000 €"],
+        ["Trésorerie cumulée fin An 1", "≈ 280 000 €", "≈ 620 000 €", "≈ 1 050 000 €"],
+        ["Garantie financière requise (10 % CA)", "800 000 €", "1 600 000 €", "2 400 000 €"],
+        ["Eventy reste solvable ?", "Oui (équilibre fragile)", "Oui (confortable)", "Oui (très confortable)"],
+      ],
+    }),
+    P("Dans le scénario pessimiste — défini comme une cadence de croisière divisée par deux par rapport à la cible — Eventy Life demeure solvable et capable d'honorer ses engagements voyageurs. Le seuil de bascule en perte n'est atteint qu'à 3 voyages/sem ou moins en T4, hypothèse considérée comme très improbable compte tenu du pipeline commercial déjà en construction."),
+    P("Le scénario optimiste, à 15 voyages/sem dès le T4, est plausible mais non recommandé comme scénario de référence — Eventy Life préfère présenter un cas central étayé et tenir ses engagements. La trajectoire se construira progressivement, voyage après voyage."),
+
+    H2("4.8. Ratios financiers prévisionnels — clés de lecture"),
+    P("Pour faciliter l'analyse comparative et l'instruction du dossier par les commissions APST et Atout France, voici les principaux ratios financiers prévisionnels du scénario central."),
+    makeTable({
+      widths: [4680, 2340, 2340],
+      header: ["Ratio", "An 1", "An 2"],
+      rows: [
+        ["Marge brute / CA", "11,1 %", "11,1 %"],
+        ["Eventy net (avant charges) / CA", "4,3 %", "4,3 %"],
+        ["Marge nette / CA", "2,0 %", "2,3 %"],
+        ["Charges salariales / CA", "1,1 %", "0,7 %"],
+        ["Coût de la conformité / CA", "0,03 %", "0,1 %"],
+        ["Délai moyen acompte → départ (jours)", "≈ 45", "≈ 45"],
+        ["Délai moyen règlement fournisseur (jours)", "≈ 30 (à exécution)", "≈ 30"],
+        ["BFR estimé (jours de CA)", "≈ - 15 (positif structurel)", "≈ - 15"],
+        ["Capacité d'autofinancement (CAF / CA)", "≈ 2,5 %", "≈ 2,8 %"],
+        ["Endettement bancaire / fonds propres", "0", "0 (pas d'emprunt)"],
+        ["Réserve volontaire constituée fin de période", "≈ 50 K€", "≈ 200 K€"],
+      ],
+    }),
+    P("Lecture : le BFR négatif structurel (-15 jours de CA) est typique des agences de voyages à forfait — l'opérateur encaisse les acomptes avant de payer ses fournisseurs. Cette caractéristique est un atout, mais elle implique une responsabilité accrue sur la garantie financière, raison pour laquelle Eventy Life sollicite une couverture supérieure aux minima réglementaires historiques."),
+
+    H2("4.9. Bilan prévisionnel synthétique — fin An 1"),
+    P("Le bilan prévisionnel à la clôture du premier exercice illustre la solidité financière du modèle Eventy Life — un actif circulant en majorité, des fonds propres positifs, et aucun endettement bancaire."),
+    makeTable({
+      widths: [4680, 2340, 2340],
+      header: ["Poste", "Actif (€)", "Passif (€)"],
+      rows: [
+        ["Immobilisations incorporelles (logiciels, marque INPI)", "8 000", ""],
+        ["Immobilisations corporelles (matériel informatique)", "2 500", ""],
+        ["Stocks (n/a — service immatériel)", "0", ""],
+        ["Créances clients", "12 000", ""],
+        ["Disponibilités (banque + compte de paiement Stripe)", "620 000", ""],
+        ["TOTAL ACTIF", "642 500", ""],
+        ["Capital social", "", "3 000"],
+        ["Réserves", "", "0 (création)"],
+        ["Réserve volontaire (5 % du CA)", "", "50 000"],
+        ["Résultat de l'exercice", "", "271 500"],
+        ["Fonds propres", "", "324 500"],
+        ["Dettes fournisseurs (échéances en cours)", "", "180 000"],
+        ["Acomptes voyageurs en transit (fonds garantis APST)", "", "120 000"],
+        ["Dettes fiscales et sociales (IS, TVA marge, charges)", "", "18 000"],
+        ["TOTAL PASSIF", "", "642 500"],
+      ],
+    }),
+    P("Le bilan respecte naturellement l'égalité actif = passif. Les acomptes voyageurs en transit (120 000 €) sont intégralement adossés à des liquidités disponibles et couverts par la garantie financière APST. Aucun risque de découvert sur les engagements voyageurs."),
+
+    H2("4.10. Capacité d'autofinancement — l'autonomie financière comme philosophie"),
+    P("Eventy Life a été pensée pour s'autofinancer. Le fondateur a personnellement assumé la totalité de la R&D pré-lancement (plateforme technique de plus d'un million de lignes de code), évitant à la société une dette technique ou un endettement de démarrage. Cette autonomie initiale est un atout pour l'examen de la solvabilité."),
+    P("La capacité d'autofinancement (CAF) prévisionnelle An 1 d'environ 2,5 % du CA permet de financer en interne :"),
+    Bullet("La constitution de la réserve volontaire de 5 % du CA (objectif pluriannuel)."),
+    Bullet("Le renforcement progressif de l'équipe interne (de 5 à 12 ETP entre An 1 et An 2)."),
+    Bullet("Les investissements de la plateforme technique (évolutions, sécurité, scalabilité)."),
+    Bullet("Le marketing et la communication."),
+    P("Aucun emprunt bancaire n'est prévu dans le scénario central. Une éventuelle levée de fonds Seed (150 à 300 K€ en T2 An 2026) viendrait accélérer le développement, sans en être une condition de viabilité. C'est un signal fort de solidité — Eventy Life ne demande pas la confiance de l'APST « parce qu'elle en a besoin pour exister », mais parce que la garantie est l'expression naturelle d'un opérateur sérieux qui se conforme à la loi."),
     PB(),
   ];
 }
@@ -903,6 +1016,21 @@ function partie7Garanties() {
     Bullet("Droit d'accès, de rectification, d'effacement et de portabilité respectés."),
     Bullet("Conservation des données encadrée — 5 ans après dernière activité, sauf obligations légales spécifiques."),
     Bullet("Notification CNIL en cas de violation de données dans les 72 heures."),
+
+    H2("7.7. Politique LCB-FT et KYC — vigilance et coopération"),
+    P("Bien que le secteur des voyages à forfait ne relève pas du dispositif LCB-FT au sens strict des articles L561-1 et suivants du Code monétaire et financier (les voyages organisés ne sont pas des opérations financières), Eventy Life applique de sa propre initiative une politique de vigilance proportionnée. Cette vigilance protège la plateforme, la communauté de voyageurs et les partenaires."),
+    H3("Vigilance « voyageurs » (KYC simplifié)"),
+    Bullet("Identification du voyageur lors de la réservation : nom, prénom, email vérifié, téléphone."),
+    Bullet("Détection des paiements anormaux ou rejetés via les contrôles natifs Stripe (Radar, anti-fraude)."),
+    Bullet("Bloc de paiements multiples non explicables sur même carte ou même IP — déclenche une revue manuelle."),
+    Bullet("Conservation des données KYC pendant la durée légale (5 ans après la dernière transaction)."),
+    H3("Vigilance « partenaires » (KYC renforcé)"),
+    Bullet("Avant tout référencement HRA, autocariste ou créateur indépendant : vérification du Kbis ou de l'inscription INSEE, RIB et signature d'un contrat-cadre."),
+    Bullet("Vérification de la conformité fiscale et sociale lors du référencement (attestation URSSAF, attestation fiscale)."),
+    Bullet("Mise à jour annuelle de la documentation des partenaires actifs."),
+    Bullet("Procédure de déréférencement immédiat en cas de doute sur l'identité, la solvabilité ou la conformité d'un partenaire."),
+    H3("Coopération autorités"),
+    P("Eventy Life s'engage à coopérer pleinement avec TRACFIN, la DGCCRF, l'administration fiscale et toute autorité compétente. Aucune réquisition légale ne se verra opposer un quelconque obstacle ; les données nécessaires à une enquête seront communiquées dans les délais réglementaires."),
     PB(),
   ];
 }
@@ -957,10 +1085,181 @@ function partie8Comparatif() {
   ];
 }
 
-// ---------- 9. Calendrier ----------
-function partie9Calendrier() {
+// ---------- 9. Risques ----------
+function partie9Risques() {
   return [
-    H1("9. Calendrier opérationnel — chemin critique", "partie9"),
+    H1("9. Analyse de risques et plan de continuité d'activité"),
+    Quote("Bien gérer les risques, ce n'est pas espérer qu'ils n'arrivent pas. C'est se préparer à ce qu'ils arrivent et savoir comment réagir."),
+
+    H2("9.1. Cartographie des risques principaux"),
+    P("Eventy Life a identifié, hiérarchisé et adressé sept familles de risques susceptibles d'affecter l'exécution des prestations ou la sécurité des voyageurs. Chaque famille fait l'objet de mesures de prévention et d'un plan d'action en cas de réalisation."),
+    makeTable({
+      widths: [600, 2400, 1500, 1500, 3360],
+      header: ["#", "Famille de risque", "Probabilité", "Gravité", "Mesures Eventy"],
+      rows: [
+        ["1", "Défaillance d'un fournisseur HRA (faillite hôtel, restaurant)", "Faible", "Modérée", "Multi-référencement par destination, contrat-cadre avec clauses de substitution, base de partenaires de back-up activable en 24-48h."],
+        ["2", "Défaillance transporteur (panne autocar, faillite autocariste)", "Faible", "Élevée", "Réseau de 8-15 autocaristes français partenaires, plan B activable en moins de 6h, contractualisation avec clauses pénales."],
+        ["3", "Annulation massive (crise sanitaire, géopolitique, météo)", "Modérée", "Très élevée", "Pack Sérénité inclus avec clause force majeure, garantie financière APST mobilisable, fonds de réserve volontaire 5% du CA."],
+        ["4", "Litige client majeur (incident, blessure, retard)", "Faible", "Modérée", "RC Pro 1,5 M€ par sinistre, ligne d'assistance 24/7, médiation MTV en cas de désaccord, procédures internes documentées."],
+        ["5", "Cyber-incident (fuite de données, attaque)", "Faible", "Élevée", "Architecture Scaleway certifiée HDS, sauvegardes chiffrées, plan de réponse incident, notification CNIL 72h, assurance cyber prévue An 2."],
+        ["6", "Risque humain (départ d'un collaborateur clé)", "Modérée", "Modérée", "Documentation interne exhaustive, transfert de compétences planifié, polyvalence des 5 ETP, recrutement de back-up planifié."],
+        ["7", "Risque réglementaire (évolution Code Tourisme, directive UE)", "Modérée", "Modérée", "Veille juridique permanente (avocat tourisme partenaire), adaptation continue des CGV, formation annuelle du dirigeant 21h+ minimum."],
+      ],
+    }),
+
+    H2("9.2. Plan de continuité d'activité (PCA) — scénarios critiques"),
+    H3("Scénario A — Défaillance fournisseur en cours de voyage"),
+    P("Si un hôtel partenaire est inopérant à l'arrivée du groupe (incendie, sur-réservation, fermeture administrative), l'accompagnateur Eventy active immédiatement le plan de substitution : (i) appel au desk d'astreinte 24/7, (ii) activation d'un partenaire de back-up dans la même catégorie via la base partenaires, (iii) prise en charge des frais éventuels supplémentaires sur la trésorerie d'urgence (fonds de réserve), (iv) communication transparente au groupe."),
+    H3("Scénario B — Crise sanitaire ou géopolitique majeure"),
+    P("En cas d'interdiction de voyage vers une destination programmée, Eventy active la procédure de modification ou d'annulation conforme à la directive (UE) 2015/2302 : remboursement intégral des fonds versés (sous 14 jours conformément à l'article L211-14 du Code Tourisme), proposition de bons d'avoir conformes au cadre réglementaire (refusables par le voyageur), mobilisation de la garantie financière APST si la trésorerie est insuffisante."),
+    H3("Scénario C — Cyber-incident significatif"),
+    P("En cas de violation de données ou d'indisponibilité prolongée de la plateforme, Eventy active : (i) cellule de crise convoquée sous 1h, (ii) bascule sur infrastructure de secours (Scaleway Amsterdam), (iii) notification CNIL sous 72h, (iv) information des voyageurs concernés via un canal sécurisé, (v) audit forensique externe, (vi) mesures correctives documentées."),
+    H3("Scénario D — Indisponibilité du dirigeant"),
+    P("La dépendance au dirigeant fondateur est un risque connu en phase de démarrage. Eventy mitige ce risque par : (i) procuration bancaire double signature avec le futur DAF / responsable opérations (recrutement An 1), (ii) documentation exhaustive des procédures critiques (manuel qualité interne), (iii) clause statutaire de désignation d'un président intérimaire, (iv) souscription progressive d'une assurance « homme-clé » à compter de l'An 2."),
+
+    H2("9.3. Fonds de réserve volontaire — un coussin auto-imposé"),
+    P("Au-delà des obligations réglementaires (garantie financière APST illimitée, RC Pro), Eventy Life met en place une discipline interne supplémentaire : la constitution d'un fonds de réserve volontaire à hauteur de 5 % du chiffre d'affaires annuel. Ce fonds est :"),
+    Bullet("Logé sur un compte bancaire séparé du compte d'exploitation."),
+    Bullet("Mobilisable uniquement sur décision documentée du président, en cas de risque pesant sur la continuité d'exploitation ou la satisfaction des voyageurs."),
+    Bullet("Reconstitué prioritairement avant toute distribution de dividendes (clause statutaire)."),
+    Bullet("Reporté à l'expert-comptable et mentionné dans le rapport annuel à l'APST."),
+    P("À la fin de l'An 1, ce fonds atteindra environ 50 K€. À la fin de l'An 2, il visera 200 K€. Cette discipline volontaire ajoute un coussin d'absorption des chocs au-dessus de la garantie financière obligatoire."),
+    PB(),
+  ];
+}
+
+// ---------- 10. Gouvernance ----------
+function partie10Gouvernance() {
+  return [
+    H1("10. Gouvernance et contrôle interne"),
+    Quote("La gouvernance, ce n'est pas un règlement à afficher. C'est une discipline à pratiquer."),
+
+    H2("10.1. Organes de gouvernance"),
+    P("La gouvernance d'Eventy Life SAS s'articule autour de trois niveaux complémentaires."),
+    makeTable({
+      widths: [3000, 3000, 3360],
+      header: ["Organe", "Composition", "Mission"],
+      rows: [
+        ["Présidence", "David Eventy, Président, Fondateur", "Direction stratégique, représentation légale, signature des engagements"],
+        ["Comité de pilotage opérationnel (mensuel)", "Président + responsables opérations, technique, finance", "Suivi des KPIs, arbitrages opérationnels, validation des risques courants"],
+        ["Comité conformité & risques (trimestriel)", "Président + avocat tourisme + expert-comptable + représentant APST sur invitation", "Revue des incidents, conformité réglementaire, calibrage de la garantie financière"],
+      ],
+    }),
+
+    H2("10.2. Plan de recrutement An 1 — équipe-cible"),
+    P("L'équipe interne Eventy Life se construit progressivement selon une logique de polyvalence et de couverture des fonctions critiques."),
+    makeTable({
+      widths: [600, 3500, 1850, 1850, 1560],
+      header: ["#", "Poste", "Statut", "Mois cible", "Rôle clé"],
+      rows: [
+        ["1", "Président, Fondateur", "Dirigeant", "M0", "Vision, stratégie, conformité"],
+        ["2", "Responsable opérations & qualité", "CDI", "M2", "Pilotage des voyages, partenariats HRA, relation créateurs"],
+        ["3", "Responsable plateforme technique (CTO délégué)", "CDI", "M3", "Maintenance et évolutions, sécurité, scalabilité"],
+        ["4", "Responsable finance & conformité (DAF)", "CDI", "M4-M6", "Comptabilité, trésorerie, déclarations APST, audit interne"],
+        ["5", "Responsable marketing & communication", "CDI", "M6", "Acquisition voyageurs, animation de la communauté, marque"],
+        ["6", "Chargé(e) de relation voyageurs (support)", "CDI", "M8", "Service client, ligne d'assistance 24/7, gestion des incidents"],
+      ],
+    }),
+
+    H2("10.3. Conseils externes permanents"),
+    P("Au-delà de l'équipe interne, Eventy Life s'appuie sur quatre conseils externes choisis avec rigueur — c'est une demande naturelle des organismes de garantie et un facteur de sécurité."),
+    Bullet("Avocat spécialisé en droit du tourisme — rédaction et veille des CGV, contrats partenaires, conformité directive UE 2015/2302."),
+    Bullet("Expert-comptable spécialisé tourisme — TVA marge, déclarations sociales, attestation annuelle des comptes."),
+    Bullet("Commissaire aux comptes — désignation à compter du seuil légal (CA > 8 M€ HT), vraisemblablement au 31/12 An 1."),
+    Bullet("Délégué à la Protection des Données (DPO) externe — désigné dans les 6 mois post-lancement."),
+
+    H2("10.4. Procédures de contrôle interne"),
+    P("Eventy Life se dote dès le démarrage d'un dispositif de contrôle interne proportionné à sa taille et à ses risques. Les principes structurants :"),
+    Numbered("Séparation des fonctions clés : la fonction d'engagement (commande de prestations) est distincte de la fonction de paiement (libération des fonds), avec workflow numérique tracé."),
+    Numbered("Double signature bancaire au-delà d'un seuil défini (5 000 € en An 1, ajustable)."),
+    Numbered("Rapprochement bancaire mensuel avec contrôle croisé responsable opérations / DAF."),
+    Numbered("Audit interne annuel des procédures critiques, conduit par l'expert-comptable."),
+    Numbered("Revue trimestrielle des indicateurs de risque (taux d'annulation, taux de litige, délai moyen de remboursement)."),
+    Numbered("Tenue d'un registre des incidents — chaque incident significatif est journalisé, analysé, corrigé."),
+
+    H2("10.5. Politique de rémunération du dirigeant"),
+    P("La rémunération du président d'Eventy Life est volontairement encadrée pour témoigner de l'engagement à long terme du fondateur et préserver les capacités d'autofinancement."),
+    Bullet("Rémunération mensuelle plafonnée à un niveau de marché modéré pendant l'An 1 (en cohérence avec la dimension démarrage)."),
+    Bullet("Pas de dividendes tant que la réserve volontaire (5 % du CA annuel) n'est pas constituée — clause statutaire."),
+    Bullet("Pas de prime variable indexée sur le volume de fonds clients en transit, afin d'éviter tout incitatif à la prise de risque excessive."),
+    Bullet("Transparence intégrale envers l'APST : la politique de rémunération est communiquée annuellement avec le bilan."),
+    PB(),
+  ];
+}
+
+// ---------- 11. Indicateurs de pilotage ----------
+function partie11KPIs() {
+  return [
+    H1("11. Indicateurs de pilotage et reporting"),
+    Quote("Ce qui se mesure se pilote. Ce qui se pilote se tient."),
+
+    H2("11.1. Indicateurs financiers"),
+    P("Les indicateurs financiers sont suivis mensuellement par le comité de pilotage et reportés trimestriellement à l'APST. Tous les seuils d'alerte ci-dessous déclenchent une revue immédiate du comité conformité & risques."),
+    makeTable({
+      widths: [3500, 2000, 2000, 1860],
+      header: ["Indicateur", "Cible An 1", "Seuil d'alerte", "Fréquence"],
+      rows: [
+        ["CA cumulé mensuel", "≥ 1,3 M€/mois en T4", "< 70 % de la cible", "Mensuel"],
+        ["Marge brute / CA", "≥ 11 %", "< 9 %", "Mensuel"],
+        ["Taux de remplissage moyen / voyage", "≥ 38 / 53 places (≈ 72 %)", "< 30 places (≈ 57 %)", "Voyage par voyage"],
+        ["Trésorerie cumulée", "≥ 600 K€ fin An 1", "< 300 K€", "Hebdomadaire"],
+        ["Fonds de réserve volontaire", "≥ 50 K€ fin An 1", "Non constitué", "Trimestriel"],
+        ["Couverture garantie / fonds en transit", "≥ 130 %", "< 110 %", "Trimestriel"],
+        ["Délai moyen de remboursement (annulation)", "≤ 14 jours", "> 21 jours", "Voyage par voyage"],
+      ],
+    }),
+
+    H2("11.2. Indicateurs qualité & satisfaction"),
+    makeTable({
+      widths: [3500, 2000, 2000, 1860],
+      header: ["Indicateur", "Cible An 1", "Seuil d'alerte", "Fréquence"],
+      rows: [
+        ["Net Promoter Score (NPS) post-voyage", "≥ + 60", "< + 40", "Voyage par voyage"],
+        ["Note moyenne voyage / 5", "≥ 4,5", "< 4,0", "Voyage par voyage"],
+        ["Taux de litige déclaré", "≤ 1 %", "> 3 %", "Mensuel"],
+        ["Taux d'annulation voyageur", "≤ 5 %", "> 10 %", "Mensuel"],
+        ["Taux d'incident opérationnel (panne, défaillance)", "≤ 2 %", "> 5 %", "Mensuel"],
+        ["Taux de saisine du médiateur (MTV)", "≤ 0,2 %", "> 1 %", "Trimestriel"],
+        ["Délai moyen de réponse au support", "≤ 4 h ouvrées", "> 12 h", "Hebdomadaire"],
+      ],
+    }),
+
+    H2("11.3. Indicateurs écosystème — santé du réseau"),
+    makeTable({
+      widths: [3500, 2000, 2000, 1860],
+      header: ["Indicateur", "Cible An 1", "Seuil d'alerte", "Fréquence"],
+      rows: [
+        ["Nombre de créateurs indépendants actifs", "≥ 100 fin An 1", "< 50", "Mensuel"],
+        ["Nombre de partenaires HRA référencés", "≥ 200 fin An 1", "< 100", "Trimestriel"],
+        ["Nombre d'autocaristes partenaires actifs", "≥ 8", "< 4", "Trimestriel"],
+        ["Taux de fidélité créateur (rotation < 12 mois)", "≤ 25 %", "> 50 %", "Trimestriel"],
+        ["Concentration top 5 fournisseurs HRA / CA", "≤ 25 %", "> 40 %", "Trimestriel"],
+      ],
+    }),
+    P("Les indicateurs de concentration sont suivis avec attention : un risque de marché lié à la dépendance vis-à-vis d'un fournisseur unique serait identifié et corrigé par une diversification active."),
+
+    H2("11.4. Cadence et destinataires des rapports"),
+    makeTable({
+      widths: [2400, 2400, 2400, 2160],
+      header: ["Rapport", "Cadence", "Émetteur", "Destinataire(s)"],
+      rows: [
+        ["Tableau de bord opérationnel", "Hebdomadaire", "Responsable opérations", "Comité de pilotage"],
+        ["Reporting financier", "Mensuel", "DAF", "Président, Comité de pilotage"],
+        ["Reporting voyageurs (qualité, NPS)", "Mensuel", "Responsable qualité", "Président, équipe"],
+        ["Déclaration trimestrielle des fonds en transit", "Trimestrielle", "DAF", "APST"],
+        ["Rapport de conformité & risques", "Trimestriel", "Comité conformité", "Président, conseil"],
+        ["Bilan annuel certifié", "Annuel", "Expert-comptable / CAC", "APST, Atout France, Greffe"],
+        ["Rapport RGPD / DPO", "Annuel", "DPO externe", "Président, CNIL si requis"],
+      ],
+    }),
+    PB(),
+  ];
+}
+
+// ---------- 12. Calendrier ----------
+function partie12Calendrier() {
+  return [
+    H1("12. Calendrier opérationnel — chemin critique"),
     Quote("Pour partir en voyage, il faut d'abord poser les pieds par terre. Voici notre marche d'approche."),
     P("Le chemin critique de l'immatriculation et du lancement opérationnel d'Eventy Life se déploie sur 10 à 14 semaines, structurées autour des dépendances réglementaires."),
     makeTable({
@@ -984,10 +1283,10 @@ function partie9Calendrier() {
   ];
 }
 
-// ---------- 10. Engagements ----------
-function partie10Engagements() {
+// ---------- 13. Engagements ----------
+function partie13Engagements() {
   return [
-    H1("10. Engagements solennels d'Eventy Life", "partie10"),
+    H1("13. Engagements solennels d'Eventy Life"),
     Quote("Un dossier ne vaut que par les engagements qu'il contient et la rigueur avec laquelle ils sont tenus."),
     P("Au nom d'Eventy Life SAS, le président David Eventy prend, par la signature de ce dossier, les engagements suivants — opposables à l'APST, à Atout France, et à toute autorité de contrôle."),
     H2("10.1. Engagements de conformité réglementaire"),
@@ -1022,10 +1321,56 @@ function partie10Engagements() {
   ];
 }
 
-// ---------- 11. Annexes ----------
-function partie11Annexes() {
+// ---------- 14. FAQ APST anticipée ----------
+function partie14FAQ() {
   return [
-    H1("11. Annexes — index des pièces jointes", "partie11"),
+    H1("14. FAQ — questions anticipées de la commission APST"),
+    Quote("Les meilleures réponses sont celles qu'on a préparées avant qu'on nous pose la question."),
+    P("Cette partie anticipe les questions classiques d'une commission d'admission APST sur la base de l'expérience du secteur et des points de vigilance habituels. Elle a vocation à faciliter l'instruction du dossier."),
+
+    H2("Q1. Eventy Life est en cours de création — comment évaluer la solidité d'un acteur sans historique ?"),
+    P("Trois éléments objectifs permettent d'évaluer la solidité d'Eventy Life avant son premier exercice clos : (i) la plateforme technique propriétaire — plus d'un million de lignes de code, 31 modules backend, 3 300 tests automatisés — déjà opérationnelle et auto-financée ; (ii) le pipeline commercial — partenariats HRA et autocaristes en cours de structuration, créateurs indépendants identifiés ; (iii) la rigueur du présent dossier, qui démontre une compréhension complète du cadre réglementaire et un budget de conformité provisionné. Le dirigeant prend par ailleurs l'engagement personnel d'une contre-garantie de 10 000 €."),
+
+    H2("Q2. Le modèle de rémunération distribuée (HRA + 5 % vendeur + 3 % créateur) n'est-il pas inhabituel ?"),
+    P("Le modèle est moins « inhabituel » qu'« explicite ». Toute agence de voyages distribue une partie de sa marge à des apporteurs d'affaires (commissions, partenariats, salaires des commerciaux). Eventy Life formalise cette distribution dans un cadre transparent et contractuel, ce qui présente trois avantages : (i) lisibilité totale des flux financiers — atout pour la conformité et l'audit ; (ii) alignement des intérêts entre Eventy, créateurs et vendeurs ; (iii) protection du voyageur — qui sait ce qu'il paie et à qui. La commission APST y verra une garantie supplémentaire de bonne tenue financière."),
+
+    H2("Q3. Le seuil de départ à 38 voyageurs (au lieu de 53) ne fragilise-t-il pas la rentabilité par voyage ?"),
+    P("Le seuil de 38 voyageurs est un choix de prudence économique et commerciale. Il garantit que les coûts directs (autocariste, accompagnateur, animations) sont couverts dès lors que ce seuil est atteint. Les voyages avec remplissage supérieur (jusqu'à 53) génèrent une marge plus élevée — c'est un effet de levier. Eventy ne s'engage pas à partir « à tout prix » : si le remplissage descend sous 38, le voyage est annulé et les voyageurs intégralement remboursés sous 14 jours. Cette discipline est inscrite dans les CGV."),
+
+    H2("Q4. Comment Eventy Life gère-t-elle la TVA marge ?"),
+    P("Eventy Life est soumise au régime de TVA sur la marge bénéficiaire pour les agences de voyages, conformément au BOI-TVA-SECT-60 et à l'article 266-1-e du CGI. La marge taxable est calculée voyage par voyage, par différence entre le prix payé par le voyageur (TTC) et le coût des prestations refacturées, achetées auprès de tiers européens. La TVA est exigible à l'encaissement de l'acompte (proportionnellement) puis du solde. Un expert-comptable spécialisé tourisme est mandaté pour assurer la conformité comptable mensuelle."),
+
+    H2("Q5. La plateforme technique est-elle vraiment opérationnelle ou un projet ?"),
+    P("La plateforme est opérationnelle. Le code est versionné sur un dépôt Git privé, déployé en environnement de production sur Scaleway (backend NestJS) et Vercel (frontend Next.js). Les 3 300+ tests automatisés s'exécutent sur chaque mise à jour via CI/CD. Une démonstration peut être organisée à la demande de la commission APST, sur place ou en visioconférence. Une revue technique par un tiers (audit de sécurité externe) est planifiée à la fin du premier semestre d'exploitation."),
+
+    H2("Q6. Quel est le risque maximal pour l'APST en cas de défaillance d'Eventy Life ?"),
+    P("Le risque maximal est borné par les fonds clients en transit à un instant donné. Avec un délai moyen acompte → départ de 45 jours et un CA pic mensuel An 1 estimé à 2,5 M€, les fonds en transit n'excèdent pas 1,25 M€ environ en An 1. Eventy Life sollicite une garantie financière de 1,6 M€ — soit une couverture de 130 % par rapport au risque maximal estimé, indexée trimestriellement. Cette discipline d'indexation contractuelle protège l'APST contre toute dérive."),
+
+    H2("Q7. Que se passe-t-il si le volume d'affaires dépasse fortement les prévisions ?"),
+    P("Le contrat avec l'APST prévoit une indexation contractuelle de la garantie au volume réel d'affaires, avec déclaration trimestrielle des fonds en transit. En cas de dépassement supérieur à 30 % de l'enveloppe initiale, Eventy Life déclenche immédiatement une demande d'ajustement à la hausse de la garantie, et augmente la cotisation variable en conséquence. Le mécanisme est auto-correctif et protège l'APST autant qu'il protège les voyageurs."),
+
+    H2("Q8. Qui sont les créateurs indépendants — quel est leur statut juridique ?"),
+    P("Les créateurs indépendants travaillant avec Eventy Life sont des auto-entrepreneurs ou micro-entreprises immatriculées en France. Aucun lien de subordination — Eventy n'est pas employeur. Chaque créateur signe un contrat-cadre de partenariat précisant les rémunérations (5 % vendeur + 3 % créateur sur HRA), les obligations de qualité, les obligations d'information précontractuelle envers le voyageur. Les créateurs ne signent pas le contrat de voyage — c'est Eventy Life qui contracte avec le voyageur et reste responsable de plein droit conformément à l'article L211-16."),
+
+    H2("Q9. Comment Eventy Life se distingue-t-elle d'une plateforme de mise en relation simple (type marketplace) ?"),
+    P("Eventy Life n'est PAS une marketplace de mise en relation. Eventy Life est un opérateur de voyages au sens strict : c'est Eventy qui vend le voyage au voyageur, qui contracte avec le voyageur, qui est responsable de plein droit de la bonne exécution des prestations, qui supporte la garantie financière APST. Les créateurs indépendants sont des prestataires d'Eventy, pas des vendeurs en direct au voyageur. Cette qualification — opérateur et non intermédiaire — est cardinale pour la conformité au Code du Tourisme et pour l'utilité de la garantie financière."),
+
+    H2("Q10. Quelles sont les conditions de sortie ou de résiliation de la garantie APST ?"),
+    P("Eventy Life accepte les conditions de résiliation prévues par les statuts de l'APST. En cas de résiliation à l'initiative d'Eventy (changement de garant, fin d'activité), la garantie demeure en vigueur jusqu'à l'extinction de tous les engagements voyageurs en cours. En cas de résiliation à l'initiative de l'APST (manquement grave), Eventy Life s'engage à coopérer pleinement et à transférer ses obligations vers un garant successeur dans les meilleurs délais, sous le contrôle d'Atout France."),
+
+    H2("Q11. Pourquoi la cible An 2 (CA 80 M€) semble-t-elle ambitieuse ?"),
+    P("La cible An 2 est ambitieuse mais explicable. Elle repose sur trois leviers cumulatifs : (i) montée en cadence de 50 voyages/sem en T4 An 1 à 200 voyages/sem en T4 An 2 — soit un quadruplement réaliste si la traction est confirmée ; (ii) ouverture progressive de l'Europe (12 → 25 destinations) ; (iii) effet de réseau créateurs / ambassadeurs / influenceurs. Le scénario central An 2 est néanmoins traité avec prudence : le scénario pessimiste (40 M€ CA An 2) reste profitable. Eventy ne sollicite pas la garantie sur la base d'un scénario optimiste — elle s'engage à indexer la garantie au volume réel."),
+
+    H2("Q12. Que recouvre le « Pack Sérénité » mentionné dans le dossier ?"),
+    P("Le Pack Sérénité est un ensemble de garanties complémentaires INCLUSES dans le prix du voyage — sans option, sans surcoût visible. Il couvre : annulation pour motif valable, rapatriement médical, frais médicaux à l'étranger, bagages perdus / volés, assistance juridique, ligne d'assistance 24/7. Les composantes assurantielles sont souscrites auprès d'un assureur tiers (en cours de sélection) et attestées par un certificat individuel pour chaque voyageur. Le coût du Pack Sérénité est intégré dans la décomposition de prix présentée au voyageur — transparence totale."),
+    PB(),
+  ];
+}
+
+// ---------- 15. Annexes ----------
+function partie15Annexes() {
+  return [
+    H1("15. Annexes — index et contenus"),
     P("Le présent dossier est accompagné des annexes suivantes, fournies sous forme de documents séparés ou de sections complémentaires. Elles peuvent être transmises à l'APST, à Atout France ou à tout garant tiers à leur demande."),
     makeTable({
       widths: [800, 4060, 4500],
@@ -1044,15 +1389,175 @@ function partie11Annexes() {
       ],
     }),
     Spacer(),
-    P("Toutes les annexes sont disponibles sur simple demande à eventylife@gmail.com.", { italics: true }),
+    P("Les contenus détaillés des annexes-clés sont reproduits ci-après. Les annexes complémentaires (B, C, H, I, J) sont disponibles sur simple demande à eventylife@gmail.com.", { italics: true }),
+    PB(),
+
+    H2("Annexe A — CV synthétique du dirigeant"),
+    P("Document préparé pour transmission à l'APST et à Atout France. La version intégrale signée est disponible sur demande."),
+    H3("Identité"),
+    Bullet("Nom : David Eventy"),
+    Bullet("Fonction : Président, Fondateur — Eventy Life SAS (en cours de création)"),
+    Bullet("Contact : eventylife@gmail.com"),
+    H3("Parcours"),
+    P("David Eventy est un entrepreneur autodidacte. Son parcours combine une expertise technique acquise sur des années de développement de plateformes web et mobiles, une sensibilité forte au monde du voyage et de l'hôtellerie-restauration, et une capacité avérée à mener un projet complexe de bout en bout — comme en témoigne la plateforme Eventy Life elle-même, conçue, codée et déployée en autonomie."),
+    P("Au-delà du projet Eventy Life, David Eventy a accompagné de multiples acteurs économiques dans la digitalisation de leurs activités. Cette pluralité de regards — technique, commercial, opérationnel — constitue la trame de la capacité professionnelle qu'il met aujourd'hui au service du tourisme."),
+    H3("Engagements de capacité professionnelle"),
+    Bullet("Suivi d'une formation qualifiante en droit du tourisme et fiscalité agence (modules 2025-2026)."),
+    Bullet("Recrutement, dans les 6 premiers mois d'exploitation, d'un responsable opérations titulaire d'un BTS Tourisme ou d'une expérience certifiée — en complément de capacité."),
+    Bullet("Engagement de formation continue d'au moins 21 heures par an dans les domaines droit du tourisme, droit de la consommation, fiscalité voyage, gestion de crise."),
+    H3("Compétences clés"),
+    Bullet("Direction opérationnelle d'un projet pluridisciplinaire (technique, commercial, juridique, financier)."),
+    Bullet("Conception et développement de plateformes numériques à fort volume."),
+    Bullet("Compréhension fine du cadre réglementaire tourisme — directive UE 2015/2302, Code du Tourisme."),
+    Bullet("Sensibilité aux enjeux d'expérience client et de qualité de service."),
+    PB(),
+
+    H2("Annexe D — Conditions Générales de Vente — extraits structurants"),
+    P("Les CGV intégrales sont en cours de finalisation avec un avocat spécialisé en droit du tourisme. Elles seront jointes au dossier sous une dizaine de jours après finalisation. Voici la structure de référence et quelques clauses-clés."),
+    H3("Sommaire prévu des CGV"),
+    Numbered("Préambule et identification de l'opérateur (Eventy Life SAS, IM Atout France, garantie APST, RC Pro, médiation MTV)."),
+    Numbered("Définitions (voyage à forfait, voyageur, opérateur, prestations associées)."),
+    Numbered("Information précontractuelle obligatoire (formulaire arrêté du 1er mars 2018)."),
+    Numbered("Formation du contrat — modalités d'inscription, acompte, signature électronique."),
+    Numbered("Prix et révision (modification limitée à 8 % conformément à l'article L211-12)."),
+    Numbered("Modification du voyage par l'organisateur (procédure et droits du voyageur)."),
+    Numbered("Cession du contrat à un tiers (jusqu'à 7 jours avant le départ)."),
+    Numbered("Résolution avant le début du voyage (frais de résolution barème transparent)."),
+    Numbered("Résolution après le début du voyage (rapatriement, prise en charge)."),
+    Numbered("Responsabilité de l'opérateur (responsabilité de plein droit, article L211-16)."),
+    Numbered("Pack Sérénité — contenu, modalités d'activation, exclusions."),
+    Numbered("Médiation des litiges — saisine MTV (mtv.travel), procédure, délais."),
+    Numbered("Données personnelles et RGPD."),
+    Numbered("Loi applicable et juridictions compétentes."),
+    H3("Clauses-clés (extraits)"),
+    P("Clause « Identité de l'opérateur et garants » : « Eventy Life SAS, immatriculée au RCS de [ville] sous le numéro [SIREN], dont le siège social est sis [adresse], est immatriculée au registre des opérateurs de voyages et de séjours d'Atout France sous le numéro IM [numéro]. La garantie financière est apportée par l'APST — Association Professionnelle de Solidarité du Tourisme, 15 av. Carnot, 75017 Paris. La responsabilité civile professionnelle est assurée par [assureur] sous le contrat n° [n°], avec une garantie minimale de 1 500 000 € par sinistre. Le médiateur compétent est la Médiation Tourisme et Voyage (MTV), 12 rue Eugène Sue, 75018 Paris — mtv.travel. »"),
+    P("Clause « Modification du prix » : « Le prix du voyage peut faire l'objet d'une modification à la hausse ou à la baisse jusqu'à 20 jours avant le départ, dans la limite de 8 % du prix initial, en cas d'évolution du coût du transport (carburant, taxes), du taux de change, ou des taxes locales obligatoires. Toute modification supérieure à 8 % ouvre droit, au choix du voyageur, soit à l'acceptation, soit à la résolution sans frais avec remboursement intégral sous 14 jours. »"),
+    P("Clause « Frais de résolution » (barème transparent) : « En cas de résolution du contrat par le voyageur avant le départ, des frais standard de résolution s'appliquent selon le délai : plus de 60 jours avant départ — 25 % du prix ; entre 60 et 30 jours — 50 % ; entre 30 et 15 jours — 75 % ; moins de 15 jours — 90 %. En cas de résolution pour motif force majeure couvert par le Pack Sérénité, ces frais sont remboursés selon les conditions du Pack. »"),
+    PB(),
+
+    H2("Annexe E — Catalogue programmes types saison 1"),
+    P("Échantillon représentatif de 5 voyages-types programmés pour la saison de lancement. Chaque fiche reprend la structure standard d'une fiche voyage Eventy : intitulé, dates, destination, programme jour par jour, prestations incluses, prix, créateur attitré."),
+    H3("Voyage 1 — Marrakech, le sourire des médinas (5 jours)"),
+    Bullet("Période : avril – octobre, départ vendredi soir, retour mardi matin."),
+    Bullet("Transport : vol charter ou vol régulier groupe (selon disponibilité), transferts privés sur place."),
+    Bullet("Hébergement : riad de charme 4*, pension complète."),
+    Bullet("Programme : visite des souks, jardin Majorelle, Atlas, Essaouira optionnelle, soirées tagines, hammam."),
+    Bullet("Prix par voyageur : 749 € TTC tout inclus."),
+    Bullet("Capacité : 38 voyageurs cibles."),
+    H3("Voyage 2 — Lisbonne et la côte de l'Estoril (4 jours)"),
+    Bullet("Période : mars – novembre, départ jeudi soir, retour dimanche soir."),
+    Bullet("Transport : autocar Grand Tourisme depuis Paris, ou vol charter."),
+    Bullet("Hébergement : hôtel 4* centre-ville, petits-déjeuners + 2 dîners."),
+    Bullet("Programme : Alfama, Belém, Cascais, Sintra, dégustation de pasteis et fado."),
+    Bullet("Prix par voyageur : 599 € TTC."),
+    H3("Voyage 3 — Barcelone et la Costa Brava (5 jours)"),
+    Bullet("Période : mai – septembre."),
+    Bullet("Transport : autocar Grand Tourisme avec accompagnement humain depuis Paris."),
+    Bullet("Hébergement : hôtel 4*, demi-pension + tapas une soirée."),
+    Bullet("Programme : Sagrada Familia, Park Güell, plages de Lloret de Mar, Gérone, Tossa de Mar."),
+    Bullet("Prix par voyageur : 549 € TTC."),
+    H3("Voyage 4 — Pays-Bas féerique : Amsterdam et les tulipes (4 jours)"),
+    Bullet("Période : avril – mai (pleine floraison)."),
+    Bullet("Transport : autocar Grand Tourisme depuis Paris."),
+    Bullet("Hébergement : hôtel 4* dans Amsterdam centre."),
+    Bullet("Programme : Keukenhof, croisière sur les canaux, musées Van Gogh et Rijksmuseum, balade à vélo."),
+    Bullet("Prix par voyageur : 679 € TTC."),
+    H3("Voyage 5 — Prague la magnifique (4 jours)"),
+    Bullet("Période : avril – octobre + marché de Noël en décembre."),
+    Bullet("Transport : vol charter ou vol régulier groupe."),
+    Bullet("Hébergement : hôtel 4* Vieille Ville."),
+    Bullet("Programme : pont Charles, château, soirée musique classique, croisière sur la Vltava, dégustation de bières tchèques."),
+    Bullet("Prix par voyageur : 729 € TTC."),
+    P("Le catalogue saison 1 comporte au total 24 programmes répartis sur 12 destinations. Le panier moyen pondéré est de 800 € TTC par voyageur, conforme aux hypothèses financières."),
+    PB(),
+
+    H2("Annexe F — Liste type des partenaires identifiés"),
+    P("Eventy Life construit son réseau partenaires sur le principe de la qualité de service, de la fiabilité opérationnelle, et de l'ancrage territorial européen avec privilège initial aux fournisseurs français. La liste exhaustive est confidentielle ; les catégories et profils-types sont présentés ci-dessous."),
+    makeTable({
+      widths: [2400, 2400, 2400, 2160],
+      header: ["Catégorie", "Volume cible An 1", "Profil type", "Critères de sélection"],
+      rows: [
+        ["Autocaristes", "8-15 partenaires actifs", "TPE / PME française, flotte ≥ 5 cars Grand Tourisme, certification IRU/IDTM", "Conformité chronotachygraphe, double chauffeur, ABS/ESP, climatisation, Wi-Fi"],
+        ["Hôtels (HRA)", "100-200 référencés", "3* à 5* selon programme, indépendants ou chaînes nationales", "Note ≥ 8/10 sur plateformes, retour sur 50 voyageurs minimum, contrat-cadre signé"],
+        ["Restaurants (HRA)", "100-200 référencés", "Cuisine locale authentique, capacité ≥ 38 couverts simultanés", "Hygiène certifiée, allergènes documentés, devis groupe transparent"],
+        ["Activités (HRA)", "50-100 référencés", "Guides agréés, ateliers artisanaux, musées, croisières, soirées thématiques", "Assurance professionnelle, langue parlée, capacité groupe"],
+        ["Créateurs indépendants", "100-300 actifs", "Auto-entrepreneurs, expérience voyage ou organisation, langues étrangères", "Charte qualité signée, formation Eventy obligatoire, NPS ≥ 60 sur premiers voyages"],
+        ["Accompagnateurs / animateurs", "30-60 missions/mois", "Indépendants, profil convivial, expérience animation groupe", "Casier judiciaire B3 vierge, formation premiers secours, charte qualité"],
+        ["Assureur Pack Sérénité", "1-2 partenaires", "Allianz Travel, Mutuaire, Mondial Assistance ou équivalent", "Couverture rapatriement, médical, bagages, annulation, plafonds suffisants"],
+      ],
+    }),
+    PB(),
+
+    H2("Annexe G — Déclaration sur l'honneur du dirigeant"),
+    P("Document à signer manuscritement par le dirigeant lors du dépôt officiel du dossier. Modèle reproduit ci-après."),
+    Spacer(),
+    P("« Je soussigné David Eventy, Président de la société Eventy Life SAS en cours de création (ou nouvellement immatriculée sous le numéro [SIREN]), atteste sur l'honneur :", { italics: true }),
+    Bullet("Ne pas avoir fait l'objet d'une condamnation pénale ou d'une sanction civile ou administrative de nature à interdire l'exercice d'une activité commerciale, industrielle, ou artisanale ;"),
+    Bullet("Ne pas être en situation de faillite personnelle ou d'interdiction de gérer ;"),
+    Bullet("Disposer de la capacité juridique pour exercer la fonction de représentant légal de la société ;"),
+    Bullet("Avoir pris connaissance de l'ensemble des obligations réglementaires applicables à l'activité d'opérateur de voyages, notamment au titre des articles L211-1 et suivants du Code du Tourisme et de la directive (UE) 2015/2302 ;"),
+    Bullet("Avoir préparé et soumis le présent dossier de garantie financière en toute sincérité, sans omission de fait susceptible d'altérer la décision de la commission d'admission ;"),
+    Bullet("M'engager à informer sans délai l'APST et Atout France de toute évolution de ma situation personnelle, juridique ou financière ayant un impact sur les engagements souscrits."),
+    Spacer(),
+    P("Fait à Paris, le [date], en deux exemplaires originaux.", { italics: true }),
+    Spacer(),
+    P("David Eventy", { bold: true }),
+    P("Président, Eventy Life SAS"),
+    Spacer(),
+    P("(signature manuscrite)", { italics: true }),
+    PB(),
+
+    H2("Annexe H — Schéma fonctionnel de la plateforme technique"),
+    P("Vue synthétique des composants et flux principaux de la plateforme Eventy Life. Une architecture technique détaillée est disponible sur demande pour audit."),
+    H3("Couches applicatives"),
+    Bullet("Couche présentation : Next.js 14 — 32 portails (Public, Client, Pro, Admin, Maisons, Jeux, Métiers spécialisés, etc.)."),
+    Bullet("Couche API : NestJS 10 — 31 modules métiers."),
+    Bullet("Couche données : PostgreSQL via Prisma ORM."),
+    Bullet("Couche paiement : Stripe Connect (compte de paiement par voyage)."),
+    Bullet("Couche stockage fichiers : S3-compatible (Scaleway Object Storage)."),
+    Bullet("Couche email : SMTP transactionnel (Brevo, partenaire français)."),
+    H3("Modules métiers structurants"),
+    Bullet("module booking : gestion des réservations et acomptes."),
+    Bullet("module finance : ledger interne, rapprochement Stripe, déclarations."),
+    Bullet("module insurance : Pack Sérénité, attestation par voyageur."),
+    Bullet("module legal : versions des CGV, mentions légales, RGPD."),
+    Bullet("module documents : génération PDF (factures, contrats, attestations)."),
+    Bullet("module post-sale : enquêtes NPS, suivi des litiges, médiation."),
+    Bullet("module marketing : acquisition, campagnes, suivi conversions."),
+    Bullet("module HRA : référencement et gestion des partenaires."),
+    Bullet("module transport : gestion des autocaristes et planning bus."),
+    Bullet("module groups : groupes voyageurs, communication, gamification."),
+    PB(),
+
+    H2("Annexe I — Modèle de fiche d'information précontractuelle"),
+    P("Modèle conforme à l'arrêté du 1er mars 2018 fixant le formulaire d'information standardisé pour la vente de voyages et de séjours. Ce formulaire est généré automatiquement par la plateforme et présenté au voyageur avant toute conclusion de contrat."),
+    Spacer(),
+    P("INFORMATION STANDARDISÉE POUR LES CONTRATS DE VOYAGE À FORFAIT", { bold: true }),
+    P("La combinaison de services de voyage qui vous est proposée est un forfait au sens de la directive (UE) 2015/2302 et de l'article L211-2 du Code du Tourisme.", { italics: true }),
+    P("Vous bénéficierez donc de tous les droits octroyés par l'Union européenne applicables aux forfaits, tels que transposés dans le Code du Tourisme. L'entreprise Eventy Life SAS sera entièrement responsable de la bonne exécution du forfait dans son ensemble."),
+    P("En outre, comme l'exige la loi, l'entreprise Eventy Life SAS dispose d'une protection afin de rembourser vos paiements et, si le transport est compris dans le forfait, d'assurer votre rapatriement, au cas où elle deviendrait insolvable."),
+    P("Droits essentiels prévus par le Code du Tourisme :"),
+    Bullet("Vous recevrez toutes les informations essentielles sur le forfait avant de conclure le contrat."),
+    Bullet("Le prestataire responsable de la bonne exécution de toutes les prestations comprises dans le contrat est toujours désigné."),
+    Bullet("Vous recevrez un numéro de téléphone d'urgence ou les coordonnées d'un point de contact."),
+    Bullet("Vous pouvez transférer le forfait à une autre personne, moyennant un préavis raisonnable et éventuellement le paiement de frais supplémentaires."),
+    Bullet("Le prix du forfait ne peut être augmenté que si des coûts spécifiques augmentent et si cette possibilité est explicitement prévue dans le contrat ; il ne peut en aucun cas être modifié moins de 20 jours avant le début du forfait. Si la majoration de prix dépasse 8 % du prix du forfait, vous pouvez résilier le contrat."),
+    Bullet("Si l'organisateur du voyage modifie de manière significative un des éléments essentiels du forfait, vous pouvez accepter la modification ou résilier le contrat sans frais."),
+    Bullet("Vous pouvez résilier le contrat sans payer de frais en cas de circonstances exceptionnelles."),
+    Bullet("En outre, vous pouvez, à tout moment avant le début du forfait, résilier le contrat moyennant le paiement de frais de résolution appropriés et justifiables."),
+    Bullet("Si, après le début du voyage, des éléments essentiels ne peuvent être fournis, d'autres prestations appropriées devront vous être proposées sans supplément de prix. Vous pouvez résilier le contrat sans payer de frais lorsque les services ne sont pas exécutés conformément au contrat, que cela perturbe considérablement le voyage et que l'organisateur ne remédie pas au problème."),
+    Bullet("Vous avez droit à une réduction de prix ou à un dédommagement lorsque les services de voyage ne sont pas exécutés ou sont mal exécutés."),
+    Bullet("L'organisateur doit apporter une aide si vous êtes en difficulté."),
+    Bullet("Si l'organisateur devient insolvable, les montants versés seront remboursés. Si l'organisateur devient insolvable après le début du forfait et si le transport est compris dans le forfait, le rapatriement des voyageurs est garanti par la garantie financière APST."),
+    P("Garantie financière : APST — 15 av. Carnot, 75017 Paris — info@apst.travel.", { italics: true }),
     PB(),
   ];
 }
 
-// ---------- 12. Sources ----------
-function partie12Sources() {
+// ---------- 16. Sources ----------
+function partie16Sources() {
   return [
-    H1("12. Sources réglementaires et bibliographiques", "partie12"),
+    H1("16. Sources réglementaires et bibliographiques"),
     H2("12.1. Textes législatifs et réglementaires"),
     Bullet("Code du Tourisme — Articles L211-1 à L211-24 (régime de la vente de voyages et de séjours)."),
     Bullet("Code du Tourisme — Articles R211-26 à R211-34 (garantie financière)."),
@@ -1264,10 +1769,14 @@ const doc = new Document({
         ...partie6Capacite(),
         ...partie7Garanties(),
         ...partie8Comparatif(),
-        ...partie9Calendrier(),
-        ...partie10Engagements(),
-        ...partie11Annexes(),
-        ...partie12Sources(),
+        ...partie9Risques(),
+        ...partie10Gouvernance(),
+        ...partie11KPIs(),
+        ...partie12Calendrier(),
+        ...partie13Engagements(),
+        ...partie14FAQ(),
+        ...partie15Annexes(),
+        ...partie16Sources(),
         ...motFinal(),
       ],
     },
