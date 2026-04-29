@@ -22,6 +22,32 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
+## Enrichissements v8 / v9 / v10 — passes 1 à 4
+
+### Passe 1 — Enrichissement de contenu (v8 : ~42,7 k mots)
+- **Annexe O** — Contrat-cadre créateur indépendant (7 articles)
+- **Annexe P** — Contrat-cadre HRA (5 articles)
+- **Annexe Q** — Charte qualité accompagnateur Eventy (5 articles)
+- **Annexe R** — Procédure de réclamation voyageur (5 étapes + modèle de courrier)
+- **Annexe S** — Charte de transparence des prix (6 engagements opposables)
+- **Schéma flux financiers Stripe Connect** (diagramme ASCII en Table)
+- **Schéma parcours voyageur** (10 étapes : découverte → post-voyage)
+- **Matrice RACI gouvernance** (12 processus × 6 fonctions)
+- **Analyse de sensibilité** : taux de remplissage, panier moyen, marge HRA
+- **BFR détaillé** An 1 / An 2 (-1 436 K€ / -5 466 K€)
+- **Break-even analysis** (≈ 200 voyages/an, marge sécurité +90 %)
+- **Glossaire 15bis** : Code Tourisme + termes Eventy + 24 acronymes + renvois croisés
+
+### Passe 2 — Peaufinage rédactionnel formel (v9 : ~44,3 k mots)
+- **Avant-propos juridique** : objet, cadre normatif, méthodologie, engagement de sincérité, confidentialité, destinataires habilités
+- **Déclaration solennelle d'engagement réglementaire** (Partie 13) — 8 engagements opposables avec encart visuel double bordure bleue
+
+### Passe 3 — Encarts visuels (v10 : ~45,0 k mots)
+- **Encart "Vision rassembleurs"** (orange/cream) — Eventy Life concourt à recréer du lien social
+- **Encart "Promesse Eventy"** (bleu/blueLt) — 7 engagements opposables au voyageur
+- **Encart "Économie circulaire"** (orange/cream) — décomposition de 100 € voyageur en 8 lignes
+- **Encart "Engagement réglementaire global"** (bleu/blueLt) — 5 engagements supérieurs aux obligations légales
+
 ## Enrichissements v7 (par rapport à v6)
 
 - **Schéma organisationnel écosystème** Eventy : diagramme ASCII centré + tableaux des 6 familles d'acteurs + flux d'information / financiers (1.0.3)
@@ -118,9 +144,9 @@ Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
 ## Notes sur la production
 
-- Format A4, 3 421 paragraphes, ~37 100 mots, ~127 KB (v7 — annexes structurelles + process opérationnels)
+- Format A4, 4 058 paragraphes, ~45 000 mots, ~150 KB (v10 — passes 1 à 4 successives)
 - Validé schéma OOXML (validate.py PASSED)
-- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k) → v7 (~37,1 k)
+- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k) → v7 (~37,1 k) → v8 (~42,7 k) → v9 (~44,3 k) → v10 (~45,0 k)
 - Police Calibri, palette Eventy (orange #E87722, bleu #1F4E79)
 - Sommaire automatique cliquable (TOC champs Word/LibreOffice)
 - Header + footer avec pagination
