@@ -10,10 +10,14 @@
 | Fichier | Description |
 |---------|-------------|
 | `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.docx` | Dossier final, prêt à dépôt après validation avocat |
+| `Eventy-Life-Dossier-Garantie-Financiere-COMPLET.pdf` | Version PDF "à imprimer" (122 pages, 411 KB) |
 | `PROCESSUS-ATOUT-FRANCE.md` | Détail opérationnel du processus Atout France (chronologie, pièces, coûts, contacts) |
-| `../../scripts/garanties/build-dossier-garantie.js` | Générateur Node.js du dossier |
+| `../../scripts/garanties/build-dossier-garantie.js` | Générateur Node.js du dossier .docx |
+| `../../scripts/garanties/docx-to-pdf.py` | Convertisseur .docx → .pdf via mammoth + xhtml2pdf |
 
 ## Régénération
+
+### Génération du .docx
 
 ```bash
 NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
@@ -21,6 +25,15 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 ```
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
+
+### Conversion .docx → .pdf
+
+```bash
+python scripts/garanties/docx-to-pdf.py
+```
+
+Pré-requis : `pip install mammoth xhtml2pdf` (déjà installé sur le poste PDG).
+Sortie : `docs/garanties/Eventy-Life-Dossier-Garantie-Financiere-COMPLET.pdf` (122 pages).
 
 ## Enrichissements v11 — peaufinage formel + cohérence + relecture finale
 
