@@ -22,6 +22,19 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
+## Enrichissements v7 (par rapport à v6)
+
+- **Schéma organisationnel écosystème** Eventy : diagramme ASCII centré + tableaux des 6 familles d'acteurs + flux d'information / financiers (1.0.3)
+- **Compte d'exploitation prévisionnel mensualisé** An 1 (M01-M12) et An 2 (M13-M24) avec CA, achats, marge brute, commissions, marge nette, charges (4.4.1.1)
+- **Synthèse comparée An 1 vs An 2** (cumulé)
+- **Capacité de remboursement clients en cas de défaillance** : 6 niveaux de protection en cumul croissant + matrice de couverture par type d'incident + analyse pic des fonds en transit (9.2.3.1)
+- **Procédure de souscription RC Pro Tourisme** pas-à-pas (8 étapes) + couverture voyageurs détaillée + mise en œuvre du sinistre à l'indemnisation (7.2.3 enrichi)
+- **Process en cas d'incident voyage** complet : ligne d'urgence 24/7, 4 niveaux de gravité avec protocoles, procédures rapatriement médical / hébergement de secours / retard transport pas-à-pas, trousse de secours opérationnelle accompagnateur (9.1.1)
+- **Annexe K — Statuts SAS** complets (15 articles avec clauses spécifiques tourisme dont la réserve volontaire 5 % CA)
+- **Annexe L — Modèle d'extrait Kbis** Eventy Life (placeholder + rubriques attendues)
+- **Annexe M — RIB du compte cantonné** + convention de cantonnement avec engagements APST
+- **Annexe N — Modèle d'attestation de l'expert-comptable** (engagements opposables annuels)
+
 ## Enrichissements v6 (par rapport à v5)
 
 - **Cas de référence Atout France** : voyage type 700 € TTC + vérification croisée euro par euro (1.4)
@@ -105,9 +118,9 @@ Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
 ## Notes sur la production
 
-- Format A4, 2 780 paragraphes, ~31 400 mots, ~108 KB (v6 — phase d'enrichissement profonde finale)
+- Format A4, 3 421 paragraphes, ~37 100 mots, ~127 KB (v7 — annexes structurelles + process opérationnels)
 - Validé schéma OOXML (validate.py PASSED)
-- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k)
+- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k) → v7 (~37,1 k)
 - Police Calibri, palette Eventy (orange #E87722, bleu #1F4E79)
 - Sommaire automatique cliquable (TOC champs Word/LibreOffice)
 - Header + footer avec pagination
