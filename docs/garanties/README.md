@@ -25,6 +25,13 @@
 | `Eventy-Life-Courriers-APST-AtoutFrance.docx` | Deux lettres formelles : (1) demande d'immatriculation Atout France, (2) demande d'adhésion APST + octroi garantie financière (13 KB) |
 | `Eventy-Life-Courriers-APST-AtoutFrance.pdf` | Version PDF imprimable à signer manuscritement (4 pages · 11 KB) |
 
+### Annexes complémentaires opérationnelles
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Checklist-Atout-France.docx` / `.pdf` | Checklist exhaustive des documents à fournir à Atout France (14 KB · 3 pages) — pré-requis, pièces obligatoires, pièces complémentaires recommandées, vérifications avant transmission, suivi post-dépôt |
+| `Eventy-Life-Calendrier-J0-J90.docx` / `.pdf` | Calendrier prévisionnel des étapes administratives J0 → J+90 (13 KB · 2 pages) — détail semaine par semaine, scénarios raccourci 45 j et allongé 90 j, acteurs mobilisés |
+| `Eventy-Life-Contrat-Type-Vendeur-Createur.docx` / `.pdf` | Modèle de contrat-cadre vendeur / créateur (15 KB · 3 pages) — 12 articles + bloc signature + 5 annexes au contrat, cohérent avec le modèle de marges (5 % HT vendeur · 3 pts créateur sur HRA) |
+
 ### Documents complémentaires
 | Fichier | Description |
 |---------|-------------|
@@ -39,6 +46,8 @@
 | `../../scripts/garanties/resume-to-pdf.py` | Convertisseur résumé exécutif .docx → .pdf imprimable |
 | `../../scripts/garanties/build-courriers.js` | Générateur Node.js des courriers Atout France + APST .docx |
 | `../../scripts/garanties/courriers-to-pdf.py` | Convertisseur courriers .docx → .pdf imprimable à signer |
+| `../../scripts/garanties/build-annexes-complementaires.js` | Générateur Node.js des 3 annexes complémentaires (checklist, calendrier, contrat type) |
+| `../../scripts/garanties/annexes-to-pdf.py` | Convertisseur batch des 3 annexes .docx → .pdf imprimables |
 
 ## Régénération
 
@@ -79,6 +88,18 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-courriers.js \
   docs/garanties/Eventy-Life-Courriers-APST-AtoutFrance.docx
 python scripts/garanties/courriers-to-pdf.py
 ```
+
+### Génération des 3 annexes complémentaires (checklist + calendrier + contrat type)
+
+```bash
+NODE_PATH="$(npm root -g)" node scripts/garanties/build-annexes-complementaires.js
+python scripts/garanties/annexes-to-pdf.py
+```
+
+Sortie :
+- `docs/garanties/Eventy-Life-Checklist-Atout-France.{docx,pdf}` (14 KB · 3 pages)
+- `docs/garanties/Eventy-Life-Calendrier-J0-J90.{docx,pdf}` (13 KB · 2 pages)
+- `docs/garanties/Eventy-Life-Contrat-Type-Vendeur-Createur.{docx,pdf}` (15 KB · 3 pages)
 
 Sortie :
 - `docs/garanties/Eventy-Life-Courriers-APST-AtoutFrance.docx` (13 KB)
