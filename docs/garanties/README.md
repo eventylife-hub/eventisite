@@ -21,6 +21,27 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
+## Enrichissements v5 (par rapport à v2)
+
+- **Manifeste Eventy** + genèse + promesse-cadre (1.0, 1.0.1, 1.0.2)
+- **Anatomie d'un voyage** : décomposition euro par euro de l'argent (2.3.1)
+- **Témoignages-types** : 4 profils d'indépendants concernés (2.3.2)
+- **Maillage géographique** : 8 régions françaises (2.3.3)
+- **Trois exemples chiffrés** détaillés (Lisbonne / Marrakech / B2B Côte d'Azur) + comparaison concurrence (1.4 enrichi)
+- **Plan de trésorerie mensualisé 24 mois** (M01 → M24, encaissements / décaissements / fonds en transit / solde)
+- **Bilan prévisionnel fin An 2** + calcul détaillé de la CAF (4.4.2, 4.4.3)
+- **Conformité directive UE 2015/2302 article par article** (Art. 3 → Art. 24)
+- **Procédure Atout France** détaillée (10 étapes opérationnelles)
+- **Calendrier APST** détaillé (10 étapes, J+0 à J+90)
+- **Compte séquestre** mécanique technique (architecture + différence avec séquestre notarial)
+- **Compte bloqué de garantie** dirigeant (10 000 €, conditions, modalités)
+- **RC Pro** : plafonds détaillés + comparatif Hiscox / Galian / CMB
+- **Assurance annulation client** : causes couvertes + modalités
+- **Procédure médiation MTV** pas-à-pas (6 étapes voyageur)
+- **Tableau des recours du voyageur** : 7 niveaux hiérarchisés
+- **Droits voyageur par étape** (avant / pendant / après le voyage)
+- **Transparence prix** Eventy (décomposition publique sur fiche voyage)
+
 ## Sommaire du dossier (16 parties + cover + lettre + sommaire + mot final)
 
 1. **Présentation d'Eventy Life** — identité, vision, positionnement, modèle économique distribué (HRA + 5% vendeur + 3% créateur), trajectoire de croissance, plateforme technique, **architecture de traçabilité des fonds**
@@ -70,8 +91,9 @@ Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
 ## Notes sur la production
 
-- Format A4, 1 635 paragraphes, ~20 000 mots, ~74 KB (v2 — phase d'enrichissement)
+- Format A4, 2 416 paragraphes, ~27 600 mots, ~97 KB (v5 — phase d'enrichissement profonde)
 - Validé schéma OOXML (validate.py PASSED)
+- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k)
 - Police Calibri, palette Eventy (orange #E87722, bleu #1F4E79)
 - Sommaire automatique cliquable (TOC champs Word/LibreOffice)
 - Header + footer avec pagination
