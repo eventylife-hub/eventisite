@@ -22,6 +22,15 @@ NODE_PATH="$(npm root -g)" node scripts/garanties/build-dossier-garantie.js \
 
 Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
+## Enrichissements v11 — peaufinage formel + cohérence + relecture finale
+
+- **Préambule de qualification** (1.0.4) — affirmation formelle de la qualité d'opérateur de voyages au sens de l'article L211-1, écartant toute qualification dérivée
+- **Encart "Sécurité du voyageur en 6 niveaux"** (Partie 7) — synthèse visuelle des protections cumulées
+- **Encart "Chiffres clés du dossier"** (Partie 4) — référentiel commun à toutes les sections
+- **Encart "Conformité directive UE 2015/2302"** (Partie 3) — synthèse 8 points
+- **Tableau unifié de cohérence des chiffres clés** (Partie 4.4.7) — 25 indicateurs avec section de référence + note de cohérence
+- **Note de relecture finale** (avant le mot du fondateur) — vérifications chronologiques, financières, rédactionnelles, des annexes, de l'engagement, de la conformité + 7 étapes restantes avant dépôt
+
 ## Enrichissements v8 / v9 / v10 — passes 1 à 4
 
 ### Passe 1 — Enrichissement de contenu (v8 : ~42,7 k mots)
@@ -144,9 +153,9 @@ Pré-requis : `npm install -g docx` (déjà installé sur le poste PDG).
 
 ## Notes sur la production
 
-- Format A4, 4 058 paragraphes, ~45 000 mots, ~150 KB (v10 — passes 1 à 4 successives)
+- Format A4, 4 288 paragraphes, ~47 300 mots, ~157 KB (v11 — peaufinage formel + cohérence + relecture)
 - Validé schéma OOXML (validate.py PASSED)
-- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k) → v7 (~37,1 k) → v8 (~42,7 k) → v9 (~44,3 k) → v10 (~45,0 k)
+- Versions successives : v1 (~11 k mots) → v2 (~20 k) → v3 (~22 k) → v4 (~25 k) → v5 (~27,6 k) → v6 (~31,4 k) → v7 (~37,1 k) → v8 (~42,7 k) → v9 (~44,3 k) → v10 (~45,0 k) → v11 (~47,3 k)
 - Police Calibri, palette Eventy (orange #E87722, bleu #1F4E79)
 - Sommaire automatique cliquable (TOC champs Word/LibreOffice)
 - Header + footer avec pagination

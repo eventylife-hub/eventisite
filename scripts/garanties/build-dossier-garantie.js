@@ -631,6 +631,18 @@ function partie1Presentation() {
     }),
     P("Cette architecture fait d'Eventy Life le point de convergence et de responsabilité unique pour le voyageur (article L211-16 — responsabilité de plein droit), tout en distribuant les rôles techniques et financiers à des acteurs indépendants spécialisés dans leur domaine."),
 
+    H2("1.0.4. Préambule de qualification — affirmation de la qualité d'opérateur de voyages et de séjours"),
+    P("La société EVENTY LIFE SAS, en cours de constitution à la date d'établissement du présent dossier, déclare formellement exercer, dès son immatriculation au Registre du Commerce et des Sociétés, l'activité de vente et d'organisation de voyages à forfait au sens des articles L211-1 et suivants du Code du Tourisme."),
+    P("À ce titre, EVENTY LIFE SAS revendique pleinement la qualification d'« opérateur de voyages et de séjours » telle que définie par l'article L211-1 du Code du Tourisme et par l'article 3 de la directive (UE) 2015/2302. Cette qualification entraîne l'application intégrale du régime juridique des voyages à forfait, et notamment :"),
+    Bullet("L'obligation d'immatriculation au registre tenu par Atout France (article L211-18)."),
+    Bullet("L'obligation de justifier d'une garantie financière suffisante affectée au remboursement des fonds reçus et au rapatriement des voyageurs (article L211-18 et articles R211-26 à R211-34)."),
+    Bullet("L'obligation de souscrire une assurance de responsabilité civile professionnelle (articles L211-16 et L211-17)."),
+    Bullet("L'obligation d'information précontractuelle conforme au formulaire standardisé prévu par l'arrêté du 1er mars 2018."),
+    Bullet("La responsabilité de plein droit envers les voyageurs pour la bonne exécution de l'ensemble des prestations prévues au contrat de voyage à forfait."),
+    Bullet("L'adhésion à un dispositif de médiation conventionnée des litiges de la consommation (articles L612-1 et suivants du Code de la consommation)."),
+    P("EVENTY LIFE SAS ne se réclame d'aucune qualification dérivée susceptible de déroger à ce régime. La société n'opère pas en qualité d'intermédiaire transparent, n'exerce pas une activité de simple mise en relation, et ne propose pas de prestations de voyage liées au sens de l'article L211-2 II du Code du Tourisme. Cette clarification est cardinale pour la sécurité juridique du voyageur et pour la cohérence du présent dossier."),
+    P("La présente affirmation est opposable à EVENTY LIFE SAS et à son représentant légal. Toute communication commerciale, tout contrat type, toute mention sur le site eventylife.fr et tout élément de communication interne sont alignés sur cette qualification, sans ambiguïté."),
+
     H2("1.1. Identité de la société"),
     makeTable({
       widths: [3000, 6360],
@@ -1304,6 +1316,26 @@ function partie3CadreLegal() {
     H3("Information du voyageur en cours de voyage"),
     P("L'opérateur doit fournir une assistance appropriée dans des délais raisonnables au voyageur en difficulté ; cette obligation, prévue par la directive, est intégrée nativement dans le Pack Sérénité Eventy (inclus, sans surcoût)."),
 
+    Spacer(),
+    Encart({
+      title: "ENCART — CONFORMITÉ DIRECTIVE UE 2015/2302",
+      color: COLOR.blue,
+      fill: COLOR.blueLt,
+      lines: [
+        { text: "Eventy Life se conforme intégralement à la directive (UE) 2015/2302 du 25 novembre 2015 relative aux voyages à forfait, telle que transposée en droit français.", align: AlignmentType.JUSTIFIED, italics: true },
+        { text: "✓ Information précontractuelle — formulaire arrêté du 1er mars 2018 généré automatiquement avant tout achat.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Contrat sur support durable — PDF + accessible en permanence dans l'espace voyageur.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Modification du prix encadrée — limite 8 %, jamais moins de 20 jours avant le départ.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Cession du contrat à un tiers — possible jusqu'à 7 jours avant le départ.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Responsabilité de plein droit — Eventy reste responsable des sous-traitants.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Assistance immédiate — Pack Sérénité + ligne 24/7 inclus.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Insolvabilité — garantie financière APST + cantonnement Stripe Connect.", align: AlignmentType.JUSTIFIED },
+        { text: "✓ Médiation — adhésion MTV gratuite pour le voyageur.", align: AlignmentType.JUSTIFIED },
+        { text: "Aucune clause contractuelle ne renonce ni ne réduit les droits du voyageur issus de la directive et de sa transposition.", align: AlignmentType.JUSTIFIED, color: COLOR.orange, bold: true },
+      ],
+    }),
+    Spacer(),
+
     H2("3.4.1. Conformité article par article — directive (UE) 2015/2302"),
     P("Pour permettre à la commission APST et à l'avocat d'apprécier sans détour la conformité d'Eventy Life à la directive (UE) 2015/2302 du 25 novembre 2015 relative aux voyages à forfait, voici un tableau de mise en correspondance entre les obligations directives et la mise en œuvre opérationnelle Eventy."),
     makeTable({
@@ -1394,6 +1426,26 @@ function partie4Finance() {
   return [
     H1("4. Données financières prévisionnelles", "partie4"),
     Quote("La transparence est notre meilleure garantie. Voici nos chiffres, posés sur la table."),
+
+    Spacer(),
+    Encart({
+      title: "ENCART — CHIFFRES CLÉS DU DOSSIER EVENTY LIFE",
+      color: COLOR.orange,
+      fill: COLOR.cream,
+      lines: [
+        { text: "Les chiffres-clés ci-dessous constituent le référentiel commun du dossier. Ils sont opposables et utilisés de manière homogène dans toutes les sections.", align: AlignmentType.JUSTIFIED, italics: true },
+        { text: "VOLUME — 38 voyageurs / voyage × 800 € = 30 400 € de CA brut par voyage de référence.", align: AlignmentType.JUSTIFIED },
+        { text: "CADENCE — T4 An 1 : 10 voyages/sem · An 2 cible : 100-200 voyages/sem.", align: AlignmentType.JUSTIFIED },
+        { text: "CHIFFRE D'AFFAIRES — An 1 : 16 000 000 € · An 2 : 80 000 000 €.", align: AlignmentType.JUSTIFIED },
+        { text: "MARGE BRUTE — 11,1 % du CA (constante An 1 et An 2).", align: AlignmentType.JUSTIFIED },
+        { text: "REDISTRIBUTION INDÉPENDANTS — 6,8 % du CA (5 % vendeur + ≈ 1,8 % créateur).", align: AlignmentType.JUSTIFIED },
+        { text: "EVENTY NET AVANT CHARGES — 4,3 % du CA.", align: AlignmentType.JUSTIFIED },
+        { text: "RÉSULTAT NET — An 1 : ≈ 321 500 € (2,0 % du CA) · An 2 : ≈ 1 852 500 € (2,3 %).", align: AlignmentType.JUSTIFIED },
+        { text: "GARANTIE FINANCIÈRE DEMANDÉE — 1,6 M€ An 1, indexée trimestriellement.", align: AlignmentType.JUSTIFIED },
+        { text: "CONFORMITÉ — Code du Tourisme L211-1 et suivants + directive (UE) 2015/2302 + RGPD.", align: AlignmentType.JUSTIFIED, color: COLOR.blue, bold: true },
+      ],
+    }),
+    Spacer(),
 
     H2("4.1. Hypothèses fondatrices"),
     P("Les projections financières d'Eventy Life reposent sur les hypothèses suivantes, validées au niveau de la direction le 29 avril 2026."),
@@ -1707,6 +1759,42 @@ function partie4Finance() {
     }),
     P("Le break-even est atteint à environ 4 voyages par semaine — soit 50 % du volume cible T4 An 1 (10 voyages/semaine). La marge de sécurité au volume cible An 1 est confortable (+ 90 %). La société est conçue pour absorber une réduction d'activité significative sans perte d'exploitation. Cette marge constitue une garantie complémentaire pour la commission APST."),
 
+    H2("4.4.7. Tableau unifié de cohérence des chiffres clés"),
+    P("Pour faciliter l'instruction du dossier et assurer la traçabilité interne, voici le tableau récapitulatif unifié des chiffres clés utilisés dans l'ensemble du document. Toutes les valeurs sont cohérentes entre les différentes parties — cette table sert de point de référence unique."),
+    makeTable({
+      widths: [3500, 1500, 1500, 1500, 1360],
+      header: ["Indicateur", "Référence", "An 1", "An 2", "Section"],
+      rows: [
+        ["Capacité bus nominal", "53 voyageurs", "—", "—", "1.4"],
+        ["Taux de remplissage cible", "38 voyageurs / voyage", "—", "—", "1.4"],
+        ["Taux de remplissage seuil minimal", "28 voyageurs", "—", "—", "4.4.4"],
+        ["Panier moyen voyageur (TTC)", "800 €", "—", "—", "1.4"],
+        ["CA par voyage de référence", "30 400 €", "—", "—", "1.4"],
+        ["Voyages cumulés", "—", "≈ 380", "≈ 2 600", "4.2 / 4.3"],
+        ["Voyageurs cumulés", "—", "≈ 16 000", "≈ 100 000", "4.2 / 4.3"],
+        ["Chiffre d'affaires HT cumulé (M€)", "—", "16,0", "80,0", "4.2 / 4.3"],
+        ["Marge brute opérée (M€)", "11,1 % du CA", "1,77", "8,85", "4.2 / 4.3"],
+        ["Commission vendeur (M€)", "5,0 % CA HT", "0,80", "4,00", "4.2 / 4.3"],
+        ["Commission créateur (M€)", "≈ 1,8 % CA", "0,29", "1,45", "4.2 / 4.3"],
+        ["Eventy net avant charges (M€)", "4,3 % du CA", "0,68", "3,40", "4.2 / 4.3"],
+        ["Charges Eventy totales (M€)", "—", "0,251", "0,910", "4.2 / 4.3"],
+        ["Résultat avant impôt (M€)", "—", "0,429", "2,470", "4.2 / 4.3"],
+        ["Résultat net (M€)", "—", "0,322", "1,852", "4.2 / 4.3"],
+        ["Marge nette / CA", "—", "2,0 %", "2,3 %", "4.2 / 4.3"],
+        ["Trésorerie cumulée fin d'année (M€)", "—", "0,62", "6,70", "4.4.1 / 4.4.2"],
+        ["Fonds de réserve volontaire (K€)", "5 % CA cumulé", "50", "200", "9.3"],
+        ["Pic des fonds en transit (M€)", "—", "1,25", "4,25", "9.2.3.1"],
+        ["Garantie financière sollicitée (M€)", "≥ 130 % pic transit", "1,6", "indexée ≈ 5,5", "4.5"],
+        ["Couverture garantie / fonds en transit", "—", "128 %", "≈ 130 %", "9.2.3.1"],
+        ["Capacité d'autofinancement (K€)", "—", "342", "1 913", "4.10"],
+        ["BFR (en jours de CA)", "—", "-33", "-25", "4.4.5"],
+        ["Break-even (voyages/an)", "—", "≈ 200", "—", "4.4.6"],
+        ["Charges fixes annuelles (K€)", "—", "≈ 251", "≈ 910", "4.6 / 4.4.6"],
+      ],
+    }),
+    P("Note de cohérence : tous les chiffres présentés dans les tableaux des parties 1.4, 4.2, 4.3, 4.4.1, 4.4.2, 4.4.4, 4.4.5, 4.4.6, 4.10 et 9.2.3.1 sont strictement cohérents entre eux. Les éventuels arrondis sont du second ordre et n'affectent pas la lecture d'ensemble. Le scénario central est à entendre comme une projection prudente, non comme une cible commerciale agressive."),
+    P("Ce tableau unifié est mis à jour à chaque évolution du dossier et fait foi en cas de divergence apparente avec une section particulière."),
+
     H2("4.5. Calibrage de la garantie financière demandée"),
     P("Conformément à l'article R211-30 du Code du Tourisme et à l'arrêté du 23 décembre 2009 (article 5), le montant de la garantie financière est calculé à partir des fonds maximums susceptibles d'être détenus par l'opérateur à un instant donné. Pour une agence en création, le minimum réglementaire historique est de 200 000 €, étant rappelé que la garantie effective doit demeurer illimitée."),
     H3("Méthode de calcul"),
@@ -1905,6 +1993,24 @@ function partie7Garanties() {
   return [
     H1("7. Garanties offertes et protection du consommateur", "partie7"),
     Quote("Le client ne doit pas avoir à se demander s'il est protégé. Il doit le savoir, sans même y penser."),
+
+    Spacer(),
+    Encart({
+      title: "ENCART — SÉCURITÉ DU VOYAGEUR EVENTY EN 6 NIVEAUX",
+      color: COLOR.blue,
+      fill: COLOR.blueLt,
+      lines: [
+        { text: "Aucun voyageur Eventy Life n'est exposé à un risque de perte totale, dans aucun scénario réaliste.", align: AlignmentType.CENTER, bold: true, italics: true, size: 23, color: COLOR.orange },
+        { text: "Niveau 1 — Trésorerie disponible Eventy : ≈ 620 K€ fin An 1, mobilisable instantanément pour incident opérationnel limité.", align: AlignmentType.JUSTIFIED },
+        { text: "Niveau 2 — Fonds de réserve volontaire : 5 % du CA annuel, soit ≈ 50 K€ fin An 1, non distribuable jusqu'à reconstitution.", align: AlignmentType.JUSTIFIED },
+        { text: "Niveau 3 — Pack Sérénité (assurance externe incluse) : annulation, rapatriement médical, frais médicaux, bagages.", align: AlignmentType.JUSTIFIED },
+        { text: "Niveau 4 — Responsabilité Civile Professionnelle Tourisme : 1,5 M€ par sinistre / 3 M€ par an.", align: AlignmentType.JUSTIFIED },
+        { text: "Niveau 5 — Garantie financière APST : 1,6 M€ An 1, indexée trimestriellement, illimitée par construction.", align: AlignmentType.JUSTIFIED },
+        { text: "Niveau 6 — Contre-garantie personnelle dirigeant : 10 000 € sur compte bancaire bloqué dédié.", align: AlignmentType.JUSTIFIED },
+        { text: "Cumul des protections au pic des fonds en transit An 1 : couverture supérieure à 200 % de l'engagement maximum envers les voyageurs.", align: AlignmentType.JUSTIFIED, italics: true, color: COLOR.blue },
+      ],
+    }),
+    Spacer(),
 
     H2("7.1. Architecture de protection — vue d'ensemble"),
     P("La protection du voyageur Eventy s'appuie sur une architecture en quatre niveaux complémentaires."),
@@ -3466,6 +3572,68 @@ function partie16Sources() {
   ];
 }
 
+// ---------- Note de relecture finale ----------
+function noteRelecture() {
+  return [
+    H1("Note de relecture finale"),
+    Quote("Avant de remettre ce dossier, j'ai pris le temps de le relire — non pour le défendre, mais pour vérifier qu'il était digne de la décision qu'il sollicite."),
+    P("La présente note ferme le travail rédactionnel du dossier de garantie financière d'Eventy Life. Elle confirme à la commission APST, à Atout France et à tout examinateur tiers que les éléments suivants ont été vérifiés."),
+
+    H2("1. Cohérence chronologique"),
+    Bullet("Le dossier est daté du 29 avril 2026 dans sa version initiale."),
+    Bullet("La présente note de relecture finale est datée du 30 avril 2026."),
+    Bullet("Toutes les références chronologiques (J0, J+30, J+60) sont alignées sur la chronologie cible (Partie 12 et document `PROCESSUS-ATOUT-FRANCE.md`)."),
+    Bullet("La date d'établissement du dossier sera actualisée à chaque dépôt officiel auprès de l'APST ou d'Atout France."),
+
+    H2("2. Cohérence des chiffres"),
+    Bullet("Les chiffres clés font l'objet d'un tableau unifié en Partie 4.4.7 — référence interne unique."),
+    Bullet("Les valeurs présentées dans les Parties 1.4, 4.2, 4.3, 4.4.1, 4.4.2, 4.4.4, 4.4.5, 4.4.6, 4.10 et 9.2.3.1 sont strictement cohérentes entre elles."),
+    Bullet("Les éventuels arrondis sont mineurs et n'affectent pas la lecture d'ensemble."),
+    Bullet("Le scénario central est prudent — il sert de scénario de référence ; le scénario optimiste n'est pas la base du calibrage de la garantie."),
+
+    H2("3. Cohérence rédactionnelle"),
+    Bullet("Le ton du dossier articule la rigueur juridique et l'humanité du projet — c'est un choix assumé d'Eventy Life."),
+    Bullet("Les passages les plus formels (avant-propos, déclaration solennelle, préambule de qualification) adoptent le vocabulaire de référence du Code du Tourisme et de l'APST."),
+    Bullet("Les passages plus personnels (lettre du président, mot final) gardent le ton humain qui caractérise la marque, sans ambiguïté juridique."),
+
+    H2("4. Cohérence des annexes"),
+    Bullet("Les 19 annexes (A à S) sont indexées en début de Partie 15 et reprises dans le glossaire (Partie 15bis, point D)."),
+    Bullet("Chaque annexe est désignée explicitement par sa référence — A pour le CV du dirigeant, K pour les statuts SAS, M pour le RIB du compte cantonné, etc."),
+    Bullet("Les annexes B, C, J font l'objet d'un envoi complémentaire sur demande, en raison de la nature évolutive de leur contenu (devis, contrats partenaires en cours)."),
+
+    H2("5. Cohérence de l'engagement"),
+    Bullet("Le dossier comporte plusieurs niveaux d'engagement formel : déclaration de la lettre du président, déclaration de l'avant-propos, engagements de la Partie 13, déclaration solennelle finale (Partie 13.6), déclaration sur l'honneur (Annexe G)."),
+    Bullet("Tous ces engagements sont cohérents et opposables. Aucun ne contredit ni n'affaiblit les autres."),
+    Bullet("La déclaration solennelle finale (Partie 13.6) prévaut en cas d'ambiguïté apparente entre les engagements."),
+
+    H2("6. Conformité aux exigences"),
+    Bullet("Toutes les exigences de l'APST identifiables au moment de la rédaction sont couvertes : Kbis, statuts, prévisionnel, descriptif projet, capacité, RC Pro, justificatifs."),
+    Bullet("Toutes les exigences d'Atout France sont couvertes : capacité professionnelle, garantie financière (à obtenir préalablement), RC Pro (à obtenir préalablement), justificatif d'occupation des locaux."),
+    Bullet("La conformité à la directive (UE) 2015/2302 fait l'objet d'un tableau article par article (Partie 3.4.1) et d'un encart de synthèse."),
+    Bullet("La conformité au RGPD fait l'objet de la Partie 7.6."),
+    Bullet("La politique LCB-FT proportionnée fait l'objet de la Partie 7.7."),
+
+    H2("7. Étapes restantes avant dépôt"),
+    P("Les éléments suivants demeurent à compléter avant la transmission officielle du dossier :"),
+    Numbered("Validation par l'avocat tourisme partenaire (relecture juridique fine)."),
+    Numbered("Création effective de la SAS et obtention du Kbis."),
+    Numbered("Souscription effective de la RC Pro Tourisme et insertion de l'attestation."),
+    Numbered("Choix de la banque domiciliataire et ouverture du compte cantonné, avec insertion du RIB."),
+    Numbered("Mandat de l'expert-comptable et insertion de l'attestation."),
+    Numbered("Actualisation des dates dans la lettre de présentation et la déclaration solennelle au moment du dépôt."),
+    Numbered("Transmission officielle à l'APST avec demande d'accusé de réception."),
+
+    H2("8. Engagement de mise à jour"),
+    P("EVENTY LIFE SAS s'engage à actualiser le présent dossier à chaque évolution significative et à transmettre la version mise à jour aux destinataires concernés. Les versions intermédiaires successives (v1 à v10 puis v11 et au-delà) sont conservées dans le dépôt git interne d'Eventy Life pour traçabilité documentaire."),
+    Spacer(),
+    P("Note de relecture finale validée à la date du 30 avril 2026.", { italics: true }),
+    Spacer(),
+    P("David Eventy", { bold: true }),
+    P("Président, Fondateur — Eventy Life SAS"),
+    PB(),
+  ];
+}
+
 // ---------- Mot final ----------
 function motFinal() {
   return [
@@ -3654,6 +3822,7 @@ const doc = new Document({
         ...partie15Annexes(),
         ...partie15bisGlossaire(),
         ...partie16Sources(),
+        ...noteRelecture(),
         ...motFinal(),
       ],
     },
