@@ -39,6 +39,13 @@
 | `Eventy-Life-Contrat-Createur.docx` / `.pdf` | Contrat dédié créateur de voyages (14 KB · 3 pages) — 11 articles, **rémunération marge HRA + 3 % sur HRA refacturé** (cumulable 5 % vendeur), forfait accompagnement séparé, propriété intellectuelle co-titulaire avec mention de paternité |
 | `Eventy-Life-Contrat-HRA-Partenaire.docx` / `.pdf` | Contrat-cadre Hôtel · Restaurant · Activité (14 KB · 3 pages) — 10 articles, conditions de référencement, modalités de commande + barème d'annulation, mécanique de marge socle Eventy explicitée (TVA marge tourisme), paiement à 30 jours fin de mois, possibilité « vendeur » offerte au HRA (5 % HT) |
 
+### CGV, bon de commande et mentions légales (cohérence contractuelle)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-CGV.docx` / `.pdf` | Conditions Générales de Vente (16 KB · 4 pages) — 18 articles conformes Code du Tourisme L211-1 à L211-24 + directive (UE) 2015/2302 + arrêté 1er mars 2018 + RGPD : identification opérateur, définitions, information précontractuelle, formation contrat, prix et paiement, modification 8 %, cession à un tiers, résolution avant/pendant voyage avec barème transparent, responsabilité de plein droit, Pack Sérénité, réclamations, médiation MTV, RGPD, force majeure, juridiction |
+| `Eventy-Life-Bon-De-Commande-HRA.docx` / `.pdf` | Modèle type de bon de commande HRA (13 KB · 2 pages) — identification du bon, identification du PARTENAIRE, détail des prestations avec prix HT/TTC, allergènes signalés, coordonnées opérationnelles voyage, **barème d'annulation** cohérent avec contrat-cadre HRA, double bloc signature « Bon pour accord » |
+| `Eventy-Life-Mentions-Legales.docx` / `.pdf` | Mentions légales du site eventylife.fr (13 KB · 3 pages) — 11 sections : éditeur, directeur publication, hébergement (Scaleway/Vercel), activité réglementée (IM Atout France, garantie APST, RC Pro), RGPD et DPO, propriété intellectuelle, crédits photos, cookies, CGV, médiation, loi applicable |
+
 ### Dossier investisseur (capital-risque)
 | Fichier | Description |
 |---------|-------------|
@@ -71,6 +78,8 @@
 | `../../scripts/garanties/subventions-to-pdf.py` | Convertisseur dossier subventions .docx → .pdf imprimable |
 | `../../scripts/garanties/build-contrats-types.js` | Générateur Node.js des 3 contrats types séparés (vendeur, créateur, HRA partenaire) |
 | `../../scripts/garanties/contrats-types-to-pdf.py` | Convertisseur batch des 3 contrats .docx → .pdf imprimables prêts à signer |
+| `../../scripts/garanties/build-cgv-bons-mentions.js` | Générateur Node.js des CGV, bon de commande HRA, mentions légales |
+| `../../scripts/garanties/cgv-bons-mentions-to-pdf.py` | Convertisseur batch CGV/bon/mentions .docx → .pdf imprimables |
 
 ## Régénération
 
