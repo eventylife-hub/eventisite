@@ -50,6 +50,13 @@
 | Fichier | Description |
 |---------|-------------|
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
+| `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
+
+### Documents juridiques corporate
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Statuts-SAS.docx` / `.pdf` | Statuts SAS Eventy Life version standalone (15 KB · 4 pages) — 22 articles complets : forme, dénomination, objet social tourisme, siège, durée 99 ans, apports 3 000 €, capital, cession agrément Président, Présidence ad nutum, Direction Générale, **clause statutaire de réserve volontaire 5 % CA risques tourisme**, décisions collectives, quorum/majorités, droit d'information, exercice social, comptes annuels, affectation du résultat, commissaire aux comptes, dissolution, droit applicable |
+| `Eventy-Life-Pacte-Associes-Seed.docx` / `.pdf` | Modèle pacte d'associés type pour la levée Seed (14 KB · 3 pages) — 12 articles : parties, objet, valorisation pré-money 5 M€, gouvernance (comité d'investissement trimestriel, droit d'information renforcé), **9 décisions soumises à droit de veto** (modification objet, ouverture capital, cession actifs > 25 %, endettement > 500 K€, etc.), inaliénabilité Fondateur 36 mois, droit de préemption, tag-along 25 %, drag-along sur offre 5×, anti-dilution weighted average, liquidation préférence 1× non-participating, engagement Fondateur (plein temps, non-concurrence) |
 
 ### Documents voyageur (RGPD, cookies, information précontractuelle)
 | Fichier | Description |
@@ -98,6 +105,8 @@
 | `../../scripts/garanties/build-pitch-deck.js` | Générateur Node.js du pitch deck investisseurs (pptxgenjs · 12 slides 16:9) |
 | `../../scripts/garanties/build-manuel-incident.js` | Générateur Node.js du manuel d'incident voyage |
 | `../../scripts/garanties/manuel-incident-to-pdf.py` | Convertisseur manuel d'incident .docx → .pdf imprimable |
+| `../../scripts/garanties/build-juridique-corporate.js` | Générateur Node.js des 3 documents juridiques corporate (statuts SAS, pacte d'associés, onboarding partenaires) |
+| `../../scripts/garanties/juridique-corporate-to-pdf.py` | Convertisseur batch des 3 documents juridiques corporate .docx → .pdf imprimables |
 
 ## Régénération
 
