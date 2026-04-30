@@ -80,6 +80,13 @@
 | `Eventy-Life-Procedure-Signalement.docx` / `.pdf` | Procédure de signalement / lanceurs d'alerte — loi Waserman 2022 (14 KB · 3 pages) — 8 sections : cadre légal, champ d'application (personnes protégées, faits signalables), 3 canaux (interne `alerte@eventylife.fr`, externe Défenseur des droits/CNIL/AFA, divulgation publique en dernier recours), traitement (accusé J+7, instruction J+30, décision J+90), **protections du lanceur d'alerte** (confidentialité, protection contre représailles, aide juridique), sanctions fausses alertes, registre confidentiel, communication |
 | `Eventy-Life-Politique-Accessibilite-PMR.docx` / `.pdf` | Politique d'accessibilité PMR (14 KB · 3 pages) — engagement loi 2005-102 + directive UE 2015/2302 + convention ONU : information précontractuelle (pictogrammes, descriptions détaillées, champ besoin spécifique), mesures opérationnelles (transport, hébergement, restauration, activités, accompagnement humain), animaux d'assistance, tarification sans surcoût, **transparence sur les limites**, 7 indicateurs d'engagement de progrès An 1/An 5, partenariats (label Tourisme et Handicap An 2), recours et médiation |
 
+### Opérations internes, parcours voyageur et programme ambassadeurs
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Manuel-Operations-Quotidiennes.docx` / `.pdf` | Manuel des opérations quotidiennes — référentiel équipe (16 KB · 4 pages) — 10 sections : routines quotidiennes (matin/journée/soir), hebdomadaires (lundi/mercredi/vendredi), mensuelles (clôture, audit qualité, OKR, sauvegardes), procédures réservation (réception, modification, annulation voyageur et Eventy), gestion voyages en cours (J-30 / J-7 / pendant / retour), onboarding HRA/créateur/vendeur, comptabilité quotidienne, conformité (veille, renouvellements, CNIL), 9 indicateurs de pilotage, outils internes |
+| `Eventy-Life-Onboarding-Voyageur.docx` / `.pdf` | Onboarding voyageur pas-à-pas — parcours B2C complet (15 KB · 4 pages) — 8 étapes : découverte (J-180), réservation (J-30), préparation (J-30 / J-15 / J-7), voyage (J0 à J+N), retour (J+1 / J+7 / J+15 / J+30), fidélisation (programme parrainage 50 € · programme Eventy Famille 3 paliers · communauté), 7 indicateurs d'expérience An 1/An 5, **7 promesses émotionnelles Eventy** au voyageur (jamais seul, accueil chaleureux, rien à gérer, droit à l'erreur, respect, information, écoute) |
+| `Eventy-Life-Code-Conduite-Ambassadeurs.docx` / `.pdf` | Code de conduite ambassadeurs / influenceurs (15 KB · 4 pages) — 11 sections conformes loi influenceurs n° 2023-451 + ARPP : 4 niveaux de partenariat (ambassadeur, influenceur partenaire, influenceur invité, personnalité publique), engagements (authenticité, respect marque, confidentialité, lutte pratiques trompeuses), engagements Eventy (kit, formation, avantages, liberté éditoriale), modalités contractuelles par niveau, conflits d'intérêts, 3 niveaux de sanctions, données personnelles et droit à l'image, 6 indicateurs An 1/An 5, procédure de candidature, recours et médiation |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -183,6 +190,8 @@
 | `../../scripts/garanties/charte-audit-tableaubord-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-conformite-ethique.js` | Générateur Node.js des 3 documents (anti-corruption, signalement lanceurs d'alerte, accessibilité PMR) |
 | `../../scripts/garanties/conformite-ethique-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-operations-onboarding-ambassadeurs.js` | Générateur Node.js des 3 documents (manuel opérations quotidiennes, onboarding voyageur, code conduite ambassadeurs) |
+| `../../scripts/garanties/operations-onboarding-ambassadeurs-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
