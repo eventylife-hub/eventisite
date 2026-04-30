@@ -32,6 +32,16 @@
 | `Eventy-Life-Calendrier-J0-J90.docx` / `.pdf` | Calendrier prévisionnel des étapes administratives J0 → J+90 (13 KB · 2 pages) — détail semaine par semaine, scénarios raccourci 45 j et allongé 90 j, acteurs mobilisés |
 | `Eventy-Life-Contrat-Type-Vendeur-Createur.docx` / `.pdf` | Modèle de contrat-cadre vendeur / créateur (15 KB · 3 pages) — 12 articles + bloc signature + 5 annexes au contrat, cohérent avec le modèle de marges (5 % HT vendeur · 3 pts créateur sur HRA) |
 
+### Dossier investisseur (capital-risque)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Dossier-Investisseur.docx` / `.pdf` | Dossier de présentation aux investisseurs Seed et Série A (27 KB · 15 pages) — exec summary, marché, modèle, projections 5 ans, valorisation pré-money 4-6 M€, levée de fonds, risques, équipe |
+
+### Dossier subventions publiques
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Dossier-Subventions-Publiques.docx` / `.pdf` | Cartographie des dispositifs publics ciblés (27 KB · 17 pages) — Bpifrance (BFTE, FTT, AFI, ADI, Prêt Amorçage, Garantie Création, i-Lab/i-Nov), FEDER 2021-2027, dispositifs régionaux, tourisme (Plan Destination France, Banque des Territoires), statut JEI, CIR/CII, stratégie de candidature |
+
 ### Documents complémentaires
 | Fichier | Description |
 |---------|-------------|
@@ -48,6 +58,10 @@
 | `../../scripts/garanties/courriers-to-pdf.py` | Convertisseur courriers .docx → .pdf imprimable à signer |
 | `../../scripts/garanties/build-annexes-complementaires.js` | Générateur Node.js des 3 annexes complémentaires (checklist, calendrier, contrat type) |
 | `../../scripts/garanties/annexes-to-pdf.py` | Convertisseur batch des 3 annexes .docx → .pdf imprimables |
+| `../../scripts/garanties/build-dossier-investisseur.js` | Générateur Node.js du dossier investisseur consolidé |
+| `../../scripts/garanties/investisseur-to-pdf.py` | Convertisseur dossier investisseur .docx → .pdf imprimable |
+| `../../scripts/garanties/build-dossier-subventions.js` | Générateur Node.js du dossier subventions publiques |
+| `../../scripts/garanties/subventions-to-pdf.py` | Convertisseur dossier subventions .docx → .pdf imprimable |
 
 ## Régénération
 

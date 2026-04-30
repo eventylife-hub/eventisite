@@ -579,7 +579,7 @@ function partie6Levee() {
     Numbered("CA An 1 ≈ 18-20 M€ (vs 16 M€ scénario sans levée), résultat net 400-500 K€."),
     Numbered("Préparation Série A à 6-9 mois post-Seed."),
 
-    H2("6.2. Série A — An 2 An 2026/2027"),
+    H2("6.2. Série A — An 2 (2027/2028)"),
     makeTable({
       widths: [3500, 5860],
       header: ["Paramètre", "Valeur cible"],
@@ -588,7 +588,7 @@ function partie6Levee() {
         ["Valorisation pré-money cible", "12 — 20 M€"],
         ["Dilution cumulée fondateur (Seed + Série A)", "≈ 12-18 %"],
         ["Profil investisseurs cibles", "Fonds early-stage tourisme + capital-risque français"],
-        ["Calendrier", "An 2 An 2026/2027"],
+        ["Calendrier", "An 2 (2027/2028)"],
       ],
     }),
 
