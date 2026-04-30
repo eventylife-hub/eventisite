@@ -2274,3 +2274,548 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 - P0.11 (lecture `cancellationPolicy` créateur) — barème ignoré
 - P0.12 (Pack Sérénité override) — promesse CGV non tenue
 - P0.16 (cession billet L.211-11) — obligation Code du tourisme
+
+---
+
+# 🔄 ADDENDUM 4 — Audit infrastructure transverse 2026-04-30 (sessions 5)
+
+> Audit des couches transverses critiques pour MVP :
+> 30. Module email + templates + outbox (Brevo)
+> 31. NotificationsGateway WebSocket
+> 32. Portail HRA Maisons (vue partenaire)
+> 33. Page édition voyage `[id]/edit/page.tsx`
+> 34. Workflow admin review (approuver / rejeter Phase 1 / Phase 2)
+> 35. Module documents (upload, signature)
+>
+> **Aucune ligne de code modifiée.**
+
+---
+
+## 30. MODULE EMAIL + TEMPLATES + OUTBOX
+
+### 30.1 Architecture
+
+**Fichiers** :
+- `backend/src/modules/email/email.service.ts:795 lignes` — service principal (queue + send)
+- `backend/src/modules/email/email-templates.service.ts:1654 lignes` — registre 34 templates
+- `backend/src/modules/email/email.module.ts:25 lignes`
+- Tests : 1334 + 440 lignes spec
+
+✅ **EXCELLENT** :
+- Provider : **Brevo** (Sendinblue) via `BREVO_API_URL` (l.33)
+- Pattern **Outbox** : tous les emails passent par `prisma.emailOutbox` (l.104) — résilient aux pannes Brevo
+- `queueEmail(to, subject, templateId, variables, idempotencyKey?)` (l.64)
+- **Idempotency** : dédup par `to + templateId + subject` (l.87-101)
+- **Sécurité** :
+  - Validation email RFC 5322 + anti `\n\r` (l.130-133, anti email-injection)
+  - `sanitizeForEmailHeader()`, `sanitizeForEmailTemplate()` (l.79-85)
+  - `escapeHtml()` sur toutes les variables utilisateur (templates l.82-90)
+  - **Mask email dans logs** (RGPD, l.117 `maskEmail()`)
+- **Retry mécanism** : `stuckReset` + `claimResult` + `retryCount` (l.174, 213, 224)
+- **Statut** : `OutboxStatus.PENDING` → claimed → succeeded/failed
+
+### 30.2 Catalogue des **34 templates** existants
+
+**Fichier** : `email-templates.service.ts:32-67` (`registerTemplates()`)
+
+| Catégorie | Templates |
+|-----------|-----------|
+| **Auth** (4) | welcome, email-verification, password-reset, password-changed |
+| **Booking** (3) | booking-confirmation, booking-reminder, booking-canceled |
+| **Cart / abandonment** (1) | abandoned-cart |
+| **Paiements** (5) | payment-received, payment-invite, payment-reminder, payment-failed, payment-refunded |
+| **Hold** (1) | hold-expiring |
+| **Pro / créateur** (3) | pro-welcome, pro-approved, pro-rejected |
+| **Documents** (2) | document-reminder, document-ready |
+| **Support** (2) | support-ticket-created, support-ticket-resolved |
+| **Voyage** (2) | travel-published, voyage-no-go |
+| **Admin** (3) | admin-dispute-alert, admin-monitoring-alert, admin-daily-report |
+| **Départure reminders** (5) | departure-reminder-j30, j15, j7, j3, j1 |
+| **Post-voyage** (2) | review-request, credit-issued |
+| **Comptable** (1) | comptable-monthly-export |
+
+### 30.3 ❌ Templates manquants pour le flow création voyage
+
+| Manque | Impact | Priorité |
+|--------|--------|----------|
+| `hra-included-in-trip` | HRA inclus dans voyage en préparation (cœur du flow âme Eventy) | P0 |
+| `hra-availability-request` | Demande dispo HRA auto-générée par SymphonieHRACommunication | P0 |
+| `hra-confirmation` | HRA confirme participation au voyage | P0 |
+| `team-invite-magic-link` | Magic link pour inviter membres équipe sans compte préexistant | P0 |
+| `phase1-approved` / `phase2-approved` | Confirmation admin a validé la phase | P0 |
+| `phase1-changes-requested` / `phase2-changes-requested` | Admin demande corrections au créateur | P0 |
+| `essential-change-consent` | Consentement client modif essentielle (Art. L.211-13) | P0 légal |
+| `voyage-modified-minor` | Notification client modif mineure | P1 |
+| `ticket-transfer-request` / `ticket-transfer-accepted` | Cession billet (L.211-11) | P0 légal |
+| `manifest-j7` | Manifeste J-7 envoyé HRA + équipe | P1 |
+
+→ Sur **34 templates existants**, **10 critiques manquent** spécifiquement pour le wizard de création.
+
+### 30.4 Synthèse email
+
+| Aspect | État |
+|--------|------|
+| Provider | ✅ Brevo (Sendinblue) |
+| Pattern Outbox + idempotency | ✅ Robuste |
+| Sécurité (RFC, sanitize, escapeHtml, maskEmail RGPD) | ✅ Excellent |
+| Retry / claim / status | ✅ |
+| Tests | ✅ 1334 lignes spec templates + 440 service |
+| Catalogue templates | ✅ 34 templates riches |
+| **Templates pour wizard création** | ❌ **10 manquants** |
+
+→ **Verdict** : zone **70% MVP-ready** pour la base, mais **30% pour le wizard création**. Infrastructure prête, contenu à compléter.
+
+---
+
+## 31. NOTIFICATIONS GATEWAY WEBSOCKET
+
+### 31.1 Architecture
+
+**Fichiers** :
+- `notifications.gateway.ts:284 lignes` — Socket.IO + JWT
+- `notifications.service.ts:456 lignes`
+- `notification-events.service.ts:446 lignes` — événements métier
+- `notification-dispatcher.service.ts` (dispatcher)
+- `notification-digest.service.ts` (digest)
+- `notifications.controller.ts:204 lignes`
+- Tests : 502 (gateway) + 553 (service) + 935 (controller) + 254 (events) lignes spec
+
+✅ **EXCELLENT** :
+- WebSocket Socket.IO sur namespace `/notifications` (l.46)
+- **JWT auth** sur connect (`JWT_ACCESS_SECRET`, l.61)
+- **Fail-fast** : throw au démarrage si secret manquant (l.62-64)
+- `userConnections` Map<userId, Set<socketIds>> → multi-device support
+- **CORS validation** dynamique : `validateFrontendUrl()` valide protocole http/https + fallback prod/dev (l.73-90)
+- Logs sécurité : warn si protocole invalide
+
+### 31.2 Événements métier déjà câblés
+
+**Fichier** : `notification-events.service.ts`
+
+| Méthode | Ligne | Cas d'usage |
+|---------|-------|-------------|
+| `notifyNewFollower` | 43 | ✅ Social |
+| `notifyTeamInvite` | 78 | ✅ Cf. P0.20 partiellement résolu (utilisé dans `pro-travels.controller.ts:564`) |
+| `notifyTeamRemoval` | 111 | ✅ |
+| `notifyBookingStatusChange` | 146 | ✅ |
+| `notifyBookingConfirmed` | 182 | ✅ |
+| `notifyPaymentReceived` | 219 | ✅ |
+| `notifyProPaymentReceived` | 253 | ✅ |
+| `notifyTravelStatusChange` | 294 | ✅ Backend bouge → notif Pro |
+| `notifyDocumentStatusChange` | 333 | ✅ |
+| `notifyTicketReply` | 374 | ✅ Support |
+
+### 31.3 ❌ Événements manquants pour le flow création voyage
+
+| Manque | Impact | Priorité |
+|--------|--------|----------|
+| `notifyHraIncluded(voyageId, hraPartnerId)` | Notif HRA quand inclus dans voyage en prépa | **P0** |
+| `notifyHraConfirmed(...)` | HRA accepte la mission | P0 |
+| `notifyEssentialChange(travelId, change)` | Modif essentielle voyage publié → consentement client | **P0 légal** |
+| `notifyTravelersOfChange(travelId, type)` | Notif clients réservés (modif mineure ou essentielle) | P0 légal |
+| `notifyTicketTransferRequest(roomBookingId)` | Demande cession billet (L.211-11) | **P0 légal** |
+| `notifyPhase1Approved` / `notifyPhase1ChangesRequested` | Workflow admin review | P0 |
+| `notifyPhase2Approved` / `notifyPhase2ChangesRequested` | Idem | P0 |
+| `notifyBalanceDue` | Relance solde (J-30/J-7) | P1 |
+| `notifyManifestJ7Ready` | Manifeste J-7 prêt | P1 |
+
+### 31.4 Synthèse notifications
+
+| Aspect | État |
+|--------|------|
+| Gateway WebSocket Socket.IO | ✅ Production-ready |
+| JWT auth + fail-fast secret | ✅ |
+| CORS validation dynamique | ✅ |
+| Multi-device (userConnections Map) | ✅ |
+| Tests gateway / service / events | ✅ 2244 lignes spec |
+| Événements existants | ✅ 10 événements |
+| Couverture flow création voyage | ❌ ~9 événements critiques manquent |
+| Dispatcher + Digest services | ✅ |
+
+→ **Verdict** : zone **75% MVP-ready** pour l'infra, **30% pour le wizard création**. Squelette excellent, contenu à compléter.
+
+---
+
+## 32. PORTAIL HRA MAISONS (vue partenaire)
+
+### 32.1 Volume
+
+**Dossier** : `frontend/app/(maisons)/maisons/`
+
+- **40+ pages** (selon `find page.tsx` × profondeur)
+- Total : **16 715 lignes** de pages `page.tsx` agrégées
+- Sous-dossiers métiers : activités (planning, matériel), analytics, bracelets, championnats (création, import, [id]), clients, comptage, configuration, connexion-pro, coordination, créations, dashboard, décoration, documents, énergie, équipe, établissement, finance, gamification, hébergement, image-souvenirs, inscription, notifications, paiements, partager, réservations, restauration, revenus, rooming, sécurité, services, support, transport, vendre-3min, vente-catalogue
+
+### 32.2 ⚠️ 6 pages "vides" (2 lignes seulement) — squelette pas implémenté
+
+```
+documents/page.tsx           → 2 lignes (titre seul)
+etablissement/page.tsx        → 2 lignes
+reservations/page.tsx         → 2 lignes ❌ critique flow voyage
+revenus/page.tsx              → 2 lignes
+services/page.tsx             → 2 lignes
+support/page.tsx              → 2 lignes
+```
+
+**🔥 `reservations/page.tsx` est VIDE** alors que c'est la page **principale** où le HRA devrait voir tous les voyages où sa maison est incluse.
+
+→ Le détail `reservations/[id]/page.tsx` fait **588 lignes** : la page existe mais inaccessible depuis une liste !
+
+### 32.3 Dashboard HRA — design présent, données mock
+
+**Fichier** : `frontend/app/(maisons)/maisons/dashboard/page.tsx:50-60`
+
+```ts
+// Mock data
+{ voyage: 'Algarve Farniente Weekend', createur: 'Hélène Dupont', checkIn: '27 avr', pax: 28, nuits: 5, statut: 'EN_PREPARATION', progress: 75 },
+{ voyage: 'Porto & Algarve Prestige', createur: 'Marc Fontaine', checkIn: '3 mai', pax: 22, nuits: 4, statut: 'ACCEPTEE', progress: 40 },
+```
+
+✅ **BON** :
+- Statuts métier cohérents : `EN_PREPARATION`, `ACCEPTEE`, `EN_ATTENTE`
+- Progress % par voyage
+- Liste des arrivées prochaines (créateur, pax, nuits, accompagnateur)
+- Mention Stripe Connect : *"Versements Stripe Connect · Après commission Eventy 18%"* (l.182)
+
+❌ **MAUVAIS** :
+- Toutes les données sont **hardcodées** dans le fichier (l.50-60)
+- Aucun appel API : `grep "apiClient\|fetch" maisons/dashboard/` → 0
+- Aucun lien avec backend `Travel`, `BookingGroup`, `HotelBlock`
+
+### 32.4 Pages critiques pour MVP — état réel
+
+| Page HRA | Lignes | État réel |
+|----------|--------|-----------|
+| `dashboard/` | ~ | ✅ Design riche, ❌ mock data |
+| `reservations/` (liste) | 2 | ❌ **Vide** |
+| `reservations/[id]/` (détail) | 588 | ✅ Existe mais orphelin |
+| `notifications/` | ? | À auditer |
+| `paiements/` | 646 | ✅ Existe |
+| `revenus/` | 2 | ❌ Vide |
+| `documents/` | 2 | ❌ Vide |
+| `etablissement/` | 2 | ❌ Vide (config maison !) |
+| `coordination/` | ? | À auditer |
+| `equipe/` | ? | À auditer |
+
+### 32.5 Synthèse portail HRA
+
+| Aspect | État |
+|--------|------|
+| Volume code total | ⚠️ 16 715 lignes |
+| Architecture portail dédié | ✅ Existe |
+| Dashboard maison | ⚠️ Design OK, données mock |
+| Page liste réservations (entrée principale) | ❌ **VIDE — 2 lignes** |
+| Page détail réservation | ✅ 588 lignes existent |
+| 6 pages critiques squelette vide | ❌ |
+| Branchement backend (HotelBlock, BookingGroup) | ❌ Aucun |
+| Notification HRA inclus dans voyage | ❌ Pas branché |
+| Workflow accept/refuse | ❌ |
+
+→ **Verdict** : zone **25% MVP-ready**. Architecture du portail solide, mais **les pages clés sont vides ou mockées**. Le HRA partenaire **ne peut rien voir** des vrais voyages où sa maison est incluse.
+
+---
+
+## 33. PAGE ÉDITION VOYAGE `/pro/voyages/[id]/edit/page.tsx`
+
+### 33.1 Architecture
+
+**Fichier** : `frontend/app/(pro)/pro/voyages/[id]/edit/page.tsx:553 lignes`
+
+✅ **BON** :
+- Réutilise les composants du wizard `nouveau/components/Etape*` (DRY OK)
+- Header explicite : *"Plus de duplication : on importe les mêmes composants que le wizard de création"* (l.10-11)
+
+### 33.2 ❌ CRITIQUE — Seulement 7 étapes sur 17
+
+**Imports détectés** :
+```ts
+import EtapeInfo from '../../nouveau/components/EtapeInfo';
+import EtapeAccommodation from '../../nouveau/components/EtapeAccommodation';
+import EtapeProgram from '../../nouveau/components/EtapeProgram';
+import EtapePhotos from '../../nouveau/components/EtapePhotos';   // ⚠️ DEPRECATED
+import EtapeBusStops from '../../nouveau/components/EtapeBusStops';
+import EtapePricing from '../../nouveau/components/EtapePricing';
+import EtapeSummary from '../../nouveau/components/EtapeSummary';
+```
+
+**WIZARD_STEPS** (l.22-30) :
+1. Informations
+2. Hébergement
+3. Programme
+4. Photos
+5. Transport
+6. Tarification
+7. Récapitulatif
+
+❌ **MANQUES par rapport au wizard de création** (10 étapes absentes !) :
+- `EtapeMedias` (✅ vrai composant 1137 lignes) — **remplacé à tort par EtapePhotos deprecated** (121 lignes orphelines)
+- `EtapeBusSurPlace` (2549 lignes — bus sur place destination)
+- `EtapeOccurrences` (1851 lignes — départs multi-dates)
+- `EtapeActivites` (1029 lignes)
+- `EtapeRestoration` (1844 lignes)
+- `EtapeMarketingVoyage` (607 lignes)
+- `EtapeFournisseurs` (957 lignes — devis transport)
+- `EtapeEquipe` (815 lignes)
+- `EtapeSecurite` (921 lignes)
+- `EtapePartition` (2282 lignes — timeline DAW)
+
+→ **Conséquences** :
+1. 🔥 Si créateur veut modifier ses HRA restaurants/activités, son équipe terrain, sa fiche sécurité → **impossible** depuis `/edit`
+2. 🔥 Le composant `EtapePhotos` deprecated est utilisé alors qu'il est vide — l'édition photos ne fonctionne pas
+3. 🔥 La symétrie création/édition est cassée : le créateur peut renseigner 17 sections à la création mais n'en éditer que 6
+
+### 33.3 Synthèse édition
+
+| Aspect | État |
+|--------|------|
+| Architecture (réutilisation composants) | ✅ |
+| Volume | ✅ 553 lignes |
+| Couverture étapes | ❌ **7/17** |
+| `EtapePhotos` deprecated utilisé | ❌ Bug |
+| Restriction édition selon statut | ❌ (cf. addendum 1 §11.3) |
+| `EMPTY_FORM_DATA` en dur | ⚠️ |
+
+→ **Verdict** : zone **35% MVP-ready**. Page existe mais sous-couvre la création. **P0** : aligner.
+
+---
+
+## 34. WORKFLOW ADMIN REVIEW (Phase 1 / Phase 2)
+
+### 34.1 Endpoints
+
+**Fichier** : `backend/src/modules/admin/admin.controller.ts`
+
+✅ **BON — Endpoints présents** :
+- `GET /admin/travels` (l.265) — liste tous voyages
+- `GET /admin/travels/pending` (l.301) — voyages en attente
+- `POST /admin/travels/:id/approve-p1` (l.313) — approuve Phase 1
+- `POST /admin/travels/:id/approve-p2` (l.330) — approuve Phase 2
+- `POST /admin/travels/:id/reject` (l.347) — rejette voyage avec `RejectReasonDto`
+- `PATCH /admin/travels/:id` (l.1789) — édit admin
+- `PATCH /admin/travels/:id/status` (l.1829) — change statut admin
+- `POST /admin/travels` (l.1897) — création admin
+
+✅ **RBAC fin** :
+- `@AdminRoles(AdminRole.OPS_VOYAGE_ADMIN)` (l.314, 331, 348) — rôle dédié
+- Différent du wizard standard (`@Roles('PRO', 'ADMIN')`) → segmentation cohérente
+- `@RateLimit(RateLimitProfile.ADMIN)` partout
+
+### 34.2 ❌ Manques
+
+| Manque | Impact |
+|--------|--------|
+| **Notification créateur** quand approve-p1 / approve-p2 | Créateur ne sait pas que sa phase est validée → check manuel |
+| **Notification créateur** quand reject | Créateur ne sait pas, recommence |
+| Statut `CHANGES_REQUESTED` après reject (avec `dto.reason`) — à vérifier que ça remet en édition | Workflow incomplet |
+| Frontend admin pour valider/rejeter | Pas vu dans l'audit (à creuser) |
+| Endpoint `request-changes` distinct de `reject` | Granularité fine manquante |
+| Re-soumission après changes-requested | Workflow utilisateur peu clair |
+| Audit trail des décisions admin | Cherche `AuditLog` → présent mais pas vérifié dans ce flow |
+
+### 34.3 Synthèse admin review
+
+| Aspect | État |
+|--------|------|
+| Endpoints approve-p1 / approve-p2 / reject | ✅ Existent |
+| RBAC `OPS_VOYAGE_ADMIN` | ✅ Dédié |
+| Rate-limit ADMIN profile | ✅ |
+| Notification créateur post-décision | ❌ |
+| `request-changes` distinct de `reject` | ❌ |
+| Frontend admin validateur | ❓ À auditer |
+| Tests e2e workflow complet | ❓ |
+
+→ **Verdict** : zone **55% MVP-ready**. Backend prêt, notifications créateur + frontend admin manquants.
+
+---
+
+## 35. MODULE DOCUMENTS (upload, signature)
+
+### 35.1 Architecture
+
+**Dossier** : `backend/src/modules/documents/`
+
+- `documents.controller.ts:200 lignes` — 8 endpoints
+- `documents.service.ts:546 lignes`
+- `legal-travel-documents.service.ts:235 lignes` — **STUBS** (cf. addendum 1 §9.7)
+- `pdf-generator.service.ts:346 lignes`
+- Tests : 1486 + 989 lignes spec
+
+✅ **BON — Endpoints** :
+- `GET /documents/pro` (l.68) — liste docs pro
+- `POST /documents/pro/upload` (l.78) — upload pro
+- `GET /documents/client` (l.117) — docs client
+- `GET /documents/:id/download` (l.126) — télécharger
+- `DELETE /documents/:id` (l.145)
+- `POST /documents/:id/sign` (l.161) — **signature électronique**
+- `GET /documents/:id/signature` (l.179) — preuve signature
+- `GET /documents/:id/signature-history` (l.190)
+
+### 35.2 Types de documents
+
+**Schéma Prisma** : `enum DocumentType` (l.770-777)
+```
+CONTRAT
+PIECE_IDENTITE
+KBIS
+CONFIRMATION_RESERVATION
+FACTURE
+DOCUMENT_VOYAGE
+```
+
+**Statuts** : `PENDING`, `CONFIRMED`, `REJECTED`
+
+**Templates contrats** : `enum ContractTemplateType` (l.785-792)
+```
+PRESTATAIRE_INDEPENDANT
+DECLARATION_NON_SALARIAT
+CHARTE_PRESTATAIRE
+VENDEUR_INDEPENDANT
+RGPD_STATUS
+IMAGE_RIGHTS
+```
+
+### 35.3 ❌ Types manquants pour le wizard création voyage
+
+| Type manquant | Impact |
+|---------------|--------|
+| `ROOMING_LIST` | Liste chambres + occupants envoyée à HRA hôtel |
+| `ALLERGIES_LIST` | Allergies/régimes envoyés à HRA restaurant |
+| `BRIEFING_DRIVER` | Briefing chauffeur (consignes, pauses, urgences) |
+| `BRIEFING_GUIDE` | Briefing guide/animateur |
+| `MANIFEST_J7` | Manifeste J-7 (passagers, médical, urgences) |
+| `FICHE_PRECONTRACTUELLE_UE` | Obligation **directive UE 2015/2302** (Art. L.211-8) |
+| `CONTRAT_VOYAGE` | Contrat voyage Art. L.211-9 |
+| `ATTESTATION_ASSURANCE` | Attestation Pack Sérénité Allianz |
+
+### 35.4 LegalTravelDocumentsService — STUBS
+
+**Fichier** : `backend/src/modules/documents/legal-travel-documents.service.ts:235 lignes`
+
+> Header : *"STATUT : STUBS — Ces méthodes retournent des templates vides à implémenter."*
+
+✅ **STRUCTURES définies** :
+- `FichePrecontractuelleData` (interface complète, 27 champs)
+- `ContratVoyageData` (booking, taxes, conditions)
+- `AttestationAssuranceData` (couverture, garanties)
+- `FactureTvaDetailData` (prestations, taxes)
+
+❌ **AUCUNE LOGIQUE** :
+- Méthodes vides
+- Aucune génération PDF
+- Aucun stockage en S3 / blob
+- Aucun lien avec PdfGeneratorService
+
+### 35.5 Synthèse documents
+
+| Aspect | État |
+|--------|------|
+| Module documents | ✅ Solide (200+546+346 = 1092 lignes) |
+| Upload / download | ✅ |
+| Signature électronique | ✅ Présente avec history |
+| PDF generator | ✅ |
+| Tests | ✅ 1486 + 989 lignes spec |
+| Types pour création voyage | ❌ 8 types manquants |
+| Documents légaux UE 2015/2302 | ❌ STUBS uniquement |
+| Branchement avec voyage en préparation | ❌ Pas vu |
+
+→ **Verdict** : zone **45% MVP-ready** pour la base, **0%** pour les documents légaux obligatoires (UE 2015/2302). **P0 légal** : implémenter les 4 documents `LegalTravelDocumentsService`.
+
+---
+
+## 36. NOUVEAUX TODOs PRIORITAIRES (issus addendum 4)
+
+### 🔴 P0 — BLOQUANT MVP / RISQUE LÉGAL
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P0.29 | **Implémenter les 4 documents légaux UE 2015/2302** dans `LegalTravelDocumentsService` (Fiche précontractuelle L.211-8, Contrat voyage L.211-9, Attestation assurance, Facture TVA marge) | XL (5-7j) |
+| P0.30 | **Créer 10 templates email manquants** : hra-included-in-trip, hra-availability-request, hra-confirmation, team-invite-magic-link, phase1-approved/changes-requested, phase2-approved/changes-requested, essential-change-consent, ticket-transfer-request | L (3j) |
+| P0.31 | **Créer 9 événements `notification-events` manquants** : notifyHraIncluded, notifyHraConfirmed, notifyEssentialChange, notifyTravelersOfChange, notifyTicketTransferRequest, notifyPhase1Approved/ChangesRequested, notifyPhase2Approved/ChangesRequested | M (2j) |
+| P0.32 | **Implémenter `reservations/page.tsx` HRA** (page liste vide actuellement — entrée principale du portail !) | M (2j) |
+| P0.33 | **Aligner page édition `[id]/edit/page.tsx`** avec le wizard standard : importer les 17 étapes (pas 7), retirer EtapePhotos deprecated, utiliser EtapeMedias | M (2j) |
+| P0.34 | **Notification créateur post-décision admin** : approve-p1/p2 + reject doivent déclencher email + WebSocket | S (1j) |
+| P0.35 | **Brancher dashboard HRA aux vraies données backend** (HotelBlock, RestaurantPartner, Travel) au lieu du mock | M (2j) |
+| P0.36 | **5 pages HRA squelettes** (etablissement, services, revenus, documents, support) à implémenter | L (3j) |
+| P0.37 | **Ajouter 8 types de documents** dans `enum DocumentType` (ROOMING_LIST, ALLERGIES_LIST, BRIEFING_DRIVER/GUIDE, MANIFEST_J7, FICHE_PRECONTRACTUELLE_UE, CONTRAT_VOYAGE, ATTESTATION_ASSURANCE) + migration Prisma | M (1.5j) |
+
+### 🟠 P1 — IMPORTANT
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P1.33 | Endpoint `request-changes` distinct de `reject` (granularité fine) | S (1j) |
+| P1.34 | Frontend admin validateur Phase 1 / Phase 2 (UI dédiée) | L (3j) |
+| P1.35 | Tests E2E workflow complet admin review | M (2j) |
+| P1.36 | Génération auto manifeste J-7 (PDF + envoi HRA + équipe) | M (2j) |
+| P1.37 | Auto-création thread messagerie créateur ↔ HRA quand HRA inclus | M (1.5j) |
+| P1.38 | Workflow accept/refuse HRA exposé au partenaire dans portail Maisons | L (3j) |
+| P1.39 | Audit a11y (ARIA labels, navigation clavier) sur les 17 Etape* + portail HRA | M (2j) |
+| P1.40 | Templates departure-reminder branchés à un cron J-30/J-15/J-7/J-3/J-1 | M (1.5j) |
+
+### 🟡 P2 — POST-MVP
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P2.26 | Notification digest hebdo HRA (résumé voyages à venir) | M (1.5j) |
+| P2.27 | Mobile push notifications (Capacitor / FCM) en complément WebSocket | L (3j) |
+| P2.28 | Templates email i18n (anglais, espagnol, portugais) | L (3j) |
+
+### 📊 Mise à jour tableau récap MVP global
+
+| Bloc | Avant addendum 4 | Après audit complémentaire |
+|------|------------------|----------------------------|
+| Module email + outbox | non audité | **70% MVP** infra / **30%** templates flow création |
+| NotificationsGateway | partiellement | **75% MVP** infra / **30%** événements flow création |
+| Portail HRA Maisons | partiellement | **25% MVP** (architecture OK, pages clés vides) |
+| Page édition voyage | non audité | **35% MVP** (7/17 étapes) |
+| Workflow admin review | partiellement | **55% MVP** |
+| Module documents légaux | partiellement | **45% MVP** infra / **0%** UE 2015/2302 |
+
+**Total ajouté à la roadmap addendum 4** : ~21 jours dev (P0.29-37) + ~16 jours (P1.33-40) + ~7,5 jours (P2.26-28).
+
+**Roadmap globale cumulée (5 sessions audit)** :
+- **P0** (P0.1 → P0.37) : **~101 jours**
+- **P1** (P1.1 → P1.40) : **~73 jours**
+- **P2** (P2.1 → P2.28) : **~74 jours**
+- → ≈ **248 jours dev solo** / **≈ 124 jours en parallèle (2-3 devs)** pour 100% MVP
+
+---
+
+## 37. RÉFÉRENCES ADDENDUM 4
+
+- `backend/src/modules/email/email.service.ts:33, 60-125, 174, 213, 224` (Brevo + Outbox + idempotency)
+- `backend/src/modules/email/email-templates.service.ts:32-67` (34 templates)
+- `backend/src/modules/notifications/notifications.gateway.ts:1-90` (WebSocket Socket.IO + JWT)
+- `backend/src/modules/notifications/notification-events.service.ts:43-374` (10 événements)
+- `frontend/app/(maisons)/maisons/dashboard/page.tsx:50-60, 182` (mock data)
+- `frontend/app/(maisons)/maisons/reservations/page.tsx` (2 lignes — vide)
+- `frontend/app/(maisons)/maisons/reservations/[id]/page.tsx` (588 lignes — orphelin)
+- `frontend/app/(pro)/pro/voyages/[id]/edit/page.tsx:1-553` (7/17 étapes)
+- `backend/src/modules/admin/admin.controller.ts:313-358` (approve-p1/p2/reject)
+- `backend/src/modules/documents/documents.controller.ts:68-200` (8 endpoints)
+- `backend/src/modules/documents/legal-travel-documents.service.ts:1-235` (STUBS)
+- `backend/prisma/schema.prisma:770-792` (DocumentType + ContractTemplateType)
+
+---
+
+**Audit terminé. Aucune ligne de code modifiée.**
+
+**Découverte clé addendum 4** : l'**infrastructure transverse est solide** (Brevo + Outbox + idempotency, WebSocket + JWT, 34 templates email, signature électronique, audit log) — Eventy a investi proprement les fondations. **MAIS** :
+- 10 templates email **critiques** manquent pour le flow création voyage
+- 9 événements WebSocket **critiques** manquent
+- Le portail HRA a un dashboard riche mais sa **page liste réservations est vide**
+- La page `/edit/page.tsx` ne couvre que **7 étapes sur 17**
+- Les **4 documents légaux UE 2015/2302** sont des **STUBS**
+
+**Top 5 P0 cumulés sur 5 sessions audit** (priorité absolue) :
+1. **P0.24** — étendre `CreateTravelDtoSchema` à tous les champs `TravelFormData` (sinon wizard cosmétique)
+2. **P0.29** — implémenter les 4 documents légaux UE 2015/2302 (sinon Eventy en infraction directive UE)
+3. **P0.30 + P0.31** — créer les 10 templates email + 9 événements notif manquants
+4. **P0.18** — brancher SymphonieValidationWorkflow au backend
+5. **P0.10** — refund auto NO_GO (clients non remboursés)
+
+**Risque légal cumulé bloquant production** :
+- P0.10 (refund auto NO_GO)
+- P0.11 (lecture cancellationPolicy créateur)
+- P0.12 (Pack Sérénité override)
+- P0.16 (cession billet L.211-11)
+- P0.29 (documents légaux UE 2015/2302)
