@@ -1753,3 +1753,524 @@ Workflow décrit :
 3. **P0.20** (brancher CreatorCatalogPro → DB) — sauve les données du créateur si change de device
 4. **P0.10** (refund auto NO_GO) — bloque les remboursements perdus
 5. **P0.16** (cession billet L.211-11) — obligation légale Code du tourisme
+
+---
+
+# 🔄 ADDENDUM 3 — Audit infrastructure & qualité 2026-04-30 (sessions 4)
+
+> Audit des couches transverses (backend détaillé, sécurité, validation, performance, tests, SEO, onboarding) :
+> 21. Backend `pro-travels` en détail (controller + service + DTOs)
+> 22. Sécurité / RBAC / guards
+> 23. DTOs / validation Zod backend
+> 24. Performance / lazy-loading
+> 25. Tests existants (frontend + backend)
+> 26. SEO fiche publique
+> 27. Onboarding créateur
+>
+> **Aucune ligne de code modifiée.**
+
+---
+
+## 21. BACKEND `pro-travels` — endpoints exhaustifs
+
+### 21.1 Controller — 22 endpoints
+
+**Fichier** : `backend/src/modules/pro/travels/pro-travels.controller.ts:912 lignes`
+
+| # | Méthode | Route | Rôle | Rate-limit profile |
+|---|---------|-------|------|--------------------|
+| 1 | `GET` | `/pro/travels` | Liste voyages du Pro avec filtres (status, search, cursor, take) | (default) |
+| 2 | `POST` | `/pro/travels` | Créer voyage DRAFT | `PAYMENT` |
+| 3 | `GET` | `/pro/travels/:id` | Détail voyage | (default) |
+| 4 | `PATCH` | `/pro/travels/:id` | Update (DRAFT/CHANGES_REQUESTED only) | `SEARCH` |
+| 5 | `POST` | `/pro/travels/:id/submit-p1` | Soumet Phase 1 → PHASE1_REVIEW | `PAYMENT` |
+| 6 | `POST` | `/pro/travels/:id/submit-p2` | Soumet Phase 2 → PHASE2_REVIEW | `PAYMENT` |
+| 7 | `POST` | `/pro/travels/:id/publish` | Publie après QualityGate | `ADMIN_CRITICAL` |
+| 8 | `POST` | `/pro/travels/:id/cancel` | Annule (statut → CANCELED) | (default) |
+| 9 | `POST` | `/pro/travels/:id/quality-gate` | Run quality check | (default) |
+| 10 | `GET` | `/pro/travels/:id/quality-gate` | Last quality check | (default) |
+| 11 | `GET` | `/pro/travels/:id/quality-gate/history` | Historique checks | (default) |
+| 12 | `POST` | `/pro/travels/:id/duplicate` | Dupliquer saison | (default) |
+| 13 | `PATCH` | `/pro/travels/:id/preannounce` | Pré-annonce | (default) |
+| 14 | `GET` | `/pro/travels/:id/stats` | Stats CA/occupancy | (default) |
+| 15 | `GET` | `/pro/travels/:id/team` | Liste équipe | (default) |
+| 16 | `POST` | `/pro/travels/:id/team/invite` | Inviter membre | `SEARCH` |
+| 17 | `PATCH` | `/pro/travels/:id/team/:memberId` | Update membre | `SEARCH` |
+| 18 | `DELETE` | `/pro/travels/:id/team/:memberId` | Retirer membre | (default) |
+| 19 | `GET` | `/pro/travels/:id/bookings` | Liste réservations | (default) |
+| 20 | `GET` | `/pro/travels/:id/rooming` | Rooming list | (default) |
+| 21 | `PUT` | `/pro/travels/:id/rooming/assign` | Assigner chambres | (default) |
+
+✅ **BON** :
+- Couverture endpoint **large** (22 routes pour piloter un voyage)
+- ParseUUIDPipe sur tous les `:id` → blocage IDs malformés
+- @ApiTags, @ApiOperation, @ApiResponse → Swagger auto-généré
+- Rate-limiting par profile (PAYMENT, SEARCH, ADMIN_CRITICAL)
+- Logger NestJS sur toutes les actions sensibles (notif team invite l.569)
+- Vérification ownership systématique : `proProfile.id` vs `travel.proProfileId`
+
+⚠️ **MAUVAIS** :
+- Pas d'endpoint `POST /pro/travels/:id/team/invite` qui crée un compte si l'invité n'existe pas (l.534-536 : *"Utilisateur introuvable — il doit d'abord créer un compte Eventy"*) → friction UX
+- Endpoints quality-gate distinct (run / read / history) → 3 routes pour 1 fonctionnalité, alors qu'on pourrait faire 1 + paramètre
+
+### 21.2 Service — `pro-travels.service.ts:867 lignes`
+
+**Méthodes principales** (extraites du contrôleur) :
+- `createTravel()` — DRAFT initial, génération slug unique (50 candidats batch)
+- `getMyTravels()` — liste avec filtres + pagination cursor-based
+- `getTravelByIdAndPro()` — vérif ownership ForbiddenException
+- `updateTravel()` — refuse si pas DRAFT/CHANGES_REQUESTED
+- `submitPhase1()` / `submitPhase2()` / `publishTravel()` — workflow
+- `cancelTravel()` — bascule CANCELED (sans refund auto, cf. addendum 1 §11.6)
+- `enforceHraCascadeLock()` — admin verrouille la cascade marges → pro ne peut pas bypass
+- `generateUniqueSlug()` — anti-collision avec batch query
+
+✅ **BON** :
+- Génération slug avec batch query (perf) + fallback timestamp (l.176)
+- Vérif ownership systématique (`ForbiddenException` si proProfileId ne matche pas)
+- HRA-Cascade lock (verrouillage admin de la marge) respecté à la création
+- Workflow status machine claire
+
+❌ **CRITIQUE — Persistance partielle** :
+- `createTravel()` (l.103-141) ne persiste que **11 champs basiques** + `marginConfig`/`costConfig` en JSON opaque
+- Tous les autres champs du `TravelFormData` frontend (`depositPercent`, `cancellationPolicy`, `voyageCount`, `voyageConfigs`, `weeklyMealPlan`, `publishedPensionType`, `securitySheet`, `marketingConfig`, `selectedHotelId`, `backupHotelId1/2`, `selectedRestaurantId`, `selectedActivityIds`, `selectedBoutiqueIds`, `routeRestaurantAllerId`, `hraEstimate`, `highlights`, `uniquePoints`, `testimonials`, `tripVideoUrl`, `hostVideoUrl`, etc.) **ne sont JAMAIS persistés via createTravel/updateTravel**
+- Le service appelle `CreateTravelSchema.parse(dto)` (l.104) → schéma INTERNE différent du DTO Zod du contrôleur (double validation, peut-être différentes !) — risque de drift
+
+### 21.3 Synthèse backend pro-travels
+
+| Aspect | État |
+|--------|------|
+| Volume code | ✅ 912 (controller) + 867 (service) lignes |
+| Coverage endpoints | ✅ 22 routes (création + workflow + équipe + rooming + bookings) |
+| Validation Zod (controller) | ✅ Pipe sur 6 endpoints |
+| Vérif ownership | ✅ Systématique |
+| Rate-limiting | ✅ Par profile |
+| Logger | ✅ Présent |
+| **Persistance des champs frontend** | ❌ **Partielle** : ~85% des champs `TravelFormData` ne sont pas persistés |
+| Double validation (controller + service) | ⚠️ 2 schémas Zod, risque drift |
+| Workflow status machine | ✅ DRAFT → SUBMITTED → PHASE1_REVIEW → APPROVED_P1 → PHASE2_REVIEW → APPROVED_P2 → PUBLISHED |
+| Refund auto NO_GO | ❌ (cf. P0.10) |
+
+→ **Verdict** : zone **65% MVP-ready**. Architecture solide, mais persistance trop minimaliste — la vraie richesse du wizard frontend ne survit pas au save.
+
+---
+
+## 22. SÉCURITÉ / RBAC / GUARDS
+
+### 22.1 Guards & décorateurs
+
+**Fichier** : `backend/src/common/guards/roles.guard.ts`, `backend/src/common/decorators/roles.decorator.ts`
+
+✅ **BON** :
+- `JwtAuthGuard` + `RolesGuard` combinés sur `ProTravelsController` (l.64)
+- Décorateur `@Roles('PRO', 'ADMIN')` au niveau controller
+- `RolesGuard` lit les métadonnées via `Reflector`
+- `CurrentUser` decorator pour extraire l'utilisateur authentifié
+- ParseUUIDPipe sur tous les `:id`
+
+⚠️ **MAUVAIS** :
+- `@Roles('PRO', 'ADMIN')` au niveau controller s'applique à TOUS les endpoints, y compris team/invite, quality-gate, cancel — un Pro peut faire tout ça sur **ses** voyages mais aucun lock supplémentaire (ex : `@Roles('ADMIN')` pour cancel ?)
+- Pas de logique fine type "le Pro peut éditer son voyage en DRAFT, l'admin peut éditer n'importe quel statut" — repose uniquement sur la vérif ownership statique
+- Pas vu de guard `@Public()` ni de gestion explicite des routes anonymes
+
+### 22.2 Sécurité métier
+
+**Fichier** : `pro-travels.controller.ts:96-107` (validation enum status), `l.529-533` (select limité)
+
+✅ **BON** :
+- `SECURITY FIX (LOT 166)` : valider enum `TravelStatus` au lieu de cast aveugle (l.97-106)
+- `SECURITY FIX (Sprint 55)` : `select: { id: true }` pour ne jamais charger `passwordHash` ni `twoFactorSecret` lors de la recherche d'un user à inviter (l.531)
+- `SECURITY FIX (LOT 166)` : ne pas exposer le statut interne dans l'erreur d'updateTravel (l.218)
+
+⚠️ **MAUVAIS** :
+- Beaucoup de fixs `SECURITY FIX (LOT 166)`, `Sprint 55`, etc. : trace de bugs sécurité historiques. À auditer plus en profondeur avec un security-review dédié.
+- `pendingModels()` utilisé pour `travelTeamMember` (l.545) → modèle Prisma "pending" (pas dans le schema principal ?) → risque de cohérence
+
+### 22.3 Synthèse RBAC / sécurité
+
+| Aspect | État |
+|--------|------|
+| JwtAuthGuard + RolesGuard | ✅ Globaux sur controller |
+| Vérif ownership (proProfileId) | ✅ Systématique dans le service |
+| ParseUUIDPipe | ✅ Sur tous les `:id` |
+| Rate-limiting par profile | ✅ |
+| Sélections sécurisées (no passwordHash) | ✅ |
+| Validation enums runtime | ✅ |
+| Audit log des actions | ⚠️ Partiel (présent dans cancellation, à étendre) |
+| RBAC fin par action (pas seulement role) | ❌ |
+| Tests sécurité dédiés | ❓ À vérifier |
+
+→ **Verdict** : zone **75% MVP-ready**. Base saine, plusieurs fixs sécurité historiques visibles — bon signe (équipe attentive). Pour audit complet, lancer `/security-review`.
+
+---
+
+## 23. DTOs / VALIDATION ZOD BACKEND
+
+### 23.1 Inventaire DTOs
+
+**Dossier** : `backend/src/modules/pro/travels/dto/`
+
+| Fichier | Lignes | Schéma Zod |
+|---------|--------|-----------|
+| `create-travel.dto.ts` | 36 | `CreateTravelDtoSchema` |
+| `update-travel.dto.ts` | 10 | `UpdateTravelDtoSchema = CreateTravelDtoSchema.partial()` |
+| `duplicate-travel.dto.ts` | 28 | `DuplicateTravelDtoSchema` |
+| `invite-team-member.dto.ts` | 38 | `InviteTeamMemberDtoSchema` |
+| `update-team-member.dto.ts` | 26 | `UpdateTeamMemberDtoSchema` |
+| `assign-room.dto.ts` | 9 | `AssignRoomDtoSchema` |
+| `set-preannounce-date.dto.ts` | 8 | `SetPreannounceDateDtoSchema` |
+| `index.ts` | 7 | export central |
+| **Total** | **162** | 7 DTO Zod |
+
+### 23.2 `CreateTravelDtoSchema` (36 lignes)
+
+**Champs validés** :
+- `title` (5-255 chars, required)
+- `description` (max 10 000 chars, optional)
+- `departureDate`, `returnDate` (z.coerce.date, required)
+- `departureCity`, `destinationCity`, `destinationCountry` (max 255/100 chars, optional)
+- `transportMode` (enum 9 valeurs, required)
+- `capacity` (1-500, required)
+- `category` (enum 8 valeurs, optional)
+- `travelClass` (enum 5 valeurs, optional)
+- `isExclusive` (boolean, optional)
+- `maxGroupSize` (positive int, optional)
+- `marginConfig`, `costConfig` (`JsonObjectSchema` = z.record(z.unknown()), optional)
+
+❌ **CRITIQUE — comparaison avec le frontend `TravelFormData`** :
+
+| Champ frontend | Validé backend ? |
+|----------------|------------------|
+| `title`, `description`, `startDate`, `endDate`, `destination`, `transportMode`, `capacity` | ✅ |
+| `shortDescription`, `voyageCount`, `voyageConfigs[]` | ❌ |
+| `depositPercent`, `cancellationPolicy`, `earlyBird`, `pricingOptions[]` | ❌ |
+| `selectedHotelId`, `backupHotelId1/2`, `selectedRestaurantId`, `backupRestaurantId1/2`, `selectedActivityIds[]`, `selectedBoutiqueIds[]` | ❌ |
+| `mealConfig`, `publishedPensionType`, `publishedPensionDetails`, `weeklyMealPlan` | ❌ |
+| `routeRestaurantAllerId`, `routeRestaurantRetourId` | ❌ |
+| `hraEstimate`, `marginConfig`, `costConfig`, `marketingConfig` | ⚠️ Seulement `marginConfig`+`costConfig` en JSON opaque |
+| `securitySheet`, `securitySheetApproved` | ❌ |
+| `stops[]`, `routes[]`, `occurrences[]`, `busSurPlace` | ❌ |
+| `program[]`, `standaloneActivities[]`, `highlights[]` | ❌ |
+| `team`, `creatorAccompagnator` (équipe terrain) | ❌ (séparé via `/team/invite`) |
+| `rotationPattern`, `rotationCount`, `extraTransportDays` | ❌ |
+| `minimumPassengers`, `minPaxToGo`, `decisionDeadlineDays` | ❌ |
+| `barIncluded`, `gamme`, `selectedAircraftKey` | ❌ |
+| `tripVideoUrl`, `hostVideoUrl`, `uniquePoints`, `testimonials` | ❌ |
+
+→ Sur **~80 champs** majeurs du `TravelFormData`, seulement **~12 sont vraiment validés** par le DTO backend. **85% du wizard ne survit pas au backend**.
+
+### 23.3 Conséquences
+
+🔥 **L'utilisateur David doit savoir que** :
+- Le créateur peut passer 4h dans le wizard, mais **seuls ~12 champs sont sauvegardés**
+- Le reste est soit en `localStorage` Symphonie (perdu si change device), soit dans `marginConfig`/`costConfig` (JSON opaque, pas validé métier — créateur peut envoyer n'importe quoi)
+- Une fois publié, le voyage côté backend a un titre, dates, transport, capacité — c'est tout. La fiche publique ne peut donc pas afficher les infos riches saisies dans le wizard.
+
+### 23.4 Synthèse DTOs / validation
+
+| Aspect | État |
+|--------|------|
+| DTO Zod par endpoint | ✅ 7 schémas |
+| Validation strict via ZodValidationPipe | ✅ |
+| Couverture champs `TravelFormData` | ❌ ~15% (12/80 champs) |
+| `marginConfig` / `costConfig` validés métier | ❌ JSON opaque |
+| Double validation (pipe + service) | ⚠️ Risque drift |
+| Schemas séparés Phase 1 vs Phase 2 | ❌ Pas de DTOs distincts |
+
+→ **Verdict** : zone **20% MVP-ready**. Les DTOs existent mais sont **sous-dimensionnés**. **MVP critique** : étendre les DTOs pour persister tout le `TravelFormData`.
+
+---
+
+## 24. PERFORMANCE / LAZY-LOADING
+
+### 24.1 Mesure du bundle
+
+**Volume total wizard** :
+- Wizard standard (`Etape*` + `assistant/` + page.tsx + types.ts + marginDefaults.ts) : **~32 000 lignes**
+- Symphonie : **~40 654 lignes**
+- **Total : ~72 654 lignes côté frontend**
+
+### 24.2 Lazy-loading
+
+**Test** : `grep "dynamic\(|lazy\(|Suspense|next/dynamic" nouveau/`
+
+→ **2 fichiers** seulement :
+1. `EtapePhotos.tsx` — **deprecated orphelin**, à supprimer
+2. `EtapeMedias.tsx` — **seul composant** réellement lazy-loaded
+
+Donc en pratique : **1 seul fichier sur 70k+ lignes utilise un dynamic import**.
+
+❌ **CRITIQUE PERF** :
+- Tous les composants `Etape*`, `Symphonie*`, `Assistant*` sont chargés en bundle initial
+- Risque : First Contentful Paint dégradé pour le créateur qui ouvre `/pro/voyages/nouveau`
+- Hydratation lourde côté React (chaque composant a des `useState`, `useEffect`, `useMemo`)
+- Mobile / 3G : expérience probablement très lente
+
+### 24.3 Recommandations
+
+✅ **À faire** (P1) :
+- Lazy-load chaque `Etape*` selon l'étape courante du wizard (`React.lazy(() => import('./components/EtapeInfo'))`)
+- Lazy-load tout le dossier `symphonie/` (40k lignes) — seulement chargé si l'utilisateur ouvre le tiroir Assistant
+- Code-split par phase (Phase 1 vs Phase 2)
+- Mesure Lighthouse / Web Vitals avant/après
+
+### 24.4 Synthèse performance
+
+| Aspect | État |
+|--------|------|
+| Lazy-loading composants | ❌ Quasi inexistant (1 fichier) |
+| Code-splitting par étape | ❌ |
+| Lazy-load Symphonie | ❌ Tout chargé d'office |
+| Mesure Lighthouse / Web Vitals | ❓ Non audité |
+| Bundle size estimé | 🔥 Très élevé |
+
+→ **Verdict** : zone **10% MVP-ready**. **Risque UX majeur** sur mobile / connexion lente. À traiter en P1.
+
+---
+
+## 25. TESTS EXISTANTS
+
+### 25.1 Backend
+
+**Dossier** : `backend/test/` (e2e) + `*.spec.ts` colocalisés (unit)
+
+✅ **BON** :
+- E2E nombreux : `admin.e2e-spec.ts`, `auth.e2e-spec.ts`, `booking.e2e-spec.ts`, `bus-stops.e2e-spec.ts`, `cancellation.e2e-spec.ts`, `cancellation-comprehensive.e2e-spec.ts`, `checkout.e2e-spec.ts`, `client.e2e-spec.ts`, `admin-checkout.e2e-spec.ts`, `admin-documents.e2e-spec.ts` (10+ vu)
+- Unit pro-travels : `pro-travels.controller.spec.ts:524 lignes`, `pro-travels.service.spec.ts:1151 lignes`
+- CLAUDE.md mentionne **3 300+ tests passants** côté backend
+- `quality-gate.service.spec.ts` existe
+
+⚠️ **À VÉRIFIER** :
+- Coverage % réel
+- E2E pour le workflow complet (DRAFT → PUBLISHED) ?
+
+### 25.2 Frontend
+
+**Dossier** : `frontend/__tests__/`, `frontend/components/**/__tests__/`
+
+❌ **CRITIQUE** :
+- `grep "EtapeInfo|EtapePricing|TravelFormData|nouveau" frontend/**/*.test.tsx` → **6 fichiers** mais **AUCUN dans le wizard** :
+  - `frontend/__tests__/auth/forgot-password.test.tsx`
+  - `frontend/__tests__/pro/dashboard.test.tsx`
+  - `frontend/components/pro/__tests__/pro-empty-state.test.tsx`
+  - `frontend/components/ui/__tests__/input.test.tsx`
+  - `frontend/components/ui/__tests__/tabs.test.tsx`
+  - `frontend/hooks/__tests__/use-toast.test.tsx`
+- **Aucun test unit pour les 20 composants `Etape*`**
+- **Aucun test unit pour les 80 composants `symphonie/`**
+- **Aucun test pour les 7 composants `assistant/`**
+- **Aucun test e2e Playwright/Cypress** détecté pour le wizard de création
+
+→ **70k+ lignes frontend du wizard sans 1 seul test**.
+
+### 25.3 Synthèse tests
+
+| Aspect | État |
+|--------|------|
+| Tests backend pro-travels | ✅ Solides (1675 lignes spec) |
+| E2E backend module booking/cancellation/checkout | ✅ Présents |
+| Tests frontend wizard standard (Etape*) | ❌ **0 test** |
+| Tests frontend Symphonie | ❌ **0 test** |
+| Tests E2E création voyage end-to-end | ❌ |
+| Couverture totale frontend wizard | 🔥 **0%** |
+
+→ **Verdict** : zone **45% MVP-ready** (backend 90%, frontend 0%). **Risque régression critique** au moindre refactor frontend.
+
+---
+
+## 26. SEO FICHE PUBLIQUE VOYAGE
+
+### 26.1 generateMetadata
+
+**Fichier** : `frontend/app/(public)/voyages/[slug]/layout.tsx:52-64`
+
+```ts
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+  const seo = VOYAGE_SEO[decodedSlug];
+  // ...
+}
+```
+
+⚠️ **MAUVAIS** :
+- Source SEO = `VOYAGE_SEO[decodedSlug]` → **objet hardcodé** par slug
+- Si voyage publié n'est pas dans `VOYAGE_SEO`, fallback sur titre slug-ifié (l.61-64)
+- → SEO **non dynamique** depuis la DB du voyage publié
+
+❌ **MISSING** :
+- Pas de `generateMetadata()` qui lit depuis le backend (titre, description, photo, prix, dates) du voyage
+- Pas de JSON-LD `Schema.org/TravelOffer` ou `TouristTrip` pour Google rich snippets
+- `opengraph-image.tsx` existe (l. dossier) → bon point pour OpenGraph, à valider qu'il génère depuis vrai voyage
+
+### 26.2 Symphonie SEO
+
+**Composant** : `SymphonieFichePropagator.tsx` (vu en grep symphonie)
+**Phase** : "Phase 4 (PROPAGATE) : SEO+JSON-LD" mentionnée dans SymphonieMaster header
+
+✅ **BON** :
+- Module Symphonie dédié SEO+JSON-LD existe en frontend
+
+❌ **MISSING** :
+- Comme tout Symphonie, **localStorage uniquement** → ne touche pas la fiche publique réelle
+- Le SEO réel sur `(public)/voyages/[slug]` ne lit pas le travail de `SymphonieFichePropagator`
+
+### 26.3 Synthèse SEO
+
+| Aspect | État |
+|--------|------|
+| `generateMetadata` sur fiche publique | ⚠️ Existe mais hardcodé `VOYAGE_SEO` |
+| OpenGraph image dynamique | ✅ `opengraph-image.tsx` présent |
+| JSON-LD Schema.org/TouristTrip | ❌ Non vu |
+| Sitemap dynamique des voyages | ❓ À vérifier |
+| robots.txt | ❓ À vérifier |
+| Symphonie SEO branchée à fiche publique | ❌ Travail créateur perdu |
+
+→ **Verdict** : zone **30% MVP-ready**. Base existe, mais le travail SEO du créateur en Symphonie ne se propage pas à la fiche publique.
+
+---
+
+## 27. ONBOARDING CRÉATEUR
+
+### 27.1 Composants Symphonie dédiés
+
+**Fichiers** :
+- `SymphonieFirstSteps.tsx` (Phase 22) — 8 étapes interactives, dédié XP < 50, voyagesCreated ≤ 1
+  - Welcome hero + progression visuelle
+  - Bouton "Charger le voyage type" (pré-remplit Marrakech 4j)
+  - Bouton "Demander un parrain mentor" (auto-match niveau 5+)
+  - Statut mentor assigné
+  - Bouton "Plus tard" pour skip
+- `SymphonieOnboardingTour.tsx` (Phase 11) — Tour guidé end-to-end 5 étapes
+  - 1. Démarrer (titre, dates, destination)
+  - 2. Composer (programme, HRA, activités)
+  - 3. Soumettre à Eventy (validation)
+  - 4. Bracelets auto-commandés
+  - 5. Embarquement (clans + NFC)
+
+✅ **BON** :
+- 2 onboardings complémentaires (débutant + tour général)
+- Logique XP (déclenche FirstSteps si débutant)
+- Templates pré-remplis (voyage type Marrakech 4j)
+- Mentorship intégré
+
+❌ **CRITIQUE** :
+- Comme tout Symphonie : **branché uniquement via le tiroir flottant Assistant**
+- Si le créateur n'ouvre jamais le tiroir → il ne voit JAMAIS l'onboarding
+- Aucun **trigger automatique** au premier login créateur visible
+- État onboarding (terminé / skipped) en localStorage → si change device, on lui refait l'onboarding
+
+### 27.2 Pas d'onboarding "natif" wizard
+
+**Fichier** : `nouveau/page.tsx`
+
+❌ **MISSING** :
+- Pas de modal "Bienvenue dans le wizard ! Voici comment ça marche" au premier accès
+- Pas de tooltip onboarding sur les premières étapes
+- Pas de banner "Charger un template" en gros sur EtapeInfo
+
+### 27.3 Synthèse onboarding
+
+| Aspect | État |
+|--------|------|
+| Composants onboarding | ✅ 2 modules Symphonie complets |
+| Trigger automatique premier login | ❌ Pas vu |
+| Tooltips contextuels wizard standard | ❌ |
+| Templates pré-remplis | ✅ "Voyage type Marrakech 4j" via FirstSteps |
+| Mentorship | ✅ Auto-match niveau 5+ via FirstSteps |
+| Persistance état onboarding | ❌ localStorage seul |
+
+→ **Verdict** : zone **35% MVP-ready**. Bon contenu, mauvaise visibilité.
+
+---
+
+## 28. NOUVEAUX TODOs PRIORITAIRES (issus addendum 3)
+
+### 🔴 P0 — BLOQUANT MVP
+
+| # | Tâche | Fichier(s) | Effort |
+|---|-------|-----------|--------|
+| P0.24 | **Étendre `CreateTravelDtoSchema`** pour persister tous les champs critiques du `TravelFormData` (depositPercent, cancellationPolicy, voyageCount, voyageConfigs, weeklyMealPlan, publishedPensionType, securitySheet, marketingConfig, selectedHotelId, ...) | `dto/create-travel.dto.ts`, schema.prisma migration | XL (5j) |
+| P0.25 | **Lazy-load Symphonie** : tout le dossier `symphonie/` chargé seulement à l'ouverture du tiroir Assistant | `VoyageFlowAssistant.tsx`, dynamic imports | M (2j) |
+| P0.26 | **Lazy-load chaque `Etape*`** selon l'étape courante du wizard | `page.tsx`, dynamic imports | M (2j) |
+| P0.27 | **Tests E2E Playwright** du workflow complet création voyage (DRAFT → PUBLISHED) | nouveau dossier `tests/e2e/` | L (3j) |
+| P0.28 | **Trigger automatique de l'onboarding** au premier accès du créateur à `/pro/voyages/nouveau` | `page.tsx`, hook `useFirstVisit` | S (1j) |
+
+### 🟠 P1 — IMPORTANT
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P1.25 | Tests unit critiques pour les 5 `Etape*` les plus complexes (EtapeBusSurPlace, EtapeOccurrences, EtapePricing, EtapeInfo, EtapeBusStops) | L (3j) |
+| P1.26 | Magic-link invitation team (créer compte Eventy si pas existant) | M (2j) |
+| P1.27 | Auditer la cohérence des 2 schémas Zod backend (controller pipe + service `CreateTravelSchema.parse`) | S (0.5j) |
+| P1.28 | RBAC fin par action : `@Roles('ADMIN')` pour cancel/publish irréversible | S (1j) |
+| P1.29 | Brancher `SymphonieFichePropagator` à la vraie fiche publique `(public)/voyages/[slug]/` | M (2j) |
+| P1.30 | JSON-LD Schema.org/TouristTrip sur fiche publique pour rich snippets Google | S (1j) |
+| P1.31 | Mesure Lighthouse / Web Vitals + budget perf défini | S (1j) |
+| P1.32 | Coverage tests minimum 50% sur le wizard frontend | L (5j+) |
+
+### 🟡 P2 — POST-MVP
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P2.21 | Dashboard admin "tests coverage par module" | M (1.5j) |
+| P2.22 | Sitemap dynamique des voyages publiés | S (0.5j) |
+| P2.23 | Tooltips contextuels sur tous les `Etape*` (hover/focus) | M (2j) |
+| P2.24 | Consolider les 7 DTOs en un module `dto/v2/` avec validation métier | M (2j) |
+| P2.25 | Audit security-review complet via `/security-review` | M (2j) |
+
+### 📊 Mise à jour tableau récap MVP global
+
+| Bloc | Avant addendum 3 | Après audit complémentaire |
+|------|------------------|----------------------------|
+| Backend pro-travels | partiellement audité | **65% MVP** |
+| Sécurité / RBAC | partiellement | **75% MVP** |
+| DTOs / validation backend | partiellement | **20% MVP** ❌ critique |
+| Performance / lazy-loading | non audité | **10% MVP** 🔥 |
+| Tests frontend wizard | non audité | **0%** 🔥 |
+| Tests backend | partiellement | **90% MVP** ✅ |
+| SEO fiche publique | partiellement | **30% MVP** |
+| Onboarding créateur | non audité | **35% MVP** |
+
+**Total ajouté à la roadmap addendum 3** : ~13 jours dev (P0.24-28) + ~16 jours (P1.25-32) + ~8 jours (P2.21-25).
+
+**Roadmap globale cumulée (4 sessions audit)** :
+- P0 total : **~80 jours** (P0.1-28)
+- P1 total : **~57 jours** (P1.1-32)
+- P2 total : **~67 jours** (P2.1-25)
+- → ≈ **204 jours dev solo** / **≈ 102 jours en parallèle (2-3 devs)** pour 100% MVP
+
+---
+
+## 29. RÉFÉRENCES ADDENDUM 3
+
+- `backend/src/modules/pro/travels/pro-travels.controller.ts:1-912` (22 endpoints, 64-65 guards globaux)
+- `backend/src/modules/pro/travels/pro-travels.service.ts:103-141` (createTravel ne persiste que 11 champs)
+- `backend/src/modules/pro/travels/dto/create-travel.dto.ts:1-37` (CreateTravelDtoSchema)
+- `backend/src/modules/pro/travels/dto/update-travel.dto.ts:1-11` (UpdateTravelDtoSchema = .partial())
+- `backend/src/modules/pro/travels/pro-travels.controller.spec.ts:524 lignes`
+- `backend/src/modules/pro/travels/pro-travels.service.spec.ts:1151 lignes`
+- `backend/src/common/guards/roles.guard.ts:1-30`
+- `backend/src/common/decorators/roles.decorator.ts`
+- `frontend/app/(public)/voyages/[slug]/layout.tsx:52-64` (generateMetadata avec VOYAGE_SEO hardcodé)
+- `frontend/app/(public)/voyages/[slug]/opengraph-image.tsx`
+- `frontend/app/(pro)/pro/voyages/nouveau/components/symphonie/SymphonieFirstSteps.tsx` (Phase 22 onboarding débutant)
+- `frontend/app/(pro)/pro/voyages/nouveau/components/symphonie/SymphonieOnboardingTour.tsx` (Phase 11 tour 5 étapes)
+- `frontend/app/(pro)/pro/voyages/nouveau/components/symphonie/SymphonieFichePropagator.tsx` (SEO+JSON-LD localStorage)
+
+---
+
+**Audit terminé. Aucune ligne de code modifiée.**
+
+**Découverte clé addendum 3** : la persistance backend du voyage est **massivement sous-dimensionnée** — sur ~80 champs métier du `TravelFormData` frontend, seuls **~12 sont stockés** en base. Le créateur passe potentiellement plusieurs heures dans le wizard, mais 85% de son travail vit en localStorage Symphonie (donc volatile).
+
+**Top 3 P0 cumulés sur 4 sessions** (priorité absolue) :
+1. **P0.24** (étendre `CreateTravelDtoSchema` à tous les champs) — sans ça, tout le wizard est cosmétique
+2. **P0.18** (brancher SymphonieValidationWorkflow → backend) — débloque la chaîne validation
+3. **P0.19** (notifications HRA réelles) — sauve l'âme Eventy partenaires
+
+**Risque légal cumulé** :
+- P0.10 (refund auto NO_GO) — clients non remboursés
+- P0.11 (lecture `cancellationPolicy` créateur) — barème ignoré
+- P0.12 (Pack Sérénité override) — promesse CGV non tenue
+- P0.16 (cession billet L.211-11) — obligation Code du tourisme
