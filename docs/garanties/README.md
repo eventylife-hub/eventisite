@@ -52,12 +52,28 @@
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
 | `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
 
+### Brochure commerciale grand public
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Brochure-Commerciale.docx` / `.pdf` | Brochure grand public B2C (14 KB · 2 pages) — bandeau accroche « On ne vend pas des voyages. On réunit des gens. » + 4 questions structurantes (Pourquoi Eventy ? Comment ça marche ? Différenciation ? Garanties ?) + transparence prix + 8 destinations populaires + appel à action vers eventylife.fr |
+
+### Notes de référence aux conseils externes
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Note-Avocat-Tourisme.docx` / `.pdf` | Synthèse pour l'avocat tourisme (15 KB · 4 pages) — 12 documents à relire, 6 axes de conformité, 12 questions ouvertes, calendrier J+7 → J+42 |
+| `Eventy-Life-Note-Expert-Comptable.docx` / `.pdf` | Synthèse pour l'expert-comptable spécialisé tourisme (15 KB · 4 pages) — cadre comptable PCG + spécificités tourisme, TVA marge tourisme (BOI-TVA-SECT-60), traitement des commissions Vendeur 5 % HT et Créateur 3 %, 6 questions ouvertes TVA, IS optimisé (PME 15 % puis 25 %), **statut JEI/JEC** + CIR + CII (économie fiscale An 1 estimée 230-250 K€), charges sociales et politique rémunération dirigeant, calendrier comptable annuel + reporting trimestriel APST, modalités du mandat (honoraires 200-300 €/mois) |
+
+### Documents investisseurs additionnels
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Term-Sheet-Seed.docx` / `.pdf` | Modèle Term Sheet pour la levée Seed (15 KB · 4 pages) — 13 sections : Société + Fondateur, investissement (200-300 K€ · pré-money 5 M€), utilisation des fonds, gouvernance, **9 décisions soumises à droit de veto** (50 % Investisseurs), droits Investisseurs (anti-dilution weighted average broad-based, liquidation préférence 1× non-participating, tag-along 25 %, drag-along 5×), engagements Fondateur (plein temps, inaliénabilité 36 mois, non-concurrence), due diligence 4-6 semaines, **3 clauses engageantes** (exclusivité 60 j, confidentialité 2 ans, frais), calendrier J0 → J+60 jusqu'au closing |
+
 ### Documents complémentaires
 | Fichier | Description |
 |---------|-------------|
 | `Eventy-Life-Catalogue-Programmes-Saison-1.docx` / `.pdf` | Catalogue 10 voyages représentatifs saison 1 (15 KB · 5 pages) — Marrakech 749 € · Lisbonne 599 € · Barcelone 549 € · Pays-Bas 679 € · Prague 729 € · Andalousie 899 € · Côte d'Azur 639 € · Toscane 849 € · Belgique 399 € · B2B Côte d'Azur 1 200 € HT — fiche détaillée par voyage avec durée, période, transport, hébergement, programme, capacité, public cible · panier moyen pondéré 800 € TTC |
 | `Eventy-Life-Plan-Marketing-An-1.docx` / `.pdf` | Plan marketing & go-to-market An 1 (15 KB · 3 pages) — 8 sections : segmentation 3 cibles principales (B2C 35-55 ans · seniors · B2B), stratégie d'acquisition (réseau distribué 5 % HT vendeur en levier principal + canaux digitaux + partenariats CSE/associations seniors/ANCV), mobilisation réseau (cibles An 1 par catégorie), programme ambassadeur, calendrier trimestriel T1 → T4, KPIs marketing, **budget 30 K€ (0,2 % CA)**, stratégie contenu et tests |
-| `Eventy-Life-Note-Avocat-Tourisme.docx` / `.pdf` | Note de référence pour l'avocat tourisme partenaire (15 KB · 4 pages) — synthèse des points juridiques à valider avant dépôt officiel : 12 documents à relire (priorisés), 6 axes de conformité (Code Tourisme, directive UE 2015/2302, RGPD, Code consommation, Code commerce, fiscalité), 12 questions ouvertes (structurantes, opérationnelles, stratégiques), pièces complémentaires, **calendrier J+7 → J+42** avec 6 livrables attendus |
+| `Eventy-Life-Note-Avocat-Tourisme.docx` / `.pdf` | Note de référence pour l'avocat tourisme partenaire (15 KB · 4 pages) — synthèse des points juridiques à valider avant dépôt officiel : 12 documents à relire (priorisés), 6 axes de conformité (Code Tourisme, directive UE 2015/2302, RGPD, Code consommation, Code commerce, fiscalité), 12 questions ouvertes (structurantes, opérationnelles, stratégiques), pièces complémentaires, **calendrier J+7 → J+42** avec 6 livrables attendus *(voir aussi note expert-comptable, pendant logique)* |
 
 ### Documents juridiques corporate
 | Fichier | Description |
@@ -116,6 +132,8 @@
 | `../../scripts/garanties/juridique-corporate-to-pdf.py` | Convertisseur batch des 3 documents juridiques corporate .docx → .pdf imprimables |
 | `../../scripts/garanties/build-catalogue-marketing-avocat.js` | Générateur Node.js des 3 documents complémentaires (catalogue programmes, plan marketing, note avocat tourisme) |
 | `../../scripts/garanties/catalogue-marketing-avocat-to-pdf.py` | Convertisseur batch des 3 documents complémentaires .docx → .pdf imprimables |
+| `../../scripts/garanties/build-comptable-brochure-termsheet.js` | Générateur Node.js des 3 documents (note expert-comptable, brochure commerciale, term sheet Seed) |
+| `../../scripts/garanties/comptable-brochure-termsheet-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
