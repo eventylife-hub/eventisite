@@ -1150,3 +1150,606 @@ if (!['DRAFT', 'CHANGES_REQUESTED'].includes(travel.status)) {
 **Prochaine action recommandée** (validation PDG requise) : démarrer P0.1 (bouton soumission) + P0.3 (notif HRA) + P0.4 (catalogue créateur) en parallèle.
 
 **Priorité légale immédiate** (addendum) : P0.10 (refund auto NO_GO) + P0.11 (lecture cancellationPolicy créateur) + P0.12 (Pack Sérénité override) + P0.16 (cession billet L.211-11). Sans ces 4, Eventy facture des promesses vides aux clients et viole 2 obligations légales du Code du tourisme.
+
+---
+
+# 🔄 ADDENDUM 2 — Audit complémentaire 2026-04-30 (sessions 3)
+
+> Suite à demande PDG, audit approfondi de 5 zones encore non couvertes :
+> 14. Sous-système **Symphonie** (80 fichiers, 40 654 lignes — découverte majeure)
+> 15. **Quality Gates** côté backend
+> 16. **Pension / repas** (`publishedPensionType`, `weeklyMealPlan`, `MealConfig`)
+> 17. **Multi-voyage** (`voyageCount`, `VoyageConfig`, overrides)
+> 18. **Gamification / énergie / sponsors** dans le flow création
+>
+> **Aucune ligne de code modifiée.**
+
+---
+
+## 14. SOUS-SYSTÈME SYMPHONIE (40 654 lignes — non audité initialement)
+
+### 14.1 Découverte
+
+**Dossier** : `frontend/app/(pro)/pro/voyages/nouveau/components/symphonie/`
+
+**Volume** : **80 fichiers** — **62 composants TSX** + **17 helpers TS** + 1 broadcast.ts
+- TSX : **32 765 lignes**
+- Helpers TS : **7 879 lignes**
+- **Total : 40 654 lignes**
+
+⚠️ **Ce sous-système n'avait pas été détaillé dans le premier audit**. À titre de comparaison : le wizard "standard" (20 composants `Etape*` + 7 assistants) fait ~32 000 lignes. **Symphonie est plus gros que tout le reste du wizard**.
+
+### 14.2 Branchement dans le wizard
+
+**Fichier** : `nouveau/components/assistant/VoyageFlowAssistant.tsx:34, 228`
+
+```ts
+import SymphonieMaster from '../symphonie/SymphonieMaster';
+// …
+<SymphonieMaster formData={formData} setFormData={setFormData} />
+```
+
+→ Symphonie est branché **uniquement** via le tiroir flottant Assistant (onglet "Symphonie de création"), **pas** dans `page.tsx` du wizard standard. Donc :
+- Le wizard linéaire (Etape 1 → Etape N) reste primaire
+- Symphonie est une **couche additive** accessible via bouton flottant
+- Risque UX : si le créateur n'ouvre jamais le tiroir, il rate **40k lignes de fonctionnalités**
+
+### 14.3 Catalogue des 62 composants Symphonie
+
+**SymphonieMaster.tsx** = orchestrateur de **61 modules** sur **11+ phases** documentées dans son header :
+
+| Phase | Catégorie | Modules clés |
+|-------|-----------|--------------|
+| 1 (BASE) | Édition base | Timing, Arrêts, Activités, Catalogue |
+| 2 (CONNECT) | Connexions | Connexions inter-composants |
+| 2 (VALIDATE) | Validation | Timeline validator |
+| 2 (PROPAGATE) | Diffusion | Fiche client, Devis bus, Prix live |
+| 3 (CONNECT) | HRA | **Communication HRA** ⭐ |
+| 4 (OVERVIEW) | Synthèse | Vue ensemble, Prêt-publier |
+| 4 (VALIDATE+) | Validation avancée | Aéroport, Pauses, Dispo HRA |
+| 4 (PROPAGATE) | SEO | SEO+JSON-LD, Comparer devis |
+| 5 (OVERVIEW) | Équipe | Suggestions équipe |
+| 5 (BASE) | Persistance | **Catalogue Pro** ⭐, Historique, FAQ |
+| 6 (SECURITY) | Sécurité | **Audit log, Alertes auto, Rollback urgence** ⭐ |
+| 7 (UX) | UX | **Calendrier visuel, Drag-Drop, Undo/Redo** ⭐, Multi-drafts A/B/C, Export PDF |
+| 8 (TEMPLATES+IA) | IA | **Score qualité** ⭐, Suggestions auto, Bibliothèque templates, Dupliquer |
+| 9 (WORKFLOW) | Validation Eventy | **Soumettre, suivre statut, commentaires bidirectionnels** ⭐ |
+| 10 (BRACELETS) | Bracelets NFC | Clans/passions, Commande bracelets, Suivi livraison, Embarquement (scan + assign) |
+| 11 (ONBOARDING) | Onboarding | Tour guidé end-to-end (15 étapes) |
+
+⭐ = composants qui **résolvent des manques identifiés** dans mon premier audit.
+
+### 14.4 Composants critiques détaillés
+
+| Composant | Lignes | Rôle | Persistance |
+|-----------|--------|------|-------------|
+| `SymphonieMaster.tsx` | ~ | Orchestrateur 61 modules | localStorage |
+| `SymphonieDashboard.tsx` | ~ | Tableau de bord global (% complétion, alertes, actions prioritaires) | localStorage |
+| `CreatorCatalogPro.tsx` | ~ | **Catalogue créateur enrichi** : tags/dossiers, favoris, photos, contacts HRA, conditions négociées (remise/acompte/annulation), stats utilisation, import/export JSON | `localStorage` clé `eventy:creator:catalog-pro:v1` |
+| `SymphonieHRACommunication.tsx` | ~ | **Canal direct créateur ↔ HRA** : liste HRA + statut workflow, demande dispo auto-générée (dates+pax), mini-thread messages, conditions négociées | `localStorage` |
+| `SymphonieValidationWorkflow.tsx` | 716 | **Soumission validation Eventy** : suivi statut, historique, re-soumission après NEEDS_CHANGES, publish après APPROVED | `localStorage` clé `eventy:symphonie:validation:v1` |
+| `SymphonieQualityScore.tsx` | ~ | **Score qualité 5 axes** (Complétude 25%, Équilibre 20%, Rythme 20%, Originalité 15%, Crédibilité 20%), radar SVG | localStorage |
+| `SymphonieAuditLog.tsx` | ~ | **Journal actions créateur** : filtres par module/action/sévérité/jour | localStorage |
+| `SymphonieHistorySnapshots.tsx` | ~ | **Snapshots versionnés** : manuel + auto (5 min hash diff) + rollback granulaire + diff sommaire, limite 20 snapshots | localStorage |
+| `SymphonieEmergencyRollback.tsx` | ~ | **Détection symphonie cassée + rollback urgence** au dernier snapshot stable (score ≥ 70) | localStorage |
+| `SymphonieAutoDraftSave.tsx` | 401 | **Multi-drafts A/B/C** : 3 slots labels, autosave 10s, switch entre drafts, diff entre slots | localStorage |
+| `SymphonieDragDropEditor.tsx` | ~ | **Édition drag-drop activités** : déplacer horizontalement (heure), snap 15min, glisser entre jours | mute formData.program |
+| `SymphonieDuplicate.tsx` | ~ | **Duplication template** : anonymise (titre/dates/photos), tag (destination/thème), export JSON | localStorage `eventy:symphonie:templates:v1` |
+| `SymphonieB2BEnergy.tsx` | ~ | **Packs énergie B2B** : marques B2B, achat pack, attachement voyage, suivi consommation | localStorage `eventy:symphonie:b2b-{brands,packs,consumptions}:v1` |
+| `SymphonieSponsorIntegration.tsx` | ~ | **Intégration sponsors** : Decathlon, Booking, Air France, Visa, Red Bull (BRONZE/SILVER/GOLD/PLATINUM), tracking ROI | localStorage |
+| `SymphonieGamification.tsx` | ~ | **Profil gamifié créateur** : XP, niveaux 1-10 (Apprenti → Maître), 12 badges, devenir mentor 5+ | localStorage `eventy:symphonie:creators:v1` |
+| `SymphonieBracelet*.tsx` (3 fichiers) | ~ | **Bracelets NFC** : Clans/passions, commande, livraison, embarquement (scan + assign) | localStorage |
+| `SymphonieTransportQuoteAuto.tsx` | 385 | Devis transport automatique | localStorage |
+| `SymphonieQuoteCompare.tsx` | ~ | Compare devis (≠ EtapeFournisseurs ?) | localStorage |
+| `SymphonieMentorship.tsx` | ~ | Mentorship créateurs | localStorage |
+| `SymphonieCoCreation.tsx` | ~ | Co-création (créateurs ensemble) | localStorage |
+| `SymphonieCreatorRanking.tsx`, `SymphonieCreatorProfile.tsx`, `SymphonieCreatorReviews.tsx` | ~ | Profil + ranking + reviews créateurs | localStorage |
+| `SymphonieFirstSteps.tsx`, `SymphonieOnboardingTour.tsx` | ~ | Onboarding 15 étapes | localStorage |
+| `SymphonieFeedbackInsights.tsx`, `SymphonieVoyagerNeeds.tsx`, `SymphonieVoyagerReview.tsx` | 616 / 432 / ~ | Feedback voyageurs | localStorage |
+| `SymphoniePDFExport.tsx` | ~ | Export PDF | local |
+
+### 14.5 ⚠️ ALERTE CRITIQUE — 100% localStorage, 0 backend
+
+**Vérification** : `grep -l "fetch\|apiClient\|axios" symphonie/*.tsx` → **0 fichier**.
+
+**Tous les fichiers utilisent localStorage** :
+- `CreatorCatalogPicker.tsx` : 3 occurrences localStorage
+- `CreatorCatalogPro.tsx` : 3 occurrences
+- `SymphonieAntiBlocage.tsx` : 6 occurrences
+- `SymphonieHRACommunication.tsx` : 4 occurrences
+- `SymphonieEmergencyRollback.tsx` : 4 occurrences
+- `SymphonieMaster.tsx` : 2 occurrences
+- (...19 fichiers utilisent localStorage)
+
+→ **Conséquences** :
+1. 🔥 Si créateur change de device, perd son cache, navigateur incognito → **perte totale** de catalogue, snapshots, communications HRA, drafts A/B/C
+2. 🔥 L'**équipe Eventy ne voit JAMAIS** : les soumissions de validation Symphonie n'arrivent pas au backend, l'audit log n'est pas centralisé, les communications HRA n'envoient pas d'email
+3. 🔥 Le HRA ne reçoit **rien** : SymphonieHRACommunication promet "demande de dispo auto-générée" mais c'est purement local — aucune notif/email réelle au partenaire
+4. 🔥 Symphonie expose un Quality Score frontend qui n'est **pas** celui du backend (`QualityGateService` séparé) — 2 sources de vérité
+5. 🔥 Les sponsors / packs B2B / bracelets NFC sont annoncés mais ne **génèrent aucune commande réelle**
+
+### 14.6 Cohérence avec mon premier audit
+
+**Manques que Symphonie résout (mais en localStorage) :**
+
+| Premier audit | Symphonie | Statut réel |
+|---------------|-----------|-------------|
+| P0.1 — Bouton soumission/publication | `SymphonieValidationWorkflow.tsx:716` | ⚠️ UI existe mais **pas branché backend** |
+| P0.3 — Notification HRA "inclus dans voyage" | `SymphonieHRACommunication.tsx` | ⚠️ UI existe mais **localStorage seul, aucune notif réelle** |
+| P0.4 — Catalogue personnel créateur | `CreatorCatalogPro.tsx` + `CreatorCatalogPicker.tsx` | ⚠️ UI complète mais **localStorage** : pas multi-device, pas partagé |
+| P1.1 — Auto-création thread "Voyage X — préparation" | `SymphonieHRACommunication.tsx` (mini-thread messages) | ⚠️ localStorage |
+| P1.4 — Drag-drop arrêts intra-circuit + inter-jours | `SymphonieDragDropEditor.tsx` + `SymphonieStopsOrdering.tsx` + `SymphonieStopAdaptation.tsx` | ✅ Mute formData (donc persiste via save) |
+| P1.12 — TravelChangelog / Historique versions | `SymphonieHistorySnapshots.tsx` (20 snapshots) + `SymphonieAuditLog.tsx` | ⚠️ localStorage |
+
+→ **Symphonie est une démo client-side complète**. Pour passer MVP, il faut **brancher chaque module à un endpoint backend** (~20 endpoints à créer).
+
+### 14.7 Synthèse Symphonie
+
+| Aspect | État |
+|--------|------|
+| Volume code | **40 654 lignes** (62 TSX + 17 helpers) |
+| Branchement wizard | ⚠️ Tiroir flottant uniquement (peut être manqué) |
+| Architecture | ✅ Modulaire, additive (chaque header dit "Composant ADDITIF") |
+| Persistance | ❌ **100% localStorage**, 0 appel backend |
+| Cohérence formData | ✅ Lit `TravelFormData`, certains composants mutent (drag-drop, rollback) |
+| Couverture fonctionnelle | ✅ Très large (catalogue, comm HRA, validation, audit, snapshots, gamification, bracelets, sponsors, B2B energy, mentorship, co-création, feedback) |
+| Production-ready | ❌ **Démo only** — perte de données risquée + équipe Eventy aveugle |
+| Risque | 🔥 Si user pense que Symphonie est en prod, il bâtit sur du sable |
+
+→ **Verdict** : zone **20% MVP-ready** (UI ~100%, backend 0%). **Travail énorme à venir** pour brancher les ~20 endpoints. Mais base UI déjà très avancée.
+
+---
+
+## 15. QUALITY GATES (backend) + Score qualité (Symphonie)
+
+### 15.1 Backend — `QualityGateService`
+
+**Fichier** : `backend/src/modules/pro/quality-gate.service.ts` (555 lignes)
+
+✅ **BON** :
+- Service utilisé par `pro-travels.service.ts:publishTravel()` (l.424) avant publication
+- Bloque la publication si erreurs `severity: 'error'` non passées
+- Renvoie `QualityGateReport { passed, score, checks: QualityCheck[] }`
+- Logger NestJS pour traçabilité
+- 6 catégories de checks :
+  - **GENERAL** : titre (≥10 caract.), description (≥100 caract.), photo de couverture, cohérence dates
+  - **CONTENT** : (à creuser)
+  - **HEBERGEMENT** : (cf. catégorie)
+  - **LEGAL** : ✅ catégorie présente
+  - **PRICING** : (à creuser)
+  - **TRANSPORT** : (à creuser)
+
+❌ **À CREUSER** :
+- Pas vu de check explicite sur :
+  - Garantie financière APST renseignée
+  - RC Pro souscrite
+  - Politique d'annulation cohérente avec barème backend
+  - Acompte stocké (cf. P0.14 addendum 1)
+  - Pack Sérénité activé
+- Score weighted sur 100 ? Détail par catégorie ?
+
+### 15.2 Frontend Symphonie — `SymphonieQualityScore`
+
+**Fichier** : `nouveau/components/symphonie/SymphonieQualityScore.tsx`
+
+⚠️ **DOUBLON** :
+- Frontend score 5 axes : Complétude 25% / Équilibre 20% / Rythme 20% / Originalité 15% / Crédibilité 20%
+- Backend score 6 catégories : GENERAL / CONTENT / HEBERGEMENT / LEGAL / PRICING / TRANSPORT
+- **Pas la même rubrique, pas la même formule** → 2 scores différents pour la même chose
+- Risque : créateur voit "85/100 prêt à publier" côté Symphonie, mais soumet → backend QualityGate refuse car critère LEGAL manquant
+
+### 15.3 Workflow validation admin
+
+**Fichier** : `backend/src/modules/pro/travels/pro-travels.controller.ts:188-226`
+
+Les 3 endpoints critiques validés :
+- `POST /pro/travels/:id/submit-p1` (l.188) → `SUBMITTED`/`PHASE1_REVIEW`
+- `POST /pro/travels/:id/submit-p2` (l.207) → `PHASE2_REVIEW`
+- `POST /pro/travels/:id/publish` (l.226) → `PUBLISHED` après QualityGate
+
+❌ **MISSING — admin side** :
+- Aucun endpoint vu pour `POST /admin/travels/:id/approve-phase1`, `POST /admin/travels/:id/request-changes`
+- Workflow décrit mais côté admin : invisible sur backend (à creuser dans `admin.controller.ts`)
+- Le créateur ne peut pas avancer après `PHASE1_REVIEW` tant que admin n'a pas validé manuellement
+
+### 15.4 Synthèse Quality Gates + validation
+
+| Aspect | État |
+|--------|------|
+| Backend QualityGateService | ✅ Solide (555 lignes, 6 catégories, LEGAL/TRANSPORT inclus) |
+| Bloque publication si erreurs | ✅ `runQualityCheck()` appelé avant `PUBLISHED` |
+| Frontend score Symphonie | ⚠️ 5 axes différents → 2 sources de vérité |
+| Endpoints submit-p1 / submit-p2 / publish | ✅ Existent |
+| Endpoints admin approve / request-changes | ❓ Non vu |
+| Synchronisation statut frontend/backend | ❌ Symphonie en localStorage, backend a son enum séparé |
+| Notification créateur quand admin valide | ❌ Pas vu de listener / template email |
+
+→ **Verdict** : zone **60% MVP-ready**. Backend solide, frontend cohérent à brancher.
+
+---
+
+## 16. PENSION / REPAS (`publishedPensionType`, `weeklyMealPlan`, `MealConfig`)
+
+### 16.1 Modèles `MealConfig` et `DayMealPlan`
+
+**Fichier** : `nouveau/types.ts:155-162, 1604+`
+
+```ts
+export interface MealConfig {
+  fullBoard: boolean;     // Tout compris
+  breakfast: boolean;
+  lunch: boolean;
+  dinner: boolean;
+  specialDiets: boolean;  // végétarien, halal, etc.
+}
+
+export interface DayMealPlan {
+  /** Numéro du jour (1-based, aligné sur DayProgram.dayNumber) */
+  dayNumber: number;
+  // ... (à creuser)
+}
+```
+
+### 16.2 `publishedPensionType` (côté fiche client)
+
+**Fichier** : `nouveau/types.ts:945-962`
+
+```ts
+publishedPensionType?: 'FULL_BOARD' | 'HALF_BOARD' | 'BREAKFAST_ONLY' | 'ALL_INCLUSIVE';
+publishedPensionDetails?: string[];  // override des items par défaut PENSION_META[type].details
+```
+
+Commentaire :
+> *"Si BREAKFAST_ONLY (minimum garanti), si A_LA_CARTE/VOUCHER/MIX → BREAKFAST_ONLY; ALL_INCLUSIVE → futur (V2)"*
+> *"Permet au Pro de personnaliser la promesse client (ex: 'Boissons incluses au dîner' pour un FULL_BOARD)"*
+
+✅ **BON** :
+- Champ exposé sur la fiche publique du voyage
+- Personnalisable par le Pro (override `publishedPensionDetails`)
+- Convention `'libre'` / `'option'` / sinon = inclus dans les items
+
+⚠️ **ATTENTION** :
+- Champ dual : `MealConfig` (interne, fine-grained) vs `publishedPensionType` (vitrine simple)
+- Risque incohérence : créateur dit `fullBoard: true` mais oublie de set `publishedPensionType: 'FULL_BOARD'`
+- Pas de validation croisée détectée
+
+### 16.3 `weeklyMealPlan` (planning hebdomadaire repas)
+
+**Fichier** : `nouveau/types.ts:987-988`
+
+```ts
+/** Planning hebdomadaire restauration — construit automatiquement depuis planMode, personnalisable */
+weeklyMealPlan?: DayMealPlan[];
+```
+
+⚠️ **À VALIDER** :
+- `DayMealPlan` lié à `DayProgram.dayNumber` → cohérent avec EtapeProgram
+- Construction "automatique depuis planMode" : à vérifier (où ce code vit-il ?)
+- Edition manuelle possible
+
+### 16.4 Restaurants partenaires sur trajet long
+
+**Fichier** : `nouveau/types.ts:990-994`
+
+```ts
+routeRestaurantAllerId?: string | null;
+routeRestaurantAllerName?: string;
+routeRestaurantRetourId?: string | null;
+routeRestaurantRetourName?: string;
+```
+
+✅ **BON** :
+- Permet d'ajouter un restaurant sur les trajets aller/retour longs (cohérent avec `extraTransportDays`)
+- 2 IDs distincts aller/retour (ex: pause Lyon à l'aller, Avignon au retour)
+
+❌ **MISSING** :
+- Pas de bloc activité sur le trajet long (juste resto)
+- Pas d'option "pause toilettes obligatoire toutes les 2h" (loi conducteur bus)
+
+### 16.5 Boutiques partenaires (HRA type BOUTIQUE)
+
+**Fichier** : `nouveau/types.ts:995-996`
+
+```ts
+selectedBoutiqueIds?: string[];
+```
+
+⚠️ **À CREUSER** :
+- Boutiques sélectionnées pour le voyage (ex: shopping souk Marrakech)
+- Type HRA `BOUTIQUE` existe-t-il en backend ? (à vérifier dans les types HRA backend)
+
+### 16.6 Régimes spéciaux (allergies / diététique)
+
+**Fichier** : `backend/prisma/schema.prisma` (`DietaryPreference` lié à BookingGroup l.2268)
+
+✅ **BON** :
+- Modèle `DietaryPreference` lié à `BookingGroup`
+- Mais : pas de logique côté création voyage pour pré-déclarer les régimes possibles
+
+❌ **MISSING** :
+- Wizard ne demande pas au créateur "quels régimes garantissez-vous au restaurant partenaire ?"
+- Donc côté client, le voyageur peut demander "halal" mais le créateur n'a jamais validé que le resto sait servir halal
+- Risque commercial + sécurité alimentaire
+
+### 16.7 Synthèse pension/repas
+
+| Aspect | État |
+|--------|------|
+| `MealConfig` (fine-grained) | ✅ Présent, simple |
+| `publishedPensionType` (vitrine) | ✅ Présent, override possible |
+| `weeklyMealPlan` (jour par jour) | ⚠️ Présent mais source de génération non auditée |
+| Restaurants trajet aller/retour | ✅ Présent |
+| Régimes spéciaux pré-déclarés au resto | ❌ Manquant |
+| Validation croisée MealConfig ↔ publishedPensionType | ❌ Pas vue |
+| Boutiques HRA | ⚠️ Champs présents, type backend à vérifier |
+| ALL_INCLUSIVE | ❌ Marqué "futur (V2)" |
+
+→ **Verdict** : zone **70% MVP-ready**. Solide pour les 4 pensions de base. Manque validation croisée + régimes pré-déclarés.
+
+---
+
+## 17. MULTI-VOYAGE (`voyageCount`, `VoyageConfig`, overrides)
+
+### 17.1 Concept
+
+**Fichier** : `nouveau/types.ts:783-819, 832-845`
+
+```ts
+voyageCount?: number;  // 1-4. Défaut = 1. 2+ = multi-voyage
+voyageConfigs?: VoyageConfig[];  // Une config par voyage si voyageCount > 1
+```
+
+→ **Multi-voyage** = 1 voyage de base + 2 à 4 variations (même transport, mêmes dates, mêmes voyageurs ne mélangeant pas, juste hôtel/programme/activités différents).
+→ Cas d'usage typique : "vol charter 100 places vers Marrakech, mais 50 personnes en mode Riad authentique + 50 en Resort Palace".
+
+### 17.2 VoyageConfig — overrides possibles
+
+```ts
+export interface VoyageConfig {
+  voyageNumber: number;
+  label: string;  // Ex: "Voyage 1 — Marrakech Deluxe"
+  hotelOverride?: string | null;
+  programOverride?: DayProgram[] | null;
+  activitiesOverride?: StandaloneActivity[] | null;
+  mealConfigOverride?: MealConfig | null;
+  roomsOverride?: Room[] | null;
+  notes?: string;
+  isCustomized: boolean;
+  restaurantOverride?: string | null;
+  activityIdsOverride?: string[] | null;
+  backupHotelOverride1?: string | null;
+  backupHotelOverride2?: string | null;
+  backupRestaurantOverride1?: string | null;
+  backupRestaurantOverride2?: string | null;
+}
+```
+
+### 17.3 UI multi-voyage — `VoyageHRASelector`
+
+**Fichier** : `nouveau/components/VoyageHRASelector.tsx:468 lignes` (déjà audité §2)
+
+✅ **BON** :
+- Si `voyageCount > 1`, permet personnalisation HRA par voyage
+- Reset configs disponible (l.93-106)
+- Mock data `VOYAGE_HOTELS`, `VOYAGE_RESTAURANTS`, `VOYAGE_ACTIVITIES`
+
+⚠️ **MAUVAIS** :
+- Inline styles (pas Tailwind)
+- Typo flag `'notes'` vs `'note'` (l.82)
+
+### 17.4 Multi-voyage backend
+
+**Fichier** : `backend/prisma/schema.prisma` (`TravelGroup` model)
+
+✅ **BON** :
+- Modèle `TravelGroup` existe : `BookingGroup.travelGroupId` (l.2255), `Travel.travelGroup` (l.1987)
+- Permet de regrouper plusieurs voyages partageant infra commune
+
+❌ **À CREUSER** :
+- Pas vérifié si `TravelGroup` permet jusqu'à 4 voyages ou plus
+- Pas vu de logique backend pour "vol charter partagé entre voyages"
+
+### 17.5 Workflow multi-voyage avec avion (mention dans types.ts:836)
+
+> *"Pour 2+ voyages avec avion → demande de devis aux employés Eventy"*
+
+❌ **MISSING** :
+- Aucun endpoint vu : `POST /pro/travels/:id/request-flight-quote` (employés Eventy)
+- Workflow équipe terrain Eventy pour gérer devis groupé : non audité
+
+### 17.6 Synthèse multi-voyage
+
+| Aspect | État |
+|--------|------|
+| Concept (1 base + variations) | ✅ Bien défini types.ts |
+| `VoyageConfig` overrides (hotel/program/meals/rooms/activities/restaurant) | ✅ Complet |
+| UI `VoyageHRASelector` | ✅ Existe, fonctionnel |
+| Backend `TravelGroup` | ✅ Existe |
+| Devis avion charter groupé | ❌ Workflow manquant |
+| Limite max voyages | ⚠️ types.ts dit 1-4, à valider |
+| Validation cohérence (transport partagé) | ❓ Non auditée |
+
+→ **Verdict** : zone **65% MVP-ready**. Concept solide, UI présente, manque workflow équipe Eventy pour vols charter.
+
+---
+
+## 18. GAMIFICATION / ÉNERGIE / SPONSORS dans le flow création
+
+### 18.1 Frontend — modules Symphonie liés
+
+**Fichiers** :
+- `SymphonieGamification.tsx` — profil créateur (XP, niveaux 1-10, 12 badges, devenir mentor 5+)
+- `SymphonieB2BEnergy.tsx` + `symphonieB2BEnergyHelper.ts` — packs énergie B2B (marques + consumption)
+- `SymphonieSponsorIntegration.tsx` + `symphonieSponsorHelper.ts` — sponsors (Decathlon, Booking, Air France, Visa, Red Bull) avec packs BRONZE/SILVER/GOLD/PLATINUM, tracking ROI
+- `SymphonieRewardsLedger.tsx` — ledger récompenses créateur
+- `SymphonieClanPassions.tsx` — clans/passions (lié bracelets NFC)
+- `SymphonieBraceletEmbark.tsx`, `SymphonieBraceletDelivery.tsx`, `SymphonieBraceletsOrder.tsx` — bracelets NFC scan + assign
+- `SymphonieMentorship.tsx` — mentorship créateurs
+
+✅ **BON** :
+- Toute la suite gamification créateur côté frontend
+- Modélisation enrichie : XP, badges (12 types), niveaux titrés (Apprenti → Maître), mentor unlock
+
+❌ **CRITIQUE — TOUT en localStorage** :
+- `eventy:symphonie:creators:v1` (gamification)
+- `eventy:symphonie:b2b-{brands,packs,consumptions}:v1` (B2B energy)
+- `eventy:symphonie:activity-sponsorships:v1` (sponsors)
+- → Aucune persistance backend → si créateur change de device, **perte XP/badges/niveaux/sponsors**
+- → Pas de classement inter-créateurs réel possible
+
+### 18.2 Champ types.ts — `marginCreatorPct`
+
+**Fichier** : `nouveau/types.ts:424, 436`
+
+```ts
+// → 5% Rémunération vente (CRITIQUE pour motivation — gamification, classements)
+/** Part rémunération vente — gamification, classements, challenges (défaut 5%) */
+```
+
+✅ **BON** :
+- Champ rémunération vente créateur (5% défaut)
+- Lié à gamification (incentive vente)
+
+⚠️ **À VÉRIFIER** :
+- Cohérence avec mémoire PDG `project_business_model_pdg.md` : 5% vendeur + 3% créateur (rev 2026-04-29)
+- Le commentaire dit "5% rémunération vente" mais memory dit "3% créateur". Vérifier qui touche quoi (vendeur vs créateur du voyage).
+
+### 18.3 Backend — gamification
+
+❓ **À CREUSER** :
+- Existe-t-il un module backend `gamification` / `creator-xp` / `creator-rankings` ?
+- Le frontend Symphonie expose tout, mais aucune persistance n'a été vérifiée backend
+- Cf. memory MEMORY.md / TODO-GAMING-* multiple files (FIDÉLISATION, MONDES, RAIDS-BOSS, SOCIAL, SPONSORS-HEROS) → indique un système gaming planifié
+
+### 18.4 Sponsors — modèle commercial
+
+**Composant** : `SymphonieSponsorIntegration.tsx` (header)
+
+5 marques sponsorisées ciblées : **Decathlon, Booking, Air France, Visa, Red Bull**.
+
+4 niveaux pack : BRONZE / SILVER / GOLD / PLATINUM.
+
+Tracking : exposure, clics estimés, coût, costPerClick, roiScore.
+
+❌ **MISSING — backend** :
+- Aucun module commercial Eventy (manager sponsors)
+- Aucune intégration vraie avec ces marques (commentaire "simulation MVP, en prod : module commercial Eventy")
+- Aucune facturation sponsor automatique
+- Pas de contrat sponsor ni reporting partenaire
+
+### 18.5 Bracelets NFC — modèle physique
+
+**Composants** : `SymphonieBraceletsOrder.tsx`, `SymphonieBraceletDelivery.tsx`, `SymphonieBraceletEmbark.tsx`
+
+Workflow décrit :
+1. Commande bracelets NFC
+2. Suivi livraison (chez l'indépendant créateur)
+3. Embarquement = scan + assign à voyageur
+
+❌ **MISSING — réel** :
+- Aucun fournisseur réel (qui imprime/programme les bracelets ?)
+- Aucune intégration NFC physique côté backend (lecture scan NFC = ?)
+- Aucun stock géré
+- localStorage seul
+
+### 18.6 Synthèse gamification / énergie / sponsors
+
+| Aspect | État |
+|--------|------|
+| UI gamification créateur (XP, niveaux, badges, mentor) | ✅ Complète frontend |
+| Persistance backend gamification | ❌ Aucune (localStorage seul) |
+| Classements inter-créateurs | ❌ Impossible (pas de données partagées) |
+| Sponsors marques (5 brands, 4 niveaux) | ⚠️ UI démo + tracking ROI mais 100% simulation |
+| Module commercial Eventy backend | ❌ Inexistant |
+| Bracelets NFC | ⚠️ UI complète, 0 supply chain réelle |
+| Cohérence rémunération créateur (3% vs 5%) | ⚠️ Commentaire types.ts vs memory PDG : à clarifier |
+
+→ **Verdict** : zone **15% MVP-ready**. Tout est démo. Pas critique pour MVP V1 (focus voyage + paiement) mais à clarifier pour la roadmap future.
+
+---
+
+## 19. NOUVEAUX TODOs PRIORITAIRES (issus de l'addendum 2)
+
+### 🔴 P0 — BLOQUANT MVP
+
+| # | Tâche | Fichier(s) | Effort |
+|---|-------|-----------|--------|
+| P0.17 | **Backend pour Symphonie** : créer ~20 endpoints pour persister catalogue créateur, communications HRA, snapshots, audit log, validation workflow, drafts A/B/C — sortir du localStorage | nouveau module `symphonie` backend | XL (10-15j) |
+| P0.18 | **Brancher SymphonieValidationWorkflow.tsx aux endpoints existants** `submit-p1` / `submit-p2` / `publish` (P0.1 du premier audit) | `SymphonieValidationWorkflow.tsx`, `pro-travels.controller.ts` | M (2j) |
+| P0.19 | **Brancher SymphonieHRACommunication aux notifications backend** (P0.3 du premier audit) — envoi vrai email + WebSocket au HRA | `SymphonieHRACommunication.tsx`, `notification-events.service.ts` | L (3j) |
+| P0.20 | **Brancher CreatorCatalogPro à un endpoint** `/pro/catalog/personnel` (P0.4 du premier audit) — DB + sync multi-device | `CreatorCatalogPro.tsx`, nouveau backend | M (2j) |
+| P0.21 | **Endpoint admin approve / request-changes** (Phase 1 et Phase 2) | `admin.controller.ts`, `pro-travels.service.ts` | M (2j) |
+| P0.22 | **Régimes spéciaux pré-déclarés** au resto dans le wizard (sécurité alimentaire) | `EtapeRestoration.tsx`, `MealConfig` | S (1j) |
+| P0.23 | **Synchroniser Quality Score frontend ↔ backend** : Symphonie doit lire `QualityGateService` au lieu de calculer son propre score | `SymphonieQualityScore.tsx`, nouvel endpoint `/pro/travels/:id/quality-check` | M (1.5j) |
+
+### 🟠 P1 — IMPORTANT
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P1.19 | Ajouter checks LEGAL au QualityGateService : APST, RC Pro, garantie financière, CGV cohérentes | M (2j) |
+| P1.20 | Validation croisée `MealConfig` ↔ `publishedPensionType` (alerte si incohérent) | S (0.5j) |
+| P1.21 | Workflow équipe Eventy pour devis vol charter multi-voyage | L (3j) |
+| P1.22 | Cohérence rémunération créateur (3% vs 5% — clarifier avec PDG) + commentaire types.ts | XS (15min) |
+| P1.23 | Bouton flottant Assistant **plus visible** (pour ne pas rater Symphonie) | S (0.5j) |
+| P1.24 | Visualisation backend admin : "Quels créateurs utilisent Symphonie en mode démo ?" (utile pour identifier les voyages avec données fragiles) | M (1.5j) |
+
+### 🟡 P2 — POST-MVP
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P2.16 | Persistance gamification backend (XP, badges, niveaux, mentor) + classements inter-créateurs | L (3j) |
+| P2.17 | Module commercial Eventy backend (sponsors marques, contrats, facturation) | XL (5-7j) |
+| P2.18 | Supply chain bracelets NFC réelle (fournisseur, stock, programmation) | XL (5j+) |
+| P2.19 | Symphonie packs B2B Energy : intégration vraie avec marques | L (3j) |
+| P2.20 | ALL_INCLUSIVE comme `publishedPensionType` (V2) | S (1j) |
+
+### 📊 Mise à jour tableau récap MVP global
+
+| Bloc | Avant addendum 2 | Après audit complémentaire |
+|------|------------------|----------------------------|
+| Sous-système Symphonie (40k lignes) | non audité | **20% MVP** (UI ~100%, backend 0%) |
+| Quality Gates backend | partiellement audité | **60% MVP** (solide, à étendre) |
+| Pension / repas | non audité | **70% MVP** |
+| Multi-voyage | partiellement audité | **65% MVP** |
+| Gamification / sponsors / bracelets | non audité | **15% MVP** (démo only) |
+
+**Total ajouté à la roadmap addendum 2** : ~30 jours dev (P0.17-23) + ~7 jours (P1.19-24) + ~25 jours (P2.16-20).
+
+**Roadmap globale cumulée (3 sessions audit)** :
+- P0 total : **~67 jours** (cumul P0.1-23)
+- P1 total : **~41 jours** (cumul P1.1-24)
+- P2 total : **~59 jours** (cumul P2.1-20)
+- → ≈ **167 jours dev solo** / **≈ 84 jours en parallèle (2-3 devs)** pour atteindre 100% MVP
+
+---
+
+## 20. RÉFÉRENCES ADDENDUM 2
+
+- `frontend/app/(pro)/pro/voyages/nouveau/components/symphonie/` (80 fichiers, 40 654 lignes)
+  - `SymphonieMaster.tsx` (orchestrateur 61 modules)
+  - `SymphonieValidationWorkflow.tsx:716`
+  - `SymphonieHRACommunication.tsx`
+  - `CreatorCatalogPro.tsx` (localStorage `eventy:creator:catalog-pro:v1`)
+  - `SymphonieAutoDraftSave.tsx:401`
+  - `SymphonieHistorySnapshots.tsx`
+  - `SymphonieEmergencyRollback.tsx`
+  - `SymphonieDragDropEditor.tsx`
+- `frontend/app/(pro)/pro/voyages/nouveau/components/assistant/VoyageFlowAssistant.tsx:34, 228` (branchement Symphonie)
+- `backend/src/modules/pro/quality-gate.service.ts:1-555`
+- `backend/src/modules/pro/travels/pro-travels.controller.ts:188-226`
+- `frontend/app/(pro)/pro/voyages/nouveau/types.ts:155-162, 783-819, 832-845, 942-988`
+- `backend/prisma/schema.prisma` (`Travel`, `TravelGroup`, `DietaryPreference`, `BookingGroup`)
+- TODO-GAMING-* (FIDÉLISATION, MONDES, RAIDS-BOSS, SOCIAL, SPONSORS-HEROS)
+
+---
+
+**Audit terminé. Aucune ligne de code modifiée.**
+
+**Découverte clé addendum 2** : un sous-système **Symphonie** de **40 654 lignes** existe et résout en frontend la plupart des manques identifiés au premier audit (catalogue créateur, comm HRA, validation workflow, snapshots, drag-drop). MAIS il est **100% localStorage** → l'UI promet, le backend ne sait rien. **P0.17-20** sont prioritaires : brancher Symphonie au backend pour qu'Eventy ne soit pas une démo.
+
+**Action consolidée recommandée** (validation PDG) — Top 5 P0 cumulés sur 3 sessions audit :
+1. **P0.18** (brancher SymphonieValidationWorkflow → submit-p1/p2/publish backend) — débloque toute la chaîne validation
+2. **P0.19** (brancher SymphonieHRACommunication → vraies notifications) — sauve l'âme Eventy côté partenaires
+3. **P0.20** (brancher CreatorCatalogPro → DB) — sauve les données du créateur si change de device
+4. **P0.10** (refund auto NO_GO) — bloque les remboursements perdus
+5. **P0.16** (cession billet L.211-11) — obligation légale Code du tourisme
