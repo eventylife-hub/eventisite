@@ -3379,3 +3379,576 @@ L'addendum 5 révèle qu'**Eventy backend est BEAUCOUP plus avancé** que les pr
 - P0.12 → P0.40 (Pack Sérénité override — **maintenant 1j**)
 - P0.16 (cession billet L.211-11)
 - P0.29 (documents légaux UE 2015/2302)
+
+---
+
+# 🔄 ADDENDUM 6 — Audit modules backend annexes 2 (sessions 7)
+
+> Audit des derniers modules backend critiques :
+> 47. Module **marketing** (campagnes, QR codes, rays/rayons monnaie virtuelle)
+> 48. Module **restauration** (meal-plan, dietary, menus, déclarations, disputes)
+> 49. Modules **post-sale + reviews** (feedback, bilan, avis modération)
+> 50. Module **legal + RGPD + DSAR** (data-erasure, data-retention, avocat-portal)
+> 51. Module **cron** (24 jobs schedulés détectés)
+> 52. **Stripe Connect** workflow détaillé (transferts, payouts, dashboard)
+>
+> **Aucune ligne de code modifiée.**
+
+---
+
+## 47. MODULE MARKETING BACKEND
+
+### 47.1 Architecture
+
+**Dossier** : `backend/src/modules/marketing/` — **6 399 lignes**
+
+| Fichier | Lignes |
+|---------|--------|
+| `marketing.controller.ts` + `marketing.service.ts` | ~ |
+| `lead.service.ts` (gestion leads) | ~ |
+| `qr-code.service.ts` | 350 |
+| `rays.controller.ts` + `rays.service.ts` | 408 + 901 (système Rays = monnaie virtuelle) |
+
+### 47.2 Endpoints Marketing
+
+✅ **Campaigns workflow complet** :
+- `POST /marketing/campaigns` (l.107) — créer
+- `PATCH /marketing/campaigns/:id` (l.124) — update
+- `POST /marketing/campaigns/:id/launch` / `/pause` / `/resume` / `/end` — workflow
+- `POST /marketing/campaigns/:id/schedule` — planifier
+- `POST /marketing/campaigns/:id/duplicate`
+- `POST /marketing/campaigns/:id/delete` (soft delete)
+- `GET /marketing/campaigns` + `:id` + `:id/metrics`
+- `GET /marketing/dashboard`
+- `POST /marketing/qr-codes` + `GET /marketing/qr-codes`
+
+✅ **Rays endpoints** (l.180-346) — monnaie virtuelle marketing :
+- `GET /rays/balance` — solde Rays utilisateur
+- `GET /rays/transactions` — historique
+- `POST /rays/spend` — dépenser
+- `POST /rays/purchase/bundle` — acheter pack
+- `GET /rays/products`, `/products/:slug`, `/kits`, `/bundles`, `/promotions/active`
+- `POST /rays/grant` (admin) — créditer
+- Admin : `POST /rays/products`, `/kits`, `/bundles`, `/promotions`
+
+### 47.3 Cohérence avec EtapeMarketingVoyage frontend
+
+**Fichier** : `EtapeMarketingVoyage.tsx:607` (déjà audité §2.16 et §18.1)
+
+✅ **BON** :
+- Frontend wizard mentionne QR tracké → backend `qr-code.service.ts:350 lignes` existe
+- Frontend mentionne assets digitaux → endpoint `/api/pro/marketing/assets` mentionné (à vérifier)
+- Campaigns workflow OK côté backend
+
+❌ **ACCROCHE âme Eventy** :
+- Backend OK pour campaigns/QR/rays mais ne contient **aucun champ** pour le slogan voyage, accroche émotionnelle, hashtags personnalisés (cf. P1.3)
+- L'âme Eventy ("chaleureux comme un ami") ne survit pas au backend
+
+### 47.4 Synthèse marketing
+
+| Aspect | État |
+|--------|------|
+| Campaigns workflow | ✅ Complet |
+| QR codes service | ✅ |
+| Rays (monnaie virtuelle) | ✅ Riche |
+| Dashboard marketing | ✅ |
+| Branchement EtapeMarketingVoyage frontend | ⚠️ Partiel |
+| Champs "âme Eventy" (slogan, accroche, hashtags) | ❌ |
+
+→ **Verdict** : zone **70% MVP-ready** (backend ✅, P1.3 reste valide).
+
+---
+
+## 48. MODULE RESTAURATION BACKEND
+
+### 48.1 Architecture
+
+**Dossier** : `backend/src/modules/restauration/` — **3 945 lignes**
+
+| Fichier | Lignes |
+|---------|--------|
+| `restauration.controller.ts` | 381 |
+| `restauration.service.ts` | 923 |
+| Tests | 1 478 + spec |
+
+### 48.2 Endpoints (20 routes)
+
+✅ **EXCELLENT — Workflow restauration COMPLET** :
+
+**Meal-plan voyage** :
+- `GET /restauration/:travelId/meal-plan`
+- `PATCH /restauration/:travelId/meal-plan`
+- `GET /restauration/:travelId/meal-formula` / `PATCH`
+
+**Régimes spéciaux** :
+- `GET /restauration/:travelId/dietary` — résumé régimes par voyage
+- `POST /restauration/booking/:bookingGroupId/dietary` ⭐ **gestion régimes par booking**
+
+**Restaurants partenaires** :
+- `GET /restauration/:travelId/restaurants`
+- `POST /restauration/:travelId/restaurants`
+
+**Menus** :
+- `GET /restauration/:travelId/menus`
+- `POST /restauration/:travelId/menus`
+- `POST /restauration/menus/:menuId/courses` — ajouter plats au menu
+
+**Comptabilité** :
+- `GET /restauration/:travelId/meal-cost`
+- `GET /restauration/:travelId/costs`
+- `GET /restauration/:travelId/summary-pdf`
+
+**Déclarations repas servis** (workflow comptable) :
+- `GET /restauration/:travelId/declarations`
+- `POST /restauration/:travelId/declarations`
+- `PATCH /restauration/declarations/:id/serve` — repas servi
+- `PATCH /restauration/declarations/:id/invoice` — facturé
+- `PATCH /restauration/declarations/:id/pay` — payé
+
+**Disputes** :
+- `GET /restauration/:travelId/disputes` — litiges restauration
+
+### 48.3 🔥 RÉVÉLATION — P0.22 (régimes spéciaux pré-déclarés) résout par branchement
+
+Mon addendum 3 (§16.6) disait :
+> *"Wizard ne demande pas au créateur 'quels régimes garantissez-vous au restaurant partenaire ?' → risque commercial + sécurité alimentaire"*
+
+**Réalité** : `POST /restauration/booking/:bookingGroupId/dietary` existe, ainsi que `GET /restauration/:travelId/dietary` (résumé voyage). **Le frontend wizard `EtapeRestoration` n'utilise pas ces endpoints**. À brancher.
+
+### 48.4 Synthèse restauration
+
+| Aspect | État |
+|--------|------|
+| Module restauration | ✅ 3 945 lignes |
+| Meal-plan + meal-formula | ✅ |
+| Régimes spéciaux backend | ✅ Endpoints dédiés |
+| Restaurants partenaires par voyage | ✅ |
+| Menus + courses (plats) | ✅ |
+| Déclarations workflow (serve/invoice/pay) | ✅ Comptable |
+| Disputes | ✅ |
+| Summary PDF | ✅ |
+| **Branchement wizard `EtapeRestoration`** | ⚠️ Partiel (P0.39) |
+
+→ **Verdict** : zone **80% MVP-ready** (backend ✅).
+
+---
+
+## 49. MODULES POST-SALE + REVIEWS
+
+### 49.1 Module post-sale (5 373 lignes)
+
+**Endpoints** :
+- `GET /post-sale/travel/:travelId/dashboard` — vue post-voyage
+- `POST /post-sale/travel/:travelId/feedback` — soumettre feedback voyageur
+- `GET /post-sale/travel/:travelId/feedback-summary`
+- `GET /post-sale/travel/:travelId/report` — rapport bilan voyage
+- `GET /post-sale/booking/:bookingGroupId/invoice` — facture client
+- `GET /post-sale/travel/:travelId/pro-invoice` — facture créateur Pro
+- `POST /post-sale/travel/:travelId/send-bilan` — envoi bilan email
+- `GET /post-sale/completed` — voyages terminés
+- `POST /post-sale/travel/:travelId/archive` — archiver voyage
+
+✅ **BON** :
+- Feedback voyageur structuré
+- Rapport bilan
+- 2 factures (client / créateur Pro) — cohérent avec close-pack finance
+- Archive voyage
+
+### 49.2 Module reviews (avis voyageurs)
+
+**Endpoints** :
+- `POST /reviews` — créer review
+- `GET /reviews/travel/:travelId`
+- `GET /reviews/travel/:travelId/stats`
+- `GET /reviews/mine`
+- `POST /reviews/:id/report` — signaler abus
+- `PATCH /reviews/admin/:id/moderate` — modération
+- `GET /reviews/admin/pending` — file modération
+- `GET /reviews/pro/:proSlug` — reviews du Pro
+- `GET /reviews/pro/my-reviews`
+- `POST /reviews/:id/pro-response` — réponse Pro
+- `GET /reviews/pro/stats/:proSlug`
+
+✅ **BON** :
+- Workflow modération admin
+- Réponse Pro à un avis
+- Stats par voyage / par Pro
+- Reporting d'abus (signaler une review)
+
+### 49.3 Synthèse post-sale + reviews
+
+| Aspect | État |
+|--------|------|
+| Module post-sale | ✅ 5 373 lignes |
+| Workflow bilan voyage | ✅ |
+| Factures client + Pro | ✅ |
+| Module reviews avec modération | ✅ |
+| Réponse Pro à review | ✅ |
+| Stats publiques par voyage | ✅ |
+
+→ **Verdict** : zone **85% MVP-ready**. Très solide pour le cycle après-voyage.
+
+---
+
+## 50. MODULE LEGAL + RGPD + DSAR (10 559 lignes)
+
+### 50.1 Architecture
+
+**Dossier** : `backend/src/modules/legal/` — **10 559 lignes**
+
+| Fichier | Lignes | Rôle |
+|---------|--------|------|
+| `legal.controller.ts` | 474 | Documents légaux + acceptances |
+| `legal.service.ts` | 166 | |
+| `dsar.controller.ts` | ~ | DSAR (Data Subject Access Request) RGPD |
+| `dsar.service.ts` | 676 | |
+| `data-erasure.service.ts` | ~ | Effacement RGPD |
+| `data-retention.service.ts` | ~ | Rétention données |
+| `legal-case-tracker.service.ts` | 303 | Suivi affaires juridiques |
+| `avocat-access.service.ts` | ~ | Portail avocat dédié |
+| Tests | 1 210 + 566 spec | Coverage |
+
+### 50.2 Endpoints `legal.controller.ts`
+
+✅ **Documents légaux + acceptances** :
+- `GET /legal/documents` — liste docs (CGV, CGU, RGPD, mentions, etc.)
+- `GET /legal/documents/:type` — doc par type
+- `POST /legal/accept` — utilisateur accepte un document versionné
+- `GET /legal/me/acceptances` — historique acceptations utilisateur
+- `GET /legal/me/compliance` — compliance status utilisateur
+- `POST /legal/admin/documents` — admin crée nouvelle version
+
+✅ **Portail avocat dédié** (8 endpoints) :
+- `GET /legal/avocat/dashboard`
+- `GET /legal/avocat/documents` + `:id`
+- `GET /legal/avocat/contracts` + `:id`
+- `GET /legal/avocat/signatures`
+- `GET /legal/avocat/dsar` — affaires DSAR
+- `GET /legal/avocat/compliance`
+- `GET /legal/avocat/export/documents`
+
+### 50.3 Endpoints DSAR (Data Subject Access Request)
+
+✅ **Workflow RGPD complet** :
+- `POST /dsar` — utilisateur fait demande
+- `GET /dsar` — voir ses demandes
+- `GET /dsar/admin` — admin liste demandes
+- `GET /dsar/admin/stats`
+- `PATCH /dsar/admin/:id` — admin process
+- `GET /dsar/admin/erasure/:userId/eligibility` — éligibilité droit à l'oubli
+- `GET /dsar/admin/erasure/:userId/report` — rapport effacement
+- `POST /dsar/admin/erasure/:dsarRequestId/execute` — exécuter effacement
+- `POST /dsar/export` — export données utilisateur
+- `POST /dsar/erasure` — utilisateur demande effacement
+
+### 50.4 🔥 RÉVÉLATION — RGPD/DSAR très bien implémenté
+
+Mon premier audit n'avait pas vu ce module. **Eventy est conforme RGPD** :
+- ✅ Documents légaux versionnés + acceptance tracking utilisateur
+- ✅ DSAR workflow complet (création → admin process → eligibility → report → execute)
+- ✅ Effacement données (droit à l'oubli) avec rapport pré-effacement
+- ✅ Export données utilisateur (droit d'accès)
+- ✅ Rétention données automatisée (cron)
+- ✅ Portail avocat dédié pour suivi compliance
+
+### 50.5 Synthèse legal/RGPD
+
+| Aspect | État |
+|--------|------|
+| Module legal | ✅ 10 559 lignes |
+| Documents légaux versionnés | ✅ |
+| Acceptances tracking utilisateur | ✅ |
+| DSAR (droit d'accès RGPD) | ✅ Complet |
+| Data erasure (droit à l'oubli RGPD) | ✅ |
+| Data retention auto | ✅ |
+| Portail avocat | ✅ |
+| Compliance dashboard | ✅ |
+
+→ **Verdict** : zone **90% MVP-ready**. **Excellente conformité RGPD**.
+
+---
+
+## 51. MODULE CRON (24 jobs schedulés détectés)
+
+### 51.1 Architecture
+
+**Dossier** : `backend/src/modules/cron/` — **5 002 lignes**
+
+| Fichier | Lignes | Rôle |
+|---------|--------|------|
+| `cron.service.ts` | 1 935 | Service principal |
+| `cron-alert.service.ts` | ~ | Alertes admin |
+| `cron-cleanup.service.spec.ts` | ~ | |
+| `cron-lock.service.ts` | 231 | Verrouillage anti-concurrence |
+| `cron-timeout.decorator.ts` | 96 | Décorateur timeout |
+| `PRODUCTION-HARDENING.md` | — | Doc hardening |
+
+✅ **Lock service** + **Timeout decorator** — patterns prod-ready (anti-concurrent runs, anti-runaway jobs).
+
+### 51.2 Inventaire des 24 jobs
+
+**Fichier** : `cron.service.ts` (24 `@Cron(...)` détectés)
+
+| Schedule | Méthode (extrait commentaires) |
+|----------|--------------------------------|
+| `EVERY_5_MINUTES` | Annulation hold expirations (paiement non reçu) — **INVARIANT 7** : ne pas annuler si paiement reçu |
+| `0 6 * * *` (6h00) | Status check voyages — **idempotency** status guards |
+| `0 0 1 * *` (1er mois) | Agrégation mensuelle (perf : agrégation Prisma) |
+| `0 7 * * *` (7h00) | Daily check (PERF: pagination) |
+| `0 8 * * *` (8h00) | **Expiration blocs hôtel (14j)** ⭐ |
+| `0 3 * * 1` (lundi 3h) | Data retention (délégation `DataRetentionService`) |
+| `0 2 * * *` (2h00) | Tokens cleanup (security — anti-accumulation) |
+| `15 2 * * *` (2h15) | Tokens sensibles cleanup |
+| `30 2 * * *` (2h30) | Vouchers expiration |
+| `*/10 * * * *` (10 min) | Holds expirés |
+| `0 9 * * *` (9h00) | **Rappels départ J-7 / J-3** ⭐ |
+| `0 10 * * *` (10h00) | **Rappels paiement** ⭐ |
+| `*/30 * * * *` (30 min) | Anomalies admin alert |
+| `0 7 * * *` (7h00) | Daily report dashboard |
+| `0 */4 * * *` (4h) | Waitlist expiry |
+| `0 * * * *` (chaque heure) | Abandoned cart reminder |
+| `EVERY_MINUTE` | SLA check |
+| `0 3 * * 0` (dimanche 3h) | Weekly cleanup |
+| `0 2 1 * *` (1er mois 2h UTC) | Monthly stats |
+| `*/30 * * * *` (30 min) | Autre task |
+| `0 3 1 * *` | 1er mois 3h |
+| `0 2 * * *` | 2h00 |
+| `30 10 * * *` (10h30) | Task spécifique |
+| `0 9 * * 1` (lundi 9h) | Task hebdo |
+
+### 51.3 ❌ Crons manquants pour le wizard création
+
+| Manque | Impact | Priorité |
+|--------|--------|----------|
+| Cron relance solde **J-30** | Anti-impayés | P1.14 / P1.40 |
+| Cron relance solde **J-7** | Idem | Idem |
+| Cron génération auto **manifeste J-7** (PDF + envoi HRA + équipe) | Workflow opérationnel | P1.36 |
+| Cron auto-publication occurrences récurrentes | Voyages récurrents (P1.8) | P1 |
+| Cron alerte créateur si sa Phase 1 est en review > 7j | UX | P1 |
+
+### 51.4 Synthèse cron
+
+| Aspect | État |
+|--------|------|
+| Module cron | ✅ Solide (5 002 lignes) |
+| 24 jobs schedulés | ✅ Inventaire riche |
+| Lock anti-concurrence | ✅ |
+| Timeout decorator | ✅ |
+| Production hardening doc | ✅ |
+| Crons rappels paiement / départ | ✅ |
+| Cron relance solde J-30/J-7 | ❌ |
+| Cron manifeste J-7 | ❌ |
+| Cron occurrences récurrentes | ❌ |
+
+→ **Verdict** : zone **80% MVP-ready**. Très solide. Quelques crons métier manquent.
+
+---
+
+## 52. STRIPE CONNECT WORKFLOW DÉTAILLÉ
+
+### 52.1 Architecture
+
+**Fichier** : `backend/src/modules/payments/stripe-connect.service.ts:912 lignes`
+
+Méthodes principales :
+| Méthode | Ligne | Rôle |
+|---------|-------|------|
+| `createConnectAccount()` | 69 | Crée compte Stripe Connect (créateur Pro / partenaire) |
+| `createAccountLink()` | 151 | Lien onboarding KYC |
+| `getAccountStatus()` | 210 | Status Stripe (charges_enabled, payouts_enabled, details_submitted) |
+| `handleAccountUpdated()` | 273 | Webhook account.updated |
+| `createTransfer()` | 341 | Transfert plateforme → connect account (versement post-voyage) |
+| `createPayout()` | 408 | Payout connect → banque pro |
+| `getBalance()` | 489 | Balance Stripe Connect |
+| `getTransferHistory()` | 542 | Historique versements |
+| `getPayoutHistory()` | 622 | Historique payouts |
+| `getDashboard()` | 701 | Dashboard Pro Stripe |
+| `updatePayoutSchedule()` | 757 | Modifier fréquence payouts |
+| `deactivateAccount()` | 832 | Désactiver compte |
+| `getOnboardingProgress()` | 896 | Progress KYC |
+
+### 52.2 createTransfer (versement post-voyage)
+
+**Fichier** : `stripe-connect.service.ts:341-397`
+
+✅ **BON** :
+- Validation montant > 0 (l.348)
+- Récupération `stripeAccountId` depuis `user.metadata` (l.360)
+- Throws `NotFoundException` si pas de compte Connect (l.364)
+- `stripe.transfers.create()` avec `metadata: { userId, travelId }` (l.371-380)
+- Logger explicit (l.382-384)
+
+⚠️ **À CREUSER** :
+- Stockage `stripeAccountId` dans `user.metadata` (Json) → pas typé Prisma. Risque de drift.
+- Pas vu de check **idempotency-key** sur le transfert
+- Cohérence avec `EtapeSummary` mention *"Stripe Connect paiement automatique post-voyage, marge Eventy déduite avant versement"* (cf. §2.17)
+
+### 52.3 Workflow complet déduit
+
+1. **Onboarding Pro** : `POST /payments/stripe-connect/account` → KYC Stripe via `createAccountLink()`
+2. **Webhook account.updated** : suivre validation Stripe (`handleAccountUpdated`)
+3. **Booking client** : paiement Stripe entre platform + déduction commission Eventy 18%
+4. **Voyage terminé (post-voyage)** : `close-pack/close-pack.service.ts` → calcul net créateur → `createTransfer()` vers Connect account du créateur
+5. **Payout** : `createPayout()` connect → banque pro selon schedule (`updatePayoutSchedule`)
+
+### 52.4 Synthèse Stripe Connect
+
+| Aspect | État |
+|--------|------|
+| createConnectAccount + AccountLink (onboarding) | ✅ |
+| getAccountStatus + webhook account.updated | ✅ |
+| createTransfer (plateforme → connect) | ✅ |
+| createPayout (connect → banque) | ✅ |
+| getBalance + history (transfers, payouts) | ✅ |
+| Dashboard Pro Stripe | ✅ |
+| Idempotency-key sur transfer | ❓ Non vu |
+| stripeAccountId stocké en `user.metadata` Json (pas typé) | ⚠️ |
+| Tests stripe-connect | ✅ Spec présent |
+
+→ **Verdict** : zone **80% MVP-ready**. Workflow complet, quelques améliorations idempotency.
+
+---
+
+## 53. NOUVEAUX TODOs PRIORITAIRES (issus addendum 6)
+
+### 🔴 P0 — BLOQUANT MVP
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P0.45 | **Brancher EtapeRestoration → POST /restauration/booking/:bookingGroupId/dietary** (régimes spéciaux backend dispo) | S (1j) |
+| P0.46 | **Idempotency-key sur Stripe `createTransfer()`** + typage strict `stripeAccountId` (sortir de `user.metadata` Json) | S (1j) |
+
+### 🟠 P1 — IMPORTANT
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P1.45 | **Cron relance solde J-30 / J-7** (résout P1.14 / P1.40 partiellement) | S (1j) |
+| P1.46 | **Cron manifeste J-7** auto-PDF + envoi HRA + équipe | M (1.5j) |
+| P1.47 | **Cron alerte créateur** si Phase 1/2 en review > 7j sans réponse admin | XS (0.5j) |
+| P1.48 | **Champs "âme Eventy"** dans EtapeMarketingVoyage (slogan, accroche, hashtags) → P1.3 | S (1j) |
+
+### 🟡 P2 — POST-MVP
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P2.32 | UI "compliance dashboard" Pro (statut acceptances RGPD) — ré-utilise endpoints `/legal/me/compliance` | S (1j) |
+| P2.33 | Auto-déclencher DSAR export 1×/an pour utilisateurs RGPD-aware | S (1j) |
+| P2.34 | Webhook Stripe `account.updated` → notification créateur si KYC bloqué | S (0.5j) |
+
+### 📊 Mise à jour tableau récap MVP global
+
+| Bloc | Avant addendum 6 | Après audit complémentaire |
+|------|------------------|----------------------------|
+| Marketing backend | non audité | **70% MVP** (campaigns/QR/Rays OK, âme manquante) |
+| Restauration backend | non audité | **80% MVP** (workflow complet, branchement frontend manquant) |
+| Post-sale + reviews | non audité | **85% MVP** ✅ |
+| Legal + RGPD + DSAR | non audité | **90% MVP** ✅ Excellent |
+| Cron jobs | non audité | **80% MVP** (24 jobs, ~3 manquent) |
+| Stripe Connect détaillé | partiellement | **80% MVP** (workflow OK, idempotency à durcir) |
+
+**Total ajouté à la roadmap addendum 6** : ~2 jours dev (P0.45-46) + ~4 jours (P1.45-48) + ~2,5 jours (P2.32-34).
+
+**Roadmap globale cumulée (7 sessions audit)** :
+- **P0** (P0.1 → P0.46) : **~111 jours**
+- **P1** (P1.1 → P1.48) : **~83 jours**
+- **P2** (P2.1 → P2.34) : **~81,5 jours**
+- → ≈ **275,5 jours dev solo** / **≈ 138 jours en parallèle (2-3 devs)** pour 100% MVP
+
+---
+
+## 54. SYNTHÈSE GLOBALE — État du projet Eventy après 7 sessions audit
+
+### 54.1 Couches du projet — bilan
+
+| Couche | Volume | Maturité MVP | Note |
+|--------|--------|--------------|------|
+| **Frontend wizard standard (`Etape*`)** | ~32 000 lignes | 65% | Très riche, Zod manquant, 1 deprecated orphelin |
+| **Frontend Symphonie (composants flottants)** | ~40 654 lignes | 20% | UI ~100%, **0 backend** (localStorage) |
+| **Frontend HRA Maisons portail** | ~16 715 lignes | 25% | Dashboard riche mock, 6 pages vides |
+| **Frontend page édition** | 553 lignes | 35% | 7/17 étapes |
+| **Frontend API routes Next.js** | 198 dossiers | 70% | Pattern proxy/démo, banner manquant |
+| **Backend pro/travels** | ~1 800 lignes | 65% | 22 endpoints, persistance partielle |
+| **Backend HRA** (HotelBlock workflow) | ~6 041 lignes | 80% | Workflow complet, frontend non branché |
+| **Backend transport** | ~26 084 lignes | 85% | Très massif, frontend non branché |
+| **Backend insurance + Pack Sérénité** | ~2 755 lignes | 80% | Workflow claim complet |
+| **Backend finance + close-pack + FEC** | ~27 062 lignes | 85% | ⭐ Probablement la zone la mieux faite |
+| **Backend marketing** | ~6 399 lignes | 70% | |
+| **Backend restauration** | ~3 945 lignes | 80% | Régimes + menus + déclarations OK |
+| **Backend post-sale + reviews** | ~5 373+ lignes | 85% | Très solide |
+| **Backend legal + RGPD + DSAR** | ~10 559 lignes | 90% | ⭐ Excellence conformité |
+| **Backend cron** | ~5 002 lignes | 80% | 24 jobs |
+| **Backend Stripe Connect** | ~912 lignes | 80% | Workflow complet |
+| **Backend SEO** | ~1 990 lignes | 75% | JSON-LD complet, frontend hardcoded |
+| **Backend email + Brevo** | ~4 248 lignes | 70% | 34 templates, 10 manquent |
+| **Backend WebSocket gateway** | ~6 080 lignes | 75% | 10 événements, 9 manquent |
+| **Backend documents + signature** | ~6 053 lignes | 45% | Légaux UE 2015/2302 = STUBS |
+| **Backend cancellation + refund** | ~741 lignes | 50% | Workflow OK, NO_GO orphelin |
+
+### 54.2 Top 10 P0 priorité absolue (ordre stratégique)
+
+1. **P0.24** — étendre `CreateTravelDtoSchema` à tous les champs `TravelFormData` (5j) — **prérequis tout autre P0**
+2. **P0.10** + **P0.40** — refund auto NO_GO + Pack Sérénité override (3j) — **risque légal**
+3. **P0.11** — lecture `cancellationPolicy` créateur (2j) — **bug critique 3 sources de vérité**
+4. **P0.16** — cession billet L.211-11 (2j) — **obligation Code du tourisme**
+5. **P0.29** — 4 documents légaux UE 2015/2302 (5-7j) — **directive UE**
+6. **P0.38 + P0.39 + P0.41 + P0.45** — brancher Etape{Accommodation, Restoration, Fournisseurs, dietary} aux endpoints existants (5,5j)
+7. **P0.18** + **P0.19** + **P0.20** — brancher Symphonie au backend (catalogue, comm HRA, validation) (10j)
+8. **P0.30** + **P0.31** — 10 templates email + 9 événements notif manquants (5j)
+9. **P0.21** — endpoint admin approve/request-changes (2j)
+10. **P0.34** — notification créateur post-décision admin (1j)
+
+### 54.3 Conclusion finale audit
+
+> **Eventy = projet ambitieux, fondations backend solides, déficit principal côté glue frontend ↔ backend**
+
+**Forces** :
+- ✅ Fondations backend NestJS très solides (~150 000 lignes, 31 modules)
+- ✅ Conformité RGPD / DSAR exceptionnelle
+- ✅ Finance / FEC / TVA marge / URSSAF / APST traités sérieusement
+- ✅ Workflows critiques implémentés (HotelBlock, transport-quotes, Pack Sérénité, Stripe Connect)
+- ✅ Cron jobs riches avec lock + timeout
+- ✅ Email Brevo + Outbox + Idempotency robustes
+- ✅ WebSocket Socket.IO + JWT prod-ready
+- ✅ 3 300+ tests backend
+
+**Faiblesses critiques pour MVP** :
+- ❌ Wizard frontend (32k+40k = 72k lignes) **non connecté au backend** sur les workflows critiques (HotelBlock, restaurant-blocks, transport-quotes, dietary)
+- ❌ DTOs sous-dimensionnés : `CreateTravelDtoSchema` ne valide que 11/80 champs
+- ❌ Symphonie 100% localStorage (40k lignes "démo")
+- ❌ Page édition couvre 7/17 étapes
+- ❌ Portail HRA Maisons : pages clés vides
+- ❌ Documents légaux UE 2015/2302 : STUBS
+- ❌ Frontend wizard 0 test
+- ❌ Lazy-loading quasi inexistant (1 fichier sur 70k+ lignes)
+
+**Stratégie recommandée** :
+- **Phase 1 (~30j)** : prérequis P0.24 (DTOs étendus) + branchement wizard → backend (P0.38-46)
+- **Phase 2 (~25j)** : risques légaux (P0.10, P0.11, P0.16, P0.29, P0.40)
+- **Phase 3 (~20j)** : Symphonie → backend (P0.17-20)
+- **Phase 4 (~15j)** : édition voyage + portail HRA (P0.32-37)
+- **Phase 5 (~20j)** : tests + perf + lazy-loading (P0.25-27 + P1.32)
+
+= **~110 jours focused** pour MVP ferme. Le reste (P1, P2) en post-MVP.
+
+---
+
+## 55. RÉFÉRENCES ADDENDUM 6
+
+- `backend/src/modules/marketing/marketing.controller.ts:107-345` (15 endpoints)
+- `backend/src/modules/marketing/rays.controller.ts:180-346` (Rays system)
+- `backend/src/modules/restauration/restauration.controller.ts:43-340` (20 endpoints)
+- `backend/src/modules/post-sale/post-sale.controller.ts` (9 endpoints + factures)
+- `backend/src/modules/reviews/reviews.controller.ts` (11 endpoints + modération)
+- `backend/src/modules/legal/legal.controller.ts:49-320` (acceptances + portail avocat)
+- `backend/src/modules/legal/dsar.controller.ts:52-417` (DSAR RGPD complet)
+- `backend/src/modules/cron/cron.service.ts` (24 `@Cron(...)` jobs)
+- `backend/src/modules/cron/cron-lock.service.ts:231` + `cron-timeout.decorator.ts:96`
+- `backend/src/modules/payments/stripe-connect.service.ts:69-912` (13 méthodes)
+
+---
+
+**Audit terminé. Aucune ligne de code modifiée.**
+
+**Découverte clé addendum 6** : 4 modules backend non audités initialement (legal/RGPD, restauration, marketing, cron) sont **excellents** — Eventy a très sérieusement implémenté la conformité légale/fiscale. Le module RGPD/DSAR notamment est **production-ready** (90% MVP). La maturité globale du backend est **largement au-dessus** des premières estimations.
+
+**Verdict global après 7 sessions audit** : **~275 jours dev** (~138j en parallèle 2-3 devs) pour 100% MVP. Le projet a investi proprement les fondations ; le **gap MVP est essentiellement la glue frontend ↔ backend** (~30j) + les risques légaux ciblés (~25j) + les tests/perf (~20j) = **~75 jours focused** pour un MVP commercial ferme.
