@@ -32,6 +32,13 @@
 | `Eventy-Life-Calendrier-J0-J90.docx` / `.pdf` | Calendrier prévisionnel des étapes administratives J0 → J+90 (13 KB · 2 pages) — détail semaine par semaine, scénarios raccourci 45 j et allongé 90 j, acteurs mobilisés |
 | `Eventy-Life-Contrat-Type-Vendeur-Createur.docx` / `.pdf` | Modèle de contrat-cadre vendeur / créateur (15 KB · 3 pages) — 12 articles + bloc signature + 5 annexes au contrat, cohérent avec le modèle de marges (5 % HT vendeur · 3 pts créateur sur HRA) |
 
+### Contrats types séparés (par rôle)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Contrat-Vendeur.docx` / `.pdf` | Contrat dédié vendeur indépendant (14 KB · 3 pages) — 12 articles, **commission 5 % HT du CA voyage placé** clairement libellée, modalités de paiement (21 jours), cumul possible avec rôle créateur, RGPD, durée 1 an renouvelable |
+| `Eventy-Life-Contrat-Createur.docx` / `.pdf` | Contrat dédié créateur de voyages (14 KB · 3 pages) — 11 articles, **rémunération marge HRA + 3 % sur HRA refacturé** (cumulable 5 % vendeur), forfait accompagnement séparé, propriété intellectuelle co-titulaire avec mention de paternité |
+| `Eventy-Life-Contrat-HRA-Partenaire.docx` / `.pdf` | Contrat-cadre Hôtel · Restaurant · Activité (14 KB · 3 pages) — 10 articles, conditions de référencement, modalités de commande + barème d'annulation, mécanique de marge socle Eventy explicitée (TVA marge tourisme), paiement à 30 jours fin de mois, possibilité « vendeur » offerte au HRA (5 % HT) |
+
 ### Dossier investisseur (capital-risque)
 | Fichier | Description |
 |---------|-------------|
@@ -62,6 +69,8 @@
 | `../../scripts/garanties/investisseur-to-pdf.py` | Convertisseur dossier investisseur .docx → .pdf imprimable |
 | `../../scripts/garanties/build-dossier-subventions.js` | Générateur Node.js du dossier subventions publiques |
 | `../../scripts/garanties/subventions-to-pdf.py` | Convertisseur dossier subventions .docx → .pdf imprimable |
+| `../../scripts/garanties/build-contrats-types.js` | Générateur Node.js des 3 contrats types séparés (vendeur, créateur, HRA partenaire) |
+| `../../scripts/garanties/contrats-types-to-pdf.py` | Convertisseur batch des 3 contrats .docx → .pdf imprimables prêts à signer |
 
 ## Régénération
 
