@@ -46,6 +46,13 @@
 | `Eventy-Life-Bon-De-Commande-HRA.docx` / `.pdf` | Modèle type de bon de commande HRA (13 KB · 2 pages) — identification du bon, identification du PARTENAIRE, détail des prestations avec prix HT/TTC, allergènes signalés, coordonnées opérationnelles voyage, **barème d'annulation** cohérent avec contrat-cadre HRA, double bloc signature « Bon pour accord » |
 | `Eventy-Life-Mentions-Legales.docx` / `.pdf` | Mentions légales du site eventylife.fr (13 KB · 3 pages) — 11 sections : éditeur, directeur publication, hébergement (Scaleway/Vercel), activité réglementée (IM Atout France, garantie APST, RC Pro), RGPD et DPO, propriété intellectuelle, crédits photos, cookies, CGV, médiation, loi applicable |
 
+### Documents voyageur (RGPD, cookies, information précontractuelle)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Confidentialite-RGPD.docx` / `.pdf` | Politique de confidentialité complète conforme RGPD (14 KB · 3 pages) — 12 sections : responsable, DPO, catégories de données, finalités et bases légales, destinataires, transferts hors UE, droits voyageur (accès, rectification, effacement, portabilité), réclamation CNIL, sécurité, notification de violation, cookies, modifications |
+| `Eventy-Life-Politique-Cookies.docx` / `.pdf` | Politique cookies conforme CNIL (13 KB · 2 pages) — catégories de cookies, liste exhaustive (session, panier, consentement, mesure d'audience anonyme, marketing opt-in), bandeau de consentement, modification des préférences, durée 13 mois |
+| `Eventy-Life-Information-Precontractuelle.docx` / `.pdf` | Formulaire d'information précontractuelle voyageur (14 KB · 3 pages) — strictement conforme à l'arrêté du 1er mars 2018, droits essentiels du Code du Tourisme, caractéristiques principales du voyage à compléter, prix et modalités de paiement, garantie financière APST, ligne d'urgence 24/7, médiation MTV, acceptation horodatée |
+
 ### Dossier investisseur (capital-risque)
 | Fichier | Description |
 |---------|-------------|
@@ -80,6 +87,8 @@
 | `../../scripts/garanties/contrats-types-to-pdf.py` | Convertisseur batch des 3 contrats .docx → .pdf imprimables prêts à signer |
 | `../../scripts/garanties/build-cgv-bons-mentions.js` | Générateur Node.js des CGV, bon de commande HRA, mentions légales |
 | `../../scripts/garanties/cgv-bons-mentions-to-pdf.py` | Convertisseur batch CGV/bon/mentions .docx → .pdf imprimables |
+| `../../scripts/garanties/build-voyageur-docs.js` | Générateur Node.js des 3 documents voyageur (RGPD, cookies, info précontractuelle) |
+| `../../scripts/garanties/voyageur-docs-to-pdf.py` | Convertisseur batch 3 docs voyageur .docx → .pdf imprimables |
 
 ## Régénération
 
