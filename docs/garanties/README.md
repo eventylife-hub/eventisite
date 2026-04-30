@@ -52,6 +52,17 @@
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
 | `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
 
+### Politique RSE & engagements éthiques
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-RSE.docx` / `.pdf` | Politique de Responsabilité Sociétale d'Entreprise (15 KB · 4 pages) — 7 sections : cadre référence (ISO 26000, ODD ONU, Code Tourisme), pilier économique (architecture distribuée, engagements chiffrés, économie circulaire territoriale), pilier social (voyageurs, indépendants, équipe), pilier environnemental (transport bas-carbone, hébergement éco-responsable, numérique, compensation carbone An 2-3), pilier gouvernance (transparence, éthique, gouvernance partagée), 10 indicateurs RSE chiffrés An 1/An 5, engagement de progrès (audit RSE An 3, Pacte Mondial ONU An 2, B Corp An 4) |
+
+### Documents support voyageurs
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-FAQ-Voyageurs.docx` / `.pdf` | FAQ voyageurs pour eventylife.fr (14 KB · 3 pages) — 23 questions organisées en 6 sections : avant de réserver (7 Q), modifications/annulations (4 Q), pendant le voyage (5 Q), après le voyage (3 Q), ambassadeurs/fidélité (2 Q), données personnelles (2 Q) + contacts |
+| `Eventy-Life-Procedure-Reclamation-Detaillee.docx` / `.pdf` | Manuel support détaillé pour les réclamations voyageurs (15 KB · 4 pages) — 6 sections : périmètre/définitions, 5 étapes de traitement (accusé 48h → instruction 7-21j → réponse J+30 → règlement → médiation MTV), barème indicatif d'indemnisation (10 cas avec montants et niveau de validation), indicateurs de pilotage, cas particuliers (réclamation collective, fait HRA, abusive, sécurité), outils et templates |
+
 ### Brochure commerciale grand public
 | Fichier | Description |
 |---------|-------------|
@@ -134,6 +145,8 @@
 | `../../scripts/garanties/catalogue-marketing-avocat-to-pdf.py` | Convertisseur batch des 3 documents complémentaires .docx → .pdf imprimables |
 | `../../scripts/garanties/build-comptable-brochure-termsheet.js` | Générateur Node.js des 3 documents (note expert-comptable, brochure commerciale, term sheet Seed) |
 | `../../scripts/garanties/comptable-brochure-termsheet-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-rse-faq-reclamation.js` | Générateur Node.js des 3 documents (politique RSE, FAQ voyageurs, procédure réclamation détaillée) |
+| `../../scripts/garanties/rse-faq-reclamation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
