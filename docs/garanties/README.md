@@ -52,6 +52,13 @@
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
 | `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
 
+### Documents complémentaires
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Catalogue-Programmes-Saison-1.docx` / `.pdf` | Catalogue 10 voyages représentatifs saison 1 (15 KB · 5 pages) — Marrakech 749 € · Lisbonne 599 € · Barcelone 549 € · Pays-Bas 679 € · Prague 729 € · Andalousie 899 € · Côte d'Azur 639 € · Toscane 849 € · Belgique 399 € · B2B Côte d'Azur 1 200 € HT — fiche détaillée par voyage avec durée, période, transport, hébergement, programme, capacité, public cible · panier moyen pondéré 800 € TTC |
+| `Eventy-Life-Plan-Marketing-An-1.docx` / `.pdf` | Plan marketing & go-to-market An 1 (15 KB · 3 pages) — 8 sections : segmentation 3 cibles principales (B2C 35-55 ans · seniors · B2B), stratégie d'acquisition (réseau distribué 5 % HT vendeur en levier principal + canaux digitaux + partenariats CSE/associations seniors/ANCV), mobilisation réseau (cibles An 1 par catégorie), programme ambassadeur, calendrier trimestriel T1 → T4, KPIs marketing, **budget 30 K€ (0,2 % CA)**, stratégie contenu et tests |
+| `Eventy-Life-Note-Avocat-Tourisme.docx` / `.pdf` | Note de référence pour l'avocat tourisme partenaire (15 KB · 4 pages) — synthèse des points juridiques à valider avant dépôt officiel : 12 documents à relire (priorisés), 6 axes de conformité (Code Tourisme, directive UE 2015/2302, RGPD, Code consommation, Code commerce, fiscalité), 12 questions ouvertes (structurantes, opérationnelles, stratégiques), pièces complémentaires, **calendrier J+7 → J+42** avec 6 livrables attendus |
+
 ### Documents juridiques corporate
 | Fichier | Description |
 |---------|-------------|
@@ -107,6 +114,8 @@
 | `../../scripts/garanties/manuel-incident-to-pdf.py` | Convertisseur manuel d'incident .docx → .pdf imprimable |
 | `../../scripts/garanties/build-juridique-corporate.js` | Générateur Node.js des 3 documents juridiques corporate (statuts SAS, pacte d'associés, onboarding partenaires) |
 | `../../scripts/garanties/juridique-corporate-to-pdf.py` | Convertisseur batch des 3 documents juridiques corporate .docx → .pdf imprimables |
+| `../../scripts/garanties/build-catalogue-marketing-avocat.js` | Générateur Node.js des 3 documents complémentaires (catalogue programmes, plan marketing, note avocat tourisme) |
+| `../../scripts/garanties/catalogue-marketing-avocat-to-pdf.py` | Convertisseur batch des 3 documents complémentaires .docx → .pdf imprimables |
 
 ## Régénération
 
