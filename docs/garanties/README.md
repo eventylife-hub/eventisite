@@ -73,6 +73,13 @@
 | `Eventy-Life-Plan-Formation-Accompagnateur.docx` / `.pdf` | Programme de formation initiale et continue (14 KB · 3 pages) — formation initiale 1 journée (8 modules de 30 min à 2 h, du manifeste Eventy à la mise en situation), première mission en binôme, formation continue 21h/an minimum (8 modules disponibles : recyclage manuel d'incident, PSC1, droit du tourisme, RGPD, animation de groupe, langues, nouvelles destinations, retours d'expérience), évaluation annuelle, évolution professionnelle, **financement intégral par Eventy** des modules officiels |
 | `Eventy-Life-Politique-Avis-Voyageurs.docx` / `.pdf` | Politique de gestion des avis voyageurs / e-réputation (14 KB · 3 pages) — 6 sections : principes (authenticité, apprentissage, réponse 100 %), 7 plateformes suivies, process de réponse (templates positif/neutre/négatif), 7 KPIs e-réputation (note moyenne ≥ 4,5/5 cible), politique anti-faux avis, communication transparente sur les avis |
 
+### Conformité éthique et accessibilité
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Anti-Corruption.docx` / `.pdf` | Politique anti-corruption inspirée de la loi Sapin 2 — adaptée PME (14 KB · 3 pages) — 7 sections : cadre référence, définitions (corruption, trafic d'influence, concussion, favoritisme), engagements (tolérance zéro, cadeaux ≤ 30 €, refus paiements de facilitation, règles sponsoring/conflits/recrutement), 6 risques cartographiés, dispositif de prévention, sanctions, engagement personnel du dirigeant |
+| `Eventy-Life-Procedure-Signalement.docx` / `.pdf` | Procédure de signalement / lanceurs d'alerte — loi Waserman 2022 (14 KB · 3 pages) — 8 sections : cadre légal, champ d'application (personnes protégées, faits signalables), 3 canaux (interne `alerte@eventylife.fr`, externe Défenseur des droits/CNIL/AFA, divulgation publique en dernier recours), traitement (accusé J+7, instruction J+30, décision J+90), **protections du lanceur d'alerte** (confidentialité, protection contre représailles, aide juridique), sanctions fausses alertes, registre confidentiel, communication |
+| `Eventy-Life-Politique-Accessibilite-PMR.docx` / `.pdf` | Politique d'accessibilité PMR (14 KB · 3 pages) — engagement loi 2005-102 + directive UE 2015/2302 + convention ONU : information précontractuelle (pictogrammes, descriptions détaillées, champ besoin spécifique), mesures opérationnelles (transport, hébergement, restauration, activités, accompagnement humain), animaux d'assistance, tarification sans surcoût, **transparence sur les limites**, 7 indicateurs d'engagement de progrès An 1/An 5, partenariats (label Tourisme et Handicap An 2), recours et médiation |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -174,6 +181,8 @@
 | `../../scripts/garanties/banque-pca-presse-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-charte-audit-tableaubord.js` | Générateur Node.js des 3 documents (charte fournisseurs, audit qualité HRA, tableau de bord) |
 | `../../scripts/garanties/charte-audit-tableaubord-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-conformite-ethique.js` | Générateur Node.js des 3 documents (anti-corruption, signalement lanceurs d'alerte, accessibilité PMR) |
+| `../../scripts/garanties/conformite-ethique-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
