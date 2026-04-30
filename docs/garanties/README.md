@@ -52,6 +52,13 @@
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
 | `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
 
+### Engagements partenaires HRA et pilotage opérationnel
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Fournisseurs.docx` / `.pdf` | Charte fournisseurs / code de conduite partenaires HRA (14 KB · 3 pages) — 6 sections : engagement éthique (probité, lois locales, conformité tourisme), engagement social (droits humains, conditions de travail, diversité), engagement environnemental (hygiène, sourcing responsable, énergie/eau), engagement opérationnel (capacité 38 pax, qualité, confidentialité), modalités d'audit et conséquences, signature en double exemplaire — opposable au Partenaire |
+| `Eventy-Life-Procedure-Audit-Qualite-HRA.docx` / `.pdf` | Procédure d'audit qualité HRA détaillée (14 KB · 3 pages) — audit initial préalable au référencement (préparation J-7, visite J0 2-4 h, synthèse et décision), 3 grilles d'audit dédiées (hôtellerie, restauration, activités) avec critères et notation /5, audits récurrents annuels, audits inopinés (voyageurs-mystères), conséquences selon note moyenne (premium · validé · sous surveillance · suspendu · déréférencement immédiat) |
+| `Eventy-Life-Tableau-Bord-Operationnel.docx` / `.pdf` | Tableau de bord opérationnel KPIs (15 KB · 4 pages) — KPIs hebdomadaires (activité commerciale, opérationnel terrain, trésorerie), KPIs mensuels (financier consolidé, qualité voyageur, écosystème partenaires, marketing), KPIs trimestriels (reporting APST, comité conformité), KPIs annuels (bilan financier certifié, rapport d'activité), outils et automatisation, **cadence de revue détaillée** (lundi 9h, mensuel, trimestriel, annuel) |
+
 ### Documents opérationnels critiques (banque, continuité, presse)
 | Fichier | Description |
 |---------|-------------|
@@ -165,6 +172,8 @@
 | `../../scripts/garanties/charte-formation-avis-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-banque-pca-presse.js` | Générateur Node.js des 3 documents (banque domiciliataire, PCA global, dossier de presse) |
 | `../../scripts/garanties/banque-pca-presse-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-charte-audit-tableaubord.js` | Générateur Node.js des 3 documents (charte fournisseurs, audit qualité HRA, tableau de bord) |
+| `../../scripts/garanties/charte-audit-tableaubord-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
