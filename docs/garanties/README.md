@@ -52,6 +52,13 @@
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
 | `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
 
+### Documents opérationnels critiques (banque, continuité, presse)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Document-Banque-Domiciliataire.docx` / `.pdf` | Document de référence pour la banque domiciliataire (15 KB · 3 pages) — préparation à l'ouverture des comptes professionnels J0 → J+60 : identité société, modèle économique distribué, volumes financiers prévisionnels An 1-5, besoins bancaires (compte d'exploitation + compte cantonné), services attendus, garantie de prêt bancaire, documents à transmettre, calendrier d'ouverture, banques pressenties (traditionnelle + en ligne), engagements d'Eventy |
+| `Eventy-Life-Plan-Continuite-Activite.docx` / `.pdf` | PCA global · résilience corporate (15 KB · 4 pages) — distinct du Manuel d'incident voyage : 10 risques majeurs cartographiés (cyber, dirigeant indisponible, fournisseur défaillant, perte garantie APST, perte IM, crise sanitaire/géopolitique, défaillance Stripe, litige collectif, échec levée, catastrophe siège), 5 procédures détaillées par scénario, cellule de crise corporate (9 rôles), reprise après crise, **tests et exercices annuels obligatoires** |
+| `Eventy-Life-Dossier-Presse.docx` / `.pdf` | Dossier de presse pour journalistes et médias (15 KB · 3 pages) — histoire d'Eventy (constat, solution, modèle distribué), chiffres clés An 1/An 5, **5 angles éditoriaux** (souveraineté économique, transparence prix, voyage comme bien public, autodidacte 1M+ lignes code, tourisme social et redistributif), destinations phares, vision long terme, fondateur David Eventy, 5 verbatim utilisables, visuels disponibles, garanties professionnelles, contact presse |
+
 ### Qualité accompagnateur et e-réputation
 | Fichier | Description |
 |---------|-------------|
@@ -156,6 +163,8 @@
 | `../../scripts/garanties/rse-faq-reclamation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-charte-formation-avis.js` | Générateur Node.js des 3 documents (charte qualité accompagnateur, plan formation, politique avis voyageurs) |
 | `../../scripts/garanties/charte-formation-avis-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-banque-pca-presse.js` | Générateur Node.js des 3 documents (banque domiciliataire, PCA global, dossier de presse) |
+| `../../scripts/garanties/banque-pca-presse-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
