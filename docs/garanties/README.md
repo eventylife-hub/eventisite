@@ -52,6 +52,13 @@
 | `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
 | `Eventy-Life-Onboarding-Partenaires.docx` / `.pdf` | Guide pratique d'accueil partenaires (15 KB · 4 pages) — Partie A Créateur (6 étapes), Partie B Vendeur (4 étapes), Partie C HRA (5 étapes + audit qualité), Partie D engagements communs + points de contact (7 emails dédiés) |
 
+### Qualité accompagnateur et e-réputation
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Qualite-Accompagnateur.docx` / `.pdf` | Charte qualité accompagnateur Eventy Life standalone (15 KB · 4 pages) — 7 articles : éthique professionnelle (probité, discrétion, égalité de traitement, sobriété), disponibilité (présence permanente, joignable 24/7, coordination Eventy), compétences (connaissances destination, langues, PSC1, manuel d'incident, capacité humaine), obligations préalables (8 justificatifs dont casier B3 vierge), évaluation continue (notation post-voyage, seuils d'alerte avec déréférencement à 3 alertes < 4/5, audit qualité), trousse opérationnelle, engagement signé en double exemplaire |
+| `Eventy-Life-Plan-Formation-Accompagnateur.docx` / `.pdf` | Programme de formation initiale et continue (14 KB · 3 pages) — formation initiale 1 journée (8 modules de 30 min à 2 h, du manifeste Eventy à la mise en situation), première mission en binôme, formation continue 21h/an minimum (8 modules disponibles : recyclage manuel d'incident, PSC1, droit du tourisme, RGPD, animation de groupe, langues, nouvelles destinations, retours d'expérience), évaluation annuelle, évolution professionnelle, **financement intégral par Eventy** des modules officiels |
+| `Eventy-Life-Politique-Avis-Voyageurs.docx` / `.pdf` | Politique de gestion des avis voyageurs / e-réputation (14 KB · 3 pages) — 6 sections : principes (authenticité, apprentissage, réponse 100 %), 7 plateformes suivies, process de réponse (templates positif/neutre/négatif), 7 KPIs e-réputation (note moyenne ≥ 4,5/5 cible), politique anti-faux avis, communication transparente sur les avis |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -147,6 +154,8 @@
 | `../../scripts/garanties/comptable-brochure-termsheet-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-rse-faq-reclamation.js` | Générateur Node.js des 3 documents (politique RSE, FAQ voyageurs, procédure réclamation détaillée) |
 | `../../scripts/garanties/rse-faq-reclamation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-charte-formation-avis.js` | Générateur Node.js des 3 documents (charte qualité accompagnateur, plan formation, politique avis voyageurs) |
+| `../../scripts/garanties/charte-formation-avis-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
