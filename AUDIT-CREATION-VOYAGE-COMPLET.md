@@ -703,6 +703,450 @@ Top 5 manques bloquants :
 
 ---
 
+# 🔄 ADDENDUM — Audit complémentaire 2026-04-30 (sessions 2)
+
+> Suite à demande PDG, audit approfondi de 3 zones moins couvertes initialement :
+> 1. Pré-paiements et acomptes
+> 2. Conditions d'annulation par voyageur
+> 3. Modifications après publication
+>
+> **Aucune ligne de code modifiée.**
+
+---
+
+## 9. PRÉ-PAIEMENTS ET ACOMPTES
+
+### 9.1 Frontend wizard — config créateur
+
+**Fichier** : `EtapePricing.tsx:1091-1122`, `types.ts:966`
+
+✅ **BON** :
+- Champ `depositPercent: 30 | 50 | 100` exposé au créateur (3 boutons radio)
+- Texte UI : *"Solde à régler 30 jours avant le départ"* (l.1098, J-30 par défaut, hardcodé)
+- 3 options : 30% (acompte minimal), 50% (équilibré), 100% (paiement complet)
+- Affichage live du montant en € selon `prixPublicAuto`
+
+⚠️ **MAUVAIS / RIGIDE** :
+- Le créateur ne peut pas configurer un **échéancier multi-versements** (ex : 3 versements 33%/33%/34%)
+- La date du solde (J-30) est **hardcodée** dans le texte UI, pas paramétrable par le créateur
+- Pas de champ `paymentSchedule`, `installments`, `balanceDueDays` dans `TravelFormData`
+
+### 9.2 Backend — modèles Prisma
+
+**Fichier** : `backend/prisma/schema.prisma`
+
+❌ **CRITIQUE — MISSING** :
+- **Modèle `Travel`** (l.1900-2000) : aucun champ `depositPercent`, `balanceDueDays`, `paymentSchedule`. Le seul champ paiement est `cancellationPolicy: Json?` (l.1970, free-form, pas typé)
+- **Modèle `BookingGroup`** (l.2247) : pas de champs `depositAmountTTC` / `balanceDueDate` / `installments`. Seul `totalAmountTTC` existe
+- **Modèle `RoomBooking`** (l.2289) : pas de deposit/balance. `bookingLockedAt` (l.2303) verrouille la chambre dès 1er paiement → empêche modification/annulation libre
+- **Modèle `PaymentContribution`** (l.2359) : `amountTTC` global, **pas de typage `DEPOSIT`/`BALANCE`/`INSTALLMENT`**
+- **Modèle `PreReservation`** (l.2479-2503) : SEUL modèle avec `depositAmountTTC` (l.2485) + `holdExpiresAt` (l.2486) + statut `PENDING_DEPOSIT` — **réservé aux groupes CE/associations**, pas aux clients individuels
+
+→ **Le `depositPercent` choisi par le créateur dans le wizard n'est stocké NULLE PART au backend** (le frontend l'écrit dans `TravelFormData` mais le service `pro-travels.service.ts` ne l'enregistre pas).
+
+### 9.3 Backend — services paiement
+
+**Fichiers** :
+- `backend/src/modules/checkout/checkout.service.ts`
+- `backend/src/modules/checkout/split-pay.service.ts:412 lignes`
+- `backend/src/modules/payments/stripe-connect.service.ts`
+
+❌ **MISSING** :
+- **Aucune méthode** `createDeposit()`, `payBalance()`, `scheduleInstallment()`
+- `checkout.service.ts` : aucune mention de `deposit`, `installment`, `balance`, `escrow` (grep négatif)
+- `bookings.service.ts` : idem, aucune logique acompte/solde
+
+⚠️ **PARTIAL** :
+- `SplitPayService` (l.1-411) gère le **paiement partagé entre co-voyageurs d'une même chambre** (chacun paie sa part via `PaymentInviteToken` envoyé par email/SMS/WhatsApp/lien)
+  - Endpoints : `generateInviteToken`, `validateInviteToken`, `processContributorPayment`, `getPaymentProgress`, `revokeInviteToken`
+  - **Note** : c'est du split intra-chambre, **PAS** du paiement échelonné dans le temps (acompte/solde)
+- `stripe-connect.service.ts:489-525` : `getBalance()` lit la balance Stripe Connect du compte créateur (≠ balance d'une réservation)
+
+### 9.4 Frontend client — checkout / paiement
+
+**Fichiers** :
+- `frontend/app/(checkout)/checkout/start/`, `step-1/`, `step-2/`, `step-3/`, `recap/`, `confirmation/`
+- `frontend/app/(public)/voyages/[slug]/checkout/page.tsx`
+- `frontend/app/(client)/client/reservation/page.tsx`
+- `frontend/app/(client)/client/paiements/page.tsx`
+
+❌ **MISSING** :
+- **Aucune** UI client pour choisir entre "payer 30% maintenant + 70% J-30" ou "tout payer maintenant"
+- `grep deposit/acompte/installment` sur `(checkout)/` : **0 résultat** → checkout client = paiement unique
+- `client/reservation/page.tsx:367` : texte affiché *"Acompte à la confirmation. Annulation flexible selon nos CGV. Le voyage part même si le bus n'est pas plein"* — promesse vide, pas de logique acompte/solde derrière
+
+⚠️ **PARTIAL** :
+- `client/paiements/page.tsx` (page liste paiements client) : existe mais ne montre pas un échéancier multi-versements
+
+### 9.5 Cron paiement / relances solde
+
+**Fichier** : `backend/src/modules/cron/`
+
+❌ **MISSING** : aucun service `BalanceReminderService`, `InstallmentDueService`, `PaymentScheduleCron`. Aucune relance automatique J-35 / J-30 / J-7 pour le solde n'est implémentée.
+
+⚠️ **PARTIAL** :
+- `backend/src/modules/checkout/hold-expiry.service.ts` : gère uniquement l'expiration des `holdExpiresAt` sur RoomBooking et PreReservation (libère la chambre si pas payé à temps), pas un échéancier solde
+
+### 9.6 Garantie financière APST + escrow
+
+**Fichier** : `backend/src/modules/finance/bank-import.service.ts:21-157`
+
+✅ **BON** :
+- Champ `isEscrow: boolean` sur les comptes bancaires (`BankAccount.isEscrow`)
+- `bank-import.service.ts:146` calcule `escrowCents = comptes isEscrow=true`
+- Sépare `escrowCents` vs `operationalCents`
+
+❌ **MISSING — CRITIQUE LÉGAL APST** :
+- **Aucune logique** qui flag automatiquement les acomptes clients comme "fonds clients à séquestrer" (cf. obligation APST : fonds clients ne doivent pas être utilisés pour le fonctionnement avant prestation)
+- `PaymentContribution` n'a pas de champ `isClientFunds` ou `escrowAccountId`
+- Reporting APST mensuel (montant des fonds clients en cours) : **non implémenté**
+- Cf. memory `project_garantie_apst.md` : garantie cible An 1 = 1,6 M€ → traçabilité escrow obligatoire
+
+### 9.7 Cohérence CGV vs code (acomptes)
+
+**Fichier** : `pdg-eventy/01-legal/CGV-TEMPLATE.md:33-40` (Article 4)
+
+> CGV dit : *"Acompte 30% à la réservation. Solde 70% au plus tard J-30 avant le départ. Split payment via Stripe disponible."*
+
+❌ **MISMATCH** :
+- CGV impose **acompte 30% fixe** + solde J-30
+- Wizard frontend permet 30 / 50 / 100% au choix créateur — **incohérent avec CGV**
+- Backend n'implémente AUCUN des deux → l'utilisateur paie 100% à la réservation de fait
+
+### 9.8 Synthèse pré-paiements / acomptes
+
+| Aspect | Frontend wizard | Frontend client | Backend | Cohérence CGV |
+|--------|-----------------|-----------------|---------|---------------|
+| `depositPercent` configurable | ✅ (30/50/100) | ❌ (paiement unique) | ❌ (non stocké) | ❌ CGV dit 30% fixe |
+| Solde J-30 paramétrable | ❌ (hardcodé texte) | ❌ | ❌ | ⚠️ CGV dit J-30 |
+| Échéancier multi-versements | ❌ | ❌ | ❌ | — |
+| Split intra-chambre | — | ⚠️ | ✅ SplitPayService | ✅ CGV mentionne |
+| Relance solde automatique | — | — | ❌ | ❌ |
+| Fonds clients en escrow APST | — | — | ⚠️ structure DB OK, logique manquante | ❌ |
+
+→ **Verdict** : zone **0% MVP-ready**. Le créateur choisit un acompte que personne ne lit, le client paie tout d'un coup, aucune relance, aucun escrow APST. Risque légal majeur (APST + CGV menteuses).
+
+---
+
+## 10. CONDITIONS D'ANNULATION PAR VOYAGEUR
+
+### 10.1 Frontend wizard — choix créateur
+
+**Fichier** : `EtapePricing.tsx:36-55, 1124-1153`, `types.ts:781, 967`
+
+✅ **BON** :
+- `cancellationPolicy: 'FLEXIBLE' | 'STANDARD' | 'STRICTE'` (3 options radio)
+- Descriptions UI claires :
+  - **FLEXIBLE** : Remboursement 100% si annulation jusqu'à J-30
+  - **STANDARD** : Remboursement 75% si annulation jusqu'à J-45
+  - **STRICTE** : Remboursement 50% si annulation jusqu'à J-60
+
+⚠️ **RIGIDE** :
+- 3 niveaux figés, aucun barème personnalisable par le créateur
+- Pas d'affichage du Pack Sérénité (qui devrait override le barème selon CGV)
+
+### 10.2 Backend — modèle + service annulation
+
+**Fichiers** :
+- `backend/prisma/schema.prisma:4603-4637` (model `Cancellation`)
+- `backend/src/modules/cancellation/cancellation.service.ts:741 lignes`
+- `backend/src/common/constants/business.constants.ts:37-51`
+
+✅ **BON** :
+- Module `cancellation` complet : `CancellationController` + `CancellationService` + DTO
+- Workflow `PENDING → APPROVED/REJECTED → REFUNDED` avec `processCancellation()` (admin valide), `processRefund()` (Stripe)
+- Idempotency keys + transactions atomiques (TOCTOU race protection)
+- Audit log automatique (`AuditLog`)
+- Email `booking-canceled` envoyé au client (template présent)
+- **V25** : option `preferCredit` (avoir) au lieu de remboursement Stripe → `processCredit()` crée `Invoice(CREDIT_NOTE)` (l.4617-4621 schema, 365j validité par défaut)
+- Vérif `bookingLockedAt` post-paiement (anti-double-annulation)
+
+❌ **CRITIQUE — POLITIQUE HARDCODÉE** :
+
+```ts
+// business.constants.ts:37-51
+CANCELLATION_THRESHOLDS = { FULL_REFUND_DAYS: 60, HIGH_REFUND_DAYS: 30, MEDIUM_REFUND_DAYS: 15, LOW_REFUND_DAYS: 7 }
+CANCELLATION_REFUND_RATES = { FULL: 100, HIGH: 70, MEDIUM: 50, LOW: 30, NONE: 0 }
+```
+
+```ts
+// cancellation.service.ts:235-256 — computeRefundAmount()
+> 60j  : 100% - 50€ frais
+30-60j : 70%
+15-30j : 50%
+7-15j  : 30%
+< 7j   : 0%
+```
+
+→ Le service **IGNORE** le `cancellationPolicy` choisi par le créateur dans le wizard. Que le créateur ait choisi FLEXIBLE, STANDARD ou STRICTE, le service applique **toujours** le même barème codé en dur. Le champ `Travel.cancellationPolicy: Json?` (l.1970) n'est jamais lu par `cancellationService`.
+
+### 10.3 Cohérence frontend ↔ backend ↔ CGV
+
+| Délai | Frontend FLEXIBLE | Frontend STANDARD | Frontend STRICTE | Backend (hardcodé) | CGV (Article 6) |
+|-------|-------------------|-------------------|------------------|--------------------|-----------------| 
+| > 60j | 100% | 100% | 100% | **100% - 50€** | **Frais 35-50€** (= ~98% refund) ✅ |
+| 30-60j | 100% | 75% | 50% | **70%** | **70%** (frais 30%) ✅ |
+| 15-30j | — | — | — | **50%** | **50%** (frais 50%) ✅ |
+| 7-15j | — | — | — | **30%** | **25%** (frais 75%) ❌ écart 5pts |
+| < 7j | — | — | — | **0%** | **0%** (frais 100%) ✅ |
+
+→ **3 sources de vérité différentes**. Le wizard ment au créateur (son choix n'est jamais appliqué). Le backend est ~aligné avec CGV sauf 1 palier (7-15j : 30% vs 25%).
+
+### 10.4 Pack Sérénité (assurance annulation)
+
+**Fichier CGV** : `pdg-eventy/01-legal/CGV-TEMPLATE.md:58, 77-86` (Article 9)
+
+> CGV dit : *"Avec le Pack Sérénité (inclus) : annulation toutes causes remboursée à 100% du prix du voyage (hors frais de dossier), quelle que soit la date d'annulation."*
+
+❌ **CRITIQUE — NON IMPLÉMENTÉ** :
+- `cancellation.service.ts:216-270` (`computeRefundAmount`) **n'a pas** de branche `if (packSerenite) return 100%`
+- `RoomBooking.insuranceSelected` (l.2308) existe mais n'est pas lu par le calcul de remboursement
+- `EtapePricing.tsx:250-261` configure le Pack Sérénité côté création (35€ public / 15€ coût), mais le déclencheur côté annulation est absent
+- Pas de modèle `InsuranceClaim` lié au refund (le Pack Sérénité couvre quels motifs ? maladie, deuil, perte emploi ?)
+
+→ **Le Pack Sérénité est facturé au client mais n'a aucun effet sur les remboursements**. Risque commercial + légal (publicité mensongère).
+
+### 10.5 Cession billet (substitution voyageur)
+
+**Fichier** : `backend/prisma/schema.prisma:2337-2356` (model `BookingTransfer`)
+
+⚠️ **MODÈLE EXISTE, IMPLÉMENTATION ABSENTE** :
+- `BookingTransfer` : `roomBookingId`, `fromUserId`, `toUserId`/`toEmail`, `status` (PENDING/APPROVED), `reason`, `approvedByUserId`
+- `grep "BookingTransfer\|transferBooking\|cession"` sur `backend/src/modules/` : **0 résultat**
+- **Aucun controller ni service** n'utilise ce modèle → cession billet (Art. L.211-11 Code du tourisme, OBLIGATION LÉGALE) **non implémentée**
+- CGV-TEMPLATE.md:44 le promet pourtant : *"Transfert de contrat à un tiers possible"*
+
+### 10.6 Annulation partielle (1 voyageur sur 4)
+
+❌ **NON IMPLÉMENTÉE** :
+- `Cancellation` est attaché au `BookingGroup` entier, pas à un `RoomBooking` ni à un payeur individuel
+- Si 1 voyageur sur 4 annule, soit toute la chambre est annulée, soit l'annulation est refusée
+- Pas de logique de re-répartition `PaymentContribution` après désistement partiel
+
+### 10.7 Frontend client — annulation
+
+**Fichier** : `frontend/app/(client)/client/reservations/[id]/annuler/page.tsx:371 lignes`
+
+✅ **BON** :
+- Page dédiée `/client/reservations/:id/annuler` complète
+- Appel `GET /client/bookings/:id/calculate-refund` (preview du montant)
+- Affiche `policyApplied` ("60+ jours : 100% - 50€"), `refundAmountCents`, `cancellationFeeCents`
+- Validation Zod (`cancellationSchema`)
+- Toast notification + ConfirmDialog
+- Fallback DEMO_RESERVATIONS si API indispo
+
+⚠️ **MAUVAIS** :
+- Affiche le barème backend hardcodé, pas celui choisi par le créateur (cohérent avec ce que le client va recevoir, mais ment vis-à-vis du wizard créateur)
+- Pas de mention "Pack Sérénité couvert ?" dans l'UI annulation
+
+### 10.8 Synthèse annulation voyageur
+
+| Aspect | État |
+|--------|------|
+| Choix créateur (FLEXIBLE/STANDARD/STRICTE) | ⚠️ Frontend OK, **ignoré par backend** |
+| Barème backend cohérent CGV | ⚠️ Aligné sauf 1 palier (7-15j) |
+| Pack Sérénité override | ❌ Promis CGV, **non implémenté** |
+| Cession billet (L.211-11) | ❌ Modèle DB OK, **0 implémentation** |
+| Annulation partielle | ❌ |
+| Avoir (preferCredit) | ✅ V25 implémenté |
+| Page client `/annuler` | ✅ Existe et fonctionne |
+| Audit log + email confirmation | ✅ |
+| Idempotency Stripe refund | ✅ |
+
+→ **Verdict** : zone **40% MVP-ready**. Le moteur d'annulation (refund Stripe + avoir) fonctionne, mais 3 fonctionnalités contractuellement promises sont absentes (choix créateur, Pack Sérénité, cession). **Risque légal moyen** (Art. L.211-11 obligatoire).
+
+---
+
+## 11. MODIFICATIONS APRÈS PUBLICATION
+
+### 11.1 Backend — verrouillage strict
+
+**Fichier** : `backend/src/modules/pro/travels/pro-travels.service.ts:214-222`
+
+```ts
+// updateTravel()
+if (!['DRAFT', 'CHANGES_REQUESTED'].includes(travel.status)) {
+  throw new BadRequestException('Impossible de modifier ce voyage dans son état actuel');
+}
+```
+
+✅ **BON** :
+- Édition autorisée **uniquement** si statut `DRAFT` ou `CHANGES_REQUESTED`
+- Une fois `PUBLISHED` / `SALES_OPEN` → toute modif refusée par 400
+- Cohérent avec sécurité contrat client (les voyageurs réservés ne doivent pas voir leurs conditions changer en silence)
+
+❌ **TROP STRICT** :
+- Aucun mécanisme de **modification mineure** vs **essentielle** (CGV Article 7 : *"Modification mineure : pas d'indemnité"*)
+- Aucune correction typo/photo possible après publication sans repasser par DRAFT (= retire le voyage du marché temporairement)
+- Aucun champ `lockedFields` (tarif, dates, destination) vs `editableFields` (description, photos, équipe)
+
+### 11.2 Détection modifications "essentielles" (loi tourisme FR)
+
+**Loi** : Code du tourisme Art. L.211-13 + CGV-TEMPLATE.md:62-68 (Article 7)
+
+> Hausse > 8% du prix → client peut annuler sans frais
+> Modification d'hébergement, horaires +2h, destination → client peut accepter / remplacement / annuler avec remboursement intégral
+
+❌ **NON IMPLÉMENTÉ** :
+- Pas de champ `essentialChange`, `materialChange`, `priceIncreasePercent` sur `Travel`
+- Pas de détecteur (compare avant/après modif) ni service `EssentialChangeDetector`
+- Pas de workflow consentement client (`clientConsent: PENDING/ACCEPTED/REJECTED`)
+- **Risque légal majeur** : si une modif essentielle est appliquée, les clients ne sont jamais informés ni consultés
+
+### 11.3 Wizard nouveau/ — édition vs création
+
+**Fichier** : `frontend/app/(pro)/pro/voyages/[id]/edit/page.tsx`
+
+⚠️ **PARTIAL** :
+- Le même wizard `nouveau/components/Etape*.tsx` est réutilisé pour l'édition (import depuis `../../nouveau/components/`)
+- **Aucune restriction UI** : le frontend ne vérifie pas le statut → tous les champs restent éditables visuellement
+- Le PATCH backend refuse, mais le frontend ne prévient **pas** l'utilisateur en amont → friction UX (créateur édite, sauvegarde, reçoit erreur 400)
+- Pas de mode "mode lecture seule" ni de surlignage des champs verrouillés
+
+### 11.4 Notification clients d'une modification
+
+**Fichier** : `backend/src/modules/notifications/notification-events.service.ts`
+
+❌ **MISSING** :
+- Service `NotificationEventsService` existe avec méthodes génériques (`notifyTeamInvite`, `notifyNewFollower`)
+- **Aucune méthode dédiée** `notifyBookersOfTravelChange()`, `notifyEssentialChange()`, `notifyMinorChange()`
+- Templates email cherchés : `travel-modified`, `essential-change`, `minor-update` → **aucun trouvé**
+- L'événement `TRAVEL_UPDATED` existe dans le système d'événements mais n'a pas de listener qui notifie les clients réservés
+
+### 11.5 Historique / audit trail
+
+**Fichier** : `backend/prisma/schema.prisma:2214-2227, 4xxx`
+
+✅ **PARTIEL** :
+- `GoDecisionLog` : historique décisions NO_GO (action, decidedByUserId, reason, occupancyAtDecision)
+- `NoGoNotification` : notifications NO_GO clients (WARNING, FINAL, CANCELED)
+- `AuditLog` : audit générique des actions admin (utilisé par cancellation, etc.)
+
+❌ **MISSING** :
+- Aucun `TravelChangelog` / `TravelHistory` / `TravelVersion` pour tracker les changements (titre, prix, dates, photos)
+- Pas de diff "avant/après" entre versions du voyage
+- Impossible de répondre à : *"Qu'est-ce qui a changé sur ce voyage entre X et Y ?"*
+
+### 11.6 Annulation par créateur / Eventy (NO_GO)
+
+**Fichier** : `backend/src/modules/pro/travels/pro-travels.service.ts:551-586`
+
+✅ **BON** :
+- Endpoint `POST /pro/travels/:id/cancel` (controller l.245)
+- Accepte `reason: string`
+- Bascule statut → `CANCELED`
+- Validation : pas déjà `COMPLETED` / `CANCELED` / `NO_GO`
+- Enums : `NoGoNotifType { WARNING, FINAL, CANCELED }`, `GoAction { CONFIRM_DEPARTURE, CANCEL_NO_GO, EXTEND_DEADLINE }`
+
+❌ **CRITIQUE** :
+- **Aucun refund automatique** : le service annule le voyage mais n'appelle **pas** `cancellationService.processRefund()` pour les bookings existants
+- Pas de note de crédit / avoir auto pour les clients déjà engagés
+- Pas de notification automatique aux clients réservés ("Votre voyage X est annulé, voici votre remboursement")
+- Workflow incomplet : créateur clique "Annuler", puis ?
+
+### 11.7 Frontend pro — gestion voyages publiés
+
+**Fichier** : `frontend/app/(pro)/pro/voyages/page.tsx`
+
+✅ **BON** :
+- Liste voyages avec statuts (DRAFT, PHASE1_REVIEW, PUBLISHED, SALES_OPEN, COMPLETED, CANCELED)
+- Onglets de filtrage par statut
+- Bouton "Modifier" → lien `/[id]/edit`
+- Bouton "Dupliquer" → clonage saison
+- Affichage `placesVendues` / `totalReservations` / occupancy
+
+❌ **MISSING** :
+- **Bouton "Annuler le voyage"** absent de la page détail `/[id]/page.tsx` (alors que l'endpoint backend existe !)
+- Pas de bouton "Forcer NO_GO"
+- Pas d'écran "Modification du voyage publié" qui montrerait : impact (X clients réservés), modifs essentielles vs mineures, déclencher consentement
+- Pas de bandeau d'alerte sur la page liste si X jours avant `noGoDeadline`
+
+### 11.8 Synthèse modifications après publication
+
+| Aspect | État |
+|--------|------|
+| Verrouillage backend post-PUBLISHED | ✅ Strict (peut-être trop) |
+| Distinction modif mineure / essentielle | ❌ Non implémentée |
+| Détection hausse prix > 8% | ❌ |
+| Workflow consentement client | ❌ |
+| Frontend UI édition restrictive | ❌ Aucune restriction visuelle |
+| Notification clients modif | ❌ Aucun template ni listener |
+| Historique TravelChangelog | ❌ Pas de tracking versions |
+| Endpoint NO_GO créateur | ✅ Existe |
+| Refund auto sur NO_GO | ❌ **CRITIQUE** |
+| Bouton "Annuler le voyage" frontend | ❌ Endpoint orphelin |
+| Audit trail (AuditLog, GoDecisionLog) | ✅ Partiel |
+
+→ **Verdict** : zone **30% MVP-ready**. Le verrouillage backend protège contre les modifs sauvages mais bloque aussi les corrections mineures légitimes. La fonctionnalité NO_GO/Cancel existe côté backend mais n'est ni branchée au remboursement ni accessible côté frontend pro. **Risque légal majeur** sur loi tourisme Art. L.211-13 (modifs essentielles).
+
+---
+
+## 12. NOUVEAUX TODOs PRIORITAIRES (issus de l'addendum)
+
+### 🔴 P0 — BLOQUANT MVP / RISQUE LÉGAL
+
+| # | Tâche | Fichier(s) | Effort |
+|---|-------|-----------|--------|
+| P0.10 | **Refund auto sur NO_GO** : `pro-travels.service.ts:cancelTravel()` doit appeler `cancellationService.processRefund()` pour chaque bookingGroup actif | `pro-travels.service.ts`, `cancellation.service.ts` | M (2j) |
+| P0.11 | **Lecture du `cancellationPolicy` créateur** : `cancellation.service.ts:computeRefundAmount()` doit lire `Travel.cancellationPolicy` (FLEXIBLE/STANDARD/STRICTE) au lieu d'utiliser les constantes hardcodées | `cancellation.service.ts`, `business.constants.ts` | M (2j) |
+| P0.12 | **Pack Sérénité override** : si `RoomBooking.insuranceSelected=true`, le refund doit être 100% (cf. CGV Art. 9) | `cancellation.service.ts`, `RoomBooking` | S (1j) |
+| P0.13 | **Bouton "Annuler le voyage"** frontend `/pro/voyages/[id]/page.tsx` (endpoint backend existe déjà) | frontend pro `[id]/page.tsx` | S (1j) |
+| P0.14 | **Acompte/solde stockés en DB** : ajouter `Travel.depositPercent: Int @default(30)`, `Travel.balanceDueDays: Int @default(30)` ; lire dans le wizard et propager au booking | `schema.prisma`, `pro-travels.service.ts`, `EtapePricing.tsx` | M (2j) |
+| P0.15 | **Détection modif essentielle** : service `EssentialChangeDetector` qui compare avant/après et flag les changements (prix +8%, dates, destination, hébergement) → bloque sans consentement client | `pro-travels.service.ts`, nouveau service | L (3j) |
+| P0.16 | **Cession billet** (Art. L.211-11) : controller + service utilisant le model `BookingTransfer` existant | nouveau `booking-transfer.module.ts` | M (2j) |
+
+### 🟠 P1 — IMPORTANT
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P1.11 | Notifications clients modif voyage (templates email + listener `TRAVEL_UPDATED`) | M (1.5j) |
+| P1.12 | `TravelChangelog` model + endpoint history | M (1.5j) |
+| P1.13 | Frontend pro : UI "Modifier voyage publié" avec impact (X clients réservés) + distinction champs lockés/editables | M (2j) |
+| P1.14 | Cron `BalanceReminderService` : J-35 / J-30 / J-7 relance solde | M (1.5j) |
+| P1.15 | Annulation partielle (1 voyageur sur N) : repenser `Cancellation` au niveau `PaymentContribution` ou `RoomBooking` | L (3j) |
+| P1.16 | Wizard frontend : remplacer `depositPercent: 30/50/100` figé par éditeur d'échéancier multi-versements | M (2j) |
+| P1.17 | Reporting APST mensuel : query "fonds clients en escrow" | S (1j) |
+| P1.18 | Aligner palier 7-15j entre backend (30%) et CGV (25%) — choisir une source de vérité | XS (15min) |
+
+### 🟡 P2 — POST-MVP
+
+| # | Tâche | Effort |
+|---|-------|--------|
+| P2.11 | UI client choix "30% maintenant + 70% J-30" vs "100% maintenant" au checkout | M (1.5j) |
+| P2.12 | Page client "Mes paiements" avec échéancier visuel (acompte payé, solde dû, relances) | M (1.5j) |
+| P2.13 | Diff visuel des versions du voyage côté admin | M (2j) |
+| P2.14 | Option "remboursement partiel + avoir partiel" sur cancellation | S (1j) |
+| P2.15 | Workflow consentement client en cas de modif essentielle (UI accept/refuse/replace) | L (3j) |
+
+### 📊 Mise à jour du tableau récap MVP global
+
+| Bloc | Avant addendum | Après audit complémentaire |
+|------|----------------|----------------------------|
+| Pré-paiements / acomptes | non audité | **0% MVP** ❌ |
+| Annulation voyageur | non audité | **40% MVP** ⚠️ |
+| Modifications post-publication | non audité | **30% MVP** ⚠️ |
+
+**Total ajouté à la roadmap** : ~21 jours dev (P0.10-16) + ~13 jours (P1.11-18) + ~9 jours (P2.11-15)
+
+---
+
+## 13. RÉFÉRENCES ADDENDUM
+
+- `frontend/app/(pro)/pro/voyages/nouveau/components/EtapePricing.tsx:36-61, 1091-1153`
+- `frontend/app/(pro)/pro/voyages/nouveau/types.ts:781, 966-967`
+- `backend/prisma/schema.prisma:1970, 2247-2265, 2289-2336, 2337-2356, 2359-2401, 2479-2503, 4603-4637`
+- `backend/src/modules/cancellation/cancellation.service.ts:62-741`
+- `backend/src/modules/checkout/split-pay.service.ts:1-411`
+- `backend/src/modules/pro/travels/pro-travels.service.ts:214-222, 551-586`
+- `backend/src/modules/documents/legal-travel-documents.service.ts:1-120` (STUBS — à implémenter)
+- `backend/src/common/constants/business.constants.ts:37-51`
+- `frontend/app/(client)/client/reservations/[id]/annuler/page.tsx:1-371`
+- `pdg-eventy/01-legal/CGV-TEMPLATE.md:33-86` (Articles 4, 5, 6, 7, 9)
+
+---
+
 **Audit terminé. Aucune ligne de code modifiée.**
 
 **Prochaine action recommandée** (validation PDG requise) : démarrer P0.1 (bouton soumission) + P0.3 (notif HRA) + P0.4 (catalogue créateur) en parallèle.
+
+**Priorité légale immédiate** (addendum) : P0.10 (refund auto NO_GO) + P0.11 (lecture cancellationPolicy créateur) + P0.12 (Pack Sérénité override) + P0.16 (cession billet L.211-11). Sans ces 4, Eventy facture des promesses vides aux clients et viole 2 obligations légales du Code du tourisme.
