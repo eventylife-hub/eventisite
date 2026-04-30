@@ -46,6 +46,11 @@
 | `Eventy-Life-Bon-De-Commande-HRA.docx` / `.pdf` | Modèle type de bon de commande HRA (13 KB · 2 pages) — identification du bon, identification du PARTENAIRE, détail des prestations avec prix HT/TTC, allergènes signalés, coordonnées opérationnelles voyage, **barème d'annulation** cohérent avec contrat-cadre HRA, double bloc signature « Bon pour accord » |
 | `Eventy-Life-Mentions-Legales.docx` / `.pdf` | Mentions légales du site eventylife.fr (13 KB · 3 pages) — 11 sections : éditeur, directeur publication, hébergement (Scaleway/Vercel), activité réglementée (IM Atout France, garantie APST, RC Pro), RGPD et DPO, propriété intellectuelle, crédits photos, cookies, CGV, médiation, loi applicable |
 
+### Documents opérationnels internes
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Manuel-Incident-Voyage.docx` / `.pdf` | Manuel d'incident voyage — procédures cellule de crise (20 KB · 7 pages) — 7 parties : vue d'ensemble + ligne 24/7 + 4 niveaux de gravité avec procédures détaillées + composition cellule de crise + 5 procédures spécifiques (rapatriement médical, hébergement de secours, retard transport, crise géopolitique, décès) + trousse opérationnelle + débriefing post-incident |
+
 ### Documents voyageur (RGPD, cookies, information précontractuelle)
 | Fichier | Description |
 |---------|-------------|
@@ -57,6 +62,7 @@
 | Fichier | Description |
 |---------|-------------|
 | `Eventy-Life-Dossier-Investisseur.docx` / `.pdf` | Dossier de présentation aux investisseurs Seed et Série A (27 KB · 15 pages) — exec summary, marché, modèle, projections 5 ans, valorisation pré-money 4-6 M€, levée de fonds, risques, équipe |
+| `Eventy-Life-Pitch-Deck-Investisseurs.pptx` | Pitch deck 12 slides (476 KB · format 16:9 widescreen) — cover, problème, solution, marché, modèle économique, traction, roadmap timeline, projections financières 5 ans, concurrence, équipe, demande de financement (Seed + Série A), contact |
 
 ### Dossier subventions publiques
 | Fichier | Description |
@@ -89,6 +95,9 @@
 | `../../scripts/garanties/cgv-bons-mentions-to-pdf.py` | Convertisseur batch CGV/bon/mentions .docx → .pdf imprimables |
 | `../../scripts/garanties/build-voyageur-docs.js` | Générateur Node.js des 3 documents voyageur (RGPD, cookies, info précontractuelle) |
 | `../../scripts/garanties/voyageur-docs-to-pdf.py` | Convertisseur batch 3 docs voyageur .docx → .pdf imprimables |
+| `../../scripts/garanties/build-pitch-deck.js` | Générateur Node.js du pitch deck investisseurs (pptxgenjs · 12 slides 16:9) |
+| `../../scripts/garanties/build-manuel-incident.js` | Générateur Node.js du manuel d'incident voyage |
+| `../../scripts/garanties/manuel-incident-to-pdf.py` | Convertisseur manuel d'incident .docx → .pdf imprimable |
 
 ## Régénération
 
