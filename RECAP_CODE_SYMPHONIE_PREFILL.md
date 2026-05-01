@@ -27,8 +27,9 @@
 | 6 | `1e7c43f` | `a74c46a` | feat(round 4): merci symphony + transportQuoteValidated gate admin (TODO P0 #4) |
 | 7 | `3afcc57` | `f9ec0f0` | feat(round 5): TSP optimizer + Maps transfert + tier réel + bandeau pro devis transport |
 | 8 | `aa6006d` | `5f86ca6` | feat(round 6): partition frise (P1 #7) + auto-RFQ scaffold (P0 #3 partial) |
+| 9 | `88104e2` (front) + `5078eb2` (back) | `3400c5d` | feat(round 7): SymphonyMap (P1 #6) + backend auto-RFQ + /me/energy |
 
-Toutes les branches `master` (frontend) et `main` (eventisite) sont synchronisées.
+Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
 ---
 
@@ -409,16 +410,49 @@ Scaffold complet pour la génération automatique de devis transport :
 
 ---
 
+## 🎼 Round 7 — SymphonyMap + Backend endpoints (commit 9)
+
+3 nouveautés couvrant 3 TODOs P0/P1 majeurs.
+
+### Frontend
+
+#### `frontend/components/transport/SymphonyMap.tsx` (TODO P1 #6, 230 lignes)
+Carte Google Maps interactive avec polyline du trajet :
+- Mode 1 (clé API présente) : iframe Embed Directions avec route dessinée (origin + jusqu'à 23 waypoints + destination)
+- Mode 2 (sans clé) : sidebar liste cliquable + iframe Maps centrée sur 1er arrêt
+- Empty state si 0 arrêts, warning structurant si <2 GPS
+- Header : compteur GPS coverage + lien externe `dir/?api=1`
+- Footer : compte par type avec dots couleur (gold/ocean/mint)
+- Affichée sous SymphonyPartitionFrise dans `EtapeBusStops`
+
+### Backend NestJS
+
+#### `backend/src/modules/transport/transport-quotes.controller.ts` + `dto/auto-rfq.dto.ts`
+`POST /transport/auto-rfq` (TODO P0 #3) :
+- Reçoit `AutoRFQPayloadDto` (compose côté frontend `lib/transport/auto-rfq.ts`)
+- Map → `CreateQuoteRequestDto` (segments OUTBOUND/RETURN/TRANSFER)
+- Orchestre : `createQuoteRequest()` puis `broadcastQuoteToProviders()` (gracieux)
+- Retour : `{ rfqId, message, quoteRequest, broadcast, meta }`
+- DTO complet avec validation class-validator (7 classes nested)
+
+#### `backend/src/modules/client/client.controller.ts`
+`GET /client/me/energy` (cf. VoyageEnergyBadge front) :
+- Heuristique tier dérivé du nombre de bookings CONFIRMED/COMPLETED
+- Mapping aligné sur `PALIERS_ENERGY` frontend (STARTER → LEGEND)
+- Retour : `{ tier, balance, tripsCount, nextTier, pointsToNext, thresholds }`
+- TODO future : table `EnergyAccount` Prisma dédiée (pour l'instant scaffold)
+
+---
+
 ## 🟡 Hors scope — prochaines passes
 
-Identifiés mais non touchés (gros chantiers backend principalement) :
+Identifiés mais non touchés :
 
-1. **Endpoint backend `/api/pro/transport/auto-rfq`** — le frontend (auto-rfq.ts) pousse déjà le payload, le NestJS module `transport` doit le recevoir + broadcast emails loueurs (queue Bull).
-2. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
-3. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur.
-4. **Backend `transportQuoteValidated`** — exposer le champ dans la réponse de `/admin/travels/[id]` (et `/pro/travels/[id]`) côté backend NestJS.
-5. **API `/api/client/me/energy`** — exposer le tier du voyageur connecté (le frontend VoyageEnergyBadge la consomme déjà).
-6. **Carte interactive symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P1 #6 — visualisation Google Maps avec polyline du trajet TSP (la frise est le pendant chronologique, la carte serait le pendant géographique).
+1. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog (table partenaires HRA + arrêts validés du créateur).
+2. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur dédiée.
+3. **Backend `transportQuoteValidated`** — exposer le champ dans la réponse de `/admin/travels/[id]` (et `/pro/travels/[id]`) côté backend NestJS service `travels`.
+4. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
+5. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque déjà `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
 
 ---
 
@@ -434,7 +468,8 @@ Identifiés mais non touchés (gros chantiers backend principalement) :
 | 6. Round 4 (merci + admin gate) | 0 | 2 (merci + admin/voyages/[id]) | ~51 |
 | 7. Round 5 (TSP + Maps + tier + pro banner) | 1 (tsp-optimizer.ts) | 4 (EtapeBusStops, /pro/voyages/[id], transfert, VoyageEnergyBadge) | ~451 |
 | 8. Round 6 (partition frise + auto-RFQ) | 2 (SymphonyPartitionFrise.tsx + auto-rfq.ts) | 1 (EtapeBusStops) | ~525 |
-| **TOTAL** | **6** | **30** | **~2 397 lignes** |
+| 9. Round 7 (SymphonyMap + backend endpoints) | 2 (SymphonyMap.tsx + auto-rfq.dto.ts backend) | 3 (EtapeBusStops, transport-quotes.controller.ts, client.controller.ts) | ~685 |
+| **TOTAL** | **8** | **33** | **~3 082 lignes** |
 
 ---
 
