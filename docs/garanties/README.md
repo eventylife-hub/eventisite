@@ -129,6 +129,13 @@
 | `Eventy-Life-Charte-Editoriale.docx` / `.pdf` | Charte éditoriale Eventy (15 KB · 4 pages) — **5 piliers du ton Eventy** (chaleureux, direct, honnête, bienveillant, respectueux des intelligences), 13 mots à privilégier vs à éviter (« Voyage » vs séjour, « Tu » vs vous, « HRA partenaire » vs prestataire), interdictions (superlatifs vides, marketing manipulateur, jargon corporate, anglicismes inutiles, discriminant), règles typographiques (espace insécable, % séparateur milliers), capitalisations Eventy (« Eventy Life », « Pack Sérénité », « HRA »), adaptations par canal (web, email, réseaux, presse), **test final 5 questions devant le miroir** |
 | `Eventy-Life-Strategie-Reseaux-Sociaux.docx` / `.pdf` | Stratégie réseaux sociaux (15 KB · 4 pages) — 5 plateformes priorisées (Instagram P1, Facebook P2, TikTok P3, LinkedIn P4 B2B, YouTube P5 long terme), **5 piliers de contenu** (inspiration 40 %, témoignages 25 %, coulisses 15 %, pédagogique 10 %, engagement/valeurs 10 %), calendrier éditorial type semaine, règles de production (photos lumière naturelle, sous-titres systématiques, sous-titres premier plan accrocheur 3 sec), modération bienveillante (refus suppression avis défavorables sauf injures), publicité ≤ 30 % budget marketing, 7 KPIs An 1/An 3 (≥ 5 000 → 50 000 abonnés Instagram, taux engagement ≥ 5 %), engagements éthiques (refus dark pattern et faux comptes) |
 
+### Méthodologie produit voyage (référentiel créateurs)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Methodologie-Creation-Voyage.docx` / `.pdf` | Méthodologie de création de voyage (15 KB · 4 pages) — référentiel créateurs **8 étapes** (idéation, cadrage, conception logistique transport/hébergement/restauration/activités/accompagnement, **construction tarifaire** modèle PDG validé marge socle ~8 % HT + créateur 3 pts, fiche voyage avec décomposition transparente, validation et publication progressive Famille J-30 puis grand public, suivi pré-départ J-60/J-30/J-7, débrief J+7), 6 KPIs qualité voyage An 1/An 3 (délai 90 j → 60 j, marge brute 10-14 %, voyages renouvelés ≥ 70 % An 1) |
+| `Eventy-Life-Procedure-Sourcing-HRA.docx` / `.pdf` | Procédure de sourcing et qualification HRA (15 KB · 4 pages) — cible An 1 50 partenaires HRA → An 3 250 : 6 étapes (identification multi-canaux, qualification téléphonique 5 min trame 5 questions, visite/audit, décision référencement 4 niveaux Premium/Validé/Sous condition/Écarté, contractualisation, suivi continu audit annuel), cas particuliers (international RGPD strict, micro-partenaires, événementiel ponctuel), 7 KPIs An 1/An 3 (délai sourcing 60 j → 30 j, conversion audit→référencement ≥ 70 %, **HRA premium ≥ 4,5/5 → 35 %**), 6 engagements éthiques (refus pot-de-vin, égalité de traitement) |
+| `Eventy-Life-Grille-Decision-Destinations.docx` / `.pdf` | Grille de décision destinations (15 KB · 4 pages) — **outil de décision rationnel** : critères positifs (cohérence âme Eventy, faisabilité opérationnelle, sécurité MEAE, RSE, économique), critères de vigilance (surtourisme refus défaut, empreinte carbone justification, risques humains), **critères éliminatoires** (zone rouge MEAE, sanctions UE/ONU, atteintes droits humains), grille scoring 8 critères pondérés ≥ 4/5 prioritaire / < 3/5 écartée, réévaluation annuelle T1, **mix géographique cible An 5** (60 % France, 25 % Europe, 10 % Méditerranée, 5 % long-courrier), 6 engagements opposables sur destinations |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -246,6 +253,8 @@
 | `../../scripts/garanties/rse-carbone-achats-mobilite-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-marketing-kit-charte-reseaux.js` | Générateur Node.js des 3 documents marketing (kit ambassadeur, charte éditoriale, stratégie réseaux sociaux) |
 | `../../scripts/garanties/marketing-kit-charte-reseaux-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-methodologie-creation-sourcing-destinations.js` | Générateur Node.js des 3 documents méthodologie produit (création voyage, sourcing HRA, grille décision destinations) |
+| `../../scripts/garanties/methodologie-creation-sourcing-destinations-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
