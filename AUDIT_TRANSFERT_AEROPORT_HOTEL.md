@@ -210,6 +210,30 @@ Toutes au format **dark Eventy gold #D4A853**, **glassmorphism**, **Framer Motio
 
 Chaque page contient des données démo (DEMO_PROVIDERS, DEMO_QUOTES, DEMO_TRANSFER) **à remplacer par des fetchs API**. Tous les boutons d'action ont des commentaires `// TODO Eventy [TRANSFERT-AEROPORT P0]` indiquant l'endpoint API à câbler.
 
+### 3.2-bis Couches partagées + composants réutilisables (extension)
+
+Phase 2 de l'audit (même session) — couches transverses pour brancher les 4 squelettes :
+
+| Fichier | Lignes | Rôle |
+|---|---|---|
+| `frontend/lib/transport/transferts-aeroport.ts` | 433 | Data layer partagée : types/enums, catalogue seed initial (8 prestataires Maroc/Espagne/Portugal/Italie/Grèce + BlackLane global), helpers (`selectOptimalVehicle`, `calcVehicleCount`, `findProvidersForAirport`, `canAutoApprove` avec règles d'auto-validation, `estimateTransferDuration`, `formatPickupPoint`), constantes métier (`DEFAULT_AUTO_APPROVE_THRESHOLD_CENTS = 450`, buffers atterrissage/décollage), couleurs charte. |
+| `frontend/components/transferts-aeroport/ComparateurDevisModal.tsx` | 374 | Modal 3 colonnes côte à côte avec badges RECOMMENDED/ECONOMIC/PREMIUM, scoring combiné (qualité 40% + prix 30% + délai 15% + retard vol 15%), notes audit IA, CTA sélection. Utilisé depuis `/equipe/transferts` et `/pro/voyages/[id]/transferts-aeroport`. |
+| `frontend/app/(pro)/.../symphonie/SymphonieAirportTransferStep.tsx` | 362 | Composant additif symphonie : injecte les étapes transfert dans la timeline J0 (atterrissage → transfert → check-in) et J-final (check-out → transfert → décollage). Fallback alerte si mode avion mais transfert non configuré. |
+
+### 3.2-ter Squelette backend dédié
+
+Sous-module standalone `backend/src/modules/transport/airport-transfer/` (667 lignes) :
+
+| Fichier | Rôle |
+|---|---|
+| `airport-transfer.types.ts` | Enums + interfaces (à migrer vers Prisma) |
+| `dto/rfq-transfer.dto.ts` | 7 DTOs pour les endpoints REST |
+| `airport-transfer.service.ts` | 7 méthodes — `evaluateAutoApprove()` IMPLÉMENTÉ (5 règles), reste en `[STUB]` `NotImplementedException` |
+| `airport-transfer.controller.ts` | 7 endpoints REST (PRO/EQUIPE/ADMIN) prêts à câbler |
+| `README.md` | Plan d'activation + cohérence âme Eventy |
+
+Le module n'est **pas encore** importé dans `transport.module.ts` — il sera branché après migration Prisma + tests (cf §3.3 Sprint 1).
+
 ### 3.3 Plan d'attaque recommandé (10 jours-homme estimés)
 
 #### Sprint 1 — Backend P0 (5 jours)
