@@ -490,3 +490,124 @@ Total                                                               39 tests
 
 > *Trois batches, zéro suppression, un voyage qui respire. NE RIEN EFFACER respecté
 > à la lettre — chaque ligne ajoutée, jamais modifiée, jamais supprimée.*
+
+---
+
+## 🆕 BATCH 4 — Bell client, équipe conformité, public timeline, tests étendus (2026-05-02)
+
+Suite au "Continue. NE RIEN EFFACER." du PDG (4ème itération).
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `components/voyage/NotificationBell.tsx` | Cloche flottante notifications voyageur — variant absolute (fixed bottom-right), animation pulse + bell wiggle | ~95 |
+| `components/voyage/__tests__/LockedFieldWrapper.test.tsx` | 6 tests (lock/unlock/dialog/cancel/onUnlock) | ~80 |
+| `components/voyage/__tests__/VoyageEnrichmentBadge.test.tsx` | 7 tests (count, compact, link wrap) | ~55 |
+| `components/voyage/__tests__/VoyagePublicEnrichmentTimeline.test.tsx` | 7 tests (empty, expand, modes, creator name, transparency footer) | ~65 |
+| `components/voyage/index.ts` | Export `NotificationBell` | +2 |
+| `app/(client)/client/voyage/[id]/page.tsx` | Wire `NotificationBell` (variant="absolute") au top-level | +5 |
+| `app/(public)/voyages/[slug]/voyage-detail-client.tsx` | Wire `VoyagePublicEnrichmentTimeline` avant section "Inclus / Pas inclus" | +15 |
+| `app/(equipe)/equipe/conformite-voyages/page.tsx` | Page Pôle Conformité avec niveaux risque RED/YELLOW/GREEN, 6 stats, alerte auto-acceptation tacite imminente | ~310 |
+| `app/(equipe)/equipe/conformite-voyages/error.tsx` + `loading.tsx` | Boundaries | ~50 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `admin-enrichment.controller.ts` | 2 routes admin : `/admin/enrichments` (filtre MAJOR/OVERDUE/PENDING) + `/admin/transfers` (déduplication OUTGOING) | ~140 |
+| `client-notifications.controller.spec.ts` | 6 tests (listMyNotifications avec filtre PENDING, computeDeadline, respondAuthenticated accept/refuse, respondPublic) | ~120 |
+| `transfer-export.service.spec.ts` | 6 tests (HTML structure, legal banner, audit stamp, print CSS, empty state, XSS escape) | ~100 |
+| `travel-enrichment.service.ts` | Inject `Optional NotificationTokenService` + URLs signées HMAC pour acceptUrl/refuseUrl dans dispatch emails | +15 |
+| `travel-enrichment.service.spec.ts` | Mock NotificationTokenService.buildAckUrl | +6 |
+| `travels.module.ts` | Wire `AdminEnrichmentController` | +2 |
+
+### Logique métier ajoutée
+
+**Niveaux risque conformité (équipe responsable)** :
+- 🟢 **GREEN** : aucune modif majeure ou ack 100%
+- 🟡 **YELLOW** : ack < 80% mais oldestPendingDays ≤ 5j
+- 🔴 **RED** : oldestPendingDays > 5j (auto-acceptation tacite imminente J+7)
+
+**Email signed tokens** :
+- `dispatchMajorChangeEmails` génère désormais 2 URLs HMAC pour chaque destinataire :
+  ```
+  acceptUrl: https://eventy.life/public/notifications/{id}/accept?token=xxx&travelId=yyy
+  refuseUrl: https://eventy.life/public/notifications/{id}/refuse?token=xxx&travelId=yyy
+  ```
+- Le voyageur peut accepter/refuser sans connexion préalable
+- Endpoint `POST /public/notifications/:id/respond` valide le token + accuse réception
+
+**Notification bell** :
+- Cloche flottante (fixed bottom-right) qui apparaît automatiquement si pendingCount > 0
+- Animation Framer Motion : pulse à 1.6× scale + bell wiggle rotation
+- Click → /client/voyage/[id]/notifications
+
+**Public timeline marketplace** :
+- Affichée sur `/(public)/voyages/[slug]` si `publicEnrichments` ≥ 1
+- Wording chaleureux : "Ce voyage évolue avec amour"
+- Initial limit 3 items + bouton expansion
+- Footer signature Eventy "Transparence — chaque ajout enrichit votre expérience"
+
+### Commits batch 4
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 4 |
+| eventy-backend | master | (post-rebase) feat(travels): batch 4 |
+
+### Couverture tests étendue (cumul batch 1+2+3+4)
+
+```
+backend/src/modules/travels/travel-enrichment.service.spec.ts        12 tests
+backend/src/modules/travels/travel-enrichment-cron.service.spec.ts    2 tests
+backend/src/modules/travels/travel-transfer.service.spec.ts           6 tests
+backend/src/modules/travels/notification-token.service.spec.ts        5 tests
+backend/src/modules/travels/client-notifications.controller.spec.ts   6 tests
+backend/src/modules/travels/transfer-export.service.spec.ts           6 tests
+frontend/components/voyage/__tests__/MajorChangeDetector.test.tsx    14 tests
+frontend/components/voyage/__tests__/LockedFieldWrapper.test.tsx      6 tests
+frontend/components/voyage/__tests__/VoyageEnrichmentBadge.test.tsx   7 tests
+frontend/components/voyage/__tests__/VoyagePublicEnrichmentTimeline.test.tsx  7 tests
+─────────────────────────────────────────────────────────────────────────────
+Total                                                               71 tests
+```
+
+### Cumul scope total (4 batches)
+
+**Frontend** :
+- 8 routes Next.js (enrichissement, transfert + historique, notifications client, dashboards admin x2, équipe conformité, public timeline intégré)
+- 6 composants partagés (`MajorChangeDetector`, `LockedFieldWrapper`, `VoyageEnrichmentBadge`, `VoyageTransferredFromBadge`, `VoyagePublicEnrichmentTimeline`, `NotificationBell`)
+- 1 wizard 4 étapes (transfert)
+- error.tsx + loading.tsx pour chaque route
+- 4 fichiers de tests (34 tests)
+
+**Backend** :
+- 4 services métier (Enrichment, Transfer, NotificationToken, TransferExport)
+- 1 cron stub (relance acks)
+- 5 controllers (Enrichment, Transfer, ClientNotifications, AdminEnrichment, ChatChat existant)
+- 5 modèles Prisma additifs
+- 5 enums Prisma
+- 3 templates emails HTML
+- 6 fichiers de tests (37 tests)
+
+**Conformité légale UE 2015/2302** :
+- ✅ Article 11 §2 (notification modification majeure) — implémenté
+- ✅ Article 11 §3 (droit résolution sans frais) — implémenté
+- ✅ Article 12 §6 (remboursement 14j) — wording client
+- ✅ Preuve légale : versioning, acks, IP/UA, signed tokens, export HTML, audit stamp
+- ✅ Auto-acceptation tacite J+7 (cron stub prêt)
+
+### Prochaines étapes (Phase 2 — encore reportées)
+
+- Migration Prisma `prisma migrate dev` (les 5 modèles sont prêts)
+- Brancher services in-memory sur les vraies tables Prisma
+- Activer cron production avec auto-acceptation tacite J+7
+- Pixel tracking ouverture email (1x1 GIF signé)
+- Génération PDF native (pdfkit ou puppeteer-core)
+- Webhook outbound pour intégration ERP créateur
+- Setup environnement : `NOTIFICATION_SIGNING_SECRET` (variable ENV prod)
+
+---
+
+> *Quatre batches, zéro suppression, des cloches qui sonnent, des équipes qui veillent,
+> des voyageurs informés. L'âme Eventy ne se fige pas — elle vibre, transparente,
+> conforme, chaleureuse.*
