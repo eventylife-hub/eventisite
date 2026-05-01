@@ -23,6 +23,7 @@
 | 2 | `8872e43` | `95087d7` | feat(reader): symphonie créateur propagée aux fiches lecteur public + client |
 | 3 | `b40d0bc` | `7bc623b` | feat(client/activites): symphonie créateur en fallback API |
 | 4 | `fade9b1` | `92c5e5d` | feat(reader-symphony round 2): transport-avion + transfert + mode-voyage + billets + chat + énergie |
+| 5 | `9596b04` | `d4fdb3e` | feat(reader-symphony round 3): 8 pages client supplémentaires (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) |
 
 Toutes les branches `master` (frontend) et `main` (eventisite) sont synchronisées.
 
@@ -261,6 +262,42 @@ STARTER (100 €/100 pts) — TODO API `/client/me/energy` pour tier réel.
 
 ---
 
+## 🎼 Round 3 — Couverture symphonie étendue à 8 pages client de plus (commit 5)
+
+Suite à round 2, 8 pages client supplémentaires connectées au
+catalogue VOYAGES. Plus AUCUNE page n'affiche "Andalousie depuis
+Ronda" en dur pour des voyages qui n'ont rien à voir avec
+l'Andalousie.
+
+### Pages avec données symphonie complètes
+
+#### `frontend/app/(client)/client/voyage/[id]/transport/page.tsx`
+- voyageName + boardingStop + allStops construits depuis VOYAGES.busStops
+- référence : `#EVT-${voyage.id.toUpperCase()}-${groupSize}` (vraie ref)
+- Plus d'affichage Paris→Ronda en dur pour TOUS les voyages.
+
+#### `frontend/app/(client)/client/voyage/[id]/manifeste/page.tsx`
+- travelTitle, destination, dates, departureCity/Point/Time depuis voyage
+- accommodationName, standing, address depuis hraList[0]
+- accompanierName depuis voyage.team (créateur en priorité)
+- groupSize + pricePerPersonTTC réels
+- Manifeste = document officiel — il fallait absolument que ce soit juste.
+
+#### `frontend/app/(client)/client/voyage/[id]/checkin/page.tsx`
+- demoCheckins.travel.title + departureCity + destinationCity réels
+- checkpoints "boarding" et "hôtel" depuis catalogue
+- Le QR code de check-in affiche désormais les bonnes infos.
+
+### Pages avec titre/destination mis à jour
+
+- `co-voyageurs/page.tsx` : DEMO_DATA.travelTitle override depuis voyage
+- `cagnotte/page.tsx` : travelTitle + travelSlug + travelPrice + groupSize réels
+- `checklist/page.tsx` : title + destinationCity/Country + dates depuis voyage
+- `depenses/page.tsx` : voyageTitle override
+- `assurance/page.tsx` : claim.travel.{title, departureDate, destinationCity} réels
+
+---
+
 ## 🟡 Hors scope — prochaines passes
 
 Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
@@ -272,6 +309,7 @@ Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 5. **Tier réel du voyageur** — VoyageEnergyBadge utilise STARTER par défaut. Quand `/client/me/energy` exposera le tier, brancher le `tier` prop.
 6. **Maps Google sur transfert** — TODO P0 documenté (geo trajet aéroport → hôtel).
 7. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé).
+8. **Pages encore concernées** — `merci/`, `bus-programme/` (DaySchedule conservé en demo pour visuel riche), `aide-locale/`, `carnet/`, `suivi/` — peu visitées, fix future passe.
 
 ---
 
@@ -283,7 +321,8 @@ Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 | 2. Symphony reader | 1 (symphony-mapper.ts) | 3 (voyage-detail-client + 2 client pages) | ~405 |
 | 3. Fallback API client | 0 | 1 (activites) | ~28 |
 | 4. Symphony round 2 + énergie | 1 (VoyageEnergyBadge.tsx) | 7 (5 client + page + public) | ~302 |
-| **TOTAL** | **3** | **15** | **~1 222 lignes** |
+| 5. Symphony round 3 | 0 | 8 (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) | ~148 |
+| **TOTAL** | **3** | **23** | **~1 370 lignes** |
 
 ---
 
