@@ -91,12 +91,24 @@
 
 | Catégorie | Total | Faits | Restant |
 |---|---|---|---|
-| **Backend P0** | 18 | 1 (evaluateAutoApprove) | 17 |
+| **Backend P0** | 18 | 4 (evaluateAutoApprove, calcCombinedScore, rankAndBadge, generateAuditNotes) | 14 |
 | **Frontend P0** | 12 | 0 | 12 |
 | **Symphonie P0** | 3 | 0 (composant fait, pas câblé data) | 3 |
 | **P1** | 10 | 0 | 10 |
 | **P2** | 4 | 0 | 4 |
-| **TOTAL** | **47** | **1** | **46** |
+| **TOTAL** | **47** | **4** | **43** |
+
+## Vague 4 (2026-05-02) — fonctions pures + squelettes implémentés
+
+| Item | Lignes | Tests |
+|---|---|---|
+| `airport-transfer-scoring.helper.ts:calcCombinedScore` | implémenté | ✓ 3 tests |
+| `airport-transfer-scoring.helper.ts:rankAndBadge` | implémenté | ✓ 4 tests |
+| `airport-transfer-scoring.helper.ts:generateAuditNotes` | implémenté | ✓ 6 tests |
+| Page `/transferts/repondre/[token]` | squelette | (UI uniquement) |
+| `airport-transfer-cron.service.ts` (5 crons) | squelette | — |
+| `TransfertsKpiWidget.tsx` | squelette | (UI uniquement) |
+| `PRISMA-MODELS.md` | proposition | — |
 
 ---
 
