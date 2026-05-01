@@ -9,7 +9,7 @@
 
 Ce document recense **ce qui existe déjà**, **ce qui manque**, et les **TODOs concrets** placés dans le code (`// TODO Eventy: …`).
 
-> **Mise à jour 2026-05-02** : implémentation livrée en 32 commits frontend + 3 backend. Voir §7-§9 — État d'avancement.
+> **Mise à jour 2026-05-02** : implémentation livrée en 34 commits frontend + 5 backend (+ 6 docs bilan). Voir §7-§10 — État d'avancement.
 
 ---
 
@@ -514,3 +514,69 @@ Suite finale du chantier : 5 commits frontend + 2 commits backend.
 ---
 
 _Mise à jour 2026-05-02 (Phase 3 complète et finale). 32 commits frontend + 3 commits backend livrés sur master+main des deux repos._
+
+---
+
+## 10. PHASE 4 — Tests et second backend controller (2026-05-02)
+
+Suite suite finale : 2 commits frontend + 2 commits backend.
+
+### 10.1 Composants/lib créés (Phase 4)
+
+| Fichier | Rôle | Statut |
+|---|---|:---:|
+| `backend/src/modules/admin/equipe-quick-actions.controller.ts` | Mirror équipe : 6 endpoints `POST /equipe/voyages/:id/actions/:actionId` | ✅ |
+| `backend/src/modules/admin/equipe-quick-actions.controller.spec.ts` | 11 tests unitaires (audit-log + format réponse) | ✅ |
+| `frontend/lib/geo-zones.test.ts` | 24 tests sur le dictionnaire zones + helpers | ✅ |
+| `frontend/components/voyage/__tests__/VoyagesCalendarView.test.tsx` | 12 tests (3 modes, navigation, drill-down) | ✅ |
+| `frontend/components/admin/__tests__/KpisZoneSemaine.test.tsx` | 8 tests (heatmap, breakdown, click) | ✅ |
+| `frontend/components/admin/__tests__/AdminQuickActionsBar.test.tsx` | 12 tests (7 actions, modale, destructive) | ✅ |
+| `frontend/components/admin/__tests__/LiveInterventionsBar.test.tsx` | 8 tests (6 actions, motif obligatoire) | ✅ |
+| `frontend/components/equipe/__tests__/EquipeQuickActionsBar.test.tsx` | 10 tests (6 actions équipe) | ✅ |
+
+### 10.2 Améliorations backend (Phase 4)
+
+| Fichier | Améliorations | Statut |
+|---|---|:---:|
+| `backend/src/modules/admin/quick-actions.controller.ts` | Bulk endpoint câblé sur `BulkActionsService.bulkUpdateTravelStatus` (publish/archive/cancel/cancel-refund) avec normalisation prefix + fallback stub + audit haut niveau | ✅ |
+| `backend/src/modules/admin/quick-actions.controller.spec.ts` | 7 tests bulk supplémentaires (dispatch, normalisation, fallback, audit) | ✅ |
+| `backend/src/modules/admin/admin.module.ts` | EquipeQuickActionsController ajouté aux controllers | ✅ |
+
+### 10.3 Bilan tests Phase 4
+
+- **Backend** : 11 tests `EquipeQuickActionsController` + 7 tests `bulk` ajoutés à `AdminQuickActionsController` = **18 nouveaux tests** (total 43 tests sur les 2 controllers).
+- **Frontend** : 24 (geo-zones) + 12 (calendar) + 8 (kpis) + 12 (admin bar) + 8 (live bar) + 10 (equipe bar) = **74 nouveaux tests** sur les composants partagés.
+
+**Total Phase 4 : 92 tests unitaires.**
+
+### 10.4 Commits Phase 4
+
+33. `1f22d28` (backend) EquipeQuickActionsController + 11 tests
+34. `e36d158` (backend) Bulk endpoint câblé sur BulkActionsService
+35. `9ddc2e7b` Tests composants partagés (geo-zones + calendar + kpis)
+36. `f0ea554d` Tests 3 quick-action bars
+
+### 10.5 Bilan global FINAL
+
+| Catégorie | Quantité |
+|---|---:|
+| **Commits frontend** (master + main) | 34 |
+| **Commits backend** (master) | 5 |
+| **Documents bilan** | 6 sections (§4-§10) |
+| **Composants/lib partagés frontend** | 9 |
+| **Controllers backend** | 2 (admin + équipe) |
+| **Endpoints REST stubs** | 16 (10 admin + 6 équipe) |
+| **Pages nouvelles** | 3 (`occurrences`, `suivi-hebdo`, `heatmap`) |
+| **Pages améliorées** | 12 |
+| **Tests unitaires** | 92 (43 backend + 74 frontend) |
+
+### 10.6 Restant
+
+- **Backend** : câblage des services métiers complets (Stripe refund réel, email templates, notifications pro/équipe, transferPro, shiftAllOccurrences, incidents.service). L'audit-log est câblé partout, les bulk actions PUBLISH/ARCHIVE/CANCEL passent déjà par le service réel.
+- **P3 reporté** : API tracking GPS externe (intégration tierce, pas un fix interne).
+
+**Note backend main** : la branche `main` du repo backend a une divergence non-liée (Pennylane finance + analytics) avec `master`. Le bump pointe sur master. À synchroniser manuellement.
+
+---
+
+_Mise à jour 2026-05-02 (Phase 4 complète et FINALE). 34 commits frontend + 5 commits backend livrés sur master+main des deux repos._
