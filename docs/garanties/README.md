@@ -101,6 +101,13 @@
 | `Eventy-Life-Procedure-Crise-Communication.docx` / `.pdf` | Procédure de gestion de crise communication corporate (15 KB · 4 pages) — distincte du Manuel d'incident voyage : 5 typologies (opérationnelles, réputation, légales/éthiques, cyber/données, financières/stratégiques), cellule de crise 5 rôles (Pilote, porte-parole, conseil juridique, RP, technique), **4 niveaux de gravité** avec délais d'activation (≤ 1h critique → ≤ 24h modérée), 6 principes (vérité, rapidité, empathie, cohérence, transparence, responsabilité) + 6 interdits, procédure 7 étapes (détection → sortie de crise), 3 modèles communication, coordination autorités (Atout France 48h, APST, CNIL 72h), exercice annuel obligatoire |
 | `Eventy-Life-Politique-Conflits-Interets.docx` / `.pdf` | Politique de gestion des conflits d'intérêts (15 KB · 4 pages) — 10 sections : 3 formes (réel, apparent, potentiel), champ d'application (dirigeants, équipe, partenaires, conseils externes), situations typiques (financiers, relations personnelles, engagements externes, conflits écosystème Eventy), engagements (transparence, abstention, loyauté), règles spécifiques par catégorie, procédure déclaration `conformite@eventylife.fr` 4 étapes, **règles cadeaux** (≤ 30 € accepté, > 100 € refus, 0 espèces/cartes-cadeaux), 3 niveaux de sanctions, 6 indicateurs An 1/An 3 (100 % déclaration équipe), formation annuelle |
 
+### Ressources humaines (organisation interne)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Teletravail.docx` / `.pdf` | Charte télétravail et organisation interne (14 KB · 4 pages) — conforme L1222-9 et ANI 26 nov 2020 : régime par défaut hybride flexible (≤ 3 j télétravail, mardi de l'équipe en présentiel obligatoire), régime full remote sur dérogation, équipement fourni + indemnité 25 €/mois, plages disponibilité 10h-12h30 / 14h-17h, **droit à la déconnexion** (pas avant 9h, pas après 18h, pas week-end sauf astreinte voyage), confidentialité, rituels de cohésion (mardi équipe, séminaires trimestriels, standup, démo vendredi, café jeudi), formation 2 % masse salariale, mutuelle 70 %, 6 engagements humains (rapport max/min ≤ 5) |
+| `Eventy-Life-Procedure-Recrutement.docx` / `.pdf` | Procédure de recrutement et d'intégration (15 KB · 4 pages) — conforme L1132-1 (25 critères non-discrimination) + L1221-6 + RGPD : 7 étapes du sourcing à la confirmation période d'essai, **transparence salariale** (fourchette publiée dans annonce), programme cooptation 1 000 € net (2× seniors), 4 entretiens (téléphone, manager, cas pratique rémunéré, Président + équipe), promesse d'embauche détaillée, **onboarding J0 → J+30** (parrain, lecture âme Eventy en duo, voyage en observateur), 7 indicateurs RH An 1/An 3 (60→45 j recrutement, 100 % réponse candidats, parité ≥ 40 %) |
+| `Eventy-Life-Modele-Entretien-Annuel.docx` / `.pdf` | Modèle d'entretien annuel et plan de développement (14 KB · 4 pages) — fusion entretien annuel + entretien professionnel L6315-1, période janv-mars, durée 1h30 : préparation (15 j avant) collaborateur + manager, trame en 8 temps (ouverture, bilan année, **évaluation compétences à 5 niveaux**, bien-être/motivation 5 questions ouvertes, projection 1/3/5 ans, plan développement, rémunération, clôture), fiche de synthèse 10 rubriques, point de mi-année juillet, 3 cas particuliers (désaccord, PIP, mobilité interne), 6 engagements éthiques de l'entretien |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -210,6 +217,8 @@
 | `../../scripts/garanties/corporate-rgpd-annuel-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-cyber-crise-conflits.js` | Générateur Node.js des 3 documents (politique cybersécurité, procédure crise communication, politique conflits d'intérêts) |
 | `../../scripts/garanties/cyber-crise-conflits-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-rh-teletravail-recrutement-entretien.js` | Générateur Node.js des 3 documents RH (charte télétravail, procédure recrutement, modèle entretien annuel) |
+| `../../scripts/garanties/rh-teletravail-recrutement-entretien-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
