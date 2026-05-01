@@ -862,3 +862,133 @@ Total                                                              105 tests
 > au runbook ops, du token signé HMAC à la migration SQL idempotente, du badge
 > trust marketing au webhook ERP — Eventy respire la conformité, la transparence
 > et l'âme du voyageur respecté.*
+
+---
+
+## 🆕 BATCH 7 — Page marketing, i18n FR/EN/ES, admin ops, stats (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `app/(public)/conformite-voyageur/page.tsx` | Page marketing réassurance publique : Hero + 4 piliers UE 2015/2302 + 6 étapes + FAQ + sources légales | ~310 |
+| `app/(public)/voyages/[slug]/voyage-detail-client.tsx` | Wire `VoyageComplianceTrustBadge` après timeline enrichissement | +5 |
+| `lib/voyage/enrichment-i18n.ts` | Dictionnaire i18n centralisé 32 strings × 3 locales (FR/EN/ES) + helpers tAffected, tEnriched, detectBrowserEnrichmentLocale | ~250 |
+| `lib/voyage/__tests__/enrichment-i18n.test.ts` | 14 tests Jest (locale fallback, interpolation, plural-aware, browser detection) | ~140 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `admin-enrichment.controller.ts` | + 2 endpoints ops : `POST /admin/travels/:id/notifications/:nid/manual-remind` + `GET /admin/enrichments/stats` (KPIs agrégés) | +120 |
+| `webhook-config.controller.spec.ts` | 9 tests (get/save/test, HTTPS prod enforcement, secret auto-gen) | ~155 |
+
+### Logique métier ajoutée
+
+**Page marketing `/conformite-voyageur`** :
+- Hero avec animation pulse badge "Conformité Directive UE 2015/2302"
+- 4 piliers détaillés : Notification, Résolution sans frais, Remboursement 14j, Preuve légale
+- 6 étapes du flow voyageur (numérotation animée Framer Motion)
+- 5 questions FAQ expandables
+- Sources légales (lien EUR-Lex + Légifrance)
+- SEO trust signal pour le marketplace
+
+**i18n centralisé** :
+- 32 strings traduites : trust badge, timeline, badges, page client, modale,
+  page ack, wizard transfert
+- Helpers plural-aware (singulier/pluriel)
+- Auto-détection locale browser (FR fallback)
+- Pattern : `getEnrichmentStrings('en')` → renvoie le dictionnaire complet
+- Composants existants en FR par défaut, additif (NE RIEN EFFACER)
+
+**Admin ops actions** :
+- `manual-remind` : relance manuelle ack par admin avec audit log warn + raison
+  → utile quand un voyage approche de J+7 et qu'on veut éviter l'auto-acceptation
+- `stats` : KPIs plateforme agrégés
+  ```json
+  {
+    "summary": {
+      "travelsTracked": 47,
+      "totalBookings": 521,
+      "totalEvents": 134,
+      "totalVersions": 89,
+      "totalNotifications": 12,
+      "majorChangesCount": 4,
+      "transfersCount": 3,
+      "ackRate": 87,
+      "totalAcked": 89,
+      "totalRefused": 2
+    },
+    "eventTypeBreakdown": { "HOTEL_ADDED": 23, ... },
+    "computedAt": "2026-05-02T..."
+  }
+  ```
+
+### Commits batch 7
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 7 — marketing + i18n + trust |
+| eventy-backend | master | (post-rebase) feat(travels): batch 7 — admin ops + stats + webhook tests |
+
+### Couverture tests étendue (cumul batch 1-7)
+
+```
+backend  travel-enrichment.service.spec.ts                12 tests
+backend  travel-enrichment-cron.service.spec.ts            2 tests
+backend  travel-transfer.service.spec.ts                   6 tests
+backend  notification-token.service.spec.ts                5 tests
+backend  client-notifications.controller.spec.ts           6 tests
+backend  transfer-export.service.spec.ts                   6 tests
+backend  enrichment-webhook.service.spec.ts                4 tests
+backend  admin-enrichment.controller.spec.ts               7 tests
+backend  webhook-config.controller.spec.ts                 9 tests
+frontend MajorChangeDetector.test.tsx                     14 tests
+frontend LockedFieldWrapper.test.tsx                       6 tests
+frontend VoyageEnrichmentBadge.test.tsx                    7 tests
+frontend VoyagePublicEnrichmentTimeline.test.tsx           7 tests
+frontend NotificationBell.test.tsx                         7 tests
+frontend SymphonyDiff.test.tsx                             8 tests
+frontend PublicAckPage.test.tsx                            8 tests
+frontend enrichment-i18n.test.ts                          14 tests
+─────────────────────────────────────────────────────────────────────
+Total                                                    128 tests
+```
+
+### Cumul scope total final (7 batches)
+
+**Frontend** :
+- **11 routes Next.js** (enrichissement, transfert + historique, notifications client, dashboards admin x2, équipe conformité, public ack, intégration marketplace public, paramètres webhooks, page marketing conformité)
+- **8 composants partagés** + 1 wizard 4 étapes
+- **1 dictionnaire i18n** FR/EN/ES (32 strings × 3 locales)
+- error.tsx + loading.tsx pour chaque route
+- 8 fichiers tests Jest (71 tests frontend)
+
+**Backend** :
+- **5 services métier** + 1 cron + 1 webhook outbound
+- **8 controllers** (Travels, Lifecycle, Chat, Enrichment, Transfer, ClientNotifications, AdminEnrichment, WebhookConfig)
+- 5 modèles Prisma additifs + 5 enums + migration SQL idempotente
+- 3 templates emails HTML
+- 9 fichiers tests Jest (57 tests backend)
+
+**Documentation** :
+- 2 audits MD + 1 récap + 1 runbook + PROGRESS.md mis à jour
+
+**Conformité légale UE 2015/2302** :
+- ✅ Article 11 §2 + 11 §3 + 12 §6
+- ✅ Auto-acceptation tacite J+7
+- ✅ Preuve légale complète (versioning, acks, IP/UA, signed tokens HMAC, export HTML, audit stamp, webhook outbound)
+- ✅ Page marketing publique pour SEO + trust + transparence
+
+### Prochaines étapes (Phase 2 — toujours reportées)
+
+- Appliquer migration : `npx prisma migrate deploy` (le fichier SQL est prêt)
+- Brancher services in-memory sur les vraies tables Prisma
+- Activer cron production J+3/J+5/J+7
+- Wire i18n dans les composants existants (par défaut FR, opt-in via prop locale)
+- Pixel tracking ouverture email
+- Génération PDF native
+- Setup ENV prod
+
+---
+
+> *Sept batches, zéro suppression, un système qui parle 3 langues, un marketing
+> qui rassure, une stat qui mesure, une conformité qui rayonne. NE RIEN EFFACER.*
