@@ -24,6 +24,7 @@
 | 3 | `b40d0bc` | `7bc623b` | feat(client/activites): symphonie créateur en fallback API |
 | 4 | `fade9b1` | `92c5e5d` | feat(reader-symphony round 2): transport-avion + transfert + mode-voyage + billets + chat + énergie |
 | 5 | `9596b04` | `d4fdb3e` | feat(reader-symphony round 3): 8 pages client supplémentaires (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) |
+| 6 | `1e7c43f` | `a74c46a` | feat(round 4): merci symphony + transportQuoteValidated gate admin (TODO P0 #4) |
 
 Toutes les branches `master` (frontend) et `main` (eventisite) sont synchronisées.
 
@@ -298,18 +299,44 @@ l'Andalousie.
 
 ---
 
+## 🎼 Round 4 — Merci symphony + Devis gate (commit 6)
+
+### Pages client
+
+#### `frontend/app/(client)/client/voyage/[id]/merci/page.tsx`
+- `createDemoVoyage()` étendu pour utiliser `VOYAGES.find()` :
+  - title, destination, country, returnDate du voyage spécifique
+  - creatorName depuis `voyage.team[]` (créateur en priorité, sinon 1er)
+  - staffCount = `voyage.team.length`
+- Plus d'affichage "Andalousie depuis Ronda" + "Thomas Laurent" en dur quand l'API summary échoue.
+
+### Admin — Devis transport gate (TODO P0 #4)
+
+#### `frontend/app/(admin)/admin/voyages/[id]/page.tsx`
+- Calcul `transportQuoteValidated` à la volée :
+  - Si `travel.transportQuoteValidated: boolean` → utilisé.
+  - Sinon dérivé de `travel.transportQuotes[]` (au moins 1 status `VALIDÉ` ou `VALIDATED`).
+  - Sinon `null` (statut inconnu).
+- Nouvelle card "Devis transport validé" dans terrainCards :
+  - **Validé** → status `ok` + sub "Devis loueur validé — voyage publiable"
+  - **Non validé** → status `critical` + `urgent` + sub "Devis non validé — voyage NON publiable"
+  - **Inconnu** → status `warning` + sub "Statut inconnu — vérifier les devis"
+- Couvre la TODO P0 #4 du `TODO-SYMPHONIE-OCCURRENTS.md` : la validation devis devient visible comme gate de publication.
+
+---
+
 ## 🟡 Hors scope — prochaines passes
 
 Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 
-1. **Validations de transport** — flag `transportQuoteValidated` mentionné dans `TODO-SYMPHONIE-OCCURRENTS.md` P0 #4 — pas implémenté.
-2. **TSP optimizer + carte symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P0 #1 — gros chantier (algo + UI).
-3. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier (backend + emails).
-4. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
-5. **Tier réel du voyageur** — VoyageEnergyBadge utilise STARTER par défaut. Quand `/client/me/energy` exposera le tier, brancher le `tier` prop.
-6. **Maps Google sur transfert** — TODO P0 documenté (geo trajet aéroport → hôtel).
-7. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé).
-8. **Pages encore concernées** — `merci/`, `bus-programme/` (DaySchedule conservé en demo pour visuel riche), `aide-locale/`, `carnet/`, `suivi/` — peu visitées, fix future passe.
+1. **TSP optimizer + carte symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P0 #1 — gros chantier (algo + UI).
+2. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier (backend + emails).
+3. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
+4. **Tier réel du voyageur** — VoyageEnergyBadge utilise STARTER par défaut. Quand `/client/me/energy` exposera le tier, brancher le `tier` prop.
+5. **Maps Google sur transfert** — TODO P0 documenté (geo trajet aéroport → hôtel).
+6. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé).
+7. **Backend transportQuoteValidated** — l'admin lit le flag, mais il faut côté backend exposer ce champ dans la réponse de `/admin/travels/[id]` pour qu'il soit pleinement utilisable hors `transportQuotes` array.
+8. **Bandeau créateur "Devis non validé"** sur `/pro/voyages/[id]` — le miroir côté pro n'a pas encore son banner urgent (l'admin a celui-ci).
 
 ---
 
@@ -322,7 +349,8 @@ Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 | 3. Fallback API client | 0 | 1 (activites) | ~28 |
 | 4. Symphony round 2 + énergie | 1 (VoyageEnergyBadge.tsx) | 7 (5 client + page + public) | ~302 |
 | 5. Symphony round 3 | 0 | 8 (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) | ~148 |
-| **TOTAL** | **3** | **23** | **~1 370 lignes** |
+| 6. Round 4 (merci + admin gate) | 0 | 2 (merci + admin/voyages/[id]) | ~51 |
+| **TOTAL** | **3** | **25** | **~1 421 lignes** |
 
 ---
 
