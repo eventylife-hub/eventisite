@@ -115,6 +115,13 @@
 | `Eventy-Life-Offre-CSE-B2B.docx` / `.pdf` | Offre commerciale CSE et B2B (15 KB · 4 pages) — 3 formats (Adhésion CSE, Voyage privatisé 15-38 pax, Voyage incentive/séminaire), tarification sur devis avec décomposition transparente, conditions paiement (acompte 30 %, solde J-30), barème annulation B2B (≥ 90 j 5 % → ≤ 7 j 100 %), programme type 4j/3n, inclus/options détaillés, démarche commerciale 5 étapes (premier contact → reporting J+15), documents à transmettre, 6 indicateurs B2B An 1/An 3 (≥ 5 voyages → ≥ 30, CA B2B 10 % → 25 %, NPS ≥ +65 → +75) |
 | `Eventy-Life-Programme-Fidelisation-Famille.docx` / `.pdf` | Programme de fidélisation Eventy Famille (15 KB · 4 pages) — référentiel opposable : philosophie (réciprocité, **paliers à vie sans déclassement**), **3 paliers** (Voyageur Fidèle ≥ 2 voyages 5 % remise, Voyageur Famille ≥ 5 voyages 10 % + soirée + cadeau, Voyageur Légende ≥ 10 voyages 15 % à vie + cercle nominatif), parrainage (50/60/75 € selon palier, sans plafond), avantages permanents (newsletter, anniversaire, anniversaire de voyage), communauté (Facebook privé, apéros trimestriels), comptabilisation, 8 indicateurs fidélisation An 1/An 5, **7 engagements opposables** Eventy (préavis 12 mois si dégradation), cas particuliers (décès, exclusion, litige) |
 
+### RSE détaillée — carbone, achats et mobilité
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Engagement-Carbone.docx` / `.pdf` | Charte d'engagement carbone (15 KB · 4 pages) — méthodologie Bilan Carbone ADEME (Scope 1/2/3) + GHG Protocol + ISO 14064 : périmètre (>95 % en Scope 3 transport voyageurs), mesure par voyage dès An 1 + bilan annuel public dès An 2, **trajectoire de réduction chiffrée** (−30 % émissions/voyageur d'ici An 5), plan d'action 6 leviers (transport prioritaire, hébergement, restauration, activités, plateforme numérique, équipe), contribution carbone responsable (refus du tout-compensation, projets Verra/Gold Standard/Label Bas-Carbone français), 6 engagements opposables (refus greenwashing) |
+| `Eventy-Life-Politique-Achats-Responsables.docx` / `.pdf` | Politique d'achats responsables (15 KB · 4 pages) — 6 principes directeurs (préférence France/Europe, circuits courts, RSE, refus extractif, **paiement 30 j fin de mois LME**, transparence), 3 catégories d'achats, **grille de notation 5 critères pondérés** (qualité 30 %, prix juste 20 %, RSE 20 %, localisation 15 %, solidité 15 %), critères RSE pour HRA (environnemental, social, gouvernance), hiérarchie territoriale (local → national → européen → international), achats numériques responsables, modalités contractuelles, 6 indicateurs An 1/An 5 (≥ 85 % volume Europe, paiement ≤ 25 j) |
+| `Eventy-Life-Plan-Mobilite-Durable.docx` / `.pdf` | Plan de mobilité durable (14 KB · 4 pages) — conforme LOM 2019 + loi Climat 2021 : volet collaborateurs (FMD jusqu'à 800 €/an, 75 % transports en commun, vélo de fonction An 2, déplacements pro train ≤ 4 h obligatoire), volet voyageurs (hiérarchie autocar/train/avion, **refus structuré des vols < 4 h**, optimisation taux remplissage, étude autocar électrique An 3, partenariats SNCF), volet écosystème (HRA, transporteurs, destinations), 8 indicateurs An 1/An 5 (≥ 90 % autocar+train, ≤ 3 % avion, taux remplissage ≥ 90 %), communication sobre et honnête |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -228,6 +235,8 @@
 | `../../scripts/garanties/rh-teletravail-recrutement-entretien-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-commercial-vendeur-cse-fidelisation.js` | Générateur Node.js des 3 documents commerciaux (argumentaire vendeurs, offre CSE/B2B, programme fidélisation Eventy Famille) |
 | `../../scripts/garanties/commercial-vendeur-cse-fidelisation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-rse-carbone-achats-mobilite.js` | Générateur Node.js des 3 documents RSE détaillée (charte engagement carbone, politique achats responsables, plan mobilité durable) |
+| `../../scripts/garanties/rse-carbone-achats-mobilite-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
