@@ -110,6 +110,17 @@
 | `TransfertsKpiWidget.tsx` | squelette | (UI uniquement) |
 | `PRISMA-MODELS.md` | proposition | — |
 
+## Vague 5 (2026-05-02) — pages opérationnelles + emails + migration SQL
+
+| Item | Lignes | Type |
+|---|---|---|
+| Page `/chauffeur/transferts-aeroport` | 341 | Frontend mission jour J |
+| Page `/equipe/transferts/live` | 367 | Frontend tracking temps réel |
+| `email-templates/flight-delay.template.ts` | 180 | 2 templates (client + driver) |
+| `email-templates/quote-rejected.template.ts` | 120 | template refus poli |
+| `migration.sql` | 223 | UP+DOWN complets, ref DBA |
+| `airport-transfer-analytics.service.ts` (7 méthodes) | 134 | service squelette KPIs historiques |
+
 ---
 
 ## Comment retrouver un TODO dans le code
