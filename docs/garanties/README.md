@@ -94,6 +94,13 @@
 | `Eventy-Life-PV-Assemblee-Generale.docx` / `.pdf` | Modèle PV d'assemblée générale ordinaire annuelle (14 KB · 4 pages) — conforme Code commerce L227-9 et L232-1 : composition assemblée (associés présents/représentés), bureau, documents tenus à disposition (15 j avant), ordre du jour 9 points, 6 résolutions types (approbation comptes, quitus Président, affectation résultat, conventions réglementées L227-10, renouvellement CAC, pouvoirs formalités), clôture et signatures, annexe comptes annuels, **formalités post-AG** (dépôt greffe < 1 mois, JAL si dividendes, registre coté/paraphé, conservation 5 ans) |
 | `Eventy-Life-Rapport-Gestion-Annuel.docx` / `.pdf` | Modèle rapport de gestion annuel (15 KB · 4 pages) — conforme Code commerce L232-1 : identité Société, 10 sections : faits marquants, activité chiffrée (voyages, voyageurs, CA, marges), bilan synthétique et compte de résultat, 6 indicateurs financiers clés, **indicateurs réglementaires tourisme** (compte cantonné, pic année, garantie APST, marge sécurité, NPS, audits HRA), R&D et JEI/CIR, cartographie risques, événements postérieurs, perspectives N+1 chiffrées, proposition affectation résultat, conventions réglementées, tableaux annexes obligatoires |
 
+### Gouvernance, sécurité et gestion de crise corporate
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Cybersecurite.docx` / `.pdf` | Politique de cybersécurité et sécurité des SI (15 KB · 4 pages) — conforme RGPD article 32 + ANSSI + cible ISO 27001 An 3 : architecture (Scaleway France, cloisonnement, WAF, DDoS), authentification (MFA équipe, Argon2id voyageurs, sessions 24h/8h), habilitations RBAC, sécurité applicative (revue code, SAST/DAST, scan dépendances, headers HTTP), sauvegardes (RPO ≤ 24h, RTO ≤ 4h An 1), surveillance SIEM, **8 types d'audits récurrents** (pentest annuel PASSI, RGPD annuel DPO, restauration mensuelle, phishing trimestriel), 9 indicateurs cibles An 1/An 3 (uptime ≥ 99,5 %, 0 incident N3-N4) |
+| `Eventy-Life-Procedure-Crise-Communication.docx` / `.pdf` | Procédure de gestion de crise communication corporate (15 KB · 4 pages) — distincte du Manuel d'incident voyage : 5 typologies (opérationnelles, réputation, légales/éthiques, cyber/données, financières/stratégiques), cellule de crise 5 rôles (Pilote, porte-parole, conseil juridique, RP, technique), **4 niveaux de gravité** avec délais d'activation (≤ 1h critique → ≤ 24h modérée), 6 principes (vérité, rapidité, empathie, cohérence, transparence, responsabilité) + 6 interdits, procédure 7 étapes (détection → sortie de crise), 3 modèles communication, coordination autorités (Atout France 48h, APST, CNIL 72h), exercice annuel obligatoire |
+| `Eventy-Life-Politique-Conflits-Interets.docx` / `.pdf` | Politique de gestion des conflits d'intérêts (15 KB · 4 pages) — 10 sections : 3 formes (réel, apparent, potentiel), champ d'application (dirigeants, équipe, partenaires, conseils externes), situations typiques (financiers, relations personnelles, engagements externes, conflits écosystème Eventy), engagements (transparence, abstention, loyauté), règles spécifiques par catégorie, procédure déclaration `conformite@eventylife.fr` 4 étapes, **règles cadeaux** (≤ 30 € accepté, > 100 € refus, 0 espèces/cartes-cadeaux), 3 niveaux de sanctions, 6 indicateurs An 1/An 3 (100 % déclaration équipe), formation annuelle |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -201,6 +208,8 @@
 | `../../scripts/garanties/operations-onboarding-ambassadeurs-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-corporate-rgpd-annuel.js` | Générateur Node.js des 3 documents (DPA RGPD article 28, PV AGOA, rapport de gestion annuel) |
 | `../../scripts/garanties/corporate-rgpd-annuel-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-cyber-crise-conflits.js` | Générateur Node.js des 3 documents (politique cybersécurité, procédure crise communication, politique conflits d'intérêts) |
+| `../../scripts/garanties/cyber-crise-conflits-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
