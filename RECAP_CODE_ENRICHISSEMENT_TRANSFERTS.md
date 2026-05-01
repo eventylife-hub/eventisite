@@ -240,3 +240,123 @@ automatiquement la notification voyageurs côté voyage source si bookings actif
 
 > *Voyage créé une fois, vivant longtemps, transférable partout — l'âme Eventy
 > ne se fige pas à la publication.*
+
+---
+
+## 🆕 BATCH 2 — Extension périmètre (2026-05-02)
+
+Suite au "Continue. NE RIEN EFFACER." du PDG, le scope a été étendu pour couvrir
+de bout en bout le cycle de vie d'une modification majeure :
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `components/voyage/MajorChangeDetector.tsx` | Détection auto modif majeure + modale UI (Eventy gold + glassmorphism) | ~330 |
+| `components/voyage/index.ts` | Export `MajorChangeDetector`, `MAJOR_FIELDS`, `detectMajorChanges` | +2 |
+| `app/(pro)/pro/voyages/[id]/edit/page.tsx` | Wire MajorChangeDetector + banner rouge + flow notification post-PATCH | +90 |
+| `app/(client)/client/voyage/[id]/notifications/page.tsx` | Page voyageur accept/refuse modification (chaleureuse, droits explicités) | ~470 |
+| `app/(client)/client/voyage/[id]/notifications/error.tsx` + `loading.tsx` | Boundaries | ~30 |
+| `app/(admin)/admin/enrichissements/page.tsx` | Dashboard global ops (6 stats, 4 filtres, taux ack par voyage) | ~330 |
+| `app/(admin)/admin/transferts-voyages/page.tsx` | Dashboard global transferts inter-aéroports | ~340 |
+| `app/(admin)/admin/{enrichissements,transferts-voyages}/error.tsx` + `loading.tsx` | Boundaries | ~50 |
+| `app/(pro)/pro/voyages/[id]/transfert-aeroport/components/SymphonyDiff.tsx` | Composant visuel side-by-side avec catégories PRESERVED/RESET/MODIFIED | ~210 |
+| `app/(pro)/pro/voyages/[id]/transfert-aeroport/page.tsx` | Wire SymphonyDiff dans Step3Confirm + helper `buildSymphonyDiffItems` | +145 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `prisma/schema.prisma` | **5 nouveaux modèles** : `TravelVersion`, `TravelEnrichmentEvent`, `TravelChangeNotification`, `TravelChangeAck`, `TravelAirportTransfer` + 5 enums | +145 |
+| `src/modules/email/email-templates.service.ts` | 3 templates : `travel-major-change`, `travel-airport-transfer`, `enrichment-ack-reminder` (HTML responsive avec mention légale) | +135 |
+| `src/modules/travels/travel-enrichment.service.ts` | Méthode `dispatchMajorChangeEmails` avec `EmailService` injecté `@Optional()` | +60 |
+| `src/modules/travels/travel-enrichment-cron.service.ts` | Cron `@Cron('0 9 * * *')` pour relance ack J+3/J+5 + auto-acceptation J+7 (stub no-op tant que migration Prisma pas appliquée) | ~110 |
+| `src/modules/travels/travel-enrichment-cron.service.spec.ts` | Spec Jest | ~35 |
+| `src/modules/travels/travel-enrichment.service.spec.ts` | Mock EmailService + test dispatch emails | +20 |
+| `src/modules/travels/travels.module.ts` | Wire `TravelEnrichmentCronService` | +3 |
+
+### Logique métier ajoutée
+
+**Détecteur frontend `MajorChangeDetector`** :
+- 6 champs surveillés : `startDate`, `endDate`, `destination`, `transportMode`, `pricing.basePrice` (>8%), `capacity` (réduction)
+- Mirror parfait du backend `TravelEnrichmentService.detectMajorChange`
+- Modale 3 cas :
+  1. **Pas publié** → bannière verte (no notif required)
+  2. **Publié sans booking** → bannière verte (no notif required)
+  3. **Publié avec bookings** → reason obligatoire + checkbox "envoyer immédiatement"
+
+**Email dispatch** :
+- Trigger automatique sur `triggerNotification` si `EmailService` disponible
+- Sélection template : `travel-airport-transfer` si changeType contient `AIRPORT`, sinon `travel-major-change`
+- Personnalisé par booker : firstName + bookingRef
+- Idempotency key : `enrichment-${notif.id}-${bg.id}`
+
+**Cron J+3/J+5/J+7** :
+- Stub no-op tant que la migration Prisma n'est pas appliquée
+- Code Phase 2 prêt en commentaire
+- Auto-acceptation tacite J+7 conformément à l'art. 11 §3
+
+**Page client** :
+- Liste pending (action requise) + responded (historique)
+- Affichage diff avant/après
+- Justification du créateur visible
+- Texte légal détaillé (UE 2015/2302 art. 11 §3)
+- Confirmation modale avec wording chaleureux
+
+### Commits batch 2
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 2 |
+| eventy-backend | master | (post-rebase) feat(travels+email): batch 2 |
+
+### Couverture tests étendue
+
+```
+backend/src/modules/travels/travel-enrichment.service.spec.ts        12 tests (+1)
+backend/src/modules/travels/travel-enrichment-cron.service.spec.ts    2 tests
+backend/src/modules/travels/travel-transfer.service.spec.ts           6 tests
+─────────────────────────────────────────────────────────────────────────────
+Total batch 1+2                                                      20 tests
+```
+
+### Prochaines étapes (Phase 2 — encore reportées)
+
+- Migration Prisma `prisma migrate dev --name add_enrichment_models`
+- Brancher `TravelEnrichmentService` sur `prisma.travelVersion` / `prisma.travelChangeNotification` (remplacer in-memory)
+- Brancher `TravelEnrichmentCronService` sur les vraies queries Prisma (code commenté prêt)
+- Lock champs critiques publiés (modal "Ce champ est verrouillé")
+- Pixel tracking signé pour preuve d'ouverture email
+
+### Spec validation manuelle batch 2
+
+#### Edit page modif majeure
+- [ ] Ouvrir `/pro/voyages/demo-id/edit` → banner doré "Voyage déjà publié" en haut
+- [ ] Modifier `destination` : "Marrakech" → "Casablanca" → bannière rouge apparaît en bas avec count
+- [ ] Cliquer "Enregistrer" → modale détecteur s'ouvre avec changement listé
+- [ ] Reason vide → bouton "Sauver + notifier" disabled
+- [ ] Ajouter raison + click → loader → success message
+
+#### Page client notifications
+- [ ] Ouvrir `/client/voyage/demo-id/notifications` → 1 notification PENDING
+- [ ] Click "J'accepte la modification" → modal verte avec confirmation
+- [ ] Confirmer → notification passe en ACCEPTED
+- [ ] OU : Click "Je refuse" → modal rouge mentionnant remboursement art. 12 §6
+
+#### Admin enrichissements
+- [ ] Ouvrir `/admin/enrichissements` → 6 stats + 4 voyages demo
+- [ ] Filtre "Modif majeures" → 2 voyages affichés
+- [ ] Filtre "Acks en retard" → 1 voyage (Amsterdam)
+
+#### Admin transferts voyages
+- [ ] Ouvrir `/admin/transferts-voyages` → 5 stats + 3 transferts demo
+- [ ] Card affiche source → target avec arrow + reason
+
+#### SymphonyDiff dans wizard transfert
+- [ ] `/pro/voyages/demo-id/transfert-aeroport` → step 3
+- [ ] SymphonyDiff visible avec items PRESERVED (vert) / RESET (rouge) / MODIFIED (jaune)
+- [ ] Animation Framer Motion sur arrow source → target
+
+---
+
+> *Le voyage publié est un être vivant — il respire, grandit, accueille de nouveaux
+> partenaires, déménage parfois. Et chaque battement est tracé, chaque voyageur
+> respecté, chaque preuve conservée.*
