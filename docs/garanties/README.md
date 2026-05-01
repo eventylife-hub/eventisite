@@ -150,6 +150,13 @@
 | `Eventy-Life-Ligne-Editoriale-Blog.docx` / `.pdf` | Ligne éditoriale blog (15 KB · 4 pages) — **5 catégories de contenu** (Destinations 40 %, Conseils voyage 25 %, Vie Eventy/coulisses 15 %, Engagement/RSE 10 %, Témoignages 10 %), 6 audiences cibles, fréquence An 1 24 articles → An 3 96, calendrier saisonnier mois par mois, méthodologie (briefing, rédaction, validation, publication), charte auteur (signature obligatoire, fact-checking), **articles interdits** (clickbait, polémiques sans intérêt voyage, auto-générés sans révision), 6 KPIs blog, newsletter mensuelle « Le Mensuel Eventy » |
 | `Eventy-Life-Glossaire-Voyage.docx` / `.pdf` | Glossaire voyage Eventy (14 KB · 4 pages) — **vocabulaire tourisme et Eventy expliqué** : 35+ termes définis (APST, Atout France, Pack Sérénité, HRA, NPS, MEAE, MTV, TVA marge, ESTA, ETIAS 2026, CEAM, RC Pro, RGPD, etc.), 5 termes éthiques propres à Eventy (« On part même si on n'est que 4 », « Chaque euro est tracé », promesse-cadre, « Tu n'es jamais seul », « Liberté de l'économie »), document public eventylife.fr/glossaire, mise à jour bisannuelle T1 et T3 |
 
+### Tech, accessibilité numérique et UX (espace voyageur)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Plan-Accessibilite-Numerique.docx` / `.pdf` | Plan d'accessibilité numérique (14 KB · 4 pages) — engagement volontaire WCAG 2.1 AA / RGAA 4 (Eventy non assujettie légalement < 250 M€ CA) : périmètre (eventylife.fr + 5 portails + blog), **3 cibles** (An 1 niveau A + AA prioritaires, An 3 conformité AA totale, An 5 AAA contenus critiques), **4 principes WCAG** (perceptible, utilisable, compréhensible, robuste) avec engagements concrets, plan pluriannuel 6 phases, outils (axe DevTools, WAVE, Pa11y, NVDA, audit cabinet certifié An 2+), déclaration d'accessibilité publiée An 2, 6 KPIs, modalités signalement `accessibilite@eventylife.fr` sous 7 j |
+| `Eventy-Life-Roadmap-Technique.docx` / `.pdf` | Roadmap technique (15 KB · 4 pages) — état actuel (NestJS 31 modules, Next.js 32 portails, ~1,184 M lignes, Scaleway France) : **plan 3 ans** (An 1 consolidation parcours réservation + multi-langues + portails partenaires, An 2 app mobile + internationalisation EN/ES + ISO 27001 lancement, An 3 marketplace ambassadeur + B2B avancé + IA assistante non-extractive), R&D et statuts (JEI, **CIR 30 %, CII 30 %**), plan d'embauches techniques An 1 → An 5 (2 → 13-15 collaborateurs), 7 KPIs, 6 engagements stratégiques (souveraineté, sobriété, RGPD/accessibilité-by-design) |
+| `Eventy-Life-Guide-Espace-Voyageur.docx` / `.pdf` | Guide utilisation espace voyageur (14 KB · 4 pages) — mode d'emploi pas-à-pas eventylife.fr/mon-compte : création de compte, **réservation 9 étapes** (recherche → paiement Stripe → confirmation), suivi voyages avec documents (contrat, reçu, roadbook, voucher Pack Sérénité), modification/annulation, programme Eventy Famille (statut, code parrainage, avoirs), communication 6 emails dédiés, sécurité compte (MFA recommandée, vigilance phishing), droits RGPD (accès/rectification/effacement/opposition), accessibilité, astuces, support contact 24 h ouvrées |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -273,6 +280,8 @@
 | `../../scripts/garanties/international-securite-sante-administratif-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-content-seo-blog-glossaire.js` | Générateur Node.js des 3 documents content / SEO (guide SEO, ligne éditoriale blog, glossaire voyage) |
 | `../../scripts/garanties/content-seo-blog-glossaire-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-tech-accessibilite-roadmap-espace-voyageur.js` | Générateur Node.js des 3 documents tech/UX (plan accessibilité numérique, roadmap technique, guide espace voyageur) |
+| `../../scripts/garanties/tech-accessibilite-roadmap-espace-voyageur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
