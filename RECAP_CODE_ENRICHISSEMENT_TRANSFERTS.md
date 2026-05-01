@@ -729,3 +729,136 @@ Total                                                               82 tests
 > *Cinq batches, zéro suppression, un système complet. De l'audit légal au lien email
 > signé, du dashboard ops à la cloche voyageur, du transfert d'aéroport au webhook ERP —
 > chaque pièce travaille avec les autres dans une symphonie qui respire l'âme Eventy.*
+
+---
+
+## 🆕 BATCH 6 — Webhook config UI, trust badge, migration SQL, runbook (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `app/(pro)/pro/parametres/webhooks/page.tsx` | Page config webhook outbound complète (URL, secret HMAC avec rotate/show/copy, 5 events, toggle actif, bouton test, doc Node.js) | ~340 |
+| `app/(pro)/pro/parametres/webhooks/error.tsx` + `loading.tsx` | Boundaries | ~30 |
+| `components/voyage/VoyageComplianceTrustBadge.tsx` | Badge marketing trust public expandable (3 items détaillés UE 2015/2302) | ~110 |
+| `app/(pro)/pro/voyages/[id]/transfert-aeroport/components/__tests__/SymphonyDiff.test.tsx` | 8 tests SymphonyDiff | ~85 |
+| `app/(public)/notifications/[notificationId]/[decision]/__tests__/PublicAckPage.test.tsx` | 8 tests page ack publique | ~115 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `webhook-config.controller.ts` | 3 routes config webhook + génération secret automatique + validation HTTPS prod | ~140 |
+| `admin-enrichment.controller.spec.ts` | 7 tests AdminEnrichmentController (filtres MAJOR/OVERDUE/PENDING + déduplication transfers) | ~120 |
+| `prisma/migrations/20260502_voyage_enrichment_models/migration.sql` | Migration SQL ADDITIVE 5 tables + 5 enums avec IF NOT EXISTS pour idempotence | ~180 |
+
+### Documentation
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `RUNBOOK_ENRICHISSEMENT.md` | Runbook ops complet : 5 procédures (modif majeure, transfert, voyageurs non-répondants, litige, config ENV prod) + table des routes API + escalade | ~280 |
+
+### Logique métier ajoutée
+
+**Webhook config UI** :
+- Toggle isActive avec preview état (vert si actif, jaune sinon)
+- Secret HMAC affiché en password, click eye pour révéler
+- Bouton "Régénérer" avec confirmation
+- Bouton "Copier" avec feedback animé
+- 5 events checkboxes avec descriptions
+- Bouton "Test" qui envoie un event factice
+- Stats si actif : webhooks envoyés / échecs / taux succès
+- Bloc doc avec exemple code Node.js validation signature
+
+**VoyageComplianceTrustBadge** :
+- Mode `compact` : pill simple "Conforme UE 2015/2302" (pour cards)
+- Mode complet : badge expandable avec 3 items :
+  1. Notification en cas de modif majeure
+  2. Remboursement intégral 14j
+  3. Preuve légale conservée
+
+**Migration SQL** :
+- 5 tables avec contraintes UNIQUE et INDEX optimisés
+- 5 enums avec DO $$ BEGIN ... EXCEPTION pour idempotence
+- Conservation légale documentée :
+  - Notifications + acks : illimitée (preuve juridique)
+  - Versions + events : 5 ans (Code du tourisme art. R211-9)
+
+**Runbook** :
+- 5 procédures détaillées avec commandes SQL pour audit litige
+- Table de routes API + UI complète
+- Variables ENV prod avec valeurs recommandées
+- Escalade 4 niveaux (Routine → Vigilance → Critique → Litige)
+
+### Commits batch 6
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 6 — webhooks UI + trust + tests |
+| eventy-backend | master | (post-rebase) feat(travels): batch 6 — webhook config + migration SQL |
+
+### Couverture tests étendue (cumul batch 1-6)
+
+```
+backend/src/modules/travels/travel-enrichment.service.spec.ts        12 tests
+backend/src/modules/travels/travel-enrichment-cron.service.spec.ts    2 tests
+backend/src/modules/travels/travel-transfer.service.spec.ts           6 tests
+backend/src/modules/travels/notification-token.service.spec.ts        5 tests
+backend/src/modules/travels/client-notifications.controller.spec.ts   6 tests
+backend/src/modules/travels/transfer-export.service.spec.ts           6 tests
+backend/src/modules/travels/enrichment-webhook.service.spec.ts        4 tests
+backend/src/modules/travels/admin-enrichment.controller.spec.ts       7 tests
+frontend/components/voyage/__tests__/MajorChangeDetector.test.tsx    14 tests
+frontend/components/voyage/__tests__/LockedFieldWrapper.test.tsx      6 tests
+frontend/components/voyage/__tests__/VoyageEnrichmentBadge.test.tsx   7 tests
+frontend/components/voyage/__tests__/VoyagePublicEnrichmentTimeline.test.tsx  7 tests
+frontend/components/voyage/__tests__/NotificationBell.test.tsx        7 tests
+frontend/app/(pro)/pro/voyages/[id]/transfert-aeroport/components/__tests__/SymphonyDiff.test.tsx  8 tests
+frontend/app/(public)/notifications/[notificationId]/[decision]/__tests__/PublicAckPage.test.tsx  8 tests
+─────────────────────────────────────────────────────────────────────────────
+Total                                                              105 tests
+```
+
+### Cumul scope total final (6 batches)
+
+**Frontend** :
+- **10 routes Next.js** (enrichissement, transfert + historique, notifications client, dashboards admin x2, équipe conformité, public ack, intégration marketplace public, paramètres webhooks)
+- **8 composants partagés** (MajorChangeDetector, LockedFieldWrapper, VoyageEnrichmentBadge, VoyageTransferredFromBadge, VoyagePublicEnrichmentTimeline, NotificationBell, SymphonyDiff, VoyageComplianceTrustBadge)
+- 1 wizard 4 étapes (transfert)
+- error.tsx + loading.tsx pour chaque route
+- 7 fichiers tests Jest (57 tests frontend)
+
+**Backend** :
+- **5 services métier** + 1 cron + 1 webhook outbound
+- **7 controllers** (Travels, Lifecycle, Chat, Enrichment, Transfer, ClientNotifications, AdminEnrichment, WebhookConfig)
+- 5 modèles Prisma additifs + 5 enums + migration SQL
+- 3 templates emails HTML
+- 8 fichiers tests Jest (48 tests backend)
+
+**Documentation** :
+- 2 audits MD (AUDIT_ENRICHISSEMENT_VOYAGE.md + AUDIT_TRANSFERT_AEROPORT.md)
+- 1 récap technique (RECAP_CODE_ENRICHISSEMENT_TRANSFERTS.md)
+- 1 runbook ops (RUNBOOK_ENRICHISSEMENT.md)
+- 1 migration SQL idempotente
+- PROGRESS.md mis à jour
+
+**Conformité légale UE 2015/2302** :
+- ✅ Article 11 §2 (notification modification majeure sur support durable)
+- ✅ Article 11 §3 (droit résolution sans frais)
+- ✅ Article 12 §6 (remboursement 14j)
+- ✅ Auto-acceptation tacite J+7 (cron stub prêt + procédure ops)
+- ✅ Preuve légale : versioning + acks + IP/UA + signed tokens HMAC + export HTML + audit stamp + webhook outbound
+
+### Prochaines étapes (Phase 2 — toujours reportées)
+
+- Appliquer migration : `npx prisma migrate deploy`
+- Brancher services in-memory sur les vraies tables Prisma
+- Activer cron production : J+3/J+5/J+7
+- Pixel tracking ouverture email
+- Génération PDF native (pdfkit ou puppeteer-core)
+- Table `ProWebhookConfig` Prisma (pour persistance webhook config)
+- Setup ENV prod (`NOTIFICATION_SIGNING_SECRET`, `WEBHOOK_OUTBOUND_ENABLED`)
+
+---
+
+> *Six batches, zéro suppression, une plateforme complète. De la cloche voyageur
+> au runbook ops, du token signé HMAC à la migration SQL idempotente, du badge
+> trust marketing au webhook ERP — Eventy respire la conformité, la transparence
+> et l'âme du voyageur respecté.*
