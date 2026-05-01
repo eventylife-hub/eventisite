@@ -25,6 +25,7 @@
 | 4 | `fade9b1` | `92c5e5d` | feat(reader-symphony round 2): transport-avion + transfert + mode-voyage + billets + chat + énergie |
 | 5 | `9596b04` | `d4fdb3e` | feat(reader-symphony round 3): 8 pages client supplémentaires (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) |
 | 6 | `1e7c43f` | `a74c46a` | feat(round 4): merci symphony + transportQuoteValidated gate admin (TODO P0 #4) |
+| 7 | `3afcc57` | `f9ec0f0` | feat(round 5): TSP optimizer + Maps transfert + tier réel + bandeau pro devis transport |
 
 Toutes les branches `master` (frontend) et `main` (eventisite) sont synchronisées.
 
@@ -325,18 +326,60 @@ l'Andalousie.
 
 ---
 
+## 🎼 Round 5 — TSP + Maps + tier réel + bandeau pro (commit 7)
+
+5 améliorations qui couvrent 3 TODOs P0 du recap :
+
+### Fichier nouveau
+
+#### `frontend/lib/transport/tsp-optimizer.ts` (TODO P0 #1)
+Algorithme Nearest Neighbor + 2-opt pour ordonnancement quasi-optimal des arrêts :
+- `haversineKm()` — distance entre 2 GPS
+- `totalRouteDistance()` — coût total d'une route
+- `optimizeStopOrder(stops, { startStopId, endStopId })` — réordonne en gardant départ + arrivée fixes
+- Renvoie `{ orderedStops, totalKm, estimatedMinutes, partial }`
+- O(n²) — suffit pour 5-15 arrêts (cas Eventy typique)
+- Limite à 50 itérations 2-opt pour ne pas bloquer le thread
+
+### Fichiers modifiés
+
+#### `frontend/app/(pro)/pro/voyages/nouveau/components/EtapeBusStops.tsx`
+- Bouton **"Suggérer ordre optimal"** (gold #D4A853) dans header section PICKUP_DEPARTURE
+- S'affiche si 3+ arrêts pickup avec GPS
+- 1 clic : appelle `optimizeStopOrder`, re-attribue `sortOrder`, conserve waypoints/arrivals après
+- Réécrit `formData.stops` via `setFormData`
+
+#### `frontend/app/(pro)/pro/voyages/[id]/page.tsx`
+- Composant `TransportQuoteBanner` : bandeau urgent quand devis transport non validé
+  - **Critical** (red) → "voyage NON publiable" + lien `/pro/voyages/[id]/edit?step=fournisseurs`
+  - **Warning** (sun) → "statut inconnu — vérifier"
+  - **Hidden** quand validé (success implicit)
+- TravelDashboard interface étendue : `transportQuoteValidated?: boolean` + `transportQuotes?: Array<{status?}>`
+
+#### `frontend/app/(client)/client/voyage/[id]/transfert/page.tsx` (TODO P0 — TRANSFERT-AEROPORT)
+- iframe Google Maps Embed (replace placeholder "à intégrer") :
+  - Si `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` défini → mode `directions` avec route dessinée
+  - Sinon → fallback iframe public `maps.google.com/?q=` + lien externe `dir/?api=1`
+- Lien externe "Ouvrir l'itinéraire dans Google Maps" sous la carte
+
+#### `frontend/components/voyage/VoyageEnergyBadge.tsx`
+- Cascade tier : prop > localStorage cache (1h TTL) > fetch `/api/client/me/energy` > STARTER
+- Cache écrit après fetch réussi pour éviter refetch
+- Validation : tier doit exister dans PALIERS_ENERGY pour être appliqué
+
+---
+
 ## 🟡 Hors scope — prochaines passes
 
 Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 
-1. **TSP optimizer + carte symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P0 #1 — gros chantier (algo + UI).
-2. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier (backend + emails).
-3. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
-4. **Tier réel du voyageur** — VoyageEnergyBadge utilise STARTER par défaut. Quand `/client/me/energy` exposera le tier, brancher le `tier` prop.
-5. **Maps Google sur transfert** — TODO P0 documenté (geo trajet aéroport → hôtel).
-6. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé).
-7. **Backend transportQuoteValidated** — l'admin lit le flag, mais il faut côté backend exposer ce champ dans la réponse de `/admin/travels/[id]` pour qu'il soit pleinement utilisable hors `transportQuotes` array.
-8. **Bandeau créateur "Devis non validé"** sur `/pro/voyages/[id]` — le miroir côté pro n'a pas encore son banner urgent (l'admin a celui-ci).
+1. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier (backend + emails + queue).
+2. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
+3. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur.
+4. **Backend `transportQuoteValidated`** — exposer le champ dans la réponse de `/admin/travels/[id]` (et `/pro/travels/[id]`) côté backend NestJS.
+5. **API `/api/client/me/energy`** — exposer le tier du voyageur connecté (le frontend VoyageEnergyBadge la consomme déjà).
+6. **Carte interactive symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P1 #6 — visualisation Google Maps avec polyline du trajet TSP.
+7. **TSP visualisation "partition"** — TODO-SYMPHONIE-OCCURRENTS.md P1 #7 — frise chronologique horizontale.
 
 ---
 
@@ -350,7 +393,8 @@ Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 | 4. Symphony round 2 + énergie | 1 (VoyageEnergyBadge.tsx) | 7 (5 client + page + public) | ~302 |
 | 5. Symphony round 3 | 0 | 8 (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) | ~148 |
 | 6. Round 4 (merci + admin gate) | 0 | 2 (merci + admin/voyages/[id]) | ~51 |
-| **TOTAL** | **3** | **25** | **~1 421 lignes** |
+| 7. Round 5 (TSP + Maps + tier + pro banner) | 1 (tsp-optimizer.ts) | 4 (EtapeBusStops, /pro/voyages/[id], transfert, VoyageEnergyBadge) | ~451 |
+| **TOTAL** | **4** | **29** | **~1 872 lignes** |
 
 ---
 
