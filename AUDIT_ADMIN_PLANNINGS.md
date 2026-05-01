@@ -9,6 +9,8 @@
 
 Ce document recense **ce qui existe déjà**, **ce qui manque**, et les **TODOs concrets** placés dans le code (`// TODO Eventy: …`).
 
+> **Mise à jour 2026-05-02** : implémentation livrée en 18 commits. Voir §7 — État d'avancement.
+
 ---
 
 ## 1. INVENTAIRE — pages existantes
@@ -233,3 +235,95 @@ Classement P0 → P3 selon impact PDG / dette tech.
 ---
 
 _Audit généré le 2026-04-30. Tous les TODOs sont en place dans le code (préfixe `// TODO Eventy:`)._
+
+---
+
+## 7. ÉTAT D'AVANCEMENT (mise à jour 2026-05-02)
+
+Implémentation livrée en **18 commits** sur la branche `claude/inspiring-pascal-76b5bb` (frontend `master` + `main` + bumps repo principal).
+
+### 7.1 Composants partagés créés
+
+| Composant | Chemin | Statut |
+|---|---|:---:|
+| Dictionnaire zones géo | `frontend/lib/geo-zones.ts` | ✅ |
+| Calendrier voyages | `frontend/components/voyage/VoyagesCalendarView.tsx` | ✅ |
+| Heatmap KPIs zone × sem | `frontend/components/admin/KpisZoneSemaine.tsx` | ✅ |
+| Quick-actions admin | `frontend/components/admin/AdminQuickActionsBar.tsx` | ✅ |
+| Live interventions terrain | `frontend/components/admin/LiveInterventionsBar.tsx` | ✅ |
+| Quick-actions équipe | `frontend/components/equipe/EquipeQuickActionsBar.tsx` | ✅ |
+
+### 7.2 Pages mises à jour
+
+| Page | Améliorations livrées | Statut |
+|---|---|:---:|
+| `admin/voyages/page.tsx` | ViewMode 'calendar', filtres zone/période/places restantes, sort places, indicateurs zone+restantes dans rows | ✅ |
+| `admin/planning/page.tsx` | KPIs zone × sem (heatmap 12 sem), filtre zone, AdminQuickActionsBar dans panel, ViewMode 'annee' (12 mois), statuts 'annule'/'reporte', WeekView expand all + indicateurs zone+remplissage | ✅ |
+| `admin/voyages/[id]/page.tsx` | AdminQuickActionsBar + cartes "Dates de départ" et "Suivi hebdomadaire" | ✅ |
+| `admin/voyages/[id]/controle/page.tsx` | LiveInterventionsBar (6 actions terrain temps réel) | ✅ |
+| `admin/transport/planning/page.tsx` | Filtre zone géo (départ/destination), drill-down voyage, badges zone | ✅ |
+| `admin/pension/planning/page.tsx` | Filtre zone, drill-down voyages affectés | ✅ |
+| `equipe/voyages/page.tsx` | Toggle Liste/Calendrier, 3 filtres zone/période/places, KPIs zone | ✅ |
+| `equipe/planning/page.tsx` | Voyages multi-jours (joursDuree), drill-down side-panel, filtre zone | ✅ |
+| `equipe/voyage/planning/page.tsx` | Toggle Liste/Calendrier, 6 KPIs, filtres zone/période, drill-down | ✅ |
+| `equipe/voyage/[id]/page.tsx` | EquipeQuickActionsBar + badge zone géo | ✅ |
+
+### 7.3 Pages CRÉÉES
+
+| Nouvelle page | Chemin | Rôle | Statut |
+|---|---|---|:---:|
+| Gestion occurrences | `app/(admin)/admin/voyages/[id]/occurrences/page.tsx` | Add/edit/duplicate/delete dates de départ + shift en lot | ✅ |
+| Suivi hebdomadaire | `app/(admin)/admin/voyages/[id]/suivi-hebdo/page.tsx` | Trajectoire S-12 → S-0 + benchmark historique | ✅ |
+
+### 7.4 Priorités initiales — bilan
+
+| P | Action | Statut |
+|:---:|---|:---:|
+| **P0** | Créer `lib/geo-zones.ts` + ajouter filtre zone partout | ✅ |
+| **P0** | Brancher actions du panel `admin/planning` (via AdminQuickActionsBar) | ✅ |
+| **P0** | Quick-actions admin (forcer modif / annuler+refund / transférer / reporter) sur `admin/voyages/[id]` | ✅ |
+| **P1** | Extraire `CalendarViews.tsx` partagé + l'ajouter dans `admin/voyages` et `equipe/voyages` | ✅ |
+| **P1** | Filtres "période" (S+0, S+1, S+2, M+1) + "places restantes" | ✅ |
+| **P1** | Modèle voyage multi-jours + cliquable dans `equipe/planning` | ✅ |
+| **P1** | KPIs par zone × semaine (composant `KpisZoneSemaine`) | ✅ |
+| **P2** | Page gestion occurrences `[id]/occurrences` | ✅ |
+| **P2** | Heatmap voyages (12 sem × zone × remplissage) — intégré dans `KpisZoneSemaine` | ✅ |
+| **P2** | Panel équipe `/equipe/voyage/[id]` équivalent admin filtré | ✅ |
+| **P3** | Vue année (12 mois sur 1 page) | ✅ |
+| **P3** | Drag & drop report voyage entre 2 jours | ⏳ |
+| **P3** | Détection auto conflits transport / hébergement / créateur (en plus de HRA) | ⏳ |
+
+### 7.5 Restant à faire
+
+**Câblage API (placeholders)** : toutes les actions `AdminQuickActionsBar`, `LiveInterventionsBar`, `EquipeQuickActionsBar` et la page `occurrences` loggent + toast en attendant les endpoints backend (`POST /admin/travels/:id/{action}`, `POST /admin/travels/:id/interventions/{id}`, `POST /admin/travels/:id/occurrences/shift`, etc.).
+
+**P3 reportés** :
+- Drag & drop report voyage entre 2 jours dans `WeekView`
+- Détection automatique conflits transport (même bus 2 trajets), hébergement (double-booking hôtel), créateur (1 pro sur 3 voyages simultanés)
+- Vue "membre" 4 semaines dans `equipe/planning`
+- API tracking GPS externe (placeholder dans `LiveInterventionsBar`)
+
+### 7.6 Commits livrés
+
+1. `6d6bac85` Foundation : `lib/geo-zones.ts` + TODOs audit
+2. `17560ce9` admin/voyages : filtres zone/période/places + tri
+3. `ce8a78d6` `VoyagesCalendarView` + intégration admin/voyages
+4. `8f15d609` admin/planning : KPIs zone × sem + filtre zone
+5. `352c4803` `AdminQuickActionsBar` + intégration voyages/[id]
+6. `c71045c7` equipe/voyages : calendar + filtres + KPIs zone
+7. `a380c224` equipe/planning : multi-jours + drill-down + zone
+8. `53892c2f` admin/planning : `AdminQuickActionsBar` dans panel
+9. `50fcbe33` admin/transport/planning : filtre zone + drill-down
+10. `65934f6d` admin/pension/planning : filtre zone + drill-down
+11. `dc572ed5` `LiveInterventionsBar` + intégration controle
+12. `8d9a9452` equipe/voyage/planning : calendar + filtres + KPIs
+13. `11542e97` equipe/voyage/[id] : `EquipeQuickActionsBar` + zone
+14. `dbeb9b30` admin/voyages/[id]/occurrences : nouvelle page
+15. `aa508b4e` admin/voyages/[id]/suivi-hebdo : nouvelle page
+16. `983472a7` admin/planning : vue année + statuts annule/reporte
+17. `30abdc98` admin/planning : WeekView expand all + indicateurs
+18. `245e4ed8` admin/voyages : indicateurs places restantes + zone
+
+---
+
+_Mise à jour 2026-05-02. Implémentation livrée — câblage API restant à brancher selon priorités backend._
