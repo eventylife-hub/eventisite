@@ -87,6 +87,13 @@
 | `Eventy-Life-Onboarding-Voyageur.docx` / `.pdf` | Onboarding voyageur pas-à-pas — parcours B2C complet (15 KB · 4 pages) — 8 étapes : découverte (J-180), réservation (J-30), préparation (J-30 / J-15 / J-7), voyage (J0 à J+N), retour (J+1 / J+7 / J+15 / J+30), fidélisation (programme parrainage 50 € · programme Eventy Famille 3 paliers · communauté), 7 indicateurs d'expérience An 1/An 5, **7 promesses émotionnelles Eventy** au voyageur (jamais seul, accueil chaleureux, rien à gérer, droit à l'erreur, respect, information, écoute) |
 | `Eventy-Life-Code-Conduite-Ambassadeurs.docx` / `.pdf` | Code de conduite ambassadeurs / influenceurs (15 KB · 4 pages) — 11 sections conformes loi influenceurs n° 2023-451 + ARPP : 4 niveaux de partenariat (ambassadeur, influenceur partenaire, influenceur invité, personnalité publique), engagements (authenticité, respect marque, confidentialité, lutte pratiques trompeuses), engagements Eventy (kit, formation, avantages, liberté éditoriale), modalités contractuelles par niveau, conflits d'intérêts, 3 niveaux de sanctions, données personnelles et droit à l'image, 6 indicateurs An 1/An 5, procédure de candidature, recours et médiation |
 
+### Corporate annuel et RGPD sous-traitance
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-DPA-Sous-Traitance-RGPD.docx` / `.pdf` | DPA — Modèle de contrat de sous-traitance RGPD article 28 (15 KB · 4 pages) — 13 articles + annexe sous-traitants ultérieurs : objet, définitions, description du traitement (nature, données, personnes, durée), 8 obligations du Sous-traitant, recours à un sous-traitant ultérieur (autorisation préalable), **mesures de sécurité** techniques (chiffrement, MFA, sauvegardes, pentest annuel) et organisationnelles, notification des violations sous 24 h, transferts hors UE encadrés, sort des données fin de contrat, audit, responsabilité et indemnisation, durée et résiliation — annexable à tout contrat (Stripe, Scaleway, Google Workspace, comptable, DPO) |
+| `Eventy-Life-PV-Assemblee-Generale.docx` / `.pdf` | Modèle PV d'assemblée générale ordinaire annuelle (14 KB · 4 pages) — conforme Code commerce L227-9 et L232-1 : composition assemblée (associés présents/représentés), bureau, documents tenus à disposition (15 j avant), ordre du jour 9 points, 6 résolutions types (approbation comptes, quitus Président, affectation résultat, conventions réglementées L227-10, renouvellement CAC, pouvoirs formalités), clôture et signatures, annexe comptes annuels, **formalités post-AG** (dépôt greffe < 1 mois, JAL si dividendes, registre coté/paraphé, conservation 5 ans) |
+| `Eventy-Life-Rapport-Gestion-Annuel.docx` / `.pdf` | Modèle rapport de gestion annuel (15 KB · 4 pages) — conforme Code commerce L232-1 : identité Société, 10 sections : faits marquants, activité chiffrée (voyages, voyageurs, CA, marges), bilan synthétique et compte de résultat, 6 indicateurs financiers clés, **indicateurs réglementaires tourisme** (compte cantonné, pic année, garantie APST, marge sécurité, NPS, audits HRA), R&D et JEI/CIR, cartographie risques, événements postérieurs, perspectives N+1 chiffrées, proposition affectation résultat, conventions réglementées, tableaux annexes obligatoires |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -192,6 +199,8 @@
 | `../../scripts/garanties/conformite-ethique-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-operations-onboarding-ambassadeurs.js` | Générateur Node.js des 3 documents (manuel opérations quotidiennes, onboarding voyageur, code conduite ambassadeurs) |
 | `../../scripts/garanties/operations-onboarding-ambassadeurs-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-corporate-rgpd-annuel.js` | Générateur Node.js des 3 documents (DPA RGPD article 28, PV AGOA, rapport de gestion annuel) |
+| `../../scripts/garanties/corporate-rgpd-annuel-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
