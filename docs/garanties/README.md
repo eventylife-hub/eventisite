@@ -136,6 +136,13 @@
 | `Eventy-Life-Procedure-Sourcing-HRA.docx` / `.pdf` | Procédure de sourcing et qualification HRA (15 KB · 4 pages) — cible An 1 50 partenaires HRA → An 3 250 : 6 étapes (identification multi-canaux, qualification téléphonique 5 min trame 5 questions, visite/audit, décision référencement 4 niveaux Premium/Validé/Sous condition/Écarté, contractualisation, suivi continu audit annuel), cas particuliers (international RGPD strict, micro-partenaires, événementiel ponctuel), 7 KPIs An 1/An 3 (délai sourcing 60 j → 30 j, conversion audit→référencement ≥ 70 %, **HRA premium ≥ 4,5/5 → 35 %**), 6 engagements éthiques (refus pot-de-vin, égalité de traitement) |
 | `Eventy-Life-Grille-Decision-Destinations.docx` / `.pdf` | Grille de décision destinations (15 KB · 4 pages) — **outil de décision rationnel** : critères positifs (cohérence âme Eventy, faisabilité opérationnelle, sécurité MEAE, RSE, économique), critères de vigilance (surtourisme refus défaut, empreinte carbone justification, risques humains), **critères éliminatoires** (zone rouge MEAE, sanctions UE/ONU, atteintes droits humains), grille scoring 8 critères pondérés ≥ 4/5 prioritaire / < 3/5 écartée, réévaluation annuelle T1, **mix géographique cible An 5** (60 % France, 25 % Europe, 10 % Méditerranée, 5 % long-courrier), 6 engagements opposables sur destinations |
 
+### Sécurité voyageur international (consignes, santé, administratif)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Consignes-Securite-Destination.docx` / `.pdf` | Modèle de fiche sécurité destination (14 KB · 4 pages) — référentiel adapté par destination : niveau de vigilance MEAE (vert/jaune uniquement chez Eventy), contacts d'urgence Eventy + officiels (ambassade, hôpital, **inscription Fil d'Ariane MEAE** recommandée), risques sécuritaires/sanitaires/climatiques, législation locale (drogues, alcool, photographie, LGBTQIA+ honnêtement), argent et paiements, communication, spécificités voyage Eventy, procédures incident 4 niveaux, **liste pré-départ 10 cases à cocher**, mise à jour 30 j avant départ |
+| `Eventy-Life-Fiche-Sante-Voyageur.docx` / `.pdf` | Fiche santé voyageur international (14 KB · 4 pages) — vaccinations universelles (DTP, ROR) + voyage (hépatite A/B, typhoïde) + obligatoires selon pays (fièvre jaune, méningite ACWY), **prophylaxies** (paludisme zone par zone, dengue/chikungunya/Zika, maladies eau/aliments), trousse pharmacie minimale + tropicale, précautions par profil (femmes enceintes, seniors 65+, pathologies chroniques, PMR), couverture santé (CEAM UE, Pack Sérénité, mutuelle), surveillance retour 1 mois, sources officielles (Pasteur, OMS, BEH, CDC) |
+| `Eventy-Life-Document-Administratif-Voyageur.docx` / `.pdf` | Document administratif voyageur international (15 KB · 4 pages) — pièces d'identité (CNI UE+ Suisse/Norvège, passeport hors UE 6 mois validité, mineurs AST), **tableau visas et autorisations électroniques** (ESTA US 21 USD / AVE Canada / ETA UK depuis 2025 / ETIAS UE 2026 / VeM Brésil 2026 etc.), **délais et coûts** (passeport 60 j, visa traditionnel 60 j minimum), formalités douanières sortie/entrée/retour France (déclaration ≥ 10 000 € espèces, franchises 430 €), conduite à l'étranger (permis international gratuit), procédure perte papiers à l'étranger (6 étapes), 9 documents à scanner |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -255,6 +262,8 @@
 | `../../scripts/garanties/marketing-kit-charte-reseaux-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-methodologie-creation-sourcing-destinations.js` | Générateur Node.js des 3 documents méthodologie produit (création voyage, sourcing HRA, grille décision destinations) |
 | `../../scripts/garanties/methodologie-creation-sourcing-destinations-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-international-securite-sante-administratif.js` | Générateur Node.js des 3 documents sécurité voyageur international (consignes destination, fiche santé, document administratif visa/passeport) |
+| `../../scripts/garanties/international-securite-sante-administratif-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 

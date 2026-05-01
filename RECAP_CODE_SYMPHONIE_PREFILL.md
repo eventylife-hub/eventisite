@@ -26,6 +26,7 @@
 | 5 | `9596b04` | `d4fdb3e` | feat(reader-symphony round 3): 8 pages client supplémentaires (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) |
 | 6 | `1e7c43f` | `a74c46a` | feat(round 4): merci symphony + transportQuoteValidated gate admin (TODO P0 #4) |
 | 7 | `3afcc57` | `f9ec0f0` | feat(round 5): TSP optimizer + Maps transfert + tier réel + bandeau pro devis transport |
+| 8 | `aa6006d` | `5f86ca6` | feat(round 6): partition frise (P1 #7) + auto-RFQ scaffold (P0 #3 partial) |
 
 Toutes les branches `master` (frontend) et `main` (eventisite) sont synchronisées.
 
@@ -369,17 +370,55 @@ Algorithme Nearest Neighbor + 2-opt pour ordonnancement quasi-optimal des arrêt
 
 ---
 
+## 🎼 Round 6 — Partition frise + Auto-RFQ scaffold (commit 8)
+
+### Fichiers nouveaux
+
+#### `frontend/components/transport/SymphonyPartitionFrise.tsx` (TODO P1 #7)
+Frise chronologique horizontale des arrêts — la "partition musicale" :
+- Chaque arrêt = numéro circulaire + ville + heure + badge type
+- Différenciation visuelle : PICKUP (gold #D4A853), WAYPOINT (ocean), DROPOFF (mint)
+- Ligne connector entre arrêts avec gradient couleur
+- Header KPIs : nb notes + km totaux + durée estimée + warning GPS manquant
+- Mode compact disponible (`compact={true}`)
+- Scrollable horizontalement pour 10+ arrêts
+
+#### `frontend/lib/transport/auto-rfq.ts` (TODO P0 #3 partial)
+Scaffold complet pour la génération automatique de devis transport :
+- `checkAutoRFQEligibility(stops, occurrences, routes)` — valide les seuils :
+  - 5+ arrêts pickup
+  - 1+ occurrence
+  - 1+ route configurée
+  - 60%+ des arrêts avec GPS
+  - Renvoie `{ eligible, reasons, metrics }`
+- `buildAutoRFQPayload({ travelId, stops, occurrences, routes, ... })` — construit le payload :
+  - `pickup` : arrêts + totalKm (via tsp-optimizer) + arrivalPointId
+  - `onSite` : daysCount + estimatedKmPerDay (80km heuristique) + vehicleType
+  - `airportTransfers` : enabled si FLIGHT/MIXED + paxMin/Max depuis occurrences
+  - `occurrences` : dates + estimated pax
+  - `meta` : responseDeadlineHours=48, targetLoueurCount=3
+- `submitAutoRFQ(payload)` — POST `/api/pro/transport/auto-rfq` avec
+  graceful fallback si endpoint backend pas encore dispo
+
+### Fichier modifié
+
+#### `frontend/app/(pro)/pro/voyages/nouveau/components/EtapeBusStops.tsx`
+- Import `SymphonyPartitionFrise` + `totalRouteDistance`
+- Frise rendue au-dessus de la liste 3-types (départ/étapes/arrivée)
+- Calcul auto totalKm + duration depuis tous les arrêts ordonnés
+
+---
+
 ## 🟡 Hors scope — prochaines passes
 
-Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
+Identifiés mais non touchés (gros chantiers backend principalement) :
 
-1. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier (backend + emails + queue).
+1. **Endpoint backend `/api/pro/transport/auto-rfq`** — le frontend (auto-rfq.ts) pousse déjà le payload, le NestJS module `transport` doit le recevoir + broadcast emails loueurs (queue Bull).
 2. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
 3. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur.
 4. **Backend `transportQuoteValidated`** — exposer le champ dans la réponse de `/admin/travels/[id]` (et `/pro/travels/[id]`) côté backend NestJS.
 5. **API `/api/client/me/energy`** — exposer le tier du voyageur connecté (le frontend VoyageEnergyBadge la consomme déjà).
-6. **Carte interactive symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P1 #6 — visualisation Google Maps avec polyline du trajet TSP.
-7. **TSP visualisation "partition"** — TODO-SYMPHONIE-OCCURRENTS.md P1 #7 — frise chronologique horizontale.
+6. **Carte interactive symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P1 #6 — visualisation Google Maps avec polyline du trajet TSP (la frise est le pendant chronologique, la carte serait le pendant géographique).
 
 ---
 
@@ -394,7 +433,8 @@ Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
 | 5. Symphony round 3 | 0 | 8 (transport, manifeste, checkin, co-voyageurs, cagnotte, checklist, depenses, assurance) | ~148 |
 | 6. Round 4 (merci + admin gate) | 0 | 2 (merci + admin/voyages/[id]) | ~51 |
 | 7. Round 5 (TSP + Maps + tier + pro banner) | 1 (tsp-optimizer.ts) | 4 (EtapeBusStops, /pro/voyages/[id], transfert, VoyageEnergyBadge) | ~451 |
-| **TOTAL** | **4** | **29** | **~1 872 lignes** |
+| 8. Round 6 (partition frise + auto-RFQ) | 2 (SymphonyPartitionFrise.tsx + auto-rfq.ts) | 1 (EtapeBusStops) | ~525 |
+| **TOTAL** | **6** | **30** | **~2 397 lignes** |
 
 ---
 
