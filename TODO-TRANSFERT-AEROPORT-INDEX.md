@@ -121,6 +121,17 @@
 | `migration.sql` | 223 | UP+DOWN complets, ref DBA |
 | `airport-transfer-analytics.service.ts` (7 méthodes) | 134 | service squelette KPIs historiques |
 
+## Vague 6 (2026-05-02) — webhooks, fallback, recrutement, dashboards, feedback
+
+| Item | Lignes | Type |
+|---|---|---|
+| `webhooks/airport-transfer-webhooks.controller.ts` | 178 | 3 endpoints HMAC-protégés (status/incident/driver-info) |
+| `airport-transfer-fallback.service.ts` (8 méthodes) | 217 | gestion crise no-show/panne/annulation/retard |
+| `email-templates/transfer-cancelled.template.ts` | 89 | email annulation client |
+| Page `/transferts/devenir-partenaire` | 393 | landing + form recrutement prestataires |
+| Page `/equipe/transferts/performance` | 411 | dashboard analytique 30/60/90j |
+| Page `/client/voyage/[id]/transfert/feedback` | 254 | feedback post-voyage 4 critères + recommend |
+
 ---
 
 ## Comment retrouver un TODO dans le code
