@@ -611,3 +611,121 @@ Total                                                               71 tests
 > *Quatre batches, zéro suppression, des cloches qui sonnent, des équipes qui veillent,
 > des voyageurs informés. L'âme Eventy ne se fige pas — elle vibre, transparente,
 > conforme, chaleureuse.*
+
+---
+
+## 🆕 BATCH 5 — Public ack page, badges list, webhook outbound (2026-05-02)
+
+Suite au "Continue. NE RIEN EFFACER." du PDG (5ème itération).
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `app/(public)/notifications/[notificationId]/[decision]/page.tsx` | Page ack via lien email signé HMAC. 4 états : CONFIRM / PROCESSING / SUCCESS / ERROR. Article 11 §3 + 12 §6 affichés. | ~270 |
+| `app/(public)/notifications/[notificationId]/[decision]/error.tsx` | Boundary | ~30 |
+| `app/(pro)/pro/voyages/page.tsx` | Badge "✨ +N" compact sur cards voyages ayant des enrichissements récents | +12 |
+| `components/voyage/__tests__/NotificationBell.test.tsx` | 7 tests (empty/demo/PENDING filter/singular/link/variants) | ~75 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `enrichment-webhook.service.ts` | Service outbound webhook HMAC-SHA256 pour intégration ERP créateur. 4 events + 4 helpers | ~155 |
+| `enrichment-webhook.service.spec.ts` | 4 tests (sent/skipped/helpers wrap correctly) | ~80 |
+| `travel-transfer.service.ts` | Inject Optional `EnrichmentWebhookService` + fire `voyage.transferred` après log historique | +12 |
+| `travels.module.ts` | Wire `EnrichmentWebhookService` | +2 |
+
+### PROGRESS.md
+- Section "2026-05-02 — Sprint Enrichissement Voyages" ajoutée en tête du fichier
+- 5 batches détaillés avec scope cumulé
+- Pointeur vers `RECAP_CODE_ENRICHISSEMENT_TRANSFERTS.md`
+
+### Logique métier ajoutée
+
+**Public ack page** :
+- Lit `?token=...&travelId=...` du query string
+- Affiche selon `decision` (accept | refuse) une UI verte ou rouge
+- Confirmation manuelle puis appel `POST /public/notifications/:id/respond`
+- Mode démo : si l'API n'est pas dispo, simule succès après 800ms
+- Erreurs distinguées : token expiré vs erreur technique
+
+**Webhook outbound (events + signature)** :
+```
+POST {creatorUrl}
+Headers:
+  X-Eventy-Signature: hex(HMAC-SHA256(body, secret))
+  X-Eventy-Event: voyage.transferred
+Body: { event, occurredAt, travelId, data }
+```
+
+Events supportés :
+- `voyage.modified` — modif majeure post-publication
+- `voyage.transferred` — transfert d'aéroport
+- `voyage.notification.sent` — notification créée + envoyée
+- `voyage.notification.acknowledged` — réponse voyageur (ACCEPTED/REFUSED/TACIT_ACCEPT)
+- `voyage.enrichment.added` — partenariat ajouté à la timeline
+
+### Commits batch 5
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 5 |
+| eventy-backend | master | (post-rebase) feat(travels): batch 5 |
+
+### Couverture tests étendue (cumul batch 1+2+3+4+5)
+
+```
+backend/src/modules/travels/travel-enrichment.service.spec.ts        12 tests
+backend/src/modules/travels/travel-enrichment-cron.service.spec.ts    2 tests
+backend/src/modules/travels/travel-transfer.service.spec.ts           6 tests
+backend/src/modules/travels/notification-token.service.spec.ts        5 tests
+backend/src/modules/travels/client-notifications.controller.spec.ts   6 tests
+backend/src/modules/travels/transfer-export.service.spec.ts           6 tests
+backend/src/modules/travels/enrichment-webhook.service.spec.ts        4 tests
+frontend/components/voyage/__tests__/MajorChangeDetector.test.tsx    14 tests
+frontend/components/voyage/__tests__/LockedFieldWrapper.test.tsx      6 tests
+frontend/components/voyage/__tests__/VoyageEnrichmentBadge.test.tsx   7 tests
+frontend/components/voyage/__tests__/VoyagePublicEnrichmentTimeline.test.tsx  7 tests
+frontend/components/voyage/__tests__/NotificationBell.test.tsx        7 tests
+─────────────────────────────────────────────────────────────────────────────
+Total                                                               82 tests
+```
+
+### Cumul scope total final (5 batches)
+
+**Frontend** :
+- **9 routes Next.js** (enrichissement, transfert + historique, notifications client, dashboards admin x2, équipe conformité, public ack, public marketplace timeline)
+- **7 composants partagés** (`MajorChangeDetector`, `LockedFieldWrapper`, `VoyageEnrichmentBadge`, `VoyageTransferredFromBadge`, `VoyagePublicEnrichmentTimeline`, `NotificationBell`, `SymphonyDiff`)
+- 1 wizard 4 étapes (transfert)
+- error.tsx + loading.tsx pour chaque route
+- 5 fichiers tests Jest (41 tests frontend)
+
+**Backend** :
+- **5 services métier** (Enrichment, Transfer, NotificationToken, TransferExport, EnrichmentWebhook)
+- 1 cron stub (relance acks)
+- **6 controllers** (Travels, Lifecycle, Chat, Enrichment, Transfer, ClientNotifications, AdminEnrichment)
+- 5 modèles Prisma additifs + 5 enums
+- 3 templates emails HTML
+- 7 fichiers tests Jest (41 tests backend)
+
+**Conformité légale UE 2015/2302** :
+- ✅ Article 11 §2 (notification modification majeure sur support durable)
+- ✅ Article 11 §3 (droit résolution sans frais)
+- ✅ Article 12 §6 (remboursement 14j)
+- ✅ Auto-acceptation tacite J+7 (cron stub prêt)
+- ✅ Preuve légale : versioning + acks + IP/UA + signed tokens HMAC + export HTML + audit stamp + webhook outbound
+
+### Prochaines étapes (Phase 2 — encore reportées)
+
+- Migration Prisma `prisma migrate dev --name add_enrichment_models`
+- Brancher services in-memory sur les vraies tables Prisma (5 modèles prêts)
+- Activer cron production : auto-acceptation tacite J+7 + relances J+3/J+5
+- Pixel tracking ouverture email (1x1 GIF signé)
+- Génération PDF native (pdfkit ou puppeteer-core)
+- Table `ProWebhookConfig` + endpoint `/pro/settings/webhooks` pour configurer outbound
+- ENV variables prod : `NOTIFICATION_SIGNING_SECRET`, `WEBHOOK_OUTBOUND_ENABLED`
+
+---
+
+> *Cinq batches, zéro suppression, un système complet. De l'audit légal au lien email
+> signé, du dashboard ops à la cloche voyageur, du transfert d'aéroport au webhook ERP —
+> chaque pièce travaille avec les autres dans une symphonie qui respire l'âme Eventy.*

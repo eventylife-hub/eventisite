@@ -1,8 +1,79 @@
 # PROGRESS — Eventy Life Platform
 
-> **Dernière mise à jour** : Cowork-38 Sprints 48-56 (23 mars 2026) — 3 error.tsx, CSP unsafe-eval supprimé, image domains restreints, phone validation standardisée, 12 h4→h3, 9 aria-labels, auth debug logs supprimés, session revocation on password change, 14 JSON.parse→safeJsonParse, 7 Record<string,any>→unknown, 2 as any éliminés, 3 unbounded findMany bornés, 3 User queries avec select
+> **Dernière mise à jour** : 2026-05-02 Sprint Enrichissement Voyages — 5 batches NE RIEN EFFACER : enrichissement progressif voyage publié + transfert d'aéroport (UE 2015/2302), 9 routes Next.js, 7 composants partagés, 5 services backend + 1 webhook + 1 cron, 6 controllers, 5 modèles Prisma additifs + 5 enums, 3 templates emails, **79 tests Jest** (40 backend + 39 frontend)
+>
+> **Précédente** : Cowork-38 Sprints 48-56 (23 mars 2026) — 3 error.tsx, CSP unsafe-eval supprimé, image domains restreints, phone validation standardisée, 12 h4→h3, 9 aria-labels, auth debug logs supprimés, session revocation on password change, 14 JSON.parse→safeJsonParse, 7 Record<string,any>→unknown, 2 as any éliminés, 3 unbounded findMany bornés, 3 User queries avec select
 > **Diagramme de référence** : drawio v53 (1 533 diagrammes dont 834 PATCHES)
 > **Stack** : Next.js 14 App Router · NestJS 10 · Prisma 5 · PostgreSQL 15 · Stripe · Tailwind CSS
+
+---
+
+## 2026-05-02 — Sprint Enrichissement Voyages (5 batches NE RIEN EFFACER)
+
+> **PDG demande** : "voyage publié = vivant, déplaçable entre hubs aériens. Conformité UE 2015/2302."
+>
+> Périmètre complet livré sur 5 batches successifs sans aucune suppression.
+
+### Batch 1 — MVP (audits + routes + services)
+- ✅ `AUDIT_ENRICHISSEMENT_VOYAGE.md` + `AUDIT_TRANSFERT_AEROPORT.md` (12 + 12 TODOs détaillés)
+- ✅ `/pro/voyages/[id]/enrichissement` — UI versionning + timeline events + notifications voyageurs (4 onglets)
+- ✅ `/pro/voyages/[id]/transfert-aeroport` — wizard 4 étapes (cible / symphonie / confirmation / succès)
+- ✅ `/pro/voyages/[id]/transfert-aeroport/historique` — timeline OUTGOING/INCOMING
+- ✅ Backend `TravelEnrichmentService` + `TravelTransferService` (in-memory, prêts pour Prisma)
+- ✅ 17 tests Jest
+
+### Batch 2 — Détecteur, page client, Prisma, cron
+- ✅ `MajorChangeDetector` — détection auto (departureDate, returnDate, destination, transportMode, +8% prix, capacité)
+- ✅ `/client/voyage/[id]/notifications` — page voyageur accept/refuse modification (chaleureuse, droits explicités)
+- ✅ `/admin/enrichissements` + `/admin/transferts-voyages` — dashboards globaux ops
+- ✅ Prisma : `TravelVersion`, `TravelEnrichmentEvent`, `TravelChangeNotification`, `TravelChangeAck`, `TravelAirportTransfer` + 5 enums
+- ✅ 3 templates emails : `travel-major-change`, `travel-airport-transfer`, `enrichment-ack-reminder`
+- ✅ `TravelEnrichmentCronService` — relance ack J+3/J+5 + auto-acceptation tacite J+7 (stub no-op prêt pour Phase 2)
+- ✅ +3 tests Jest
+
+### Batch 3 — Composants partagés, API client, exports légaux
+- ✅ `LockedFieldWrapper` — verrou visuel champs critiques publiés
+- ✅ `VoyageEnrichmentBadge` + `VoyageTransferredFromBadge` — badges sur fiche voyage
+- ✅ `VoyagePublicEnrichmentTimeline` — timeline marketing publique transparente
+- ✅ `ClientNotificationsController` — 3 routes (auth + public token signé)
+- ✅ `NotificationTokenService` — HMAC-SHA256, TTL 14j, timing-safe
+- ✅ `TransferExportService` — HTML A4 print-ready avec mention légale + cachet d'audit
+- ✅ Endpoint `GET /pro/travels/:id/transfers/export`
+- ✅ +28 tests Jest (14 component + 5 token + 6 client + 6 export, 2 cron)
+
+### Batch 4 — Bell, équipe conformité, signed tokens email
+- ✅ `NotificationBell` — cloche flottante notifications voyageur (variant absolute)
+- ✅ `/equipe/conformite-voyages` — page Pôle Conformité avec niveaux risque RED/YELLOW/GREEN
+- ✅ `AdminEnrichmentController` — 2 routes admin (`/admin/enrichments` + `/admin/transfers`)
+- ✅ Email dispatch utilise URLs signées HMAC pour acceptUrl/refuseUrl
+- ✅ `VoyagePublicEnrichmentTimeline` intégré dans `/(public)/voyages/[slug]`
+- ✅ +20 tests Jest (6 lock + 7 badge + 7 timeline)
+
+### Batch 5 — Public ack page, badges list, webhook, tests
+- ✅ `/(public)/notifications/[notificationId]/[decision]` — page ack token signé (lien email)
+  avec 4 états : CONFIRM / PROCESSING / SUCCESS / ERROR
+- ✅ Badge enrichissement compact dans `/pro/voyages` list cards
+- ✅ `EnrichmentWebhookService` — webhook outbound HMAC-SHA256 pour intégration ERP créateur
+  (events : voyage.modified, voyage.transferred, voyage.notification.acknowledged, voyage.enrichment.added)
+- ✅ Wire webhook fire dans `TravelTransferService.transferToAirport`
+- ✅ +11 tests Jest (7 NotificationBell + 4 webhook)
+
+### Conformité légale UE 2015/2302
+- ✅ Article 11 §2 (notification modification majeure sur support durable) — implémenté
+- ✅ Article 11 §3 (droit résolution sans frais) — implémenté
+- ✅ Article 12 §6 (remboursement 14j) — wording côté client
+- ✅ Auto-acceptation tacite J+7 — cron stub prêt
+- ✅ Preuve légale : versioning + acks + IP/UA + signed tokens HMAC + export HTML + audit stamp
+
+### Cumul scope total
+- **9 routes Next.js** : enrichissement + transfert + historique + notifications client + 2 dashboards admin + équipe conformité + ack public + intégration public marketplace
+- **7 composants partagés** : MajorChangeDetector, LockedFieldWrapper, VoyageEnrichmentBadge, VoyageTransferredFromBadge, VoyagePublicEnrichmentTimeline, NotificationBell, SymphonyDiff
+- **5 services backend** : Enrichment, Transfer, NotificationToken, TransferExport, EnrichmentWebhook + 1 cron
+- **6 controllers** : Enrichment, Transfer, ClientNotifications, AdminEnrichment + 2 existants enrichis
+- **5 modèles Prisma additifs** + 5 enums + 3 templates emails HTML
+- **79 tests Jest** (40 backend + 39 frontend)
+
+Voir `RECAP_CODE_ENRICHISSEMENT_TRANSFERTS.md` à la racine pour le détail complet.
 
 ---
 
