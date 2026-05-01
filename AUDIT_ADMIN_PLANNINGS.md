@@ -9,7 +9,7 @@
 
 Ce document recense **ce qui existe déjà**, **ce qui manque**, et les **TODOs concrets** placés dans le code (`// TODO Eventy: …`).
 
-> **Mise à jour 2026-05-02** : implémentation livrée en 18 commits. Voir §7 — État d'avancement.
+> **Mise à jour 2026-05-02** : implémentation livrée en 27 commits frontend + 1 backend. Voir §7 — État d'avancement.
 
 ---
 
@@ -327,3 +327,93 @@ Implémentation livrée en **18 commits** sur la branche `claude/inspiring-pasca
 ---
 
 _Mise à jour 2026-05-02. Implémentation livrée — câblage API restant à brancher selon priorités backend._
+
+---
+
+## 8. PHASE 2 — extensions livrées (2026-05-02 suite)
+
+Suite du chantier : 9 commits supplémentaires (frontend) + 1 commit backend.
+
+### 8.1 Composants/lib créés
+
+| Fichier | Rôle | Statut |
+|---|---|:---:|
+| `frontend/lib/admin-quick-actions-api.ts` | Wrapper apiClient pour les 7 actions admin + 6 interventions live + bulk. Mode "queued" si API offline | ✅ |
+| `backend/src/modules/admin/quick-actions.controller.ts` | Controller stub avec 10 endpoints REST (mapping 1-1 avec le wrapper frontend) | ✅ |
+
+### 8.2 Pages mises à jour (Phase 2)
+
+| Page | Améliorations | Statut |
+|---|---|:---:|
+| `admin/voyages/page.tsx` | BulkBar enrichie (7 actions : +reschedule/transfer/cancel-refund), wired sur API | ✅ |
+| `admin/planning/page.tsx` | Conflits étendus (transport+hebergement+createur), vue année (12 mois), statuts annule/reporte, WeekView expand all + indicateurs zone+remplissage, persistance presets localStorage, AdminQuickActionsBar wired API | ✅ |
+| `admin/voyages/[id]/page.tsx` | AdminQuickActionsBar wired API (mode queued) | ✅ |
+| `admin/voyages/[id]/controle/page.tsx` | LiveInterventionsBar wired API | ✅ |
+| `admin/voyages/[id]/occurrences/page.tsx` | handleAdd + handleShiftAll wired API (optimistic update) | ✅ |
+| `equipe/planning/page.tsx` | Vue "Membre × 4 sem." (charge personnelle vs 35h, alertes surcharge) | ✅ |
+
+### 8.3 Endpoints backend stubs créés
+
+| Méthode | Endpoint | Action |
+|---|---|---|
+| POST | `/admin/travels/:id/quick-actions/force-modify` | Override modification voyage publié |
+| POST | `/admin/travels/:id/quick-actions/transfer-pro` | Réassigne voyage à un autre pro créateur |
+| POST | `/admin/travels/:id/quick-actions/cancel-refund` | Annulation + refund Stripe automatique |
+| POST | `/admin/travels/:id/quick-actions/reschedule` | Décale toutes les occurrences de N jours |
+| POST | `/admin/travels/:id/occurrences` | Ajoute une nouvelle occurrence |
+| POST | `/admin/travels/:id/occurrences/shift` | Décale toutes les occurrences à venir |
+| POST | `/admin/travels/:id/quick-actions/force-go` | Override checklist J-7 |
+| POST | `/admin/travels/:id/quick-actions/emergency-call` | Déclenche appel d'urgence groupé |
+| POST | `/admin/travels/:id/interventions` | 6 types : urgence, re-route, absent, chat, GPS, override-go |
+| POST | `/admin/travels/bulk/:action` | Bulk action sur N voyages |
+
+Tous les stubs loggent + retournent `{ ok: true }`. Le branchement aux services métiers (`travels.service`, `cancellation.service`, `payments.service` Stripe, `email.service`, `audit-log.service`, `notifications.service`, `bulk-actions.service`) est détaillé en commentaire `TODO Eventy:` dans chaque méthode pour le commit suivant.
+
+### 8.4 Bilan priorités finales
+
+| P | Action | Statut |
+|:---:|---|:---:|
+| **P0** | Lib geo-zones + filtres zone partout | ✅ |
+| **P0** | AdminQuickActionsBar wired API | ✅ |
+| **P0** | Quick-actions admin sur voyage detail | ✅ |
+| **P1** | CalendarViews partagé + intégrations | ✅ |
+| **P1** | Filtres période + places restantes | ✅ |
+| **P1** | Voyages multi-jours + drill-down equipe | ✅ |
+| **P1** | KPIs zone × semaine | ✅ |
+| **P2** | Page gestion occurrences | ✅ |
+| **P2** | Heatmap voyages | ✅ |
+| **P2** | Panel équipe `/equipe/voyage/[id]` | ✅ |
+| **P3** | Vue année (12 mois) | ✅ |
+| **P3** | Drag & drop reschedule | ⏳ |
+| **P3** | Détection auto conflits transport/hebergement/créateur | ✅ (transport+hebergement+créateur livrés) |
+| **P3** | Vue "membre" 4 semaines equipe/planning | ✅ |
+| **P3** | API tracking GPS externe | ⏳ (placeholder LiveInterventionsBar) |
+| Bonus | Persistance presets filtres localStorage | ✅ |
+| Bonus | Bulk operations étendues (transferer/reporter/cancel+refund) | ✅ |
+| Bonus | Backend stubs API + frontend wired (mode queued) | ✅ |
+
+### 8.5 Commits Phase 2
+
+19. `(audit-doc)` Bilan implémentation 18 commits
+20. `af38cf2f` Bulk operations étendues (admin/voyages)
+21. `c45036ed` Conflits transport+hebergement+créateur (admin/planning)
+22. `ccffd839` Vue Membre × 4 sem. (equipe/planning)
+23. `3d65097a` Persistance presets localStorage (admin/planning)
+24. `e9beed4` (backend) Quick-actions controller stub
+25. `c339ae32` AdminQuickActionsBar wired to backend API
+26. `d2e2aa78` LiveInterventionsBar + occurrences wired
+27. `3fc27f6b` Bulk operations wired to backend API
+
+### 8.6 Restant à faire
+
+**Backend** : brancher les 10 endpoints stubs sur les services métiers existants. Les TODO Eventy dans `quick-actions.controller.ts` listent les services à appeler pour chaque méthode (Stripe refund, email templates, audit log, notifications pro/équipe).
+
+**Frontend P3 reportés** :
+- Drag & drop reschedule voyage entre 2 jours dans `WeekView`
+- API tracking GPS externe (placeholder dans `LiveInterventionsBar`)
+
+**Note backend main** : la branche `main` du repo backend a une divergence non-liée (Pennylane finance + analytics) avec `master`. Le bump dans le repo principal pointe sur master. Synchroniser main manuellement quand prêt.
+
+---
+
+_Mise à jour 2026-05-02 (Phase 2 complète). 27 commits frontend + 1 commit backend livrés sur master+main des deux repos._
