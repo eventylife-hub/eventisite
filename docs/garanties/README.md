@@ -122,6 +122,13 @@
 | `Eventy-Life-Politique-Achats-Responsables.docx` / `.pdf` | Politique d'achats responsables (15 KB · 4 pages) — 6 principes directeurs (préférence France/Europe, circuits courts, RSE, refus extractif, **paiement 30 j fin de mois LME**, transparence), 3 catégories d'achats, **grille de notation 5 critères pondérés** (qualité 30 %, prix juste 20 %, RSE 20 %, localisation 15 %, solidité 15 %), critères RSE pour HRA (environnemental, social, gouvernance), hiérarchie territoriale (local → national → européen → international), achats numériques responsables, modalités contractuelles, 6 indicateurs An 1/An 5 (≥ 85 % volume Europe, paiement ≤ 25 j) |
 | `Eventy-Life-Plan-Mobilite-Durable.docx` / `.pdf` | Plan de mobilité durable (14 KB · 4 pages) — conforme LOM 2019 + loi Climat 2021 : volet collaborateurs (FMD jusqu'à 800 €/an, 75 % transports en commun, vélo de fonction An 2, déplacements pro train ≤ 4 h obligatoire), volet voyageurs (hiérarchie autocar/train/avion, **refus structuré des vols < 4 h**, optimisation taux remplissage, étude autocar électrique An 3, partenariats SNCF), volet écosystème (HRA, transporteurs, destinations), 8 indicateurs An 1/An 5 (≥ 90 % autocar+train, ≤ 3 % avion, taux remplissage ≥ 90 %), communication sobre et honnête |
 
+### Marketing et communication (kit, charte, réseaux sociaux)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Kit-Ambassadeur.docx` / `.pdf` | Kit ambassadeur (15 KB · 4 pages) — outillage opérationnel des ambassadeurs/influenceurs : identité visuelle complète (logo, **palette 7 couleurs HEX/RGB**, typographies Calibri/Inter), photothèque (100+ photos voyageurs, 50+ destinations, 8 vidéos destinations 9:16), slogans approuvés et phrases interdites (cohérence Code conduite ambassadeurs), modèles de publications préformatées (carrousel Instagram 5 slides, story 9:16, reel 15-90 sec, blog 800 mots), code parrainage EVENTY-[NOM]-[ANNÉE] avec lien tracé, charte éditoriale rapide, validation préalable pour communications à fort enjeu |
+| `Eventy-Life-Charte-Editoriale.docx` / `.pdf` | Charte éditoriale Eventy (15 KB · 4 pages) — **5 piliers du ton Eventy** (chaleureux, direct, honnête, bienveillant, respectueux des intelligences), 13 mots à privilégier vs à éviter (« Voyage » vs séjour, « Tu » vs vous, « HRA partenaire » vs prestataire), interdictions (superlatifs vides, marketing manipulateur, jargon corporate, anglicismes inutiles, discriminant), règles typographiques (espace insécable, % séparateur milliers), capitalisations Eventy (« Eventy Life », « Pack Sérénité », « HRA »), adaptations par canal (web, email, réseaux, presse), **test final 5 questions devant le miroir** |
+| `Eventy-Life-Strategie-Reseaux-Sociaux.docx` / `.pdf` | Stratégie réseaux sociaux (15 KB · 4 pages) — 5 plateformes priorisées (Instagram P1, Facebook P2, TikTok P3, LinkedIn P4 B2B, YouTube P5 long terme), **5 piliers de contenu** (inspiration 40 %, témoignages 25 %, coulisses 15 %, pédagogique 10 %, engagement/valeurs 10 %), calendrier éditorial type semaine, règles de production (photos lumière naturelle, sous-titres systématiques, sous-titres premier plan accrocheur 3 sec), modération bienveillante (refus suppression avis défavorables sauf injures), publicité ≤ 30 % budget marketing, 7 KPIs An 1/An 3 (≥ 5 000 → 50 000 abonnés Instagram, taux engagement ≥ 5 %), engagements éthiques (refus dark pattern et faux comptes) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -237,6 +244,8 @@
 | `../../scripts/garanties/commercial-vendeur-cse-fidelisation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-rse-carbone-achats-mobilite.js` | Générateur Node.js des 3 documents RSE détaillée (charte engagement carbone, politique achats responsables, plan mobilité durable) |
 | `../../scripts/garanties/rse-carbone-achats-mobilite-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-marketing-kit-charte-reseaux.js` | Générateur Node.js des 3 documents marketing (kit ambassadeur, charte éditoriale, stratégie réseaux sociaux) |
+| `../../scripts/garanties/marketing-kit-charte-reseaux-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
