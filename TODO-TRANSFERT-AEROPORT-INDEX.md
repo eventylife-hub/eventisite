@@ -165,6 +165,17 @@
 | Page `/equipe/transferts/audit-log` | 290 | historique chronologique RGPD-compliant |
 | Page `/transferts/partenaire/dashboard` | 290 | espace prestataire stats + RFQ + missions |
 
+## Vague 10 (2026-05-02) — sécurité + légal + monitoring + exports
+
+| Item | Lignes | Type |
+|---|---|---|
+| `airport-transfer-refund.service.spec.ts` (10 tests) | 99 | tests calculateRefundAmount barème CGV |
+| `CGV-TRANSFERTS.md` | 256 | addendum CGV à valider par avocat tourisme |
+| `airport-transfer-slack.service.ts` (6 notif préformatées) | 129 | alertes équipe Slack |
+| `airport-transfer-hmac.helper.ts` (+ 14 tests) | 212 | HMAC SHA256 + rotation secrets providers |
+| `airport-transfer-pdf.service.ts` | 97 | génération PDF Puppeteer-ready (5 méthodes) |
+| `airport-transfer-exports.controller.ts` | 103 | 4 endpoints CSV+PDF download |
+
 ---
 
 ## Comment retrouver un TODO dans le code
