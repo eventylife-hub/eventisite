@@ -154,6 +154,17 @@
 | Page `/admin/transferts-aeroport/emails-preview` | 244 | outil QA preview 6 templates email |
 | `lib/transport/transferts-aeroport-i18n.ts` | 194 | strings client FR/EN/ES (22 clés) |
 
+## Vague 9 (2026-05-02) — opérations terrain + traçabilité + financier
+
+| Item | Lignes | Type |
+|---|---|---|
+| `dispatch-sheet.template.ts` | 175 | feuille mission imprimable A4 (PDF-ready) |
+| `airport-transfer-csv.helper.ts` (+ 11 tests) | 240 | exports CSV providers/quotes/audit |
+| `airport-transfer-refund.service.ts` | 175 | gestion remboursements (calculateRefundAmount ✓ implémenté) |
+| `HANDBOOK-CHAUFFEUR.md` | 165 | guide chauffeur partenaires |
+| Page `/equipe/transferts/audit-log` | 290 | historique chronologique RGPD-compliant |
+| Page `/transferts/partenaire/dashboard` | 290 | espace prestataire stats + RFQ + missions |
+
 ---
 
 ## Comment retrouver un TODO dans le code
