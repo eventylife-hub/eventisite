@@ -132,6 +132,28 @@
 | Page `/equipe/transferts/performance` | 411 | dashboard analytique 30/60/90j |
 | Page `/client/voyage/[id]/transfert/feedback` | 254 | feedback post-voyage 4 critères + recommend |
 
+## Vague 7 (2026-05-02) — finalisation : OpenAPI, RGPD, tests, panneau, synthèse
+
+| Item | Lignes | Type |
+|---|---|---|
+| `openapi.yaml` | 592 | spec OpenAPI 3.0 (14 endpoints + 17 schemas) |
+| `RGPD-COMPLIANCE.md` | 193 | Article 30 RGPD (sous-traitants + rétention) |
+| `airport-transfer.controller.spec.ts` | 146 | 8 tests intégration NestJS |
+| `index.ts` (barrel export) | 64 | imports propres `@/modules/transport/airport-transfer` |
+| `PanneauAeroportPreview.tsx` | 163 | composant visuel panneau gold |
+| `AUDIT_TRANSFERT_AEROPORT_HOTEL_FINAL.md` | 255 | synthèse PDG des 7 vagues |
+
+## Vague 8 (2026-05-02) — outillage QA + i18n + monitoring + manifest
+
+| Item | Lignes | Type |
+|---|---|---|
+| `postman-collection.json` | ~360 | collection import-ready 14 requêtes 6 dossiers |
+| `seed-data.json` | ~150 | 8 providers + 13 zones aéroports |
+| `airport-transfer-health.controller.ts` | 60 | endpoint /health/airport-transfer |
+| `MANIFEST.md` | 220 | inventaire complet + quick start dev |
+| Page `/admin/transferts-aeroport/emails-preview` | 244 | outil QA preview 6 templates email |
+| `lib/transport/transferts-aeroport-i18n.ts` | 194 | strings client FR/EN/ES (22 clés) |
+
 ---
 
 ## Comment retrouver un TODO dans le code
