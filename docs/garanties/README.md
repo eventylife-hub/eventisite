@@ -143,6 +143,13 @@
 | `Eventy-Life-Fiche-Sante-Voyageur.docx` / `.pdf` | Fiche santé voyageur international (14 KB · 4 pages) — vaccinations universelles (DTP, ROR) + voyage (hépatite A/B, typhoïde) + obligatoires selon pays (fièvre jaune, méningite ACWY), **prophylaxies** (paludisme zone par zone, dengue/chikungunya/Zika, maladies eau/aliments), trousse pharmacie minimale + tropicale, précautions par profil (femmes enceintes, seniors 65+, pathologies chroniques, PMR), couverture santé (CEAM UE, Pack Sérénité, mutuelle), surveillance retour 1 mois, sources officielles (Pasteur, OMS, BEH, CDC) |
 | `Eventy-Life-Document-Administratif-Voyageur.docx` / `.pdf` | Document administratif voyageur international (15 KB · 4 pages) — pièces d'identité (CNI UE+ Suisse/Norvège, passeport hors UE 6 mois validité, mineurs AST), **tableau visas et autorisations électroniques** (ESTA US 21 USD / AVE Canada / ETA UK depuis 2025 / ETIAS UE 2026 / VeM Brésil 2026 etc.), **délais et coûts** (passeport 60 j, visa traditionnel 60 j minimum), formalités douanières sortie/entrée/retour France (déclaration ≥ 10 000 € espèces, franchises 430 €), conduite à l'étranger (permis international gratuit), procédure perte papiers à l'étranger (6 étapes), 9 documents à scanner |
 
+### Content / SEO et glossaire (référentiel rédacteurs)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Guide-SEO.docx` / `.pdf` | Guide SEO Eventy (15 KB · 4 pages) — **3 piliers** (technique, contenu, notoriété), Core Web Vitals (LCP ≤ 2,5 s, CLS ≤ 0,1, score Lighthouse ≥ 90), **stratégie mots-clés** (transactionnels, informationnels, longue traîne), structure type fiche voyage (title, meta, H1, schema TouristTrip), optimisation blog, backlinks naturels (refus link farms), 7 KPIs An 1/An 3 (≥ 5 000 → 80 000 visites/mois, ≥ 30 → 500 mots-clés top 10), 6 engagements éthiques (refus contenu auto-généré sans révision) |
+| `Eventy-Life-Ligne-Editoriale-Blog.docx` / `.pdf` | Ligne éditoriale blog (15 KB · 4 pages) — **5 catégories de contenu** (Destinations 40 %, Conseils voyage 25 %, Vie Eventy/coulisses 15 %, Engagement/RSE 10 %, Témoignages 10 %), 6 audiences cibles, fréquence An 1 24 articles → An 3 96, calendrier saisonnier mois par mois, méthodologie (briefing, rédaction, validation, publication), charte auteur (signature obligatoire, fact-checking), **articles interdits** (clickbait, polémiques sans intérêt voyage, auto-générés sans révision), 6 KPIs blog, newsletter mensuelle « Le Mensuel Eventy » |
+| `Eventy-Life-Glossaire-Voyage.docx` / `.pdf` | Glossaire voyage Eventy (14 KB · 4 pages) — **vocabulaire tourisme et Eventy expliqué** : 35+ termes définis (APST, Atout France, Pack Sérénité, HRA, NPS, MEAE, MTV, TVA marge, ESTA, ETIAS 2026, CEAM, RC Pro, RGPD, etc.), 5 termes éthiques propres à Eventy (« On part même si on n'est que 4 », « Chaque euro est tracé », promesse-cadre, « Tu n'es jamais seul », « Liberté de l'économie »), document public eventylife.fr/glossaire, mise à jour bisannuelle T1 et T3 |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -264,6 +271,8 @@
 | `../../scripts/garanties/methodologie-creation-sourcing-destinations-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-international-securite-sante-administratif.js` | Générateur Node.js des 3 documents sécurité voyageur international (consignes destination, fiche santé, document administratif visa/passeport) |
 | `../../scripts/garanties/international-securite-sante-administratif-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-content-seo-blog-glossaire.js` | Générateur Node.js des 3 documents content / SEO (guide SEO, ligne éditoriale blog, glossaire voyage) |
+| `../../scripts/garanties/content-seo-blog-glossaire-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
