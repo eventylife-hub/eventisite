@@ -108,6 +108,13 @@
 | `Eventy-Life-Procedure-Recrutement.docx` / `.pdf` | Procédure de recrutement et d'intégration (15 KB · 4 pages) — conforme L1132-1 (25 critères non-discrimination) + L1221-6 + RGPD : 7 étapes du sourcing à la confirmation période d'essai, **transparence salariale** (fourchette publiée dans annonce), programme cooptation 1 000 € net (2× seniors), 4 entretiens (téléphone, manager, cas pratique rémunéré, Président + équipe), promesse d'embauche détaillée, **onboarding J0 → J+30** (parrain, lecture âme Eventy en duo, voyage en observateur), 7 indicateurs RH An 1/An 3 (60→45 j recrutement, 100 % réponse candidats, parité ≥ 40 %) |
 | `Eventy-Life-Modele-Entretien-Annuel.docx` / `.pdf` | Modèle d'entretien annuel et plan de développement (14 KB · 4 pages) — fusion entretien annuel + entretien professionnel L6315-1, période janv-mars, durée 1h30 : préparation (15 j avant) collaborateur + manager, trame en 8 temps (ouverture, bilan année, **évaluation compétences à 5 niveaux**, bien-être/motivation 5 questions ouvertes, projection 1/3/5 ans, plan développement, rémunération, clôture), fiche de synthèse 10 rubriques, point de mi-année juillet, 3 cas particuliers (désaccord, PIP, mobilité interne), 6 engagements éthiques de l'entretien |
 
+### Outils commerciaux et fidélisation
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Argumentaire-Vendeurs.docx` / `.pdf` | Argumentaire commercial vendeurs détaillé (15 KB · 4 pages) — référentiel pratique du vendeur Eventy 5 % HT du CA voyage : posture (3 principes + 3 règles d'or), 3 phrases d'accroche (conversation directe / réseaux / email), présentation produit en 6 piliers, **traitement des 7 objections les plus fréquentes** (cher / inconnus / je préfère organiser / sécurité / annulation / pas connu / direct vs vendeur), closing 5 questions de validation, parcours réservation côté voyageur et vendeur, phrases interdites, outils mis à disposition, 6 KPIs vendeur débutant/confirmé, engagement éthique |
+| `Eventy-Life-Offre-CSE-B2B.docx` / `.pdf` | Offre commerciale CSE et B2B (15 KB · 4 pages) — 3 formats (Adhésion CSE, Voyage privatisé 15-38 pax, Voyage incentive/séminaire), tarification sur devis avec décomposition transparente, conditions paiement (acompte 30 %, solde J-30), barème annulation B2B (≥ 90 j 5 % → ≤ 7 j 100 %), programme type 4j/3n, inclus/options détaillés, démarche commerciale 5 étapes (premier contact → reporting J+15), documents à transmettre, 6 indicateurs B2B An 1/An 3 (≥ 5 voyages → ≥ 30, CA B2B 10 % → 25 %, NPS ≥ +65 → +75) |
+| `Eventy-Life-Programme-Fidelisation-Famille.docx` / `.pdf` | Programme de fidélisation Eventy Famille (15 KB · 4 pages) — référentiel opposable : philosophie (réciprocité, **paliers à vie sans déclassement**), **3 paliers** (Voyageur Fidèle ≥ 2 voyages 5 % remise, Voyageur Famille ≥ 5 voyages 10 % + soirée + cadeau, Voyageur Légende ≥ 10 voyages 15 % à vie + cercle nominatif), parrainage (50/60/75 € selon palier, sans plafond), avantages permanents (newsletter, anniversaire, anniversaire de voyage), communauté (Facebook privé, apéros trimestriels), comptabilisation, 8 indicateurs fidélisation An 1/An 5, **7 engagements opposables** Eventy (préavis 12 mois si dégradation), cas particuliers (décès, exclusion, litige) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -219,6 +226,8 @@
 | `../../scripts/garanties/cyber-crise-conflits-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-rh-teletravail-recrutement-entretien.js` | Générateur Node.js des 3 documents RH (charte télétravail, procédure recrutement, modèle entretien annuel) |
 | `../../scripts/garanties/rh-teletravail-recrutement-entretien-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-commercial-vendeur-cse-fidelisation.js` | Générateur Node.js des 3 documents commerciaux (argumentaire vendeurs, offre CSE/B2B, programme fidélisation Eventy Famille) |
+| `../../scripts/garanties/commercial-vendeur-cse-fidelisation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 

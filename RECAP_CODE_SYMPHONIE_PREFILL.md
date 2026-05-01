@@ -22,6 +22,7 @@
 | 1 | `4062440` | `39dd140` | feat(creation-voyage): pré-remplissage automatique depuis catalogue créateur |
 | 2 | `8872e43` | `95087d7` | feat(reader): symphonie créateur propagée aux fiches lecteur public + client |
 | 3 | `b40d0bc` | `7bc623b` | feat(client/activites): symphonie créateur en fallback API |
+| 4 | `fade9b1` | `92c5e5d` | feat(reader-symphony round 2): transport-avion + transfert + mode-voyage + billets + chat + énergie |
 
 Toutes les branches `master` (frontend) et `main` (eventisite) sont synchronisées.
 
@@ -213,18 +214,64 @@ Tous les commits ont été poussés sur `master` (frontend submodule) et `main` 
 
 ---
 
-## 🟡 Hors scope de cette session — pour les prochaines passes
+## 🎼 Round 2 — Symphony étendue à 6 pages client + énergie (commit 4)
 
-Identifiés mais non touchés (scope trop grand pour une session, à traiter individuellement) :
+Suite à round 1, six pages client supplémentaires + 1 page publique
+ont été branchées au catalogue VOYAGES. Plus AUCUN voyage ne montre
+Andalousie / Marrakech / Santorin en dur — chacun affiche ses vraies
+données.
 
-1. **`/client/voyage/[id]/transport-avion/page.tsx`** — DEMO_INFO Santorin en dur ; même fix possible (depuis VOYAGES.transport).
-2. **`/client/voyage/[id]/transfert/page.tsx`** — DEMO_TRANSFER Marrakech en dur ; 4 TODOs P0 documentés (Maps, GPS chauffeur, push notif).
-3. **`/client/voyage/[id]/billets/`, `chat/`, `mode-voyage/`** — encore quelques DEMO_TRAVELS_FULL[0] en dur.
-4. **Énergie / XP du voyage** — non connectés (composant `<EnergyBar />` n'existe pas encore sur la fiche client).
-5. **Validations de transport** — flag `transportQuoteValidated` mentionné dans `TODO-SYMPHONIE-OCCURRENTS.md` P0 #4 — pas implémenté.
-6. **TSP optimizer + carte symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P0 #1 — gros chantier.
-7. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier.
-8. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
+### Fichier nouveau
+
+#### `frontend/components/voyage/VoyageEnergyBadge.tsx` (composant)
+Badge inline qui calcule les points Énergie/XP gagnés sur un voyage selon
+le tier du voyageur (PALIERS_ENERGY) et le prix TTC. Tier par défaut
+STARTER (100 €/100 pts) — TODO API `/client/me/energy` pour tier réel.
+
+### Fichiers modifiés (round 2)
+
+#### `frontend/app/(client)/client/voyage/[id]/transport-avion/page.tsx`
+- `buildFlightFromVoyage(travelId)` — départ/arrivée/dates depuis VOYAGES + busStops + destination.
+- Cascade : API → symphony → DEMO_INFO Santorin (préservé).
+
+#### `frontend/app/(client)/client/voyage/[id]/transfert/page.tsx`
+- `buildTransferFromVoyage(voyage)` — hôtel destination depuis hraList[0], aéroport depuis destination.
+- Si voyage trouvé dans VOYAGES → utilisé direct (pas d'attente API).
+- Préserve les 4 TODOs P0 documentés (Maps, GPS chauffeur, push notif).
+
+#### `frontend/app/(client)/client/voyage/[id]/mode-voyage/page.tsx`
+- Itinéraire construit depuis `voyage.days` du catalogue.
+- Guide tiré de `voyage.team` (createur ou guide en priorité).
+- Ultime fallback Andalousie 7 jours conservé pour les voyages hors catalogue.
+
+#### `frontend/app/(client)/client/voyage/[id]/billets/page.tsx`
+- `buildBilletsFromVoyage(travelId)` — billets bus aller/retour depuis closest stop + dates.
+- Numéro de réservation `EVT-${voyage.id.slice(-5).toUpperCase()}`.
+
+#### `frontend/app/(client)/client/voyage/[id]/chat/page.tsx`
+- Sur erreur API : tripName/destination/url/dates/participants viennent de VOYAGES.
+- Plus d'affichage Andalousie pour le chat de TOUS les voyages.
+
+#### `frontend/app/(client)/client/voyage/[id]/page.tsx`
+- Import + rendu `<VoyageEnergyBadge>` dans Quick stats row.
+
+#### `frontend/app/(public)/voyages/[slug]/voyage-detail-client.tsx`
+- Import + rendu `<VoyageEnergyBadge>` dans hero (à côté PensionBadge).
+- Le visiteur voit les pts ⚡ qu'il gagnera en réservant.
+
+---
+
+## 🟡 Hors scope — prochaines passes
+
+Identifiés mais non touchés (gros chantiers, à traiter individuellement) :
+
+1. **Validations de transport** — flag `transportQuoteValidated` mentionné dans `TODO-SYMPHONIE-OCCURRENTS.md` P0 #4 — pas implémenté.
+2. **TSP optimizer + carte symphonie** — TODO-SYMPHONIE-OCCURRENTS.md P0 #1 — gros chantier (algo + UI).
+3. **Auto-RFQ devis transport** — TODO-SYMPHONIE-OCCURRENTS.md P0 #3 — gros chantier (backend + emails).
+4. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog.
+5. **Tier réel du voyageur** — VoyageEnergyBadge utilise STARTER par défaut. Quand `/client/me/energy` exposera le tier, brancher le `tier` prop.
+6. **Maps Google sur transfert** — TODO P0 documenté (geo trajet aéroport → hôtel).
+7. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé).
 
 ---
 
@@ -235,7 +282,8 @@ Identifiés mais non touchés (scope trop grand pour une session, à traiter ind
 | 1. Pré-prefill création | 1 (creator-catalogs.ts) | 4 (Etape*) | ~487 |
 | 2. Symphony reader | 1 (symphony-mapper.ts) | 3 (voyage-detail-client + 2 client pages) | ~405 |
 | 3. Fallback API client | 0 | 1 (activites) | ~28 |
-| **TOTAL** | **2** | **8** | **~920 lignes** |
+| 4. Symphony round 2 + énergie | 1 (VoyageEnergyBadge.tsx) | 7 (5 client + page + public) | ~302 |
+| **TOTAL** | **3** | **15** | **~1 222 lignes** |
 
 ---
 
