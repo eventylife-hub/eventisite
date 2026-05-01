@@ -9,7 +9,7 @@
 
 Ce document recense **ce qui existe déjà**, **ce qui manque**, et les **TODOs concrets** placés dans le code (`// TODO Eventy: …`).
 
-> **Mise à jour 2026-05-02** : implémentation livrée en 27 commits frontend + 1 backend. Voir §7 — État d'avancement.
+> **Mise à jour 2026-05-02** : implémentation livrée en 32 commits frontend + 3 backend. Voir §7-§9 — État d'avancement.
 
 ---
 
@@ -417,3 +417,100 @@ Tous les stubs loggent + retournent `{ ok: true }`. Le branchement aux services 
 ---
 
 _Mise à jour 2026-05-02 (Phase 2 complète). 27 commits frontend + 1 commit backend livrés sur master+main des deux repos._
+
+---
+
+## 9. PHASE 3 — extensions livrées (2026-05-02 fin)
+
+Suite finale du chantier : 5 commits frontend + 2 commits backend.
+
+### 9.1 Composants/lib créés (Phase 3)
+
+| Fichier | Rôle | Statut |
+|---|---|:---:|
+| `frontend/lib/equipe-quick-actions-api.ts` | Wrapper apiClient pour les 6 actions équipe | ✅ |
+| `backend/src/modules/admin/quick-actions.controller.spec.ts` | 25 tests unitaires (controller + audit-log) | ✅ |
+
+### 9.2 Pages/composants mis à jour (Phase 3)
+
+| Page | Améliorations | Statut |
+|---|---|:---:|
+| `equipe/voyage/[id]/page.tsx` | EquipeQuickActionsBar wired API | ✅ |
+| `admin/planning/page.tsx` | Drag & drop reschedule voyage entre 2 jours (WeekView) | ✅ |
+| `admin/planning/heatmap/page.tsx` | **NEW** Heatmap fullscreen 5 métriques × 26 sem × 9 zones | ✅ |
+| `admin/planning/page.tsx` | Lien "Heatmap" dans header | ✅ |
+| `backend/src/modules/admin/quick-actions.controller.ts` | Audit-log câblé sur 7 endpoints (OVERRIDE, UPDATE, ADMIN_CREATE_REFUND) | ✅ |
+
+### 9.3 Bilan priorités finales (Phase 3)
+
+| P | Action | Statut |
+|:---:|---|:---:|
+| **P0** | Lib geo-zones + filtres zone partout | ✅ |
+| **P0** | AdminQuickActionsBar wired API | ✅ |
+| **P0** | Quick-actions admin sur voyage detail | ✅ |
+| **P1** | CalendarViews partagé + intégrations | ✅ |
+| **P1** | Filtres période + places restantes | ✅ |
+| **P1** | Voyages multi-jours + drill-down equipe | ✅ |
+| **P1** | KPIs zone × semaine | ✅ |
+| **P2** | Page gestion occurrences | ✅ |
+| **P2** | Heatmap voyages | ✅ (KpisZoneSemaine integré + page heatmap fullscreen dédiée) |
+| **P2** | Panel équipe `/equipe/voyage/[id]` | ✅ |
+| **P3** | Vue année (12 mois) | ✅ |
+| **P3** | Drag & drop reschedule | ✅ |
+| **P3** | Détection auto conflits transport/hebergement/créateur | ✅ |
+| **P3** | Vue "membre" 4 semaines equipe/planning | ✅ |
+| **P3** | API tracking GPS externe | ⏳ (placeholder LiveInterventionsBar — branchement externe à faire) |
+| Bonus | Persistance presets filtres localStorage | ✅ |
+| Bonus | Bulk operations étendues | ✅ |
+| Bonus | Backend stubs API + frontend wired | ✅ |
+| Bonus | Backend tests unitaires (25 specs) | ✅ |
+| Bonus | Backend audit-log câblé | ✅ |
+| Bonus | EquipeQuickActionsBar wired API | ✅ |
+
+### 9.4 Commits Phase 3
+
+28. `edf0f12e` EquipeQuickActionsBar wired to API
+29. `5c4fc25` (backend) Tests unitaires AdminQuickActionsController
+30. `2992198` (backend) Audit-log câblé sur endpoints critiques
+31. `7ecceacb` Drag & drop reschedule voyage WeekView
+32. `ad7aa2f8` Heatmap fullscreen page admin/planning/heatmap
+
+### 9.5 Restant à faire
+
+**Backend** : brancher les services métiers complets (Stripe refund, email templates, notifications pro/équipe, travels.service.update, cancellation.service). L'audit-log est déjà câblé (Phase 3) et sert de fondation.
+
+**P3 reporté** :
+- API tracking GPS externe (intégration tierce)
+
+**Note backend main** : la branche `main` du repo backend a une divergence non-liée (Pennylane finance + analytics) avec `master`. Le bump pointe sur master.
+
+### 9.6 Bilan global final
+
+**32 commits frontend** (master + main) + **3 commits backend** (master) + **3 docs bilan**.
+
+**Composants/lib partagés livrés** :
+- `frontend/lib/geo-zones.ts` — 9 zones + helpers
+- `frontend/lib/admin-quick-actions-api.ts` — wrapper API admin
+- `frontend/lib/equipe-quick-actions-api.ts` — wrapper API équipe
+- `frontend/components/voyage/VoyagesCalendarView.tsx` — calendrier sem./mois/trim.
+- `frontend/components/admin/KpisZoneSemaine.tsx` — heatmap zone × sem
+- `frontend/components/admin/AdminQuickActionsBar.tsx` — 7 actions admin punch
+- `frontend/components/admin/LiveInterventionsBar.tsx` — 6 interventions terrain
+- `frontend/components/equipe/EquipeQuickActionsBar.tsx` — 6 actions équipe
+- `backend/src/modules/admin/quick-actions.controller.ts` — 10 endpoints + audit-log
+- `backend/src/modules/admin/quick-actions.controller.spec.ts` — 25 tests
+
+**Nouvelles pages livrées** :
+- `/admin/voyages/[id]/occurrences` — gestion dates de départ
+- `/admin/voyages/[id]/suivi-hebdo` — trajectoire S-12 → S-0
+- `/admin/planning/heatmap` — heatmap fullscreen 5 métriques
+
+**Conformité avec l'âme d'Eventy** :
+- Toutes les actions destructives ont confirmation explicite (cf AME-EVENTY confiance voyageurs)
+- Audit log automatique pour traçabilité RGPD
+- Mode "queued" si API offline pour ne pas bloquer l'utilisateur
+- Mention des emails automatiques aux voyageurs lors des actions impactantes
+
+---
+
+_Mise à jour 2026-05-02 (Phase 3 complète et finale). 32 commits frontend + 3 commits backend livrés sur master+main des deux repos._
