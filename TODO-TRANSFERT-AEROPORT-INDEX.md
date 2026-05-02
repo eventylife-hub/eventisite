@@ -198,6 +198,15 @@
 | `test-fixtures.ts` (4 providers + 8 quotes + 4 scenarios) | 293 | données réalistes pour specs |
 | Page `/transferts/stats` | 232 | transparence radicale chiffres publics |
 
+## Vague 13 (2026-05-02) — légal + sécurité + ops + handover (clôture audit)
+
+| Item | Lignes | Type |
+|---|---|---|
+| `DPA-TEMPLATE-PROVIDERS.md` | 240 | Data Processing Agreement RGPD Art. 28 |
+| `SECURITY-AUDIT-CHECKLIST.md` | 260 | OWASP-aligned 10 sections + validation 5 pers. |
+| `OPERATIONS-RUNBOOK.md` | 340 | manuel ops 24/7 8 scénarios + routine + post-mortem |
+| `AUDIT_TRANSFERT_AEROPORT_HANDOVER.md` | 280 | doc transmission engineering team + plan 4 sprints |
+
 ---
 
 ## Comment retrouver un TODO dans le code
