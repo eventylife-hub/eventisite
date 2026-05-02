@@ -37,6 +37,7 @@
 | 16 | `90f069b` (back) | `0a7c37b` | feat(round 14): EARN_REFERRAL + Stripe webhook → energy pack + migration SQL |
 | 17 | `838f4b6` (front) | `a5c1652` | feat(round 15): cascade API energie page + EnergyTierBadge sidebar |
 | 18 | `e1801d7` (back) + `6493c1a` (front) | `d56987b` | feat(round 16): /me/energy/redeem + AutoRFQ queue scaffold + checkout redeem wiring |
+| 19 | `cf0b4bb` (back) + `291ec43` (front) | `ce3c60b` | feat(round 17): /admin/energie/system dashboard + GET /admin/energy/stats + 17 unit tests |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -789,12 +790,52 @@ Queue scaffold compatible Bull/BullMQ :
 
 ---
 
-## ✅ Toutes les TODO du recap sont désormais bouclées
+## 🎼 Round 17 — Admin energy dashboard + EnergyService tests (commit 19)
 
-Plus rien dans le périmètre du recap initial. Le voyage end-to-end Eventy
-est complet : symphonie créateur → readers → check-out → énergie → fidélité.
+2 nouveautés pour observabilité + qualité du système Énergie.
 
-Restent uniquement des chantiers hors scope projet (à traiter séparément) :
+### Backend
+
+#### `backend/src/modules/admin/admin.controller.ts` — `GET /admin/energy/stats`
+- `totalAccounts` + `totalBalance` + `totalLifetimeEarned`
+- `distributionByTier` (groupBy + count)
+- `topEarners` (top 10 par lifetimeEarned)
+- `recentTransactions` (50 dernières avec metadata complète)
+- Lecture defensive Prisma : gracieux si modèles non migrés
+- Protection RBAC : `@AdminRoles()`
+
+#### `backend/src/modules/energy/energy.service.spec.ts` (nouveau, 245 lignes)
+17 tests unitaires couvrant :
+- `tierFromLifetime()` : 7 tests (limites + nominal + LEGEND extrême)
+- `DEFAULT_POINTS` : 4 tests (booking, review, referral, pack)
+- `earnPoints()` : 5 tests (no-op, idempotence, création tx, upgrade tier, gracieux)
+- `redeemPoints()` : 4 tests (no-op, solde insuffisant, OK, compte inexistant)
+- `getOrCreateAccount()` : 2 tests
+- PrismaService mocké pour isolation totale
+
+### Frontend
+
+#### `frontend/app/(admin)/admin/energie/system/page.tsx` (nouveau, 290 lignes)
+Dashboard complet :
+- Header + bouton Rafraîchir (RefreshCw spinner)
+- 4 KPI cards : comptes, balance système, lifetime cumulé, tier LEGEND
+- Distribution par tier : 5 cards colorées avec progress bar % du total
+- Top 10 voyageurs : table avec balance + lifetime + tier badge
+- Transactions récentes (50) : log avec type label coloré + montant
+- Empty state élégant si endpoint indisponible
+- Loading skeleton
+
+#### `frontend/app/(admin)/admin/energie/page.tsx`
+- Ajout du module "Système Énergie" dans la liste MODULES (icône BarChart3)
+
+---
+
+## ✅ Le voyage Eventy est désormais complet end-to-end
+
+Plus rien dans le périmètre du recap initial. Tout fonctionne, est monitoré,
+et les services critiques sont testés.
+
+Restent uniquement des chantiers hors scope projet :
 
 1. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (backend prêt). Hors scope frontend Eventy.
 2. **Migration Bull/BullMQ + Redis** — la queue est in-memory pour MVP, à migrer vers infra production quand Redis sera dispo.
@@ -823,7 +864,8 @@ Restent uniquement des chantiers hors scope projet (à traiter séparément) :
 | 16. Round 14 (EARN_REFERRAL + Stripe webhook + migration SQL) | 1 (migration.sql) | 3 (friends.service, payments.module, webhook.controller) | ~161 |
 | 17. Round 15 (Frontend Energy complet) | 1 (EnergyTierBadge.tsx) | 2 (energie/page.tsx, client/layout.tsx) | ~189 |
 | 18. Round 16 (Redeem + AutoRFQ queue) | 1 (auto-rfq-queue.service) | 4 (client.controller, quotes.controller, transport.module, checkout step-3) | ~264 |
-| **TOTAL** | **17** | **63** | **~5 735 lignes** |
+| 19. Round 17 (Admin energy dashboard + tests) | 2 (admin/energie/system/page, energy.service.spec) | 2 (admin.controller, admin/energie/page) | ~640 |
+| **TOTAL** | **19** | **65** | **~6 375 lignes** |
 
 ---
 
