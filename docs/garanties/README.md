@@ -171,6 +171,13 @@
 | `Eventy-Life-Strategie-Relations-Presse.docx` / `.pdf` | Stratégie relations presse et médias (14 KB · 4 pages) — 5 segments média (tourisme, économique, grand public, lifestyle, tech/startup), 5 angles éditoriaux différenciants (souveraineté économique, transparence radicale prix, voyage comme bien public, autodidacte 1M+ lignes code, tourisme social et redistributif), plan 3 ans (An 1 émergence avec CP lancement + tribune + interviews, An 2 notoriété avec voyages presse trimestriels, An 3+ voix d'autorité avec auditions et rapports), 6 KPIs An 1/An 3, 6 engagements éthiques (refus publi-rédactionnel camouflé, achat d'articles, off the record manipulateur) |
 | `Eventy-Life-Plan-Partenariats-Institutionnels.docx` / `.pdf` | Plan de partenariats institutionnels (14 KB · 4 pages) — **cartographie 6 catégories** (régulateurs Atout France/APST/CNIL, syndicats UMIH/GNI/SNAV, offices tourisme ADN/CRT/CDT, tourisme social ANCV/Tourisme et Handicap/UNAT, acteurs économiques Bpifrance/CCI/CMA/FrenchTech, européens ETOA/ECTAA), 3 niveaux d'engagement (adhésion, partenariat opérationnel, partenariat stratégique), calendrier 3 ans détaillé (T2 An 1 Atout France/APST → An 3 ETOA international), 6 KPIs (≥ 5 → 15 adhésions, ≥ 5 régions partenaires An 3, **labels Tourisme et Handicap + ATR**), 5 engagements éthiques (refus lobbying contraire à l'intérêt général) |
 
+### Engagement et communauté (gamification, événements, ambassadeurs)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Programme-Gamification-Voyageur.docx` / `.pdf` | Programme de gamification voyageur (14 KB · 4 pages) — **5 principes éthiques** (bienveillance, optionnel, sans dark patterns, récompenses sincères, cohérence âme Eventy), refus structurés (monnaie virtuelle, roulettes, pression amis, addiction), 3 couches (programme Famille + badges/trophées + défis/missions), 6 catégories de badges (découverte, fidélité, engagement, communautaire, découvreur, RSE), carte interactive voyageur, statistiques personnelles (km parcourus, CO2eq, NPS donnée), notifications interdites (anxiogènes, urgence factice), 6 KPIs An 1/An 3 (≥ 70 % voyageurs avec badge), 6 engagements éthiques |
+| `Eventy-Life-Plan-Evenements.docx` / `.pdf` | Plan de gestion d'événements (14 KB · 4 pages) — 4 typologies (internes équipe, partenaires, communautaires voyageurs, commerciaux/institutionnels), **calendrier annuel type** mois par mois (vœux janvier, anniversaire Eventy juin signature, IFTM Top Resa septembre), événement signature anniversaire Eventy (juin, hybride 100-300 personnes, **bilan carbone publié + compensation**), apéros trimestriels Paris + 2 villes province, 8 budgets types (mardi équipe ≤ 50 € → anniversaire 15-30 K€), 6 KPIs (≥ 800 → 5 000 participants/an, NPS ≥ + 70), 6 engagements éthiques (sobriété, lieux PMR, catering circuit court) |
+| `Eventy-Life-Guide-Portail-Ambassadeur.docx` / `.pdf` | Guide utilisation portail ambassadeur (13 KB · 4 pages) — eventylife.fr/portail-ambassadeur (4e portail complétant créateur/vendeur/HRA) : **4 niveaux de partenariat** (Ambassadeur gratuit, Influenceur invité échange en nature, Influenceur partenaire contrat structuré, Personnalité publique), code parrainage `EVENTY-[NOM]-[ANNÉE]` avec lien tracé, kit ambassadeur intégré (logo, photothèque, vidéos, templates), suivi performances détaillé, validation préalable contenus à enjeu, 3 niveaux de sanctions, formation continue, support dédié `ambassadeur@eventylife.fr` |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -300,6 +307,8 @@
 | `../../scripts/garanties/guides-portails-createur-vendeur-hra-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-strategie-expansion-rp-partenariats.js` | Générateur Node.js des 3 documents stratégie externe (expansion internationale, relations presse, partenariats institutionnels) |
 | `../../scripts/garanties/strategie-expansion-rp-partenariats-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-gamification-evenements-portail-ambassadeur.js` | Générateur Node.js des 3 documents engagement / communauté (gamification voyageur, plan d'événements, guide portail ambassadeur) |
+| `../../scripts/garanties/gamification-evenements-portail-ambassadeur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
