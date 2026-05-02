@@ -248,6 +248,13 @@
 | `Eventy-Life-Politique-Langues-Traduction.docx` / `.pdf` | Politique de gestion des langues et traduction (14 KB · 4 pages) — calendrier 7 langues (FR An 1 → DE An 5) : 5 principes (qualité humaine, adaptation culturelle, cohérence éditoriale, inclusivité, maintenance), **4 niveaux de contenu** (contractuel humain obligatoire, communication officielle humaine recommandée, marketing humain + adaptation, communautaire assisté validé), refus structurés (Google Translate/ChatGPT pour contractuel, traduction symbolique), processus 5 phases (brief → mise en ligne) avec **3-eyes principle** (traducteur + relecteur + validation Eventy), 6 KPIs |
 | `Eventy-Life-Plan-Tests-Utilisateurs-Qualitatifs.docx` / `.pdf` | Plan de tests utilisateurs qualitatifs (14 KB · 4 pages) — **5 méthodes** (entretiens individuels 45-90 min, tests utilisateurs ergonomie, sondages qualitatifs ouverts, diary studies, card sorting/co-création), 5 principes éthiques (respect, sincérité, transparence, confidentialité, restitution honnête), refus structurés (questions orientées, recrutement biaisé, pas de rémunération), **indemnités justes** (50-200 € selon durée), profils diversifiés (cohérence Charte d'inclusion), restitution équipe trimestrielle/mensuelle, 6 KPIs |
 
+### Commercial & ressources (API publique, charte commerciale, gestion stocks)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Documentation-API-Publique.docx` / `.pdf` | Documentation API publique (13 KB · 4 pages) — **vision technique partenaires** déploiement An 3 : refus structurés (API ouverte sans contrôle, gratuité illimitée, cession données voyageurs), endpoints lecture An 3 (trips, destinations, availability, pricing) puis écriture An 4+ (réservations, devis), modalités d'accès (critères sélection, contrat partenariat API, sandbox 1-2 mois), tarification (commission 5-10 % + forfait technique ≥ 1 200 €/an), OAuth 2.0 + DPA RGPD obligatoire, **SLA disponibilité ≥ 99,5 % An 3 → 99,9 % An 5**, 6 engagements opposables |
+| `Eventy-Life-Charte-Commerciale.docx` / `.pdf` | Charte commerciale (14 KB · 4 pages) — posture commerciale globale Eventy : 5 principes (sincérité, liberté du voyageur, transparence, respect, cohérence âme), refus structurés (urgence factice, scarcité simulée, confirmshaming, prix-piège, dénigrement concurrents), honnêteté (description voyage, prix décomposé, limites, risques), conduite avec voyageur (refus précipitation, conseil sincère même si coûte une vente), promotions saisonnières encadrées, **Black Friday encadré** (refus -70 % gonflés), sanctions internes/partenaires, 6 KPIs (NPS post-réservation ≥ + 60 An 1) |
+| `Eventy-Life-Plan-Gestion-Stocks-Ressources.docx` / `.pdf` | Plan de gestion des stocks et ressources (13 KB · 4 pages) — sobriété et durabilité : photothèque (Scaleway France, ≈ 500 GB An 1 → 30 TB An 5), kits voyageurs (badges réutilisables, papier recyclé FSC, refus plastique usage unique), supports marketing (préférence numérique), matériel équipe (refurbished, cycle 4-5 ans), **merch limité** (anniversaire Eventy uniquement, prix coûtant + don), 6 KPIs (≥ 90 % stocks France/Europe, 0 plastique usage unique), 6 engagements éthiques |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -399,6 +406,8 @@
 | `../../scripts/garanties/avoirs-comm-famille-post-incident-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-support-multicanal-langues-tests-ux.js` | Générateur Node.js des 3 documents support multicanal et UX (politique support multicanal, politique langues et traduction, plan de tests utilisateurs qualitatifs) |
 | `../../scripts/garanties/support-multicanal-langues-tests-ux-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-api-charte-commerciale-stocks.js` | Générateur Node.js des 3 documents commercial et ressources (documentation API publique, charte commerciale, plan de gestion des stocks et ressources) |
+| `../../scripts/garanties/api-charte-commerciale-stocks-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
