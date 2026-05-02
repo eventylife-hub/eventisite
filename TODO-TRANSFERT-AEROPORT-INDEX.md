@@ -187,6 +187,17 @@
 | Page `/transferts/faq` | 284 | FAQ voyageur 14 Q/R en 6 catégories |
 | `AUDIT_TRANSFERT_AEROPORT_DEMO_SCENARIOS.md` | 234 | 5 scénarios démo (voyageur, crise, onboarding, chauffeur, investisseurs) |
 
+## Vague 12 (2026-05-02) — geocoding + invoice + queue + holidays + fixtures
+
+| Item | Lignes | Type |
+|---|---|---|
+| `airport-transfer-geocoding.service.ts` | 173 | distance/durée + cache 24h + fallback Mapbox |
+| `email-templates/provider-invoice.template.ts` | 206 | facture mensuelle gold/dark + Stripe Connect ref |
+| `airport-transfer-queue.service.ts` (12 jobs) | 146 | BullMQ wrapper + retry + DLQ |
+| `airport-transfer-holiday.helper.ts` (+ 14 tests) | 262 | 30+ fériés 2026 (FR/MA/ES/PT/IT/GR) + risk score |
+| `test-fixtures.ts` (4 providers + 8 quotes + 4 scenarios) | 293 | données réalistes pour specs |
+| Page `/transferts/stats` | 232 | transparence radicale chiffres publics |
+
 ---
 
 ## Comment retrouver un TODO dans le code
