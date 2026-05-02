@@ -38,6 +38,7 @@
 | 17 | `838f4b6` (front) | `a5c1652` | feat(round 15): cascade API energie page + EnergyTierBadge sidebar |
 | 18 | `e1801d7` (back) + `6493c1a` (front) | `d56987b` | feat(round 16): /me/energy/redeem + AutoRFQ queue scaffold + checkout redeem wiring |
 | 19 | `cf0b4bb` (back) + `291ec43` (front) | `ce3c60b` | feat(round 17): /admin/energie/system dashboard + GET /admin/energy/stats + 17 unit tests |
+| 20 | `a81226a` (back) + `3ebf595` (front) | `b200ca6` | feat(round 18): LiveDriverMap + chauffeur GPS test + tracking endpoints + AutoRFQQueue tests |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -830,15 +831,62 @@ Dashboard complet :
 
 ---
 
-## ✅ Le voyage Eventy est désormais complet end-to-end
+## 🎼 Round 18 — Suivi GPS chauffeur 100% utilisable (commit 20)
 
-Plus rien dans le périmètre du recap initial. Tout fonctionne, est monitoré,
-et les services critiques sont testés.
+3 nouveautés finalisant le suivi GPS chauffeur end-to-end côté frontend
++ tests pour la queue.
 
-Restent uniquement des chantiers hors scope projet :
+### Backend
 
-1. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (backend prêt). Hors scope frontend Eventy.
-2. **Migration Bull/BullMQ + Redis** — la queue est in-memory pour MVP, à migrer vers infra production quand Redis sera dispo.
+#### `transport-status.controller.ts` — 2 nouveaux endpoints
+- `GET /transport/status/tracking/:occurrenceId/last-position`
+  - Renvoie la dernière position GPS depuis `DriverTrackingGateway.driverPositions`
+  - Renvoie `ageSeconds` pour détecter données obsolètes
+  - RBAC : CLIENT/PRO/ADMIN/CHAUFFEUR
+  - Polling-friendly pour LiveDriverMap frontend
+- `POST /transport/status/tracking/:occurrenceId/test-position`
+  - Endpoint test : pousse position dans gateway + broadcast WebSocket
+  - Cible : QA / page chauffeur gps-test (sans app mobile)
+  - RBAC : PRO/ADMIN/CHAUFFEUR
+
+#### `auto-rfq-queue.service.spec.ts` (nouveau, 150 lignes)
+8 tests unitaires couvrant le scaffold queue (round 16) :
+- `enqueueBroadcast()` : crée job + idempotence par quoteRequestId + jobs distincts
+- `process()` succès : appel + cleanup
+- `process()` retry exponentiel : 1s/4s/16s, attempts épuisés → cleanup
+- `process()` succès après retry : cleanup immédiat
+- `getStats()` : pending=0 + lastError exposé
+- `jest.useFakeTimers()` pour contrôler les setTimeout
+
+### Frontend
+
+#### `components/transport/LiveDriverMap.tsx` (nouveau, 200 lignes)
+- Polling REST 10s sur `/api/transport/status/tracking/:occurrenceId/last-position`
+- iframe Google Maps Embed (avec/sans clé API)
+- États : loading / unavailable / waiting / live / stale (>90s)
+- Header : badge "En direct" (vert) ou "Données anciennes" (orange)
+- Footer : GPS coordinates + vitesse + interval polling
+
+#### `app/(client)/client/voyage/[id]/suivi/page.tsx`
+- Import + render `LiveDriverMap` en tête de la page suivi
+- travelId passé comme occurrenceId (à raffiner quand l'occurrence sera connue)
+
+#### `app/(chauffeur)/chauffeur/gps-test/page.tsx` (nouveau, 235 lignes)
+- Simule l'émission GPS chauffeur sans app mobile dédiée
+- `navigator.geolocation.watchPosition()` pour la vraie position
+- Mode manuel (bouton) + mode auto (30s)
+- Cible `POST /api/transport/status/tracking/:occurrenceId/test-position`
+- Historique 20 derniers envois avec status
+- Affichage temps réel : lat/lng/accuracy/vitesse
+
+---
+
+## ✅ Le voyage Eventy est complet end-to-end + monitoré + testé
+
+Restent uniquement 2 chantiers hors scope projet (non bloquants) :
+
+1. **App mobile chauffeur** — pour émettre les positions automatiquement en background. Le scaffold web (round 18 `/chauffeur/gps-test`) couvre déjà le QA et un MVP terrain.
+2. **Migration Bull/BullMQ + Redis** — la queue est in-memory pour MVP avec scaffold (round 16) et tests (round 18). À migrer vers infra production quand Redis sera dispo.
 
 ---
 
@@ -865,7 +913,8 @@ Restent uniquement des chantiers hors scope projet :
 | 17. Round 15 (Frontend Energy complet) | 1 (EnergyTierBadge.tsx) | 2 (energie/page.tsx, client/layout.tsx) | ~189 |
 | 18. Round 16 (Redeem + AutoRFQ queue) | 1 (auto-rfq-queue.service) | 4 (client.controller, quotes.controller, transport.module, checkout step-3) | ~264 |
 | 19. Round 17 (Admin energy dashboard + tests) | 2 (admin/energie/system/page, energy.service.spec) | 2 (admin.controller, admin/energie/page) | ~640 |
-| **TOTAL** | **19** | **65** | **~6 375 lignes** |
+| 20. Round 18 (LiveDriverMap + GPS test page + tracking endpoints + queue tests) | 4 (LiveDriverMap, gps-test/page, tracking endpoints, auto-rfq-queue.spec) | 1 (suivi/page) | ~810 |
+| **TOTAL** | **23** | **66** | **~7 185 lignes** |
 
 ---
 
