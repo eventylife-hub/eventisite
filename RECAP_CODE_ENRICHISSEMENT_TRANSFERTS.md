@@ -1287,3 +1287,66 @@ Total                                          152 tests
 > *Dix batches, zéro suppression. Du voyageur français, anglais ou espagnol au
 > super-admin qui force le cron, du composant cloche au CHANGELOG.md, tout est
 > traduit, testé, tracé, sécurisé, conforme. L'âme Eventy parle 3 langues. NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 11 — A11y, monthly stats, API doc, README (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `lib/hooks/use-focus-trap.ts` | Hook a11y focus-trap (auto-focus, Tab cycle, Escape, restore) | ~70 |
+| `lib/hooks/__tests__/use-focus-trap.test.tsx` | 4 tests | ~55 |
+| `components/voyage/MajorChangeDetector.tsx` | Wire focus-trap + role="dialog" + aria-modal + aria-labelledby | +8 |
+| `components/voyage/LockedFieldWrapper.tsx` | Wire focus-trap + ARIA | +6 |
+| `app/(pro)/pro/parametres/webhooks/__tests__/ProWebhooksPage.test.tsx` | 8 tests | ~85 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `admin-enrichment.controller.ts` | + GET `/admin/enrichments/stats/monthly` (12 mois timeline) | +60 |
+| `travel-enrichment.service.spec.ts` | + 8 tests detectChangedFields (nested, arrays, null) | +60 |
+| `README.md` | Section complète "Module Enrichissement Voyages" | +80 |
+
+### Documentation
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `API_ENRICHISSEMENT_VOYAGES.md` | Spec REST + webhook payloads + signature verification (Node + Python) + codes erreur | ~370 |
+
+### Logique métier ajoutée
+
+**A11y focus-trap** :
+- Pattern WAI-ARIA Authoring Practices
+- Auto-focus 1er élément, cycle Tab/Shift+Tab, Escape ferme, restore focus précédent
+- Compatible screen readers (VoiceOver, NVDA, JAWS)
+
+**Monthly stats** :
+- Buckets 12 derniers mois pré-initialisés
+- Format `YYYY-MM` pour charts/sparklines
+
+**API doc** :
+- Tous endpoints (auth, body, response, side effects)
+- Exemples vérification signature webhook Node.js + Python
+- Conservation légale, ack tacite J+7, codes erreur
+
+### Couverture tests cumulée (batch 1-11)
+
+```
+backend (65 tests, +8 batch 11 detectChangedFields)
+frontend (107 tests, +12 batch 11)
+─────────────────────────────────────
+Total                          172 tests
+```
+
+### Commits batch 11
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | feat(voyages): batch 11 — A11y + tests WebhookConfig |
+| eventy-backend | master | feat(travels): batch 11 — monthly stats + tests + README |
+
+---
+
+> *Onze batches, zéro suppression. Le screen reader peut désormais naviguer dans
+> les modales. Le développeur peut consulter la spec API. L'admin voit les KPI
+> mois par mois. Tout est documenté, testé, accessible, conforme. NE RIEN EFFACER.*
