@@ -176,6 +176,17 @@
 | `airport-transfer-pdf.service.ts` | 97 | génération PDF Puppeteer-ready (5 méthodes) |
 | `airport-transfer-exports.controller.ts` | 103 | 4 endpoints CSV+PDF download |
 
+## Vague 11 (2026-05-02) — Stripe + multi-devises + visuels + reporting
+
+| Item | Lignes | Type |
+|---|---|---|
+| `airport-transfer-stripe.service.ts` (5 méthodes) | 164 | refund + Connect payout + onboarding |
+| `airport-transfer-currency.helper.ts` (+ 16 tests) | 214 | multi-devises EUR/GBP/USD/MAD/CHF/CZK |
+| `panneau-aeroport-svg.helper.ts` (+ 17 tests) | 331 | SVG imprimable A4/A3 + pancarte main |
+| `monthly-report.template.ts` | 253 | rapport mensuel HTML→PDF synthèse + funnel + top |
+| Page `/transferts/faq` | 284 | FAQ voyageur 14 Q/R en 6 catégories |
+| `AUDIT_TRANSFERT_AEROPORT_DEMO_SCENARIOS.md` | 234 | 5 scénarios démo (voyageur, crise, onboarding, chauffeur, investisseurs) |
+
 ---
 
 ## Comment retrouver un TODO dans le code
