@@ -42,6 +42,7 @@
 | 21 | `08c2ca0` (back) + `217964c` (front) | `ec53a20` | test(round 19): tsp-optimizer + symphony-mapper + DriverArrivalDetection (33 tests) |
 | 22 | `3af6368` (front) | `ed5d55f` | test(round 20): creator-catalogs + auto-rfq (32 tests) + COWORK-SESSIONS-LOG |
 | 23 | `6f6bd7b` (back) | `1e13687` | test(round 21): EnergyExpiry + DriverTrackingGateway (24 tests) |
+| 24 | `0e98e3f` (front) | `9c42d11` | test(round 22): Component tests VoyageEnergyBadge + SymphonieGate + SymphonyPartitionFrise (35 tests) |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -955,7 +956,8 @@ Restent uniquement 2 chantiers hors scope projet (non bloquants) :
 | 21. Round 19 (Tests utilities + cron arrival, 33 tests) | 3 (tsp-optimizer.test, symphony-mapper.test, driver-arrival-detection.spec) | 0 | ~600 |
 | 22. Round 20 (Tests creator-catalogs + auto-rfq + cowork log, 32 tests) | 2 (creator-catalogs.test, auto-rfq.test) | 1 (COWORK-SESSIONS-LOG) | ~665 |
 | 23. Round 21 (Tests EnergyExpiry + DriverTrackingGateway, 24 tests) | 2 (energy-expiry.spec, driver-tracking.gateway.spec) | 0 | ~411 |
-| **TOTAL** | **30** | **67** | **~8 861 lignes** |
+| 24. Round 22 (Component tests, 35 tests) | 3 (VoyageEnergyBadge.test, SymphonieGate.test, SymphonyPartitionFrise.test) | 0 | ~405 |
+| **TOTAL** | **33** | **67** | **~9 266 lignes** |
 
 ---
 
