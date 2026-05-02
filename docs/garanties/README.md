@@ -206,6 +206,13 @@
 | `Eventy-Life-Politique-Gestion-Documentaire.docx` / `.pdf` | Politique de gestion documentaire et archivage (14 KB · 4 pages) — taxonomie en **8 catégories** (légal corporate, financier, contractuel, réglementaire, RH, voyageurs, opérationnel, communication) avec durées de conservation (5-50 ans selon catégorie), architecture stockage Scaleway France chiffré AES-256, conventions de nommage, 4 niveaux de confidentialité (public, interne, restreint, direction), cycle de vie complet (création → archivage → destruction documentée), RGPD (anonymisation après 3 ans), 6 KPIs (100 % documents indexés An 1) |
 | `Eventy-Life-Charte-UGC.docx` / `.pdf` | Charte des contenus utilisateurs (14 KB · 4 pages) — règles UGC (User-Generated Content) : photos/vidéos voyageurs, avis Trustpilot/Google, posts réseaux taguant Eventy : 6 principes (respect droits auteur, accord exprès, modération bienveillante, crédit systématique, refus extraction commerciale), modalités d'accord (forme, durée, crédit), modération (refus suppression avis défavorable légal, suppression injures), **programme « Voix Eventy » An 2** (encouragement bienveillant), refus structurés (achat témoignages, chantage à la remise, diffamation), cas particuliers (mineurs, partenaires HRA), 6 KPIs |
 
+### Culture et innovation (open source, communication interne, amélioration continue)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Open-Source-PI.docx` / `.pdf` | Politique open source et propriété intellectuelle (14 KB · 4 pages) — engagement Eventy : **5 principes** (reconnaissance, réciprocité, transparence, souveraineté, refus du double standard), stack open source utilisé (Next.js, NestJS, PostgreSQL), engagement contributions An 1 (sponsoring ≥ 50 €/mois, rétro-PRs) → An 5+ (open source modules métier, calculateur carbone), refus open-washing et brevetage défensif, gestion PI (marques INPI, brevets exceptionnels FRAND, droits d'auteur, secrets d'affaires), 6 licences listées, compliance SBOM annuelle, 6 KPIs |
+| `Eventy-Life-Plan-Communication-Interne.docx` / `.pdf` | Plan de communication interne (13 KB · 4 pages) — 5 principes (transparence, régularité, bidirectionnalité, sobriété, bienveillance) : rituels équipe (standup lundi, mardi de l'équipe, démo vendredi, café jeudi, all-hands mensuel, séminaire trimestriel), communication 4 catégories de partenaires (créateurs, vendeurs, HRA, ambassadeurs), communication voyageurs (transactionnelle, communautaire, marketing), **communication ascendante** (boîtes mail dédiées `alerte@`/`conformite@`/`idees@`, sondages anonymes), 6 KPIs (eNPS ≥ + 30 → + 50), 6 engagements (refus jargon corporate, silence radio, rétention info) |
+| `Eventy-Life-Procedure-Amelioration-Continue.docx` / `.pdf` | Procédure d'amélioration continue (14 KB · 4 pages) — méthodologie inspirée Kaizen + lean : **5 principes** (bienveillance « cause pas coupable », transparence, apprentissage collectif, pas de double peine, petits pas), refus structurés (culture du blame, zéro défaut paralysant, dogmatisme), sources internes/externes/incidents, cycle PDCA adapté (Plan/Do/Check/Act), méthodes pratiques (post-mortem 60-90 min sous 7 j, REX projet, idées `idees@eventylife.fr`), reconnaissance non-financière, 6 KPIs (≥ 30 → 100 idées/an, 100 % post-mortems documentés), 6 engagements éthiques |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -345,6 +352,8 @@
 | `../../scripts/garanties/strategique-etudes-droit-image-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-makebuy-gestion-doc-ugc.js` | Générateur Node.js des 3 documents gouvernance opérationnelle (politique make/buy, politique gestion documentaire, charte UGC) |
 | `../../scripts/garanties/makebuy-gestion-doc-ugc-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-opensource-comm-interne-amelioration-continue.js` | Générateur Node.js des 3 documents culture / innovation (politique open source et PI, plan de communication interne, procédure d'amélioration continue) |
+| `../../scripts/garanties/opensource-comm-interne-amelioration-continue-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
