@@ -30,6 +30,7 @@
 | 9 | `88104e2` (front) + `5078eb2` (back) | `3400c5d` | feat(round 7): SymphonyMap (P1 #6) + backend auto-RFQ + /me/energy |
 | 10 | `6edd9e7` (front) + `05a08a4` (back) | `ba1da09` | feat(round 8): Auto-RFQ UI button + backend /pro/catalog/creator + transportQuoteValidated computed |
 | 11 | `3afb0d2` (front) + `a8295ee` (back) | `ef8f8b1` | feat(round 9): API cascade catalogs + SymphonieGate widget + DriverTrackingGateway WebSocket |
+| 12 | `90dd1e9` (front) + `4fc28f3` (back) | `4d5feee` | feat(round 10): SymphonieGate wired dans 3 pages + DriverArrivalDetectionService cron 30s |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -526,16 +527,43 @@ Import `JwtModule.registerAsync` + provider `DriverTrackingGateway`.
 
 ---
 
-## 🟡 Hors scope — prochaines passes (long terme)
+## 🎼 Round 10 — SymphonieGate wired + DriverArrivalDetection cron (commit 12)
 
-Identifiés mais non touchés (gros chantiers ou dépendances Prisma) :
+2 nouveautés bouclant les TODOs hors-scope restantes côté visible.
+
+### Frontend — SymphonieGate désormais visible partout
+
+#### `frontend/app/(pro)/pro/voyages/[id]/page.tsx`
+SymphonieGate rendu sous TransportQuoteBanner, avant FourLights. Le créateur voit en un coup d'œil ce qui reste à valider sur son voyage.
+
+#### `frontend/app/(admin)/admin/voyages/[id]/page.tsx`
+SymphonieGate rendu sous WorkflowBanner. Lecture defensive via cast `as unknown` — gracieux si champs absents.
+
+#### `frontend/app/(pro)/pro/voyages/nouveau/components/EtapeSummary.tsx`
+SymphonieGate rendu avant Phase Indicators. Le créateur voit AVANT soumission ce qui manque.
+
+### Backend NestJS
+
+#### `backend/src/modules/transport/driver-arrival-detection.service.ts` (nouveau, 165 lignes)
+Cron `@Cron('*/30 * * * * *')` qui détecte l'arrivée chauffeur :
+- Lit positions chauffeurs récentes (<2 min) depuis la map mémoire de DriverTrackingGateway
+- Pour chaque position : lit les arrêts de l'occurrence trackée (defensive Prisma)
+- Calcule haversine vs chaque arrêt
+- Si <200m → appelle `gateway.notifyDriverArrived()` (dédup automatique)
+- Lecture defensive : gracieux si modèles TransportStop/RouteStop pas migrés
+
+Cron toutes les 30 secondes — équilibre réactivité vs charge serveur.
+
+---
+
+## 🟡 Hors scope — prochaines passes (long terme — Prisma migrations)
+
+Identifiés mais non touchés (besoins de schéma Prisma ou infra) :
 
 1. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
 2. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
 3. **Migration Prisma champ Travel.transportQuoteValidated direct** — pour l'instant calculé dynamiquement via quoteRequests. Une colonne dédiée + trigger permettrait des indexes.
-4. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway déjà en place côté serveur).
-5. **Cron service détection arrivée chauffeur** — service qui appelle `gateway.notifyDriverArrived()` quand chauffeur entre dans un rayon de 200m d'un stop.
-6. **Wire SymphonieGate dans /pro/voyages/[id] + /admin/voyages/[id]** — le composant est créé, il reste à l'instancier dans les pages avec les vraies données.
+4. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron déjà en place côté serveur).
 
 ---
 
@@ -554,7 +582,8 @@ Identifiés mais non touchés (gros chantiers ou dépendances Prisma) :
 | 9. Round 7 (SymphonyMap + backend endpoints) | 2 (SymphonyMap.tsx + auto-rfq.dto.ts backend) | 3 (EtapeBusStops, transport-quotes.controller.ts, client.controller.ts) | ~685 |
 | 10. Round 8 (Auto-RFQ UI + creator catalog + quote computed) | 0 | 3 (EtapeFournisseurs, pro.controller, travels.service) | ~334 |
 | 11. Round 9 (cascade API + SymphonieGate + GPS gateway) | 2 (SymphonieGate.tsx + driver-tracking.gateway.ts) | 2 (creator-catalogs.ts, transport.module.ts) | ~688 |
-| **TOTAL** | **10** | **38** | **~4 104 lignes** |
+| 12. Round 10 (SymphonieGate wiring + arrival cron) | 1 (driver-arrival-detection.service.ts) | 4 (pro voyage, admin voyage, EtapeSummary, transport.module) | ~294 |
+| **TOTAL** | **11** | **42** | **~4 398 lignes** |
 
 ---
 
