@@ -1469,3 +1469,68 @@ Total              194 tests
 > qui partent en vrille, le badge "Enrichi" parle 3 langues, le helper timeout
 > est prêt pour la production. Chaque détail est polished, chaque cas couvert,
 > chaque langue parlée. NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 14 — Reduced motion, transferred-from i18n, admin hub, Prisma seed (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `lib/hooks/use-reduced-motion.ts` | Hook `prefers-reduced-motion` + `getMotionVariants(reduced)` helper | ~55 |
+| `lib/hooks/__tests__/use-reduced-motion.test.tsx` | 5 tests | ~50 |
+| `components/voyage/VoyageEnrichmentBadge.tsx` | + i18n `VoyageTransferredFromBadge` (FR/EN/ES) | +18 |
+| `components/voyage/__tests__/VoyageEnrichmentBadge.test.tsx` | + 3 tests EN/ES + compact i18n | +20 |
+| `app/(admin)/admin/conformite-hub/page.tsx` | Hub navigation centralisée 3 sections + ressources docs | ~225 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `prisma/seed-enrichment.ts` | Script seed démo (5 versions, 6 events, 1 notif + 3 acks, 1 transfer / voyage) | ~200 |
+
+### Logique métier ajoutée
+
+**Reduced motion** : détection système, helper `getMotionVariants(reduced)` opacity-only si reduced.
+
+**TransferredFromBadge i18n** : "Transféré depuis" / "Transferred from" / "Transferido desde", compact "ici/here/aquí".
+
+**Admin hub** : 3 sections (Ops/Debug/Doc) + ressources MD + endpoints stats.
+
+**Prisma seed** : standalone script TypeScript, try/catch par section, JSON stats output.
+
+### Couverture tests cumulée (batch 1-14)
+
+```
+backend (72 tests)
+frontend (130 tests, +8)
+─────────────────────────
+Total              202 tests
+```
+
+### Commits batch 14
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | feat(voyages): batch 14 — reduced motion + transferred i18n + hub |
+| eventy-backend | master | feat(travels): batch 14 — Prisma seed-enrichment.ts |
+
+### Cumul scope total final (14 batches)
+
+**Frontend** :
+- **14 routes Next.js** + **9 composants partagés** (TOUS i18n)
+- **3 hooks** (locale, focus-trap, reduced-motion)
+- **A11y conforme** WAI-ARIA + reduced motion
+- 18 fichiers tests Jest (130 tests)
+
+**Backend** :
+- **5 services** + 1 cron + 1 webhook outbound (failed deliveries + fireWithTimeout)
+- **8 controllers** (12 endpoints admin)
+- **5 modèles Prisma** + 5 enums + migration SQL + **seed script**
+- 9 fichiers tests Jest (72 tests)
+
+---
+
+> *Quatorze batches, zéro suppression. L'utilisateur sensible aux animations est
+> respecté, le badge transféré parle 3 langues, l'admin a son hub central, le dev
+> a son Prisma seed. Ce sprint est probablement le plus complet jamais livré sur
+> la plateforme Eventy. NE RIEN EFFACER.*
