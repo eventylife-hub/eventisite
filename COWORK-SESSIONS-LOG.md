@@ -1,7 +1,66 @@
 # Log des Sessions Cowork — Eventy
 
 > **Fichier de référence** pour que chaque nouvelle session Cowork puisse reprendre là où la précédente s'est arrêtée.
-> **Dernière mise à jour** : 20 mars 2026
+> **Dernière mise à jour** : 2 mai 2026
+
+---
+
+## Session Symphonie + Énergie + GPS chauffeur (2026-05-01 → 2026-05-02)
+
+**Branche** : `claude/confident-euclid-756c40`
+**Récap détaillé** : `RECAP_CODE_SYMPHONIE_PREFILL.md`
+**Total** : **20 rounds successifs**, **27 fichiers nouveaux**, **66+ modifiés**, **~8 500 lignes ajoutées**
+
+### Résumé exécutif
+
+Mission initiale (rounds 1-2) :
+- Pré-remplir la création de voyage avec les catalogues HRA + arrêts du créateur
+- Propager la symphonie composée par le créateur aux fiches lecteur (public + client)
+
+Au-delà du périmètre initial (rounds 3-20) :
+- Compte Énergie complet end-to-end (gain/redeem/expire) avec dashboard admin
+- Devis transport gate avec auto-RFQ + queue scaffold
+- Suivi GPS chauffeur (gateway WebSocket + cron arrival + map voyageur + page test chauffeur)
+- 91 tests unitaires (33 backend + 58 frontend) sur les services critiques
+- Migration Prisma SQL prête à déployer
+
+### Livrable principal par sujet
+
+| Sujet | Backend | Frontend |
+|---|---|---|
+| **Symphonie créateur → readers** | `travels.service.findById` étend avec `transportQuoteValidated` | `creator-catalogs.ts`, `symphony-mapper.ts`, 8 Etape* connectées, 13 readers connectés (public + client tabs) |
+| **Compte Énergie** | `EnergyService` + 4 hooks earn (booking, review, referral, pack) + cron EXPIRE + endpoints `/me/energy/*` + Stripe webhook | `EnergyTierBadge` sidebar + `/client/energie` cascade API + `/admin/energie/system` dashboard |
+| **Devis transport** | `auto-rfq.dto.ts` + `transport-quotes.controller.submitAutoRFQ` + `AutoRFQQueueService` (retry exponentiel) | `auto-rfq.ts` builder + `EtapeFournisseurs.AutoRFQSection` + `TransportQuoteBanner` pro/admin |
+| **Suivi GPS chauffeur** | `DriverTrackingGateway` WebSocket + `DriverArrivalDetectionService` cron + endpoints REST tracking | `LiveDriverMap` polling + `/chauffeur/gps-test` page navigator.geolocation |
+| **TSP optimizer** | — | `tsp-optimizer.ts` (Nearest Neighbor + 2-opt) + `SymphonyMap` polyline + `SymphonyPartitionFrise` |
+| **Symphonie publication** | computed `transportQuoteValidated` | `SymphonieGate` widget 8 checks (wired sur 3 pages) |
+
+### Migration SQL
+
+`prisma/migrations/20260502_energy_account_and_transport_quote_validated/migration.sql` :
+- `Travel.transportQuoteValidated` (Boolean? + index)
+- `EnergyAccount` table (1:1 user, balance, lifetime, tier)
+- `EnergyTransaction` table (log immutable, FK CASCADE, expiresAt TTL)
+- 9 enums + 7 index
+- À déployer : `npx prisma migrate deploy`
+
+### Tests unitaires (91 au total)
+
+Backend (33) :
+- `EnergyService` : 17 tests
+- `AutoRFQQueueService` : 8 tests
+- `DriverArrivalDetectionService` : 7 tests
+- (existant) `transport-quotes.service.spec.ts` : déjà présent
+
+Frontend (58) :
+- `tsp-optimizer.test.ts` : 13 tests
+- `symphony-mapper.test.ts` : 13 tests
+- `creator-catalogs.test.ts` : 16 tests
+- `auto-rfq.test.ts` : 16 tests
+
+### Hors scope restant (chantiers infra projet uniquement)
+1. App mobile chauffeur dédiée (web scaffold couvre QA + MVP terrain)
+2. Migration Bull/BullMQ + Redis (in-memory MVP fonctionnel + testé)
 
 ---
 
