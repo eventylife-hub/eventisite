@@ -1397,3 +1397,75 @@ Total              184 tests
 > manuellement entre 3 langues, l'admin voit les webhook deliveries qui ont
 > échoué et peut retry à la main. Tout vit, tout respire, tout reste tracé.
 > NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 13 — Admin webhooks-failed UI + VoyageEnrichmentBadge i18n + timeout (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `app/(admin)/admin/webhooks-failed/page.tsx` | Page admin debug ops : 4 stats, breakdown par event, filtre, liste records avec retry, payload JSON expandable | ~370 |
+| `app/(admin)/admin/webhooks-failed/__tests__/AdminWebhooksFailedPage.test.tsx` | 7 tests | ~85 |
+| `components/voyage/VoyageEnrichmentBadge.tsx` | + prop `locale?: EnrichmentLocale`, utilise tEnriched(), formatRecency étendue FR/EN/ES | +20 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `enrichment-webhook.service.ts` | + `fireWithTimeout(url, body, headers, timeoutMs)` helper avec AbortController (défaut 5s) | +35 |
+| `enrichment-webhook.service.spec.ts` | + 3 tests fireWithTimeout (success, network failure, custom headers) | +50 |
+
+### Logique métier ajoutée
+
+**Admin webhooks-failed UI** :
+- Vue ops complète sur les failed deliveries
+- Stats : total, événements distincts, pros impactés, avec retry
+- Breakdown event count
+- Filtre par event type
+- Retry button avec feedback animé
+- Payload JSON expandable via `<details>`/`<summary>`
+
+**VoyageEnrichmentBadge i18n** :
+- Le dernier composant non-i18n est désormais traduit
+- formatRecency : "today/yesterday/Nd ago" (EN), "hoy/ayer/hace Nd" (ES)
+
+**fireWithTimeout** :
+- Helper `AbortController` reusable pour appels HTTP externes avec timeout strict
+- Distingue erreur réseau vs timeout dans le message
+- Phase 2 ready pour brancher le webhook outbound réel
+
+### Couverture tests cumulée (batch 1-13)
+
+```
+backend (72 tests, +3)
+frontend (122 tests, +7)
+─────────────────────────
+Total              194 tests
+```
+
+### Commits batch 13
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | feat(voyages): batch 13 — admin webhooks-failed + VoyageEnrichmentBadge i18n |
+| eventy-backend | master | feat(travels): batch 13 — fireWithTimeout helper + tests |
+
+### Cumul scope total final (13 batches)
+
+**Frontend** :
+- **13 routes Next.js** (+ /admin/webhooks-failed) + **9 composants partagés** (TOUS i18n FR/EN/ES) + **2 hooks**
+- **A11y conforme** (focus-trap, ARIA dialog/menu)
+- 16 fichiers tests Jest (122 tests)
+
+**Backend** :
+- **5 services** + 1 cron + 1 webhook outbound (avec failed deliveries store + fireWithTimeout)
+- **8 controllers** (11 endpoints admin)
+- **5 modèles Prisma** + 5 enums + migration SQL
+- 9 fichiers tests Jest (72 tests)
+
+---
+
+> *Treize batches, zéro suppression. L'admin a sa page debug pour les webhooks
+> qui partent en vrille, le badge "Enrichi" parle 3 langues, le helper timeout
+> est prêt pour la production. Chaque détail est polished, chaque cas couvert,
+> chaque langue parlée. NE RIEN EFFACER.*
