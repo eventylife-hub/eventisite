@@ -28,6 +28,7 @@
 | 7 | `3afcc57` | `f9ec0f0` | feat(round 5): TSP optimizer + Maps transfert + tier réel + bandeau pro devis transport |
 | 8 | `aa6006d` | `5f86ca6` | feat(round 6): partition frise (P1 #7) + auto-RFQ scaffold (P0 #3 partial) |
 | 9 | `88104e2` (front) + `5078eb2` (back) | `3400c5d` | feat(round 7): SymphonyMap (P1 #6) + backend auto-RFQ + /me/energy |
+| 10 | `6edd9e7` (front) + `05a08a4` (back) | `ba1da09` | feat(round 8): Auto-RFQ UI button + backend /pro/catalog/creator + transportQuoteValidated computed |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -444,15 +445,53 @@ Carte Google Maps interactive avec polyline du trajet :
 
 ---
 
+## 🎼 Round 8 — Auto-RFQ UI + Backend creator catalog + transportQuoteValidated (commit 10)
+
+3 nouveautés bouclant les 3 dernières TODOs back-end principales.
+
+### Frontend
+
+#### `frontend/app/(pro)/pro/voyages/nouveau/components/EtapeFournisseurs.tsx`
+Composant `AutoRFQSection` (gold #D4A853) en tête de l'étape Fournisseurs :
+- 4 métriques d'éligibilité (arrêts départ, occurrences, routes, GPS coverage)
+- Badge ✓ Éligible vert OU ⏳ "À compléter" + raisons listées
+- Bouton "Lancer le devis automatique" disabled tant que pas éligible
+- Au clic : `buildAutoRFQPayload()` → `submitAutoRFQ()` → toast résultat
+- Le créateur n'a plus à remplir le formulaire devis manuellement
+
+### Backend NestJS
+
+#### `backend/src/modules/pro/pro.controller.ts`
+`GET /pro/catalog/creator` :
+- Lecture defensive via prismaAny (`HotelPartner` / `RestaurantPartner` /
+  `ActivityPartner` / `BusStop`) — gracieux si modèles non encore peuplés
+- Filtre par destination (city OR country fuzzy)
+- Retour : `{ creatorId, destination, counts, hotels, restaurants, activities, stops, isEmpty }`
+- Le frontend `creator-catalogs.ts` peut remplacer le fallback DEMO_HRA_*
+  par une lecture cascade : 1. `/pro/catalog/creator` → 2. DEMO_HRA_*
+  (catalogue) → 3. MOCK_* local
+
+#### `backend/src/modules/travels/travels.service.ts`
+`findById()` étendu — calcul `transportQuoteValidated` :
+- Lit `prisma.quoteRequest.findMany({ where: { travelId } })`
+- Si au moins un statut `VALIDATED`/`ACCEPTED`/`VALIDÉ` → `true`
+- Si aucun devis → `null` (statut inconnu)
+- Si erreur lecture → `null` gracieux (table pas migrée)
+- Le champ est exposé dans la réponse `travel.transportQuoteValidated`
+- Les frontends admin `/admin/voyages/[id]` + pro `/pro/voyages/[id]`
+  consomment déjà ce champ pour leur bandeau gate de publication
+
+---
+
 ## 🟡 Hors scope — prochaines passes
 
 Identifiés mais non touchés :
 
-1. **API backend `/api/pro/catalog/creator`** — pour remplacer creator-catalogs.ts (qui lit DEMO_*) par un vrai endpoint NestJS module pro/catalog (table partenaires HRA + arrêts validés du créateur).
-2. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur dédiée.
-3. **Backend `transportQuoteValidated`** — exposer le champ dans la réponse de `/admin/travels/[id]` (et `/pro/travels/[id]`) côté backend NestJS service `travels`.
-4. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
-5. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque déjà `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
+1. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur dédiée.
+2. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
+3. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque déjà `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
+4. **Front consume /pro/catalog/creator** — l'endpoint backend est prêt, le frontend `creator-catalogs.ts` lit toujours DEMO_HRA_* directement. Modification mineure pour brancher l'API en cascade quand backend dispo.
+5. **Migration Prisma champ Travel.transportQuoteValidated direct** — pour l'instant calculé dynamiquement via quoteRequests. Une colonne dédiée + trigger permettrait des indexes.
 
 ---
 
@@ -469,7 +508,8 @@ Identifiés mais non touchés :
 | 7. Round 5 (TSP + Maps + tier + pro banner) | 1 (tsp-optimizer.ts) | 4 (EtapeBusStops, /pro/voyages/[id], transfert, VoyageEnergyBadge) | ~451 |
 | 8. Round 6 (partition frise + auto-RFQ) | 2 (SymphonyPartitionFrise.tsx + auto-rfq.ts) | 1 (EtapeBusStops) | ~525 |
 | 9. Round 7 (SymphonyMap + backend endpoints) | 2 (SymphonyMap.tsx + auto-rfq.dto.ts backend) | 3 (EtapeBusStops, transport-quotes.controller.ts, client.controller.ts) | ~685 |
-| **TOTAL** | **8** | **33** | **~3 082 lignes** |
+| 10. Round 8 (Auto-RFQ UI + creator catalog + quote computed) | 0 | 3 (EtapeFournisseurs, pro.controller, travels.service) | ~334 |
+| **TOTAL** | **8** | **36** | **~3 416 lignes** |
 
 ---
 
