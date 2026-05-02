@@ -31,6 +31,7 @@
 | 10 | `6edd9e7` (front) + `05a08a4` (back) | `ba1da09` | feat(round 8): Auto-RFQ UI button + backend /pro/catalog/creator + transportQuoteValidated computed |
 | 11 | `3afb0d2` (front) + `a8295ee` (back) | `ef8f8b1` | feat(round 9): API cascade catalogs + SymphonieGate widget + DriverTrackingGateway WebSocket |
 | 12 | `90dd1e9` (front) + `4fc28f3` (back) | `4d5feee` | feat(round 10): SymphonieGate wired dans 3 pages + DriverArrivalDetectionService cron 30s |
+| 13 | `06e2da4` (back) | `2a9fe4a` | feat(round 11): Prisma schema EnergyAccount + Travel.transportQuoteValidated |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -556,14 +557,63 @@ Cron toutes les 30 secondes — équilibre réactivité vs charge serveur.
 
 ---
 
-## 🟡 Hors scope — prochaines passes (long terme — Prisma migrations)
+## 🎼 Round 11 — Prisma schema EnergyAccount + transportQuoteValidated (commit 13)
 
-Identifiés mais non touchés (besoins de schéma Prisma ou infra) :
+Migrations Prisma + branchements pour fermer 2 TODO recap.
 
-1. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
-2. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
-3. **Migration Prisma champ Travel.transportQuoteValidated direct** — pour l'instant calculé dynamiquement via quoteRequests. Une colonne dédiée + trigger permettrait des indexes.
-4. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron déjà en place côté serveur).
+### `backend/prisma/schema.prisma`
+
+#### `Travel.transportQuoteValidated` (Boolean? + index)
+Permet override admin / cache colonnaire au lieu de calcul dynamique systématique depuis `quoteRequest[]`. Le service `findById()` lit la colonne en priorité, sinon dérive depuis quotes.
+
+#### `model EnergyAccount` (1:1 User)
+- `balance` : solde actuel (source de vérité)
+- `lifetimeEarned` : total cumulé (base du tier)
+- `tier` : EnergyTier dénormalisé (recalculé après chaque tx)
+- `tripsCount` : compte voyages confirmés
+- Index sur tier, balance, userId
+
+#### `model EnergyTransaction`
+Log immutable des earns/redeems pour audit :
+- `type` : EARN_BOOKING / EARN_REVIEW / EARN_REFERRAL / EARN_PROMOTION / EARN_PACK_PURCHASE / REDEEM_VOYAGE / REDEEM_VOUCHER / ADJUST_ADMIN / EXPIRE
+- `referenceId` + `referenceType` pour audit (bookingId, reviewId…)
+- `expiresAt` : TTL 12 mois par défaut
+- `actorId` + `actorRole` pour traçabilité
+
+#### `enum EnergyTier` + `enum EnergyTransactionType`
+
+### `backend/src/modules/travels/travels.service.ts`
+`findById()` cascade :
+1. Colonne directe `travel.transportQuoteValidated` (override admin)
+2. Calcul depuis `quoteRequest[]` (existant)
+3. `null` si aucun
+
+### `backend/src/modules/client/client.controller.ts`
+`/me/energy` cascade :
+1. `EnergyAccount` table (source de vérité — populée par triggers métier)
+2. Heuristique fallback `tripsCount` (existant)
+- Retourne `source: 'energy_account' | 'heuristic'` pour traçabilité
+
+### `backend/src/modules/client/client.module.ts`
+Import `PrismaModule` (nécessaire pour injecter `PrismaService` dans le controller).
+
+> **Migration SQL** à exécuter en environnement DB :
+> `npx prisma migrate dev --name add-energy-and-transport-quote-validated`
+
+---
+
+## 🟡 Hors scope — prochaines passes (long terme — infra)
+
+Tous les TODO P0/P1 du recap sont désormais couverts. Reste :
+
+1. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue (Bull/BullMQ).
+2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron déjà en place côté serveur, prêts à recevoir des positions).
+3. **Triggers métier EnergyAccount** — les modèles Prisma sont en place, il reste à brancher :
+   - Hook après booking confirmation → `EARN_BOOKING` transaction
+   - Hook après review → `EARN_REVIEW`
+   - Hook après checkout pack → `EARN_PACK_PURCHASE`
+   - Cron expirations (`EXPIRE` après 12 mois)
+4. **Trigger transportQuoteValidated** — quand `quoteRequest.status` passe à VALIDATED, set `travel.transportQuoteValidated = true` automatiquement.
 
 ---
 
@@ -583,7 +633,8 @@ Identifiés mais non touchés (besoins de schéma Prisma ou infra) :
 | 10. Round 8 (Auto-RFQ UI + creator catalog + quote computed) | 0 | 3 (EtapeFournisseurs, pro.controller, travels.service) | ~334 |
 | 11. Round 9 (cascade API + SymphonieGate + GPS gateway) | 2 (SymphonieGate.tsx + driver-tracking.gateway.ts) | 2 (creator-catalogs.ts, transport.module.ts) | ~688 |
 | 12. Round 10 (SymphonieGate wiring + arrival cron) | 1 (driver-arrival-detection.service.ts) | 4 (pro voyage, admin voyage, EtapeSummary, transport.module) | ~294 |
-| **TOTAL** | **11** | **42** | **~4 398 lignes** |
+| 13. Round 11 (Prisma schema EnergyAccount + transportQuoteValidated) | 0 (modèles dans schema.prisma) | 4 (schema.prisma, travels.service, client.controller, client.module) | ~140 (utiles) |
+| **TOTAL** | **11** | **46** | **~4 538 lignes** |
 
 ---
 
