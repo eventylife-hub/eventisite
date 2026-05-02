@@ -33,6 +33,7 @@
 | 12 | `90dd1e9` (front) + `4fc28f3` (back) | `4d5feee` | feat(round 10): SymphonieGate wired dans 3 pages + DriverArrivalDetectionService cron 30s |
 | 13 | `06e2da4` (back) | `2a9fe4a` | feat(round 11): Prisma schema EnergyAccount + Travel.transportQuoteValidated |
 | 14 | `02d4af3` (back) | `8c9a91d` | feat(round 12): EnergyService + booking earn hook + acceptQuote trigger |
+| 15 | `50cdcfc` (back) | `b4f8952` | feat(round 13): EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -645,14 +646,56 @@ Trigger auto `travel.transportQuoteValidated = true` dans la `$transaction` :
 
 ---
 
-## 🟡 Hors scope — prochaines passes (long terme — infra)
+## 🎼 Round 13 — EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE (commit 15)
 
-Toutes les TODO du recap initial sont désormais couvertes. Restent :
+3 nouveautés bouclant définitivement les TODO recap "Hooks earn supplémentaires" + "Cron EXPIRE".
+
+### Hooks earn livrés
+
+#### `backend/src/modules/reviews/reviews.service.ts` — `moderateReview()`
+- Hook EARN_REVIEW quand l'avis est APPROUVÉ par modération admin
+  (pas à la création — évite le farming)
+- Idempotent par `(userId, reviewId)`
+- Try/catch global : ne JAMAIS bloquer la modération si earn échoue
+- Import EnergyService injecté dans le constructor
+
+#### `backend/src/modules/reviews/reviews.module.ts`
+Import `EnergyModule`.
+
+#### `backend/src/modules/client/client.controller.ts` — `POST /client/me/energy/purchase-pack`
+- Endpoint pour créditer un pack Énergie après paiement Stripe confirmé
+- Idempotent par `checkoutSessionId` (référence Stripe)
+- Appelé par le webhook Stripe (server-side, pas le frontend — sécurité)
+- Body : `{ packId, points, checkoutSessionId }`
+- Couvre `EARN_PACK_PURCHASE`
+
+#### `backend/src/modules/client/client.module.ts`
+Import `EnergyModule`.
+
+### Cron expirations
+
+#### `backend/src/modules/energy/energy-expiry.service.ts` (nouveau, 100 lignes)
+- `@Cron('0 3 * * *')` quotidien à 03:00 UTC
+- Lit les `EARN_*` avec `expiresAt < now` (batch 500, ordre asc par expiresAt)
+- Pour chaque earn :
+  - Vérifie qu'aucune transaction `EXPIRE` existante (idempotence)
+  - Crée transaction `EXPIRE` de `-points`
+  - Décrémente balance via SQL raw `GREATEST(0, balance - X)` (jamais négatif)
+- Lecture defensive : skip silencieux si modèles non migrés
+
+#### `backend/src/modules/energy/energy.module.ts`
+Provider `EnergyExpiryService`.
+
+---
+
+## 🟡 Hors scope — prochaines passes (chantiers infra long terme)
+
+Toutes les TODO du recap initial + les TODO secondaires sont désormais couvertes. Restent uniquement les chantiers infra/business :
 
 1. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue (Bull/BullMQ).
-2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron + service métier déjà en place côté serveur, prêts à recevoir des positions).
-3. **Hooks earn supplémentaires** — `EARN_REVIEW` (après publication avis), `EARN_REFERRAL` (après inscription parrainée confirmée), `EARN_PACK_PURCHASE` (après checkout pack stripe). Le service `EnergyService` est prêt, il reste à appeler `earnPoints()` dans ces flows.
-4. **Cron `EXPIRE`** — quand un earn dépasse `expiresAt`, créer une transaction `EXPIRE` négative + décrémenter le balance.
+2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron + service métier déjà en place côté serveur).
+3. **Hook EARN_REFERRAL** — après confirmation d'une inscription parrainée. Le service `EnergyService` accepte déjà ce type, il reste à brancher dans le flow d'inscription friend/referral.
+4. **Webhook Stripe → /me/energy/purchase-pack** — l'endpoint backend est créé, il reste à appeler depuis le webhook Stripe quand un pack est payé.
 
 ---
 
@@ -674,7 +717,8 @@ Toutes les TODO du recap initial sont désormais couvertes. Restent :
 | 12. Round 10 (SymphonieGate wiring + arrival cron) | 1 (driver-arrival-detection.service.ts) | 4 (pro voyage, admin voyage, EtapeSummary, transport.module) | ~294 |
 | 13. Round 11 (Prisma schema EnergyAccount + transportQuoteValidated) | 0 (modèles dans schema.prisma) | 4 (schema.prisma, travels.service, client.controller, client.module) | ~140 (utiles) |
 | 14. Round 12 (EnergyService + booking earn + acceptQuote trigger) | 2 (energy.service, energy.module) | 4 (app.module, bookings.module, bookings.service, transport-quotes.service) | ~363 |
-| **TOTAL** | **13** | **50** | **~4 901 lignes** |
+| 15. Round 13 (EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE) | 1 (energy-expiry.service) | 4 (reviews.service, reviews.module, client.controller, client.module, energy.module) | ~220 |
+| **TOTAL** | **14** | **54** | **~5 121 lignes** |
 
 ---
 
