@@ -1101,3 +1101,94 @@ Total                                            136 tests
 > peut désormais lire ses droits dans sa langue, sa locale est mémorisée, son
 > Google search remontera la page conformité. Et l'admin a le bouton seed
 > pour faire vivre le système en démo. NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 9 — i18n live, admin drill-down, sécurité (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `app/(client)/client/voyage/[id]/notifications/page.tsx` | Wire `useEnrichmentLocale` + `getEnrichmentStrings` : titre, empty state, accept/refuse CTA via NotificationCard | +15 |
+| `app/(public)/notifications/[id]/[decision]/page.tsx` | Wire `useEnrichmentLocale` + 5 strings i18n (titres confirm, processing, success accept/refuse, error, footer HMAC) | +10 |
+| `app/(admin)/admin/voyages/[id]/enrichissements/page.tsx` | Drill-down complet voyage : 4 stats, liste versions, notifications avec bouton "Relancer manuellement", timeline events, 3 quick links | ~400 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `client-notifications.controller.ts` | Rate limit `WRITE → AUTH` sur `respondPublic` (anti-bruteforce token guessing) | +1 |
+| `admin-enrichment.controller.spec.ts` | + 8 tests (manualRemind 3, getStats 2, seedDemoEnrichment 3) | +90 |
+
+### Logique métier ajoutée
+
+**i18n auto-détection** :
+- Page client notifications utilise `useEnrichmentLocale` qui :
+  1. Lit `localStorage.eventy_enrichment_locale`
+  2. Fallback sur `navigator.language` (en-* / es-* / fr-*)
+  3. Fallback `'fr'`
+- Strings localisées : titre page, empty state, CTA boutons accept/refuse
+- Page ack publique : aussi auto-locale (5 strings traduites)
+
+**Admin drill-down `/admin/voyages/[id]/enrichissements`** :
+- Vue complète d'un voyage : versions + events + notifications
+- Bouton "Relancer manuellement" sur chaque notif PARTIALLY_ACK / SENT
+  → POST `/admin/travels/:id/notifications/:nid/manual-remind`
+- Stats inline : ack rate avec progress bar
+- Quick links vers Pro / Admin global / Équipe Conformité
+- Lien export preuve légale en header (sticky)
+
+**Sécurité rate limit** :
+- `POST /public/notifications/:id/respond` upgraded `WRITE` → `AUTH`
+- Profile AUTH = limite stricte (anti-bruteforce sur les tokens HMAC signés)
+- Empêche un attaquant d'essayer plusieurs tokens en peu de temps
+
+### Commits batch 9
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 9 — i18n live + admin drill-down |
+| eventy-backend | master | (post-rebase) feat(travels): batch 9 — rate limit + admin tests |
+
+### Couverture tests étendue (cumul batch 1-9)
+
+```
+backend (57 tests)
+  travel-enrichment.service.spec.ts                12 tests
+  travel-enrichment-cron.service.spec.ts            5 tests
+  travel-transfer.service.spec.ts                   6 tests
+  notification-token.service.spec.ts                5 tests
+  client-notifications.controller.spec.ts           6 tests
+  transfer-export.service.spec.ts                   6 tests
+  enrichment-webhook.service.spec.ts                4 tests
+  admin-enrichment.controller.spec.ts              15 tests (+8)
+  webhook-config.controller.spec.ts                 9 tests
+
+frontend (82 tests, inchangé batch 9)
+─────────────────────────────────────────────────────────────────────
+Total                                            144 tests
+```
+
+### Cumul scope total final (9 batches)
+
+**Frontend** :
+- **12 routes Next.js** (+1 admin drill-down)
+- **8 composants partagés** (i18n-aware)
+- **1 dictionnaire i18n** + **1 hook locale** wired dans 2 pages
+- 10 fichiers tests Jest (82 tests)
+
+**Backend** :
+- **5 services métier** + 1 cron + 1 webhook outbound
+- **8 controllers** (rate limits production-ready)
+- **5 modèles Prisma additifs** + 5 enums + migration SQL
+- 9 fichiers tests Jest (57 tests)
+
+**Documentation** :
+- 2 audits + 1 récap + 1 runbook + PROGRESS.md + SEO sitemap
+
+**Conformité légale UE 2015/2302** : ✅ tous articles + i18n trilingue + sécurité rate limit AUTH
+
+---
+
+> *Neuf batches, zéro suppression. Le voyageur lit dans sa langue, l'admin a son
+> drill-down par voyage avec relance manuelle, l'attaquant trouve un mur de rate
+> limit. Tout vit, tout respire, tout est tracé. NE RIEN EFFACER.*
