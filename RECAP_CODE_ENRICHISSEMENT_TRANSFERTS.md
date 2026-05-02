@@ -1192,3 +1192,98 @@ Total                                            144 tests
 > *Neuf batches, zéro suppression. Le voyageur lit dans sa langue, l'admin a son
 > drill-down par voyage avec relance manuelle, l'attaquant trouve un mur de rate
 > limit. Tout vit, tout respire, tout est tracé. NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 10 — i18n complète, webhook, admin cron, CHANGELOG (2026-05-02)
+
+### Frontend — i18n composants restants
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `components/voyage/NotificationBell.tsx` | Wire i18n via labels FR/EN/ES (singular/plural) | +12 |
+| `components/voyage/MajorChangeDetector.tsx` | i18n : detectorMinorOnly, detectorCancel, save labels | +5 |
+| `components/voyage/LockedFieldWrapper.tsx` | i18n complet via LOCK_STRINGS FR/EN/ES (8 strings) | +35 |
+
+### Frontend — Tests
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `__tests__/AdminVoyageEnrichissements.test.tsx` | 5 tests (title, stats, versions, links, manual remind) | ~75 |
+| `__tests__/ConformiteVoyageurPage.test.tsx` | 8 tests (hero, 4 piliers, 6 steps, FAQ, sources légales, CTA, articles) | ~60 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `travel-enrichment.service.ts` | Inject Optional `EnrichmentWebhookService` + fire `voyage.enrichment.added` après addEvent | +18 |
+| `admin-enrichment.controller.ts` | + POST `/admin/enrichments/cron/run-ack-reminders` (trigger manuel cron) | +35 |
+
+### Documentation
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `CHANGELOG.md` | Sprint Enrichissement Voyages — entrée détaillée scope 10 batches | ~150 |
+
+### Logique métier ajoutée
+
+**i18n complet sur TOUS les composants** :
+- 8 composants partagés acceptent désormais `locale?: EnrichmentLocale`
+- Default 'fr' (NE RIEN EFFACER : aucun changement breaking)
+- Strings localisées via dictionnaire centralisé `enrichment-i18n` ou inline `LOCK_STRINGS` / `BELL_STRINGS`
+
+**Webhook fire on addEvent** :
+- `TravelEnrichmentService.addEvent` déclenche maintenant le webhook
+  `voyage.enrichment.added` côté ERP créateur après chaque ajout d'enrichissement
+- Pattern : lookup `proProfileId` via Prisma puis `webhookService.fireEnrichmentAdded`
+- Optional inject (no-op si webhook service indisponible)
+
+**Trigger cron manuel** :
+- POST `/admin/enrichments/cron/run-ack-reminders`
+- Réservé `SUPER_ADMIN/FOUNDER_ADMIN`
+- Log warn pour audit trail
+- Utile en staging + tests + ops urgentes
+
+**CHANGELOG.md** :
+- Format Keep a Changelog
+- Entrée Sprint Enrichissement Voyages avec scope total
+- Mention conformité UE 2015/2302 articles couverts
+- Variables ENV listées
+- Phase 2 todos pour déploiement prod
+
+### Commits batch 10
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 10 — i18n composants + tests |
+| eventy-backend | master | (post-rebase) feat(travels): batch 10 — webhook + admin cron |
+
+### Couverture tests étendue (cumul batch 1-10)
+
+```
+backend (57 tests)                              57 tests
+frontend (95 tests, +13 batch 10)               95 tests
+─────────────────────────────────────────────────────────────────────
+Total                                          152 tests
+```
+
+### Cumul scope total final (10 batches)
+
+**Frontend** :
+- **12 routes Next.js**
+- **8 composants partagés** (TOUS i18n-aware FR/EN/ES)
+- **1 dictionnaire i18n** + **1 hook locale**
+- 12 fichiers tests Jest (95 tests)
+
+**Backend** :
+- **5 services métier** + 1 cron + 1 webhook outbound
+- **8 controllers** (production-ready security)
+- **5 modèles Prisma additifs** + 5 enums + migration SQL idempotente
+- 9 fichiers tests Jest (57 tests)
+
+**Documentation** :
+- 2 audits + 1 récap + 1 runbook + PROGRESS.md + CHANGELOG.md + SEO
+
+**Conformité légale UE 2015/2302** : ✅ tous articles + i18n trilingue + webhook outbound + admin cron trigger
+
+---
+
+> *Dix batches, zéro suppression. Du voyageur français, anglais ou espagnol au
+> super-admin qui force le cron, du composant cloche au CHANGELOG.md, tout est
+> traduit, testé, tracé, sécurisé, conforme. L'âme Eventy parle 3 langues. NE RIEN EFFACER.*
