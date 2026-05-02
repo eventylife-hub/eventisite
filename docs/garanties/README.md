@@ -220,6 +220,13 @@
 | `Eventy-Life-Plan-Voyageurs-Mysteres.docx` / `.pdf` | Plan d'audit voyageurs-mystères (14 KB · 4 pages) — méthodologie d'évaluation qualité par observateurs intégrés (complémentaire Procédure d'audit qualité HRA) : profils variés reflétant diversité, anonymat strict (identité connue Président uniquement), périmètre 10 dimensions (parcours en ligne → communication post-voyage), méthodologie 4 phases (préparation T-30 → plan d'action J+30), calendrier An 1 pilote 2-3 audits → An 3 ≥ 12 audits couvrant 75 % voyages, **refus audit punitif** ou utilisation comme outil de pression, 6 KPIs (note ≥ 4/5 An 1 → 4,5/5, 100 % confidentialité préservée), 6 engagements éthiques |
 | `Eventy-Life-Manuel-Voyageur-Autonome.docx` / `.pdf` | Manuel voyageur autonome (14 KB · 4 pages) — handbook pratique pendant le voyage : liste de vérification J-1 (10 cases à cocher), documents à imprimer, jour du départ (lieu RDV, kit voyageur, briefing), rythme quotidien type, **liberté préservée** (skipper sans surcoût, son rythme), Pack Sérénité comment utiliser (4 étapes), bonnes pratiques en groupe (respect, éco-gestes), gestion problèmes 3 niveaux, retour J+1, programme Eventy Famille / parrainage / Voix Eventy An 2, contacts, mot d'Eventy chaleureux |
 
+### Méthodologies opérationnelles (expérimentation, sponsoring, animation)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Plan-Experimentation.docx` / `.pdf` | Plan d'expérimentation et tests (13 KB · 4 pages) — méthodologie sobre des tests A/B : **5 principes éthiques** (respect, transparence, sobriété, apprentissage, refus dark pattern), refus structurés (urgence factice, scarcité simulée, roach motel, confirmshaming, prix-piège), domaines autorisés (UX, contenu, recommandations, communication transactionnelle) vs **interdits** (prix, modèle économique, Pack Sérénité, RGPD, labels), méthodologie 5 phases (hypothèse → décision), outils EU privilégiés (refus Optimizely/VWO américains), 6 KPIs, 6 engagements éthiques |
+| `Eventy-Life-Politique-Sponsoring-Mecenat.docx` / `.pdf` | Politique de sponsoring et mécénat (14 KB · 4 pages) — distinction sponsoring vs mécénat : 5 principes (alignement valeurs, durée pluriannuelle, mesurabilité, transparence, cohérence interne), refus structurés (greenwashing, token-isme, conflit d'intérêts), **5 thématiques prioritaires** (tourisme social, écologie, inclusion handicap, ESS, culture/patrimoine), plafonds (≤ 0,5 % CA An 1 → ≤ 1 % An 3 dont ≥ 50 % mécénat An 3), process 5 étapes, 6 KPIs, 6 engagements éthiques |
+| `Eventy-Life-Methodologie-Animation-Accompagnateur.docx` / `.pdf` | Méthodologie d'animation accompagnateur en groupe (14 KB · 4 pages) — bonnes pratiques d'animation au quotidien (complémentaire Charte qualité accompagnateur) : 5 principes posture (présence, bienveillance, humilité, médiation, transparence), 4 phases d'animation (J0 accueil → dernier jour bilan), communication groupe (briefings, individuelle, outils), **médiation 5 étapes** + escalade, inclusion (solo, séniors, PMR, profils variés), bonnes pratiques quotidiennes, animations optionnelles, refus structurés (animation infantilisante, pression, favoritisme), 6 KPIs |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -363,6 +370,8 @@
 | `../../scripts/garanties/opensource-comm-interne-amelioration-continue-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-inclusion-voyageurs-mysteres-manuel-voyageur.js` | Générateur Node.js des 3 documents inclusion / qualité voyageur (charte d'inclusion et diversité, plan d'audit voyageurs-mystères, manuel voyageur autonome) |
 | `../../scripts/garanties/inclusion-voyageurs-mysteres-manuel-voyageur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-experimentation-sponsoring-animation.js` | Générateur Node.js des 3 documents méthodologies opérationnelles (plan d'expérimentation, politique sponsoring/mécénat, méthodologie animation accompagnateur) |
+| `../../scripts/garanties/experimentation-sponsoring-animation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
