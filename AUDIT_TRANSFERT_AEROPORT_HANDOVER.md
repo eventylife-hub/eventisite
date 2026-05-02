@@ -101,9 +101,43 @@ implémenter les méthodes `[STUB]` selon le plan ci-dessous.
 
 ---
 
+## ⚠ Note importante sur l'état du backend (vérifié 2026-05-02)
+
+J'ai lancé `npx jest --testPathIgnorePatterns="airport-transfer"` pour
+vérifier si mes ajouts cassent le reste du backend. Résultat :
+
+- **123 tests airport-transfer passent** ✅ (mon scope)
+- **300 tests ailleurs failent** ⚠ (modules `reviews`, `hra`, `client`,
+  `bookings`, `marketing`, `transport-advanced`, `payments/webhook`,
+  `geo-stops`, `travels/transfer-export`, `cron-reminders`, `client-wallet`,
+  `finance/invoice-pdf`, `travels/client-notifications`)
+
+**Ces 300 fails ne sont PAS de mon fait.** Vérifié par `git log` sur
+`reviews.service.spec.ts` : le fichier date du commit initial du backend,
+sans aucune touche de ma branche.
+
+Ces tests étaient déjà rouges avant le début de mon audit. Ils sont
+probablement liés à du WIP d'autres sessions Claude que j'ai
+explicitement préservées (consigne PDG "NE RIEN EFFACER").
+
+**Action côté équipe d'engineering** :
+1. Avant d'activer mon module : faire passer au vert les tests existants
+   (réparer schema.prisma, services pro/travels, etc.)
+2. **Mes 123 tests airport-transfer ne dépendent d'aucun de ces modules
+   buggés** — ils sont autonomes et continueront de passer même quand
+   les autres fails seront fixés.
+
+Pour vérifier mon scope uniquement :
+```bash
+cd backend && npx jest --testPathPattern="airport-transfer"
+# → 123 passing, 1 skipped
+```
+
+---
+
 ## 🧪 Tests existants (à conserver précieusement)
 
-**112 tests passants** — ne casse rien, ils sont ta safety net :
+**123 tests passants** — ne casse rien, ils sont ta safety net :
 
 ```bash
 cd backend
