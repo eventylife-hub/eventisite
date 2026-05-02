@@ -241,6 +241,13 @@
 | `Eventy-Life-Plan-Animation-Communaute-Famille.docx` / `.pdf` | Plan d'animation communauté Eventy Famille (14 KB · 4 pages) — groupe Facebook privé (cible An 1 ≥ 200 membres → An 5 ≥ 50 K) : 5 principes (bienveillance, authenticité, service, transparence, respect), refus sur-promotion (≤ 20 % contenu commercial), règlement et modération bienveillante, calendrier éditorial type (lundi/mercredi/vendredi/dimanche + mensuel + saisonnier + annuel), **3 types de contenu** (Eventy ≤ 20 %, voyageurs ≥ 60 %, inspirationnel ≤ 20 %), animation par voyageurs eux-mêmes, **migration vers solution souveraine An 3+** (refus dépendance acteurs non-européens), 6 KPIs |
 | `Eventy-Life-Politique-Communication-Post-Incident.docx` / `.pdf` | Politique de communication post-incident voyageur (14 KB · 4 pages) — suivi humain dans la durée du voyageur incidenté : 5 principes (empathie, reconnaissance, suivi, geste juste, apprentissage), refus structurés (communication standardisée, minimisation, déni, oubli post-règlement, condition « si tu ne dis rien sur les réseaux »), **6 phases du suivi** (pendant incident → retour J0 appel Président → réclamation J+1-7 → règlement J+15-30 → suivi long terme J+30-90 → anniversaire J+365), niveaux de geste empathique selon incident (50 € → 1 000 € + voyage), 6 KPIs, 7 engagements opposables |
 
+### Support multicanal, multilingue et recherche UX
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Support-Multicanal.docx` / `.pdf` | Politique de support voyageur multicanal (14 KB · 4 pages) — 5 principes (humanité, réactivité, précision, empathie, transparence) : 5 canaux (email avec 6 boîtes dédiées, téléphone, chat An 2, réseaux sociaux, espace voyageur), **délais de réponse engagés** (email 24 h An 1 → 4 h An 3, urgence 4 h → 30 min, Pack Sérénité 24/7 immédiat), refus chatbot IA non maîtrisé (cohérence Roadmap technique), escalade 4 niveaux (équipe → référent → Président → avocat), refus outils américains (Zendesk, Intercom), 6 KPIs (CSAT ≥ 4,3/5 An 1 → 4,7/5) |
+| `Eventy-Life-Politique-Langues-Traduction.docx` / `.pdf` | Politique de gestion des langues et traduction (14 KB · 4 pages) — calendrier 7 langues (FR An 1 → DE An 5) : 5 principes (qualité humaine, adaptation culturelle, cohérence éditoriale, inclusivité, maintenance), **4 niveaux de contenu** (contractuel humain obligatoire, communication officielle humaine recommandée, marketing humain + adaptation, communautaire assisté validé), refus structurés (Google Translate/ChatGPT pour contractuel, traduction symbolique), processus 5 phases (brief → mise en ligne) avec **3-eyes principle** (traducteur + relecteur + validation Eventy), 6 KPIs |
+| `Eventy-Life-Plan-Tests-Utilisateurs-Qualitatifs.docx` / `.pdf` | Plan de tests utilisateurs qualitatifs (14 KB · 4 pages) — **5 méthodes** (entretiens individuels 45-90 min, tests utilisateurs ergonomie, sondages qualitatifs ouverts, diary studies, card sorting/co-création), 5 principes éthiques (respect, sincérité, transparence, confidentialité, restitution honnête), refus structurés (questions orientées, recrutement biaisé, pas de rémunération), **indemnités justes** (50-200 € selon durée), profils diversifiés (cohérence Charte d'inclusion), restitution équipe trimestrielle/mensuelle, 6 KPIs |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -390,6 +397,8 @@
 | `../../scripts/garanties/mineurs-notes-frais-env-destinations-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-avoirs-comm-famille-post-incident.js` | Générateur Node.js des 3 documents support voyageur (politique avoirs et remboursements, plan d'animation communauté Famille, politique communication post-incident) |
 | `../../scripts/garanties/avoirs-comm-famille-post-incident-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-support-multicanal-langues-tests-ux.js` | Générateur Node.js des 3 documents support multicanal et UX (politique support multicanal, politique langues et traduction, plan de tests utilisateurs qualitatifs) |
+| `../../scripts/garanties/support-multicanal-langues-tests-ux-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
