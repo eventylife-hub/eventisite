@@ -36,6 +36,7 @@
 | 15 | `50cdcfc` (back) | `b4f8952` | feat(round 13): EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE |
 | 16 | `90f069b` (back) | `0a7c37b` | feat(round 14): EARN_REFERRAL + Stripe webhook → energy pack + migration SQL |
 | 17 | `838f4b6` (front) | `a5c1652` | feat(round 15): cascade API energie page + EnergyTierBadge sidebar |
+| 18 | `e1801d7` (back) + `6493c1a` (front) | `d56987b` | feat(round 16): /me/energy/redeem + AutoRFQ queue scaffold + checkout redeem wiring |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -751,12 +752,52 @@ Badge tier + balance pour le header voyageur :
 
 ---
 
-## 🟡 Hors scope — prochaines passes (chantiers infra uniquement)
+## 🎼 Round 16 — Redeem points + AutoRFQ queue scaffold (commit 18)
 
-Toutes les TODO P0/P1/secondaires/tertiaires/UX du recap sont désormais bouclées. Restent uniquement les chantiers infra non bloquants :
+3 nouveautés finalisant l'Énergie + queue Bull-ready scaffold.
 
-1. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` synchrone. L'envoi async fiable (retry, dedup) gagnerait à passer par une queue (Bull/BullMQ). Non bloquant MVP.
-2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron + service métier déjà en place côté serveur, prêts à recevoir des positions). Hors scope frontend Eventy.
+### Backend
+
+#### `backend/src/modules/client/client.controller.ts` — `POST /client/me/energy/redeem`
+- Endpoint pour échanger points contre réduction voyage / voucher
+- Body : `{ type: 'REDEEM_VOYAGE' | 'REDEEM_VOUCHER', points, referenceId, ... }`
+- Vérifie solde via `EnergyService.redeemPoints()`
+- Idempotent par `referenceId` (bookingId)
+- Retour : `{ success, deducted, newBalance }` ou message d'erreur
+
+#### `backend/src/modules/transport/auto-rfq-queue.service.ts` (nouveau, 145 lignes)
+Queue scaffold compatible Bull/BullMQ :
+- Backend in-memory (Map + setTimeout) pour MVP
+- Retry exponentiel : 3 tentatives, backoff 1s/4s/16s
+- Idempotent par `quoteRequestId`
+- `getStats()` pour monitoring admin
+- Interface compatible Bull → swap simple vers BullMQ + Redis
+
+#### `backend/src/modules/transport/transport-quotes.controller.ts` — `submitAutoRFQ()`
+- Remplace broadcast synchrone par `enqueueBroadcast()`
+- Retourne `broadcastJobId` au lieu du résultat broadcast
+- Quote retournée immédiatement même si SMTP lent
+- Emails partent fiablement avec retry exponentiel
+
+### Frontend
+
+#### `frontend/app/(checkout)/checkout/step-3/page.tsx`
+- Nouveau `persistEnergyRedeem()` async : POST `/api/client/me/energy/redeem`
+- Idempotent par bookingGroupId
+- Try/catch silent (backend checkout fait fallback)
+- Appelé après `persistEnergyGain()` dans handleFullPayment + handleSplitPayInvites
+
+---
+
+## ✅ Toutes les TODO du recap sont désormais bouclées
+
+Plus rien dans le périmètre du recap initial. Le voyage end-to-end Eventy
+est complet : symphonie créateur → readers → check-out → énergie → fidélité.
+
+Restent uniquement des chantiers hors scope projet (à traiter séparément) :
+
+1. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (backend prêt). Hors scope frontend Eventy.
+2. **Migration Bull/BullMQ + Redis** — la queue est in-memory pour MVP, à migrer vers infra production quand Redis sera dispo.
 
 ---
 
@@ -781,7 +822,8 @@ Toutes les TODO P0/P1/secondaires/tertiaires/UX du recap sont désormais bouclé
 | 15. Round 13 (EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE) | 1 (energy-expiry.service) | 4 (reviews.service, reviews.module, client.controller, client.module, energy.module) | ~220 |
 | 16. Round 14 (EARN_REFERRAL + Stripe webhook + migration SQL) | 1 (migration.sql) | 3 (friends.service, payments.module, webhook.controller) | ~161 |
 | 17. Round 15 (Frontend Energy complet) | 1 (EnergyTierBadge.tsx) | 2 (energie/page.tsx, client/layout.tsx) | ~189 |
-| **TOTAL** | **16** | **59** | **~5 471 lignes** |
+| 18. Round 16 (Redeem + AutoRFQ queue) | 1 (auto-rfq-queue.service) | 4 (client.controller, quotes.controller, transport.module, checkout step-3) | ~264 |
+| **TOTAL** | **17** | **63** | **~5 735 lignes** |
 
 ---
 
