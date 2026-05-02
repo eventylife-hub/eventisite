@@ -1350,3 +1350,50 @@ Total                          172 tests
 > *Onze batches, zéro suppression. Le screen reader peut désormais naviguer dans
 > les modales. Le développeur peut consulter la spec API. L'admin voit les KPI
 > mois par mois. Tout est documenté, testé, accessible, conforme. NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 12 — LocaleSwitcher + webhook failed deliveries (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `components/voyage/LocaleSwitcher.tsx` | Sélecteur langue 3 locales (🇫🇷🇬🇧🇪🇸) ARIA-compliant | ~115 |
+| `components/voyage/__tests__/LocaleSwitcher.test.tsx` | 8 tests | ~85 |
+| `app/(client)/client/voyage/[id]/notifications/page.tsx` | Wire LocaleSwitcher dans header sticky | +1 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `enrichment-webhook.service.ts` | + FailedDeliveryRecord + listFailedDeliveries + stats + retry + recordFailure (LRU 500) | +85 |
+| `enrichment-webhook.service.spec.ts` | + 4 tests | +35 |
+| `admin-enrichment.controller.ts` | + GET/POST `/admin/webhooks/failed-deliveries` | +35 |
+
+### Logique métier
+
+**LocaleSwitcher** : ARIA-compliant (`role=menu`, `menuitemradio`, `aria-checked`, `aria-expanded`), compact ou full, click-outside, persist localStorage.
+
+**Webhook failed deliveries** : LRU 500 records, inspection ops, retry manuel SUPER_ADMIN. Phase 2 : table Prisma `WebhookDeliveryFailure`.
+
+### Couverture tests cumulée (batch 1-12)
+
+```
+backend (69 tests, +4)
+frontend (115 tests, +8)
+─────────────────────────
+Total              184 tests
+```
+
+### Commits batch 12
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | feat(voyages): batch 12 — LocaleSwitcher |
+| eventy-backend | master | feat(travels): batch 12 — webhook failed deliveries |
+
+---
+
+> *Douze batches, zéro suppression. Le voyageur peut désormais switcher
+> manuellement entre 3 langues, l'admin voit les webhook deliveries qui ont
+> échoué et peut retry à la main. Tout vit, tout respire, tout reste tracé.
+> NE RIEN EFFACER.*
