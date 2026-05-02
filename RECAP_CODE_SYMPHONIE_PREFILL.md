@@ -32,6 +32,7 @@
 | 11 | `3afb0d2` (front) + `a8295ee` (back) | `ef8f8b1` | feat(round 9): API cascade catalogs + SymphonieGate widget + DriverTrackingGateway WebSocket |
 | 12 | `90dd1e9` (front) + `4fc28f3` (back) | `4d5feee` | feat(round 10): SymphonieGate wired dans 3 pages + DriverArrivalDetectionService cron 30s |
 | 13 | `06e2da4` (back) | `2a9fe4a` | feat(round 11): Prisma schema EnergyAccount + Travel.transportQuoteValidated |
+| 14 | `02d4af3` (back) | `8c9a91d` | feat(round 12): EnergyService + booking earn hook + acceptQuote trigger |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -602,18 +603,56 @@ Import `PrismaModule` (nécessaire pour injecter `PrismaService` dans le control
 
 ---
 
+## 🎼 Round 12 — EnergyService + booking earn hook + acceptQuote trigger (commit 14)
+
+3 nouveautés bouclant les 2 dernières TODO recap.
+
+### `backend/src/modules/energy/energy.service.ts` (nouveau, 280 lignes)
+
+Service complet pour gérer le compte Énergie :
+
+- **`getOrCreateAccount(userId)`** — upsert atomique
+- **`earnPoints({ userId, type, points?, referenceId?, ... })`**
+  - Idempotent par `(userId, type, referenceId)` — pas de double crédit
+  - Recalcule tier dénormalisé (STARTER → LEGEND) après chaque earn
+  - TTL 12 mois par défaut
+  - Log la transaction dans `EnergyTransaction`
+- **`redeemPoints({ userId, type, points, referenceId? })`**
+  - Vérifie solde, log négatif, décrémente atomique
+  - Renvoie null si insuffisant
+- **`tierFromLifetime()`** helper static
+- **`DEFAULT_POINTS`** : booking 100, review 30, referral 250, promotion 50
+- Lecture defensive Prisma : gracieux si modèles non migrés
+
+### `backend/src/modules/energy/energy.module.ts`
+Provider + export `EnergyService`, import `PrismaModule`.
+
+### `backend/src/app.module.ts`
+`EnergyModule` ajouté dans imports.
+
+### `backend/src/modules/bookings/bookings.service.ts` — `finalConfirm()`
+Hook earn après transition `FULLY_PAID → CONFIRMED` :
+- `earnPoints()` avec `referenceId=bookingGroupId` pour idempotence
+- Try/catch global : ne JAMAIS bloquer la confirmation si earn échoue
+
+### `backend/src/modules/bookings/bookings.module.ts`
+Import `EnergyModule`.
+
+### `backend/src/modules/transport/transport-quotes.service.ts` — `acceptQuote()`
+Trigger auto `travel.transportQuoteValidated = true` dans la `$transaction` :
+- Lecture defensive : log warn si colonne absente
+- Couvre la TODO recap "trigger auto transportQuoteValidated"
+
+---
+
 ## 🟡 Hors scope — prochaines passes (long terme — infra)
 
-Tous les TODO P0/P1 du recap sont désormais couverts. Reste :
+Toutes les TODO du recap initial sont désormais couvertes. Restent :
 
 1. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue (Bull/BullMQ).
-2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron déjà en place côté serveur, prêts à recevoir des positions).
-3. **Triggers métier EnergyAccount** — les modèles Prisma sont en place, il reste à brancher :
-   - Hook après booking confirmation → `EARN_BOOKING` transaction
-   - Hook après review → `EARN_REVIEW`
-   - Hook après checkout pack → `EARN_PACK_PURCHASE`
-   - Cron expirations (`EXPIRE` après 12 mois)
-4. **Trigger transportQuoteValidated** — quand `quoteRequest.status` passe à VALIDATED, set `travel.transportQuoteValidated = true` automatiquement.
+2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron + service métier déjà en place côté serveur, prêts à recevoir des positions).
+3. **Hooks earn supplémentaires** — `EARN_REVIEW` (après publication avis), `EARN_REFERRAL` (après inscription parrainée confirmée), `EARN_PACK_PURCHASE` (après checkout pack stripe). Le service `EnergyService` est prêt, il reste à appeler `earnPoints()` dans ces flows.
+4. **Cron `EXPIRE`** — quand un earn dépasse `expiresAt`, créer une transaction `EXPIRE` négative + décrémenter le balance.
 
 ---
 
@@ -634,7 +673,8 @@ Tous les TODO P0/P1 du recap sont désormais couverts. Reste :
 | 11. Round 9 (cascade API + SymphonieGate + GPS gateway) | 2 (SymphonieGate.tsx + driver-tracking.gateway.ts) | 2 (creator-catalogs.ts, transport.module.ts) | ~688 |
 | 12. Round 10 (SymphonieGate wiring + arrival cron) | 1 (driver-arrival-detection.service.ts) | 4 (pro voyage, admin voyage, EtapeSummary, transport.module) | ~294 |
 | 13. Round 11 (Prisma schema EnergyAccount + transportQuoteValidated) | 0 (modèles dans schema.prisma) | 4 (schema.prisma, travels.service, client.controller, client.module) | ~140 (utiles) |
-| **TOTAL** | **11** | **46** | **~4 538 lignes** |
+| 14. Round 12 (EnergyService + booking earn + acceptQuote trigger) | 2 (energy.service, energy.module) | 4 (app.module, bookings.module, bookings.service, transport-quotes.service) | ~363 |
+| **TOTAL** | **13** | **50** | **~4 901 lignes** |
 
 ---
 
