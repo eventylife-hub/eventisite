@@ -178,6 +178,13 @@
 | `Eventy-Life-Plan-Evenements.docx` / `.pdf` | Plan de gestion d'événements (14 KB · 4 pages) — 4 typologies (internes équipe, partenaires, communautaires voyageurs, commerciaux/institutionnels), **calendrier annuel type** mois par mois (vœux janvier, anniversaire Eventy juin signature, IFTM Top Resa septembre), événement signature anniversaire Eventy (juin, hybride 100-300 personnes, **bilan carbone publié + compensation**), apéros trimestriels Paris + 2 villes province, 8 budgets types (mardi équipe ≤ 50 € → anniversaire 15-30 K€), 6 KPIs (≥ 800 → 5 000 participants/an, NPS ≥ + 70), 6 engagements éthiques (sobriété, lieux PMR, catering circuit court) |
 | `Eventy-Life-Guide-Portail-Ambassadeur.docx` / `.pdf` | Guide utilisation portail ambassadeur (13 KB · 4 pages) — eventylife.fr/portail-ambassadeur (4e portail complétant créateur/vendeur/HRA) : **4 niveaux de partenariat** (Ambassadeur gratuit, Influenceur invité échange en nature, Influenceur partenaire contrat structuré, Personnalité publique), code parrainage `EVENTY-[NOM]-[ANNÉE]` avec lien tracé, kit ambassadeur intégré (logo, photothèque, vidéos, templates), suivi performances détaillé, validation préalable contenus à enjeu, 3 niveaux de sanctions, formation continue, support dédié `ambassadeur@eventylife.fr` |
 
+### Finance et comptabilité (TVA, plan comptable, audit interne)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Guide-TVA-Marge-Tourisme.docx` / `.pdf` | Guide TVA marge tourisme (15 KB · 4 pages) — application opérationnelle BOI-TVA-SECT-60 + article 266-1-e CGI : principe (TVA sur la marge brute, pas sur le prix total), conditions d'application (Eventy en son nom propre), périmètre marge vs frais généraux (régime classique), **exemple chiffré complet** (voyage 800 € TTC : marge brute 130 €, TVA marge 21,67 €, marge nette Eventy 7,66 % CA TTC), prestations hors UE à 0 %, comptes dédiés, déclarations CA12/CA3 (régime simplifié vs réel), pièges à éviter, **6 engagements éthiques fiscaux** (refus dumping/optimisation agressive) |
+| `Eventy-Life-Plan-Comptable-Processus.docx` / `.pdf` | Plan comptable et processus comptable mensuel (14 KB · 4 pages) — référentiel adapté tourisme : plan de comptes (comptes de bilan classes 1-5 + comptes de résultat 6-7 + comptes spécifiques tourisme 411 voyageurs / 461 cantonné / 6044 TVA marge), processus comptable (quotidien/hebdomadaire/mensuel), reporting (interne mensuel / trimestriel APST / annuel), contrôles internes (séparation des tâches progressive An 1→An 4), conservation pièces (10 ans), **8 KPIs financiers** An 1/An 3 (délai clôture ≤ 10 j → 5 j, marge brute 10-14 %, trésorerie ≥ 1 mois → 3 mois) |
+| `Eventy-Life-Plan-Audit-Interne.docx` / `.pdf` | Plan d'audit interne (14 KB · 4 pages) — référentiel ISO 19011 + IFACI : **5 périmètres** (financier, opérationnel, conformité, cybersécurité, RSE), calendrier annuel type T1 financier+RSE+conformité / T2 cybersec+RGPD / T3 opérationnel+HRA / T4 accessibilité+conflits, méthodologie 5 phases (préparation T-30 → suivi T+90), **4 niveaux de criticité** (mineur ≤ 90 j → critique action immédiate), auditeurs internes + externes (CAC, PASSI, DPO, ISO), 6 KPIs (≥ 8 → 20 audits internes/an, **0 écart critique**), 6 engagements éthiques (vérité, bienveillance, non-représailles) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -309,6 +316,8 @@
 | `../../scripts/garanties/strategie-expansion-rp-partenariats-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-gamification-evenements-portail-ambassadeur.js` | Générateur Node.js des 3 documents engagement / communauté (gamification voyageur, plan d'événements, guide portail ambassadeur) |
 | `../../scripts/garanties/gamification-evenements-portail-ambassadeur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-tva-marge-comptable-audit-interne.js` | Générateur Node.js des 3 documents finance / comptabilité (TVA marge tourisme, plan comptable et processus, plan d'audit interne) |
+| `../../scripts/garanties/tva-marge-comptable-audit-interne-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
