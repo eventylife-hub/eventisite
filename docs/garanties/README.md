@@ -185,6 +185,13 @@
 | `Eventy-Life-Plan-Comptable-Processus.docx` / `.pdf` | Plan comptable et processus comptable mensuel (14 KB · 4 pages) — référentiel adapté tourisme : plan de comptes (comptes de bilan classes 1-5 + comptes de résultat 6-7 + comptes spécifiques tourisme 411 voyageurs / 461 cantonné / 6044 TVA marge), processus comptable (quotidien/hebdomadaire/mensuel), reporting (interne mensuel / trimestriel APST / annuel), contrôles internes (séparation des tâches progressive An 1→An 4), conservation pièces (10 ans), **8 KPIs financiers** An 1/An 3 (délai clôture ≤ 10 j → 5 j, marge brute 10-14 %, trésorerie ≥ 1 mois → 3 mois) |
 | `Eventy-Life-Plan-Audit-Interne.docx` / `.pdf` | Plan d'audit interne (14 KB · 4 pages) — référentiel ISO 19011 + IFACI : **5 périmètres** (financier, opérationnel, conformité, cybersécurité, RSE), calendrier annuel type T1 financier+RSE+conformité / T2 cybersec+RGPD / T3 opérationnel+HRA / T4 accessibilité+conflits, méthodologie 5 phases (préparation T-30 → suivi T+90), **4 niveaux de criticité** (mineur ≤ 90 j → critique action immédiate), auditeurs internes + externes (CAC, PASSI, DPO, ISO), 6 KPIs (≥ 8 → 20 audits internes/an, **0 écart critique**), 6 engagements éthiques (vérité, bienveillance, non-représailles) |
 
+### Résilience corporate (assurances, formation interne, succession dirigeant)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Assurance-Globale.docx` / `.pdf` | Politique d'assurance globale (15 KB · 4 pages) — cartographie **7 couvertures structurelles** : garantie financière APST 1,6 M€ / RC Pro Tourisme ≥ 2 M€ par sinistre / Multirisque locaux / Cyber risque ≥ 500 K€ / Pack Sérénité voyageurs (refacturé) / Mutuelle équipe 70 % part Eventy / RC dirigeant D&O ≥ 1 M€ ; couvertures complémentaires An 2-3 (pertes d'exploitation, garantie homme-clé), gouvernance (revue annuelle T1, courtier spécialisé), 6 KPIs (coût total assurances ≤ 0,8 % CA An 1), 6 engagements éthiques (refus sous/sur-couverture, transparence) |
+| `Eventy-Life-Plan-Formation-Interne.docx` / `.pdf` | Plan de formation interne équipe (14 KB · 4 pages) — engagements (≥ 2 % masse salariale An 1 → ≥ 5 % An 3, ≥ 21 h → 35 h formation/an/collaborateur) : **5 catégories** (réglementaires, métier tourisme, techniques, transverses, stratégiques), modalités (internes Eventy lunch & learn, externes Qualiopi, conférences sectorielles 500-1 500 €/an), **parcours individualisés** par profil (junior dev 1 500 € → manager 3 500 €), 6 KPIs (heures formation, % budget, taux satisfaction ≥ 75 % → 90 %), 6 engagements (égalité d'accès, refus formation gadget) |
+| `Eventy-Life-Plan-Succession-Dirigeant.docx` / `.pdf` | Plan de succession dirigeant et continuité (14 KB · 4 pages) — anticipation du risque « founder-led » : **4 niveaux d'indisponibilité** (courte < 7 j, moyenne 1 sem-3 mois, longue > 3 mois, disparition/décès), architecture (référent intérim opérationnel, Conseil de surveillance ad hoc, Direction Générale par intérim), documentation indispensable (coffre-fort numérique sécurisé 2 personnes, carnet de bord dirigeant), procédures spécifiques par niveau, **3 décisions stratégiques en cas de Niveau 4** (continuité avec nouveau dirigeant, cession alignée valeurs, dissolution ordonnée préservant voyageurs), 6 engagements opposables (mise à jour annuelle, tests pratiques, refus dissolution chaotique) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -318,6 +325,8 @@
 | `../../scripts/garanties/gamification-evenements-portail-ambassadeur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-tva-marge-comptable-audit-interne.js` | Générateur Node.js des 3 documents finance / comptabilité (TVA marge tourisme, plan comptable et processus, plan d'audit interne) |
 | `../../scripts/garanties/tva-marge-comptable-audit-interne-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-assurances-formation-interne-succession.js` | Générateur Node.js des 3 documents résilience corporate (politique d'assurance globale, plan de formation interne, plan de succession dirigeant) |
+| `../../scripts/garanties/assurances-formation-interne-succession-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
