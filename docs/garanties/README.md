@@ -199,6 +199,13 @@
 | `Eventy-Life-Plan-Etudes-Veille-Marche.docx` / `.pdf` | Plan d'études et veille marché (14 KB · 4 pages) — démarche d'apprentissage continu (refus dénigrement, espionnage commercial) : **4 domaines de veille** (marché tourisme, concurrentielle, technologique, réglementaire), 4 études voyageurs récurrentes (NPS continu, sondage trimestriel Famille, étude annuelle approfondie, sondage post-voyage automatisé), sources institutionnelles (Atout France, OMT, INSEE, Eurostat) + médias + sectorielles + outils, reporting (newsletter veille mensuelle, réunion trimestrielle, synthèse annuelle), partage public (tribune signée David Eventy, observatoire eventylife.fr/observatoire An 3), 6 KPIs |
 | `Eventy-Life-Politique-Image-Droit.docx` / `.pdf` | Politique image et droit à l'image (14 KB · 4 pages) — principe directeur : aucune image identifiable sans accord écrit libre éclairé révocable : **4 niveaux d'utilisation** (non identifiable / identifiable contexte non sensible / individuelle valorisation / mineurs et personnes vulnérables), modalités d'accord (format, étapes), utilisations autorisées vs interdites (refus deep fake, cession à tiers, modifications dénaturantes), **droit de retrait** (`image@eventylife.fr` sous 30 j → 14 j An 3), stockage Scaleway France, cas spécifiques (groupe voyage, témoignages, partenaires HRA, équipe), 5 KPIs (100 % accords signés/images), 7 engagements éthiques |
 
+### Gouvernance opérationnelle (make/buy, gestion documentaire, UGC)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Make-Buy.docx` / `.pdf` | Politique d'externalisation et choix make/buy (14 KB · 4 pages) — règles de décision interne vs externe : 5 principes (maîtrise sur identité, souveraineté données, expertise pointue externalisée, maîtrise coûts, cohérence valeurs), refus structurés (cœur de métier, relation voyageur, audit qualité, offshoring extractif), **cartographie make/buy par 15 domaines** (création voyages = make / cloud = buy / paiement = buy / juridique = buy / cybersec avancée = buy), critères de sélection prestataires (RGPD, RSE, France/Europe, ≥ 90 %), modalités contractuelles + plan réversibilité, 6 KPIs An 1/An 3 |
+| `Eventy-Life-Politique-Gestion-Documentaire.docx` / `.pdf` | Politique de gestion documentaire et archivage (14 KB · 4 pages) — taxonomie en **8 catégories** (légal corporate, financier, contractuel, réglementaire, RH, voyageurs, opérationnel, communication) avec durées de conservation (5-50 ans selon catégorie), architecture stockage Scaleway France chiffré AES-256, conventions de nommage, 4 niveaux de confidentialité (public, interne, restreint, direction), cycle de vie complet (création → archivage → destruction documentée), RGPD (anonymisation après 3 ans), 6 KPIs (100 % documents indexés An 1) |
+| `Eventy-Life-Charte-UGC.docx` / `.pdf` | Charte des contenus utilisateurs (14 KB · 4 pages) — règles UGC (User-Generated Content) : photos/vidéos voyageurs, avis Trustpilot/Google, posts réseaux taguant Eventy : 6 principes (respect droits auteur, accord exprès, modération bienveillante, crédit systématique, refus extraction commerciale), modalités d'accord (forme, durée, crédit), modération (refus suppression avis défavorable légal, suppression injures), **programme « Voix Eventy » An 2** (encouragement bienveillant), refus structurés (achat témoignages, chantage à la remise, diffamation), cas particuliers (mineurs, partenaires HRA), 6 KPIs |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -336,6 +343,8 @@
 | `../../scripts/garanties/assurances-formation-interne-succession-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-strategique-etudes-droit-image.js` | Générateur Node.js des 3 documents vision stratégique (plan stratégique 5 ans, plan d'études et veille marché, politique image et droit à l'image) |
 | `../../scripts/garanties/strategique-etudes-droit-image-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-makebuy-gestion-doc-ugc.js` | Générateur Node.js des 3 documents gouvernance opérationnelle (politique make/buy, politique gestion documentaire, charte UGC) |
+| `../../scripts/garanties/makebuy-gestion-doc-ugc-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
