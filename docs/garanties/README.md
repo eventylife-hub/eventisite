@@ -164,6 +164,13 @@
 | `Eventy-Life-Guide-Portail-Vendeur.docx` / `.pdf` | Guide utilisation portail vendeur (13 KB · 4 pages) — eventylife.fr/portail-vendeur : code parrainage personnel `EVENTY-[NOM]-[ANNÉE]`, lien tracé, catalogue commercial avec fiches partageables et kit (visuels Instagram/FB/TikTok préformatés, vidéos courtes, templates email), suivi ventes (CA placé, commissions, NPS filleuls), versement Stripe Connect 21 j après retour de voyage, cumul créateur (5 % + 3 %), **4 statuts de progression** (Débutant/Actif/Confirmé/Légende), 5 KPIs |
 | `Eventy-Life-Guide-Portail-HRA.docx` / `.pdf` | Guide utilisation portail HRA (14 KB · 4 pages) — eventylife.fr/maisons : profil établissement (identité, calendrier disponibilité, engagement RSE), **réception et confirmation commandes** (sous 7 j ouvrés, idéalement 48 h), gestion voyages (liste voyageurs RGPD finalité opérationnelle, communication accompagnateur), facturation (paiement 30 j fin de mois LME, **15 j pour micro-entreprises locales**), audit annuel + NPS voyageurs, statistiques, 6 engagements opposables Eventy envers HRA (paiement sans retard injustifié, refus pratiques d'achat extractives) |
 
+### Stratégie externe (expansion, RP, partenariats institutionnels)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Plan-Expansion-Internationale.docx` / `.pdf` | Plan d'expansion internationale (14 KB · 4 pages) — **5 phases pluriannuelles** (Phase 0 fondation France An 1-2, Phase 1 frontaliers BE/CH/LU An 2-3, Phase 2 Europe étendue ES/IT/PT/NL An 3-4, Phase 3 Europe totale DE/UK/Nordiques An 5-6, Phase 4 Canada/Asie An 7+), 5 principes (maîtrise avant croissance, partenariats locaux, conformité, cohérence éthique, profitabilité prouvée), refus structurés (pays autoritaires, franchise, USA An 1-3), adaptations (linguistique, juridique, fiscale, paiement), 6 KPIs (≥ 5-7 pays An 5, ≥ 25 % CA international An 5, **délai rentabilité ≤ 24 mois**), 6 engagements éthiques (refus néo-colonialisme touristique, dumping social/fiscal) |
+| `Eventy-Life-Strategie-Relations-Presse.docx` / `.pdf` | Stratégie relations presse et médias (14 KB · 4 pages) — 5 segments média (tourisme, économique, grand public, lifestyle, tech/startup), 5 angles éditoriaux différenciants (souveraineté économique, transparence radicale prix, voyage comme bien public, autodidacte 1M+ lignes code, tourisme social et redistributif), plan 3 ans (An 1 émergence avec CP lancement + tribune + interviews, An 2 notoriété avec voyages presse trimestriels, An 3+ voix d'autorité avec auditions et rapports), 6 KPIs An 1/An 3, 6 engagements éthiques (refus publi-rédactionnel camouflé, achat d'articles, off the record manipulateur) |
+| `Eventy-Life-Plan-Partenariats-Institutionnels.docx` / `.pdf` | Plan de partenariats institutionnels (14 KB · 4 pages) — **cartographie 6 catégories** (régulateurs Atout France/APST/CNIL, syndicats UMIH/GNI/SNAV, offices tourisme ADN/CRT/CDT, tourisme social ANCV/Tourisme et Handicap/UNAT, acteurs économiques Bpifrance/CCI/CMA/FrenchTech, européens ETOA/ECTAA), 3 niveaux d'engagement (adhésion, partenariat opérationnel, partenariat stratégique), calendrier 3 ans détaillé (T2 An 1 Atout France/APST → An 3 ETOA international), 6 KPIs (≥ 5 → 15 adhésions, ≥ 5 régions partenaires An 3, **labels Tourisme et Handicap + ATR**), 5 engagements éthiques (refus lobbying contraire à l'intérêt général) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -291,6 +298,8 @@
 | `../../scripts/garanties/tech-accessibilite-roadmap-espace-voyageur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-guides-portails-createur-vendeur-hra.js` | Générateur Node.js des 3 guides portails partenaires (créateur, vendeur, HRA) |
 | `../../scripts/garanties/guides-portails-createur-vendeur-hra-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-strategie-expansion-rp-partenariats.js` | Générateur Node.js des 3 documents stratégie externe (expansion internationale, relations presse, partenariats institutionnels) |
+| `../../scripts/garanties/strategie-expansion-rp-partenariats-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
