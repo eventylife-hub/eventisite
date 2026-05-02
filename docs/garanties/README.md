@@ -157,6 +157,13 @@
 | `Eventy-Life-Roadmap-Technique.docx` / `.pdf` | Roadmap technique (15 KB · 4 pages) — état actuel (NestJS 31 modules, Next.js 32 portails, ~1,184 M lignes, Scaleway France) : **plan 3 ans** (An 1 consolidation parcours réservation + multi-langues + portails partenaires, An 2 app mobile + internationalisation EN/ES + ISO 27001 lancement, An 3 marketplace ambassadeur + B2B avancé + IA assistante non-extractive), R&D et statuts (JEI, **CIR 30 %, CII 30 %**), plan d'embauches techniques An 1 → An 5 (2 → 13-15 collaborateurs), 7 KPIs, 6 engagements stratégiques (souveraineté, sobriété, RGPD/accessibilité-by-design) |
 | `Eventy-Life-Guide-Espace-Voyageur.docx` / `.pdf` | Guide utilisation espace voyageur (14 KB · 4 pages) — mode d'emploi pas-à-pas eventylife.fr/mon-compte : création de compte, **réservation 9 étapes** (recherche → paiement Stripe → confirmation), suivi voyages avec documents (contrat, reçu, roadbook, voucher Pack Sérénité), modification/annulation, programme Eventy Famille (statut, code parrainage, avoirs), communication 6 emails dédiés, sécurité compte (MFA recommandée, vigilance phishing), droits RGPD (accès/rectification/effacement/opposition), accessibilité, astuces, support contact 24 h ouvrées |
 
+### Guides utilisation portails partenaires
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Guide-Portail-Createur.docx` / `.pdf` | Guide utilisation portail créateur (13 KB · 4 pages) — eventylife.fr/portail-createur : connexion + MFA, tableau de bord, **création de voyage** 9 étapes (cohérence Méthodologie de création de voyage), gestion HRA (panel, onboarding, audit), suivi voyages (J-60, J-30, J-7, pendant, retour), rémunération (3 pts HT créateur + cumul vendeur 5 % + forfait accompagnement), statistiques, communication interne, formation continue 1 jour/an, **6 erreurs à éviter** (promesses non confirmées, modifications sans concertation, etc.) |
+| `Eventy-Life-Guide-Portail-Vendeur.docx` / `.pdf` | Guide utilisation portail vendeur (13 KB · 4 pages) — eventylife.fr/portail-vendeur : code parrainage personnel `EVENTY-[NOM]-[ANNÉE]`, lien tracé, catalogue commercial avec fiches partageables et kit (visuels Instagram/FB/TikTok préformatés, vidéos courtes, templates email), suivi ventes (CA placé, commissions, NPS filleuls), versement Stripe Connect 21 j après retour de voyage, cumul créateur (5 % + 3 %), **4 statuts de progression** (Débutant/Actif/Confirmé/Légende), 5 KPIs |
+| `Eventy-Life-Guide-Portail-HRA.docx` / `.pdf` | Guide utilisation portail HRA (14 KB · 4 pages) — eventylife.fr/maisons : profil établissement (identité, calendrier disponibilité, engagement RSE), **réception et confirmation commandes** (sous 7 j ouvrés, idéalement 48 h), gestion voyages (liste voyageurs RGPD finalité opérationnelle, communication accompagnateur), facturation (paiement 30 j fin de mois LME, **15 j pour micro-entreprises locales**), audit annuel + NPS voyageurs, statistiques, 6 engagements opposables Eventy envers HRA (paiement sans retard injustifié, refus pratiques d'achat extractives) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -282,6 +289,8 @@
 | `../../scripts/garanties/content-seo-blog-glossaire-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-tech-accessibilite-roadmap-espace-voyageur.js` | Générateur Node.js des 3 documents tech/UX (plan accessibilité numérique, roadmap technique, guide espace voyageur) |
 | `../../scripts/garanties/tech-accessibilite-roadmap-espace-voyageur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-guides-portails-createur-vendeur-hra.js` | Générateur Node.js des 3 guides portails partenaires (créateur, vendeur, HRA) |
+| `../../scripts/garanties/guides-portails-createur-vendeur-hra-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
