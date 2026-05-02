@@ -213,6 +213,13 @@
 | `Eventy-Life-Plan-Communication-Interne.docx` / `.pdf` | Plan de communication interne (13 KB · 4 pages) — 5 principes (transparence, régularité, bidirectionnalité, sobriété, bienveillance) : rituels équipe (standup lundi, mardi de l'équipe, démo vendredi, café jeudi, all-hands mensuel, séminaire trimestriel), communication 4 catégories de partenaires (créateurs, vendeurs, HRA, ambassadeurs), communication voyageurs (transactionnelle, communautaire, marketing), **communication ascendante** (boîtes mail dédiées `alerte@`/`conformite@`/`idees@`, sondages anonymes), 6 KPIs (eNPS ≥ + 30 → + 50), 6 engagements (refus jargon corporate, silence radio, rétention info) |
 | `Eventy-Life-Procedure-Amelioration-Continue.docx` / `.pdf` | Procédure d'amélioration continue (14 KB · 4 pages) — méthodologie inspirée Kaizen + lean : **5 principes** (bienveillance « cause pas coupable », transparence, apprentissage collectif, pas de double peine, petits pas), refus structurés (culture du blame, zéro défaut paralysant, dogmatisme), sources internes/externes/incidents, cycle PDCA adapté (Plan/Do/Check/Act), méthodes pratiques (post-mortem 60-90 min sous 7 j, REX projet, idées `idees@eventylife.fr`), reconnaissance non-financière, 6 KPIs (≥ 30 → 100 idées/an, 100 % post-mortems documentés), 6 engagements éthiques |
 
+### Inclusion et qualité voyageur (charte diversité, voyageurs-mystères, manuel voyageur)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Inclusion-Diversite.docx` / `.pdf` | Charte d'inclusion et diversité (14 KB · 4 pages) — engagements pour équipe/partenaires/voyageurs : **6 principes** (égalité, transparence salariale, accessibilité, représentation, bienveillance, action concrète), refus structurés (token-isme, performatif sans actions), engagements équipe (recrutement diversifié ≥ 30 % short-list profils sous-représentés, parité H/F ≥ 40 % An 1 → 45 %, recrutement personnes en situation de handicap ≥ 6 % à terme, rapport max/min salaire ≤ 5), engagements voyageurs (refus de sélection à l'entrée, accessibilité PMR, ANCV An 2), engagements partenaires, 7 KPIs, sanctions claires |
+| `Eventy-Life-Plan-Voyageurs-Mysteres.docx` / `.pdf` | Plan d'audit voyageurs-mystères (14 KB · 4 pages) — méthodologie d'évaluation qualité par observateurs intégrés (complémentaire Procédure d'audit qualité HRA) : profils variés reflétant diversité, anonymat strict (identité connue Président uniquement), périmètre 10 dimensions (parcours en ligne → communication post-voyage), méthodologie 4 phases (préparation T-30 → plan d'action J+30), calendrier An 1 pilote 2-3 audits → An 3 ≥ 12 audits couvrant 75 % voyages, **refus audit punitif** ou utilisation comme outil de pression, 6 KPIs (note ≥ 4/5 An 1 → 4,5/5, 100 % confidentialité préservée), 6 engagements éthiques |
+| `Eventy-Life-Manuel-Voyageur-Autonome.docx` / `.pdf` | Manuel voyageur autonome (14 KB · 4 pages) — handbook pratique pendant le voyage : liste de vérification J-1 (10 cases à cocher), documents à imprimer, jour du départ (lieu RDV, kit voyageur, briefing), rythme quotidien type, **liberté préservée** (skipper sans surcoût, son rythme), Pack Sérénité comment utiliser (4 étapes), bonnes pratiques en groupe (respect, éco-gestes), gestion problèmes 3 niveaux, retour J+1, programme Eventy Famille / parrainage / Voix Eventy An 2, contacts, mot d'Eventy chaleureux |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -354,6 +361,8 @@
 | `../../scripts/garanties/makebuy-gestion-doc-ugc-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-opensource-comm-interne-amelioration-continue.js` | Générateur Node.js des 3 documents culture / innovation (politique open source et PI, plan de communication interne, procédure d'amélioration continue) |
 | `../../scripts/garanties/opensource-comm-interne-amelioration-continue-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-inclusion-voyageurs-mysteres-manuel-voyageur.js` | Générateur Node.js des 3 documents inclusion / qualité voyageur (charte d'inclusion et diversité, plan d'audit voyageurs-mystères, manuel voyageur autonome) |
+| `../../scripts/garanties/inclusion-voyageurs-mysteres-manuel-voyageur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
