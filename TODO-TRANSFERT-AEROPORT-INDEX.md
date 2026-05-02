@@ -207,6 +207,20 @@
 | `OPERATIONS-RUNBOOK.md` | 340 | manuel ops 24/7 8 scénarios + routine + post-mortem |
 | `AUDIT_TRANSFERT_AEROPORT_HANDOVER.md` | 280 | doc transmission engineering team + plan 4 sprints |
 
+## Vague 14 (2026-05-02) — FAQ i18n + clôture officielle audit
+
+| Item | Lignes | Type |
+|---|---|---|
+| `lib/transport/transferts-aeroport-faq-i18n.ts` | 274 | FAQ traduite FR+EN+ES (14 Q/R × 3 langues) |
+| `AUDIT_TRANSFERT_AEROPORT_AUDIT_COMPLETE.md` | 200 | clôture officielle audit avec stop-recommendation |
+
+---
+
+## 🏁 AUDIT CLOS — 14 vagues — 2026-05-02
+
+Voir [`AUDIT_TRANSFERT_AEROPORT_AUDIT_COMPLETE.md`](AUDIT_TRANSFERT_AEROPORT_AUDIT_COMPLETE.md)
+pour la clôture officielle. Toute itération future = nouvelle branche.
+
 ---
 
 ## Comment retrouver un TODO dans le code
