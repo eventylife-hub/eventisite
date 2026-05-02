@@ -227,6 +227,13 @@
 | `Eventy-Life-Politique-Sponsoring-Mecenat.docx` / `.pdf` | Politique de sponsoring et mécénat (14 KB · 4 pages) — distinction sponsoring vs mécénat : 5 principes (alignement valeurs, durée pluriannuelle, mesurabilité, transparence, cohérence interne), refus structurés (greenwashing, token-isme, conflit d'intérêts), **5 thématiques prioritaires** (tourisme social, écologie, inclusion handicap, ESS, culture/patrimoine), plafonds (≤ 0,5 % CA An 1 → ≤ 1 % An 3 dont ≥ 50 % mécénat An 3), process 5 étapes, 6 KPIs, 6 engagements éthiques |
 | `Eventy-Life-Methodologie-Animation-Accompagnateur.docx` / `.pdf` | Méthodologie d'animation accompagnateur en groupe (14 KB · 4 pages) — bonnes pratiques d'animation au quotidien (complémentaire Charte qualité accompagnateur) : 5 principes posture (présence, bienveillance, humilité, médiation, transparence), 4 phases d'animation (J0 accueil → dernier jour bilan), communication groupe (briefings, individuelle, outils), **médiation 5 étapes** + escalade, inclusion (solo, séniors, PMR, profils variés), bonnes pratiques quotidiennes, animations optionnelles, refus structurés (animation infantilisante, pression, favoritisme), 6 KPIs |
 
+### Politiques opérationnelles spécifiques (mineurs, notes de frais, environnement par destination)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Mineurs-Voyageurs.docx` / `.pdf` | Charte mineurs voyageurs (14 KB · 4 pages) — encadrement spécifique : **3 catégories** (A : mineur avec représentant légal, B : ≥ 16 ans avec accord parental, C : voyages collectifs scolaires REFUSÉS An 1-3), conditions d'acceptation, **documents obligatoires** (CNI mineur, autorisation parentale, AST CERFA n° 15646*01 si étranger), encadrement renforcé (briefing accompagnateur, hébergement séparé adultes non représentants, refus alcool), protection contre pratiques inappropriées (casier B3 vierge, signalement immédiat), confidentialité RGPD article 8, 6 KPIs, 7 engagements opposables |
+| `Eventy-Life-Politique-Notes-De-Frais.docx` / `.pdf` | Politique de gestion des notes de frais (14 KB · 4 pages) — **5 principes** (sincérité, sobriété, justification, cohérence valeurs, rapidité 14 j) : refus structurés (frais somptuaires, fraude, frais privés requalifiés), 6 catégories de frais avec plafonds (transport préférence train/transports en commun, hébergement ≤ 150 €/nuit Paris, restauration ≤ 25 € midi/35 € soir), pièces justificatives obligatoires ≥ 1 €, validation Président > 500 €, FMD séparé, sanctions fraude, 6 KPIs (NDF / CA ≤ 1 % An 1 → 0,8 % An 3) |
+| `Eventy-Life-Plan-Gestion-Env-Destinations.docx` / `.pdf` | Plan de gestion environnementale par destination (14 KB · 4 pages) — fiche environnementale par voyage (créée à conception, mise à jour annuelle T1) : empreinte carbone détaillée (Scope 3 transport/hébergement/restauration/activités), critères RSE des partenaires, risques environnementaux locaux (surtourisme, stress hydrique, biodiversité), facteurs ADEME 2026 chiffrés (autocar 30 g/km, TGV 4 g/km, avion 285 g/km, hôtel 4-15 kg/nuit, repas viande 7-10 kg vs végétarien 1-2 kg), plan d'amélioration **3 niveaux d'impact** (faible < 100 / modéré 100-200 / fort > 200 kg CO2eq), 6 KPIs |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -372,6 +379,8 @@
 | `../../scripts/garanties/inclusion-voyageurs-mysteres-manuel-voyageur-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-experimentation-sponsoring-animation.js` | Générateur Node.js des 3 documents méthodologies opérationnelles (plan d'expérimentation, politique sponsoring/mécénat, méthodologie animation accompagnateur) |
 | `../../scripts/garanties/experimentation-sponsoring-animation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-mineurs-notes-frais-env-destinations.js` | Générateur Node.js des 3 documents politiques opérationnelles spécifiques (charte mineurs voyageurs, politique notes de frais, plan de gestion environnementale destinations) |
+| `../../scripts/garanties/mineurs-notes-frais-env-destinations-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
