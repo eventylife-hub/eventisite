@@ -234,6 +234,13 @@
 | `Eventy-Life-Politique-Notes-De-Frais.docx` / `.pdf` | Politique de gestion des notes de frais (14 KB · 4 pages) — **5 principes** (sincérité, sobriété, justification, cohérence valeurs, rapidité 14 j) : refus structurés (frais somptuaires, fraude, frais privés requalifiés), 6 catégories de frais avec plafonds (transport préférence train/transports en commun, hébergement ≤ 150 €/nuit Paris, restauration ≤ 25 € midi/35 € soir), pièces justificatives obligatoires ≥ 1 €, validation Président > 500 €, FMD séparé, sanctions fraude, 6 KPIs (NDF / CA ≤ 1 % An 1 → 0,8 % An 3) |
 | `Eventy-Life-Plan-Gestion-Env-Destinations.docx` / `.pdf` | Plan de gestion environnementale par destination (14 KB · 4 pages) — fiche environnementale par voyage (créée à conception, mise à jour annuelle T1) : empreinte carbone détaillée (Scope 3 transport/hébergement/restauration/activités), critères RSE des partenaires, risques environnementaux locaux (surtourisme, stress hydrique, biodiversité), facteurs ADEME 2026 chiffrés (autocar 30 g/km, TGV 4 g/km, avion 285 g/km, hôtel 4-15 kg/nuit, repas viande 7-10 kg vs végétarien 1-2 kg), plan d'amélioration **3 niveaux d'impact** (faible < 100 / modéré 100-200 / fort > 200 kg CO2eq), 6 KPIs |
 
+### Support voyageur (avoirs/remboursements, animation communauté, communication post-incident)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Politique-Avoirs-Remboursements.docx` / `.pdf` | Politique de gestion des avoirs et remboursements (14 KB · 4 pages) — règles concrètes : cas de remboursement intégral 100 % (rétractation 14 j, annulation Eventy force majeure, modification substantielle), cas de remboursement partiel barème CGV (≥ 90 j 95 % → ≤ 7 j 0 %), avoir voyage Eventy (validité 24 mois, **refus avoir forcé** contre droit du voyageur), modalités opérationnelles (annulation@/modification@), suivi comptable, 6 KPIs (délai remboursement ≤ 14 j An 1 → 7 j An 3), 6 engagements éthiques |
+| `Eventy-Life-Plan-Animation-Communaute-Famille.docx` / `.pdf` | Plan d'animation communauté Eventy Famille (14 KB · 4 pages) — groupe Facebook privé (cible An 1 ≥ 200 membres → An 5 ≥ 50 K) : 5 principes (bienveillance, authenticité, service, transparence, respect), refus sur-promotion (≤ 20 % contenu commercial), règlement et modération bienveillante, calendrier éditorial type (lundi/mercredi/vendredi/dimanche + mensuel + saisonnier + annuel), **3 types de contenu** (Eventy ≤ 20 %, voyageurs ≥ 60 %, inspirationnel ≤ 20 %), animation par voyageurs eux-mêmes, **migration vers solution souveraine An 3+** (refus dépendance acteurs non-européens), 6 KPIs |
+| `Eventy-Life-Politique-Communication-Post-Incident.docx` / `.pdf` | Politique de communication post-incident voyageur (14 KB · 4 pages) — suivi humain dans la durée du voyageur incidenté : 5 principes (empathie, reconnaissance, suivi, geste juste, apprentissage), refus structurés (communication standardisée, minimisation, déni, oubli post-règlement, condition « si tu ne dis rien sur les réseaux »), **6 phases du suivi** (pendant incident → retour J0 appel Président → réclamation J+1-7 → règlement J+15-30 → suivi long terme J+30-90 → anniversaire J+365), niveaux de geste empathique selon incident (50 € → 1 000 € + voyage), 6 KPIs, 7 engagements opposables |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -381,6 +388,8 @@
 | `../../scripts/garanties/experimentation-sponsoring-animation-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-mineurs-notes-frais-env-destinations.js` | Générateur Node.js des 3 documents politiques opérationnelles spécifiques (charte mineurs voyageurs, politique notes de frais, plan de gestion environnementale destinations) |
 | `../../scripts/garanties/mineurs-notes-frais-env-destinations-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-avoirs-comm-famille-post-incident.js` | Générateur Node.js des 3 documents support voyageur (politique avoirs et remboursements, plan d'animation communauté Famille, politique communication post-incident) |
+| `../../scripts/garanties/avoirs-comm-famille-post-incident-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
