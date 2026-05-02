@@ -39,6 +39,7 @@
 | 18 | `e1801d7` (back) + `6493c1a` (front) | `d56987b` | feat(round 16): /me/energy/redeem + AutoRFQ queue scaffold + checkout redeem wiring |
 | 19 | `cf0b4bb` (back) + `291ec43` (front) | `ce3c60b` | feat(round 17): /admin/energie/system dashboard + GET /admin/energy/stats + 17 unit tests |
 | 20 | `a81226a` (back) + `3ebf595` (front) | `b200ca6` | feat(round 18): LiveDriverMap + chauffeur GPS test + tracking endpoints + AutoRFQQueue tests |
+| 21 | `08c2ca0` (back) + `217964c` (front) | `ec53a20` | test(round 19): tsp-optimizer + symphony-mapper + DriverArrivalDetection (33 tests) |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -881,6 +882,41 @@ Dashboard complet :
 
 ---
 
+## 🎼 Round 19 — Tests unitaires utilities + cron arrival (commit 21)
+
+3 nouvelles suites de tests pour blinder la qualité.
+
+### Frontend
+
+#### `lib/__tests__/tsp-optimizer.test.ts` (nouveau, 145 lignes) — 13 tests
+- `haversineKm()` : 4 tests (identité, Paris-Lyon ~393km, Paris-NYC ~5837km, symétrie)
+- `totalRouteDistance()` : 4 tests (vide, 1 stop, triangle, sans GPS)
+- `optimizeStopOrder()` : 7 tests (1/0 stops, optim 4 stops, start/end fixes, partial GPS, durée à 60 km/h)
+
+#### `app/(public)/voyages/[slug]/__tests__/symphony-mapper.test.ts` (nouveau, 290 lignes) — 13 tests
+- `mapBusStopsToPickupPoints()` : 2 tests
+- `mapDaysToProgram()` : 3 tests (vide, format J{n}, décodage HTML)
+- `mapVoyageToHRAPartners()` : 4 tests (hraList, restos libre/inclus, activités opt)
+- `mapVoyageActivitiesToTrip()` : 4 tests (difficulty mapping, equipment toBring, fallback provided)
+- `mapVoyageToMaisons()` : 3 tests (format nights, singularisation 1 nuit)
+
+### Backend
+
+#### `transport/driver-arrival-detection.service.spec.ts` (nouveau, 165 lignes) — 7 tests
+- `detectArrivals()` :
+  - no-op si aucune position en gateway
+  - ignore positions > 2 min
+  - notifie si chauffeur à <200m d'un arrêt
+  - NE notifie PAS si >200m
+  - lecture defensive si transportStop absent
+  - skip arrêts sans GPS
+  - processe plusieurs chauffeurs distincts
+  - survit aux exceptions DB
+
+**Total round 19 : 33 nouveaux tests unitaires.**
+
+---
+
 ## ✅ Le voyage Eventy est complet end-to-end + monitoré + testé
 
 Restent uniquement 2 chantiers hors scope projet (non bloquants) :
@@ -914,7 +950,8 @@ Restent uniquement 2 chantiers hors scope projet (non bloquants) :
 | 18. Round 16 (Redeem + AutoRFQ queue) | 1 (auto-rfq-queue.service) | 4 (client.controller, quotes.controller, transport.module, checkout step-3) | ~264 |
 | 19. Round 17 (Admin energy dashboard + tests) | 2 (admin/energie/system/page, energy.service.spec) | 2 (admin.controller, admin/energie/page) | ~640 |
 | 20. Round 18 (LiveDriverMap + GPS test page + tracking endpoints + queue tests) | 4 (LiveDriverMap, gps-test/page, tracking endpoints, auto-rfq-queue.spec) | 1 (suivi/page) | ~810 |
-| **TOTAL** | **23** | **66** | **~7 185 lignes** |
+| 21. Round 19 (Tests utilities + cron arrival, 33 tests) | 3 (tsp-optimizer.test, symphony-mapper.test, driver-arrival-detection.spec) | 0 | ~600 |
+| **TOTAL** | **26** | **66** | **~7 785 lignes** |
 
 ---
 
