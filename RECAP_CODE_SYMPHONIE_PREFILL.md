@@ -29,6 +29,7 @@
 | 8 | `aa6006d` | `5f86ca6` | feat(round 6): partition frise (P1 #7) + auto-RFQ scaffold (P0 #3 partial) |
 | 9 | `88104e2` (front) + `5078eb2` (back) | `3400c5d` | feat(round 7): SymphonyMap (P1 #6) + backend auto-RFQ + /me/energy |
 | 10 | `6edd9e7` (front) + `05a08a4` (back) | `ba1da09` | feat(round 8): Auto-RFQ UI button + backend /pro/catalog/creator + transportQuoteValidated computed |
+| 11 | `3afb0d2` (front) + `a8295ee` (back) | `ef8f8b1` | feat(round 9): API cascade catalogs + SymphonieGate widget + DriverTrackingGateway WebSocket |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -483,15 +484,58 @@ Composant `AutoRFQSection` (gold #D4A853) en tête de l'étape Fournisseurs :
 
 ---
 
-## 🟡 Hors scope — prochaines passes
+## 🎼 Round 9 — Cascade API + SymphonieGate + DriverTrackingGateway (commit 11)
 
-Identifiés mais non touchés :
+3 nouveautés bouclant les TODOs hors-scope restants.
 
-1. **Suivi GPS chauffeur jour J** — TODO P1 (push notif quand chauffeur arrivé) — nécessite WebSocket + app chauffeur dédiée.
-2. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
-3. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque déjà `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
-4. **Front consume /pro/catalog/creator** — l'endpoint backend est prêt, le frontend `creator-catalogs.ts` lit toujours DEMO_HRA_* directement. Modification mineure pour brancher l'API en cascade quand backend dispo.
-5. **Migration Prisma champ Travel.transportQuoteValidated direct** — pour l'instant calculé dynamiquement via quoteRequests. Une colonne dédiée + trigger permettrait des indexes.
+### Frontend
+
+#### `frontend/lib/creator-catalogs.ts` — Cascade API → DEMO → MOCK
+- `fetchCreatorCatalogFromApi(destination)` — GET `/api/pro/catalog/creator` avec credentials, renvoie `null` si vide/échec
+- `getCreatorCatalogWithApiFallback(destination)` — helper haut-niveau qui fait la cascade complète, mappe les hôtels/restos/activités/arrêts du backend vers le format `CreatorXxx[]` attendu par les Etape*
+- Source tracée : `'api' | 'demo'` pour traçabilité
+- Backward compat : les helpers synchrones existants restent disponibles
+
+#### `frontend/components/transport/SymphonieGate.tsx` (TODO P0 #4 + #5)
+Widget checklist de publication d'un voyage — 8 gates :
+- 5+ arrêts pickup
+- Arrêts validés (GPS + photo)
+- Point d'arrivée
+- Route configurée
+- Occurrence confirmée
+- Routes assignées aux occurrences
+- Plan ramassage (pax estimés)
+- Devis transport validé
+Rendu : progress bar + grid 2 colonnes + badge global "voyage publiable", click handler optionnel.
+
+### Backend NestJS
+
+#### `backend/src/modules/transport/driver-tracking.gateway.ts` (TODO P1 — Suivi GPS chauffeur)
+WebSocket gateway pour suivi GPS chauffeur en temps réel :
+- Namespace `/driver-tracking`, JWT obligatoire (rôle DRIVER pour émettre)
+- Channels :
+  - `tracking:subscribe { occurrenceId }` → join room `occurrence:${id}`
+  - `tracking:driver-update { lat, lng, speed, heading, occurrenceId }` → broadcast aux abonnés
+  - `tracking:driver-arrived-${occId}` push notif (dédupe par stopId)
+- `haversineKm()` static helper pour calcul rayon 200m
+- Maps en mémoire : occurrenceSubscribers, driverPositions, notifiedArrivals
+- Type `ExtendedSocket` local pour pallier les limites du `socket.io.d.ts` minimal
+
+#### `backend/src/modules/transport/transport.module.ts`
+Import `JwtModule.registerAsync` + provider `DriverTrackingGateway`.
+
+---
+
+## 🟡 Hors scope — prochaines passes (long terme)
+
+Identifiés mais non touchés (gros chantiers ou dépendances Prisma) :
+
+1. **Table EnergyAccount Prisma** — pour exposer le tier réel (l'endpoint `/me/energy` actuel est heuristique sur tripsCount).
+2. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue.
+3. **Migration Prisma champ Travel.transportQuoteValidated direct** — pour l'instant calculé dynamiquement via quoteRequests. Une colonne dédiée + trigger permettrait des indexes.
+4. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway déjà en place côté serveur).
+5. **Cron service détection arrivée chauffeur** — service qui appelle `gateway.notifyDriverArrived()` quand chauffeur entre dans un rayon de 200m d'un stop.
+6. **Wire SymphonieGate dans /pro/voyages/[id] + /admin/voyages/[id]** — le composant est créé, il reste à l'instancier dans les pages avec les vraies données.
 
 ---
 
@@ -509,7 +553,8 @@ Identifiés mais non touchés :
 | 8. Round 6 (partition frise + auto-RFQ) | 2 (SymphonyPartitionFrise.tsx + auto-rfq.ts) | 1 (EtapeBusStops) | ~525 |
 | 9. Round 7 (SymphonyMap + backend endpoints) | 2 (SymphonyMap.tsx + auto-rfq.dto.ts backend) | 3 (EtapeBusStops, transport-quotes.controller.ts, client.controller.ts) | ~685 |
 | 10. Round 8 (Auto-RFQ UI + creator catalog + quote computed) | 0 | 3 (EtapeFournisseurs, pro.controller, travels.service) | ~334 |
-| **TOTAL** | **8** | **36** | **~3 416 lignes** |
+| 11. Round 9 (cascade API + SymphonieGate + GPS gateway) | 2 (SymphonieGate.tsx + driver-tracking.gateway.ts) | 2 (creator-catalogs.ts, transport.module.ts) | ~688 |
+| **TOTAL** | **10** | **38** | **~4 104 lignes** |
 
 ---
 
