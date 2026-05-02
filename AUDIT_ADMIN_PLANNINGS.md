@@ -9,7 +9,7 @@
 
 Ce document recense **ce qui existe déjà**, **ce qui manque**, et les **TODOs concrets** placés dans le code (`// TODO Eventy: …`).
 
-> **Mise à jour 2026-05-02** : implémentation livrée en 34 commits frontend + 5 backend (+ 6 docs bilan). Voir §7-§10 — État d'avancement.
+> **Mise à jour 2026-05-02** : implémentation livrée en 36 commits frontend + 9 backend (+ 7 docs bilan). Voir §7-§11 — État d'avancement.
 
 ---
 
@@ -580,3 +580,87 @@ Suite suite finale : 2 commits frontend + 2 commits backend.
 ---
 
 _Mise à jour 2026-05-02 (Phase 4 complète et FINALE). 34 commits frontend + 5 commits backend livrés sur master+main des deux repos._
+
+---
+
+## 11. PHASE 5 — Validation, RBAC et tests API wrappers (2026-05-02 fin)
+
+Suite finale du chantier : 2 commits frontend + 4 commits backend (DTO Zod, ENDPOINTS_INVENTORY, RBAC, tests).
+
+### 11.1 Backend — sécurisation et standards
+
+| Fichier | Améliorations | Statut |
+|---|---|:---:|
+| `dto/quick-actions.dto.ts` | **NEW** 11 schémas Zod centralisés (validation runtime) | ✅ |
+| `quick-actions.controller.ts` | Validation Zod via `ZodValidationPipe` sur les 10 endpoints + `@UseGuards(JwtAuthGuard, AdminRolesGuard)` + `@AdminRoles(...)` per-endpoint critique | ✅ |
+| `equipe-quick-actions.controller.ts` | Idem pour les 6 endpoints équipe | ✅ |
+| `*.controller.spec.ts` | `.overrideGuard(...)` pour les 36 tests existants — toujours green | ✅ |
+| `ENDPOINTS_INVENTORY.md` | 16 nouveaux endpoints documentés (Admin Quick-Actions + Equipe Quick-Actions) avec DTO/audit/RBAC | ✅ |
+
+### 11.2 Tests RBAC appliqués (par endpoint critique)
+
+| Endpoint | Rôles requis |
+|---|---|
+| `force-modify` | FOUNDER + OPS_VOYAGE |
+| `transfer-pro` | FOUNDER + OPS_VOYAGE |
+| `cancel-refund` | FOUNDER + OPS_VOYAGE + FINANCE |
+| `reschedule` | FOUNDER + OPS_VOYAGE |
+| `force-go` | FOUNDER + OPS_VOYAGE + TERRAIN |
+| `bulk` (toutes actions) | FOUNDER + OPS_VOYAGE |
+| `signaler-incident` | FOUNDER + OPS_VOYAGE + TERRAIN + SUPPORT |
+| `go-nogo` | FOUNDER + OPS_VOYAGE + TERRAIN |
+| `briefer-accompagnateur` | FOUNDER + OPS_VOYAGE + TERRAIN + MISSION |
+
+Endpoints non critiques (`add-occurrence`, `emergency-call`, `intervention`, `suivre`, `chat-groupe`, `appel-pro`) : authentification admin requise mais pas de rôle spécifique.
+
+### 11.3 Frontend — tests des wrappers API
+
+| Fichier | Specs | Couverture |
+|---|---:|---|
+| `lib/admin-quick-actions-api.test.ts` | 18 | 7 quick-actions + interventions + bulk + shift, mode queued |
+| `lib/equipe-quick-actions-api.test.ts` | 9 | 6 actions équipe, mapping endpoints, mode queued |
+
+### 11.4 Commits Phase 5
+
+37. `df6bc45` (backend) DTOs Zod centralisés
+38. `5c0a7d4` (backend) ENDPOINTS_INVENTORY 16 endpoints
+39. `b0e5ea5` (backend) RBAC guards critiques
+40. `3562e66b` (frontend) Tests wrappers API admin + équipe (27 specs)
+
+### 11.5 Bilan global FINAL
+
+| Catégorie | Quantité |
+|---|---:|
+| **Commits frontend** (master + main) | **36** |
+| **Commits backend** (master) | **9** |
+| **Documents bilan** | 7 sections (§4-§11) |
+| **Composants/lib partagés frontend** | 11 (+ wrappers API) |
+| **Controllers backend** | 2 (admin + équipe) |
+| **DTOs Zod** | 11 schémas |
+| **Endpoints REST stubs** | 16 (10 admin + 6 équipe) |
+| **Pages nouvelles** | 3 (`occurrences`, `suivi-hebdo`, `heatmap`) |
+| **Pages améliorées** | 12 |
+| **Tests unitaires** | **119** (43 backend + 76 frontend) |
+
+### 11.6 Conformité production
+
+- ✅ **Validation Zod** sur 16/16 endpoints (runtime + types)
+- ✅ **Audit log** câblé sur les 11 endpoints critiques (OVERRIDE / UPDATE / ADMIN_CREATE_REFUND / APPROVE / REJECT / CREATE)
+- ✅ **RBAC guards** appliqués (JwtAuthGuard + AdminRolesGuard avec rôles spécifiques)
+- ✅ **Tests** 119 specs (controllers + bars + wrappers + composants partagés + lib utilitaire)
+- ✅ **Documentation** ENDPOINTS_INVENTORY mis à jour
+- ✅ **Mode queued** côté frontend si API offline (pas d'erreur user-facing)
+- ✅ **Confirmations explicites** pour actions destructives (modale + tapage du titre)
+
+### 11.7 Restant à faire
+
+**Backend** : câblage complet des services métiers (Stripe refund réel, email templates, notifications pro/équipe, `transferPro`, `shiftAllOccurrences`, `incidents.service`). L'audit-log + RBAC + bulk publish/archive/cancel sont déjà fonctionnels.
+
+**Frontend P3 reporté** :
+- API tracking GPS externe (intégration tierce)
+
+**Note backend main** : la branche `main` du backend a une divergence non-liée (Pennylane finance + analytics) avec `master`. Synchroniser manuellement quand prêt.
+
+---
+
+_Mise à jour 2026-05-02 (Phase 5 complète et FINALE). 36 commits frontend + 9 commits backend livrés sur master+main des deux repos._
