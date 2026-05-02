@@ -255,6 +255,13 @@
 | `Eventy-Life-Charte-Commerciale.docx` / `.pdf` | Charte commerciale (14 KB · 4 pages) — posture commerciale globale Eventy : 5 principes (sincérité, liberté du voyageur, transparence, respect, cohérence âme), refus structurés (urgence factice, scarcité simulée, confirmshaming, prix-piège, dénigrement concurrents), honnêteté (description voyage, prix décomposé, limites, risques), conduite avec voyageur (refus précipitation, conseil sincère même si coûte une vente), promotions saisonnières encadrées, **Black Friday encadré** (refus -70 % gonflés), sanctions internes/partenaires, 6 KPIs (NPS post-réservation ≥ + 60 An 1) |
 | `Eventy-Life-Plan-Gestion-Stocks-Ressources.docx` / `.pdf` | Plan de gestion des stocks et ressources (13 KB · 4 pages) — sobriété et durabilité : photothèque (Scaleway France, ≈ 500 GB An 1 → 30 TB An 5), kits voyageurs (badges réutilisables, papier recyclé FSC, refus plastique usage unique), supports marketing (préférence numérique), matériel équipe (refurbished, cycle 4-5 ans), **merch limité** (anniversaire Eventy uniquement, prix coûtant + don), 6 KPIs (≥ 90 % stocks France/Europe, 0 plastique usage unique), 6 engagements éthiques |
 
+### Humain & culturel (valeurs équipe, sensibilisation voyageurs, prévention burnout)
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Charte-Valeurs-Ethique-Equipe.docx` / `.pdf` | Charte des valeurs et code éthique équipe (14 KB · 4 pages) — culture interne : **5 valeurs Eventy** (chaleur humaine, transparence radicale, refus de l'extraction, sobriété et durabilité, apprentissage et humilité), code de conduite individuel 4 axes (voyageurs, équipe, partenaires, entreprise), **engagements forts opposables** (refus harcèlement/discrimination/fraude/corruption sanctionné immédiatement), vie d'équipe (rituels, modes de travail, reconnaissance non-financière), 7 engagements opposables Eventy envers équipe, 6 KPIs (eNPS ≥ + 30 An 1 → + 50, turnover involontaire < 5 %) |
+| `Eventy-Life-Plan-Education-Sensibilisation-Voyageurs.docx` / `.pdf` | Plan d'éducation et sensibilisation voyageurs (14 KB · 4 pages) — transparence radicale en action : 5 principes (transparence, sobriété, respect, utilité, bienveillance), refus structurés (culpabilisation, greenwashing, paternalisme, conditionnalité), 4 phases (pré-réservation transparence prix/CO2eq → préparation roadbook J-30 → voyage briefings sobres → post-voyage prolongement), **5 sujets prioritaires** (empreinte carbone, surtourisme, économie locale circulaire, diversité, sécurité/santé), refus du « tourisme zoo » et regard extractif, 6 KPIs |
+| `Eventy-Life-Plan-Prevention-Burnout.docx` / `.pdf` | Plan de prévention du burnout équipe (14 KB · 4 pages) — protection santé mentale : 5 principes (prévention active, anticipation, bienveillance, confidentialité, action concrète), refus structurés (sur-travail glorifié, présentéisme, culpabilisation arrêts maladie), 5 facteurs de risque, mesures préventives (organisation, charge, reconnaissance, sens, autonomie), détection (sondages anonymes, entretiens, signaux faibles), **soutien 4 étapes** (discussion → aménagement → soutien externe psychologue → arrêt sans culpabilisation), 6 KPIs (0 cas burnout, ≤ 40 h/semaine, NPS ≥ + 30 → + 50) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -408,6 +415,8 @@
 | `../../scripts/garanties/support-multicanal-langues-tests-ux-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-api-charte-commerciale-stocks.js` | Générateur Node.js des 3 documents commercial et ressources (documentation API publique, charte commerciale, plan de gestion des stocks et ressources) |
 | `../../scripts/garanties/api-charte-commerciale-stocks-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-valeurs-sensibilisation-burnout.js` | Générateur Node.js des 3 documents humain et culturel (charte valeurs et éthique équipe, plan éducation et sensibilisation voyageurs, plan prévention burnout équipe) |
+| `../../scripts/garanties/valeurs-sensibilisation-burnout-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
