@@ -262,6 +262,13 @@
 | `Eventy-Life-Plan-Education-Sensibilisation-Voyageurs.docx` / `.pdf` | Plan d'éducation et sensibilisation voyageurs (14 KB · 4 pages) — transparence radicale en action : 5 principes (transparence, sobriété, respect, utilité, bienveillance), refus structurés (culpabilisation, greenwashing, paternalisme, conditionnalité), 4 phases (pré-réservation transparence prix/CO2eq → préparation roadbook J-30 → voyage briefings sobres → post-voyage prolongement), **5 sujets prioritaires** (empreinte carbone, surtourisme, économie locale circulaire, diversité, sécurité/santé), refus du « tourisme zoo » et regard extractif, 6 KPIs |
 | `Eventy-Life-Plan-Prevention-Burnout.docx` / `.pdf` | Plan de prévention du burnout équipe (14 KB · 4 pages) — protection santé mentale : 5 principes (prévention active, anticipation, bienveillance, confidentialité, action concrète), refus structurés (sur-travail glorifié, présentéisme, culpabilisation arrêts maladie), 5 facteurs de risque, mesures préventives (organisation, charge, reconnaissance, sens, autonomie), détection (sondages anonymes, entretiens, signaux faibles), **soutien 4 étapes** (discussion → aménagement → soutien externe psychologue → arrêt sans culpabilisation), 6 KPIs (0 cas burnout, ≤ 40 h/semaine, NPS ≥ + 30 → + 50) |
 
+### Éducation, RH stagiaires et data éthique
+| Fichier | Description |
+|---------|-------------|
+| `Eventy-Life-Plan-Partenariat-Universitaire.docx` / `.pdf` | Plan de partenariat universitaire et formation tourisme (13 KB · 4 pages) — engagement avec écoles et universités : 5 principes (engagement durable, réciprocité, qualité, diversité, refus instrumentalisation), 4 catégories d'établissements cibles (universités tourisme/hôtellerie, écoles commerce, écoles spécialisées, formations tech), **4 niveaux d'engagement** (interventions ponctuelles → stages → projets pédagogiques → chaire An 4-5), calendrier An 1 → An 5 progressif, 6 KPIs (≥ 5 partenaires actifs An 3, ≥ 30 % conversion embauche), 6 engagements opposables |
+| `Eventy-Life-Politique-Stagiaires-Alternants.docx` / `.pdf` | Politique des stagiaires et alternants (14 KB · 4 pages) — encadrement éthique : 5 principes (apprentissage réel, mentorat qualité, indemnisation équitable, inclusion, engagement durable), refus structurés (stagiaire-photocopieur, gratification minimale, remplacement poste salarié), 4 catégories accueillies (3e → master → alternants), **gratification au-delà du minimum légal** (+30 % stages 1-3 mois, +50 % 4-6 mois, +10 % alternants), mentor dédié, sujets prioritaires (refus tâches répétitives), 6 KPIs |
+| `Eventy-Life-Politique-Valorisation-Donnees.docx` / `.pdf` | Politique de valorisation des données — data éthique (14 KB · 4 pages) — refus monétisation données voyageurs : 5 principes (finalité voyage, minimisation, souveraineté, transparence, sobriété), **refus absolu** (vente données, monétisation publicitaire, tracking Facebook Pixel/GA4 invasif, IA générative entraînée sur données voyageurs, profilage abusif), 4 utilisations autorisées (voyage, contractuel, communication opt-in, statistiques anonymisées), pseudonymisation 3 ans / anonymisation 5 ans, droits RGPD complets, données médicales chiffrement renforcé, 7 engagements opposables, 6 KPIs (0 cessions, 0 plaintes CNIL) |
+
 ### Politique RSE & engagements éthiques
 | Fichier | Description |
 |---------|-------------|
@@ -417,6 +424,8 @@
 | `../../scripts/garanties/api-charte-commerciale-stocks-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 | `../../scripts/garanties/build-valeurs-sensibilisation-burnout.js` | Générateur Node.js des 3 documents humain et culturel (charte valeurs et éthique équipe, plan éducation et sensibilisation voyageurs, plan prévention burnout équipe) |
 | `../../scripts/garanties/valeurs-sensibilisation-burnout-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
+| `../../scripts/garanties/build-universites-stagiaires-data.js` | Générateur Node.js des 3 documents éducation/RH/data (plan partenariat universitaire, politique stagiaires et alternants, politique valorisation des données) |
+| `../../scripts/garanties/universites-stagiaires-data-to-pdf.py` | Convertisseur batch des 3 documents .docx → .pdf imprimables |
 
 ## Régénération
 
