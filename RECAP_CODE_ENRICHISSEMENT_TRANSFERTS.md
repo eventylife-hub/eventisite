@@ -992,3 +992,112 @@ Total                                                    128 tests
 
 > *Sept batches, zéro suppression, un système qui parle 3 langues, un marketing
 > qui rassure, une stat qui mesure, une conformité qui rayonne. NE RIEN EFFACER.*
+
+---
+
+## 🆕 BATCH 8 — i18n wiring, hook locale, SEO, demo seed (2026-05-02)
+
+### Frontend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `components/voyage/VoyageComplianceTrustBadge.tsx` | i18n wiring : prop `locale` FR/EN/ES (défaut FR), 6 strings traduites via getEnrichmentStrings | +10 |
+| `components/voyage/VoyagePublicEnrichmentTimeline.tsx` | i18n wiring : prop `locale` (heading, creator, expand/collapse, footer) | +10 |
+| `lib/hooks/use-enrichment-locale.ts` | Hook `useEnrichmentLocale` — résolution localStorage > browser > 'fr' + persist | ~70 |
+| `lib/hooks/__tests__/use-enrichment-locale.test.ts` | 5 tests (initial, localStorage read, fallback, setLocale persist) | ~55 |
+| `components/voyage/__tests__/VoyageComplianceTrustBadge.test.tsx` | 6 tests (compact, expandable, FR/EN/ES) | ~55 |
+| `app/(public)/conformite-voyageur/layout.tsx` | SEO Metadata Next.js (title, description, keywords, OpenGraph, Twitter, canonical, robots) | ~50 |
+| `app/sitemap.ts` | Entrée `/conformite-voyageur` priority 0.8 monthly | +6 |
+
+### Backend
+| Fichier | Rôle | Lignes |
+|---|---|---|
+| `admin-enrichment.controller.ts` | + POST `/admin/travels/:id/seed-demo-enrichment` (6 events + 1 notif pour staging, bloqué prod sauf `ALLOW_DEMO_SEED=true`) | +55 |
+| `travel-enrichment-cron.service.spec.ts` | + 3 tests (idempotent, no EmailService, empty no-op) | +20 |
+
+### Logique métier ajoutée
+
+**i18n wiring** :
+- Composants acceptent `locale?: EnrichmentLocale` en prop
+- Pattern : `const t = getEnrichmentStrings(locale);` puis utilise `{t.trustBadgeTitle}`
+- Default `'fr'` → comportement strictement identique pour les composants existants (NE RIEN EFFACER)
+
+**Hook `useEnrichmentLocale`** :
+- 1er chargement : tente localStorage `eventy_enrichment_locale`
+- Sinon : détection browser via `navigator.language`
+- Sinon : `'fr'` par défaut
+- `setLocale()` persiste en localStorage
+- Safe SSR (try/catch sur window/localStorage)
+
+**SEO Metadata** :
+- Title pertinent : "Vos droits voyageur protégés à 100% — Eventy Life"
+- 8 keywords ciblés conformité
+- OpenGraph FR + Twitter card
+- Canonical `/conformite-voyageur`
+
+**Demo seed admin** :
+- Endpoint pour créer rapidement des events + notif sur un voyage (utile pour tests staging)
+- Bloqué en production sauf flag explicite `ALLOW_DEMO_SEED=true`
+- Log warn si tentative non autorisée
+
+### Commits batch 8
+
+| Repo | Branche | Commit |
+|---|---|---|
+| eventy-frontend | master | (post-rebase) feat(voyages): batch 8 — i18n wiring + hook + SEO |
+| eventy-backend | master | (post-rebase) feat(travels): batch 8 — admin seed + cron tests |
+
+### Couverture tests étendue (cumul batch 1-8)
+
+```
+backend (49 tests)
+  travel-enrichment.service.spec.ts                12 tests
+  travel-enrichment-cron.service.spec.ts            5 tests (+3)
+  travel-transfer.service.spec.ts                   6 tests
+  notification-token.service.spec.ts                5 tests
+  client-notifications.controller.spec.ts           6 tests
+  transfer-export.service.spec.ts                   6 tests
+  enrichment-webhook.service.spec.ts                4 tests
+  admin-enrichment.controller.spec.ts               7 tests
+  webhook-config.controller.spec.ts                 9 tests
+
+frontend (82 tests)
+  MajorChangeDetector.test.tsx                     14 tests
+  LockedFieldWrapper.test.tsx                       6 tests
+  VoyageEnrichmentBadge.test.tsx                    7 tests
+  VoyagePublicEnrichmentTimeline.test.tsx           7 tests
+  NotificationBell.test.tsx                         7 tests
+  SymphonyDiff.test.tsx                             8 tests
+  PublicAckPage.test.tsx                            8 tests
+  enrichment-i18n.test.ts                          14 tests
+  use-enrichment-locale.test.ts                     5 tests
+  VoyageComplianceTrustBadge.test.tsx               6 tests
+─────────────────────────────────────────────────────────────────────
+Total                                            136 tests
+```
+
+### Cumul scope total final (8 batches)
+
+**Frontend** :
+- **11 routes Next.js** + **1 layout SEO**
+- **8 composants partagés** (i18n-aware FR/EN/ES)
+- **1 dictionnaire i18n** + **1 hook** locale
+- 10 fichiers tests Jest (82 tests)
+
+**Backend** :
+- **5 services métier** + 1 cron + 1 webhook outbound
+- **8 controllers**
+- **5 modèles Prisma additifs** + 5 enums + migration SQL
+- 9 fichiers tests Jest (49 tests)
+
+**Documentation** :
+- 2 audits + 1 récap + 1 runbook + PROGRESS.md
+- SEO + sitemap
+
+**Conformité légale UE 2015/2302** : ✅ tous articles couverts + i18n trilingue
+
+---
+
+> *Huit batches, zéro suppression. Un voyageur français, anglais ou espagnol
+> peut désormais lire ses droits dans sa langue, sa locale est mémorisée, son
+> Google search remontera la page conformité. Et l'admin a le bouton seed
+> pour faire vivre le système en démo. NE RIEN EFFACER.*
