@@ -35,6 +35,7 @@
 | 14 | `02d4af3` (back) | `8c9a91d` | feat(round 12): EnergyService + booking earn hook + acceptQuote trigger |
 | 15 | `50cdcfc` (back) | `b4f8952` | feat(round 13): EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE |
 | 16 | `90f069b` (back) | `0a7c37b` | feat(round 14): EARN_REFERRAL + Stripe webhook → energy pack + migration SQL |
+| 17 | `838f4b6` (front) | `a5c1652` | feat(round 15): cascade API energie page + EnergyTierBadge sidebar |
 
 Toutes les branches `master` (frontend), `master` (backend) et `main` (eventisite) sont synchronisées.
 
@@ -723,13 +724,39 @@ Migration SQL prête à déployer (`npx prisma migrate deploy`) :
 
 ---
 
-## 🟡 Hors scope — prochaines passes (chantiers infra/business uniquement)
+## 🎼 Round 15 — Frontend Energy complet (commit 17)
 
-Toutes les TODO P0/P1/secondaires/tertiaires du recap initial sont désormais bouclées. Restent :
+L'expérience Énergie côté voyageur est désormais 100% branchée à l'API backend.
 
-1. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` mais l'envoi async fiable (retry, dedup) gagnerait à passer par une queue (Bull/BullMQ). Pas bloquant pour le MVP.
-2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron + service métier déjà en place côté serveur).
-3. **Frontend energy badges & dashboard** — afficher le balance + tier sur les pages voyageur (composant `VoyageEnergyBadge` existant pour les pts gagnés par voyage, mais pas de dashboard complet).
+### `frontend/app/(client)/client/energie/page.tsx`
+Cascade API :
+- Fetch `/api/client/me/energy` au montage (avec AbortController)
+- Variables `solde`/`cumul` (au lieu de constantes MOCK directes)
+- Tous les calculs (palier, progressPct, depensable, voyage goal) utilisent `solde`/`cumul`
+- Réactif au vrai compte du voyageur — plus de mock 8 240 / 24 650
+- Fallback gracieux MOCK si API indisponible
+
+### `frontend/components/voyage/EnergyTierBadge.tsx` (nouveau, 130 lignes)
+Badge tier + balance pour le header voyageur :
+- Cascade : prop > localStorage cache (1h TTL) > fetch `/api/client/me/energy`
+- Cliquable → redirect `/client/energie` (sauf `noLink`)
+- Mode compact (juste tier emoji) ou full (tier + balance + label)
+- Couleur dynamique selon palier (bleu STARTER → violet LEGEND)
+- Différent de `VoyageEnergyBadge` (qui montre les pts gagnés sur UN voyage)
+
+### `frontend/app/(client)/client/layout.tsx`
+- Import `EnergyTierBadge`
+- Affiché dans la card user info de la sidebar (sous identité)
+- Visible sur TOUS les écrans client → toujours conscient du tier
+
+---
+
+## 🟡 Hors scope — prochaines passes (chantiers infra uniquement)
+
+Toutes les TODO P0/P1/secondaires/tertiaires/UX du recap sont désormais bouclées. Restent uniquement les chantiers infra non bloquants :
+
+1. **Queue Bull pour broadcast emails loueurs** — l'endpoint `/transport/auto-rfq` invoque `broadcastQuoteToProviders` synchrone. L'envoi async fiable (retry, dedup) gagnerait à passer par une queue (Bull/BullMQ). Non bloquant MVP.
+2. **App mobile chauffeur** — émet les positions GPS sur le WebSocket (gateway + cron + service métier déjà en place côté serveur, prêts à recevoir des positions). Hors scope frontend Eventy.
 
 ---
 
@@ -753,7 +780,8 @@ Toutes les TODO P0/P1/secondaires/tertiaires du recap initial sont désormais bo
 | 14. Round 12 (EnergyService + booking earn + acceptQuote trigger) | 2 (energy.service, energy.module) | 4 (app.module, bookings.module, bookings.service, transport-quotes.service) | ~363 |
 | 15. Round 13 (EARN_REVIEW + EARN_PACK_PURCHASE + cron EXPIRE) | 1 (energy-expiry.service) | 4 (reviews.service, reviews.module, client.controller, client.module, energy.module) | ~220 |
 | 16. Round 14 (EARN_REFERRAL + Stripe webhook + migration SQL) | 1 (migration.sql) | 3 (friends.service, payments.module, webhook.controller) | ~161 |
-| **TOTAL** | **15** | **57** | **~5 282 lignes** |
+| 17. Round 15 (Frontend Energy complet) | 1 (EnergyTierBadge.tsx) | 2 (energie/page.tsx, client/layout.tsx) | ~189 |
+| **TOTAL** | **16** | **59** | **~5 471 lignes** |
 
 ---
 
